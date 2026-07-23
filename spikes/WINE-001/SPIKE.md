@@ -45,23 +45,31 @@ unknown-executable default work; rebase against another upstream revision succee
   the load-bearing MSVC `-target aarch64-windows` branch) and the hand-written arm64
   dispatchers. Analyses: `results/2026-07-23-03-macos26-exec-policy-and-va-floor.md`,
   `results/2026-07-23-04-teb-in-tsd-and-first-pe-execution.md`.
-- **Gate 3 (ARM64EC/WoW64 x64 layer): in progress.** EC hybrid Wine (`--enable-archs=
-  arm64ec,aarch64`) builds on macOS (`work/build-2`); the 4 EC-side `[x18]` TEB reads in
-  `signal_arm64ec.c` are fixed. An Alloy-authored stub emulator (`emu-stub/`, exports the
-  `xtajit64.dll` BTCpu64/lifecycle ABI) stands in for FEX to test the loader→emulator
-  handshake. A minimal x86-64 console PE and the stub both **load**, but execution is
-  blocked at image mapping: `mprotect(PROT_EXEC)` on the cross-arch code sections returns
-  EACCES (macOS W^X / Mach max_protection). Root cause narrowed (not the reserved-area
-  allocator, not JIT entitlements); next step is a live `mach_vm_region` dump. Full
-  analysis: `results/2026-07-23-05-gate3-arm64ec-groundwork.md`. Still deferred to a
-  later gate-3 step: `env.c`/LDT `limit_2g` sites.
+- **Gate 3 (ARM64EC/WoW64 x64 layer): Wine side PROVEN 23 July 2026.** x64 guest PEs
+  (freestanding and full-CRT/TLS-callback 4K-aligned) load through the EC loader; the
+  emulator interface resolves and initializes (`ProcessInit` → feature probes →
+  `ThreadInit`); the first x64 transfer (TLS callback / entry point) reaches the stub's
+  `ExitToX64`; exit 0, no faults; native ARM64X path regression-free. The gate-3 EACCES
+  was **not** capped max_protection (live region dump: `max = RWX`) — it was macOS's
+  RWX-denial on non-MAP_JIT memory hitting 4K-guest-in-16K-host page unions, compounded
+  by three more defects (unchecked metadata unprotect + pre-init NULL-dispatch recursion;
+  lld FFS exports taken raw for the dispatch trio; emulator import-chain stamping order).
+  Fixes: Wine `mprotect_exec` drops EXEC when RWX is denied (guest x64 pages don't need
+  host EXEC under an emulator — exec faults route to `KiUserEmulationDispatcher` by
+  design); `arm64ec_process_init` resolves the dispatch trio through
+  `arm64ec_redirect_ptr` (**required by FEX's lld-built dll too**); stub rebuilt
+  freestanding (ntdll-only imports), 64K-aligned, DbgPrint logging, noreturn trio.
+  Full kill-chain + evidence: `results/2026-07-23-06-gate3-wine-side-proven.md`.
+  Remaining for full gate 3: FEX Darwin port + swap-in (founder-only, = CPU-001 gate 4).
+  Still deferred: `env.c`/LDT `limit_2g` sites; `wineboot --init` service-spin follow-up.
 - Follow-ups (not gate-2 blockers): full graphical boot needs a FreeType + `winemac.drv`
   build (font/GUI backend); service-subsystem autostart faults; `get_core_id_regs_arm64`
   stub for guest CPU features.
 
 Wine patches live on local branch `alloy/spike-wine-001` in `third_party/src/wine`
-(`0e693a0` loader flags + KUSD + teb_block; `efd41b9` TEB-from-TSD; plus uncommitted-at-
-writing EC `signal_arm64ec.c` TEB fixes + a `virtual.c` errno diagnostic).
+(`0e693a0` loader flags + KUSD + teb_block; `efd41b9` TEB-from-TSD; `8870df9` EC TEB
+dispatchers + errno logging; plus the gate-3 close: `mprotect_exec` RWX→RW fallback,
+dispatch-trio redirection, region-dump + low-pc-fault diagnostics).
 
 ## Results log
 

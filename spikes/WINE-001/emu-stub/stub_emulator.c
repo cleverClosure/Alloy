@@ -17,7 +17,6 @@
 
 #include <windows.h>
 #include <winternl.h>
-#include <stdio.h>
 
 #ifndef STATUS_SUCCESS
 #define STATUS_SUCCESS ((NTSTATUS)0)
@@ -36,11 +35,27 @@ typedef struct _SYSTEM_CPU_INFORMATION {
     ULONG  ProcessorFeatureBits;
 } SYSTEM_CPU_INFORMATION;
 
+/* ntdll-only logging/exit: ProcessInit runs during arm64ec_process_init,
+ * before any DLL initializers (ucrtbase CRT state is not set up yet), so
+ * stdio would fault.  DbgPrint reaches Wine's debug stream at any stage. */
+ULONG WINAPIV DbgPrint(const char *fmt, ...);
+DECLSPEC_NORETURN void WINAPI RtlExitUserProcess(NTSTATUS status);
+
 static void emu_log(const char *msg)
 {
-    /* goes to the Wine debug stream / stderr of the host process */
-    fprintf(stderr, "alloy-emu-stub: %s\n", msg);
-    fflush(stderr);
+    DbgPrint("alloy-emu-stub: %s\n", msg);
+}
+
+/* Built with -nostdlib: the emulator DLL must import ONLY ntdll.  Linking the
+ * mingw CRT pulls in ucrtbase -> kernel32 -> kernelbase as dependencies of
+ * xtajit64.dll, which the EC loader then loads (and stamps hybrid metadata
+ * for) BEFORE arm64ec_process_init resolves the dispatch trio - leaving their
+ * __os_arm64x_* slots NULL and every exit thunk jumping to 0.  Real xtajit64
+ * imports only ntdll for the same reason. */
+BOOL WINAPI DllMainCRTStartup(HINSTANCE inst, DWORD reason, void *reserved)
+{
+    (void)inst; (void)reason; (void)reserved;
+    return TRUE;
 }
 
 /* ---- lifecycle: called during arm64ec_process_init() ---- */
@@ -73,7 +88,7 @@ void WINAPI BeginSimulation(void)
     emu_log("BeginSimulation: guest x64 entry reached - stub cannot translate x86-64.");
     emu_log("Plumbing proven; real execution requires the FEX emulator (founder-integrated).");
     /* exit cleanly so the harness records a deterministic, non-crashing result */
-    ExitProcess(0);
+    RtlExitUserProcess(0);
 }
 
 /* ---- processor feature model ---- */
@@ -116,9 +131,26 @@ void WINAPI ResetToConsistentState(EXCEPTION_RECORD *r, CONTEXT *c, ARM64_NT_CON
 { (void)r; (void)c; (void)a; }
 
 /* ---- ARM64<->x64 dispatch trio (resolved by name in arm64ec_process_init) ----
- * Real thunks perform the ABI transition; the stub only needs them to exist so
- * export resolution succeeds. They must never actually run for the init proof. */
+ * Real thunks transfer control INTO guest x64 code and never return normally.
+ * Returning would leave the transition state (including SP adjustments) broken,
+ * so each stub logs the hand-off marker and terminates cleanly: reaching any of
+ * these means the loader completed the native side and requested x64 execution
+ * (e.g. a TLS callback or the exe entry), which only a real emulator can run. */
 
-void WINAPI ExitToX64(void) { emu_log("ExitToX64 (stub)"); }
-void WINAPI DispatchJump(void) { emu_log("DispatchJump (stub)"); }
-void WINAPI RetToEntryThunk(void) { emu_log("RetToEntryThunk (stub)"); }
+void WINAPI ExitToX64(void)
+{
+    emu_log("ExitToX64: x64 code transfer requested - Wine-side plumbing proven; exiting (stub).");
+    RtlExitUserProcess(0);
+}
+
+void WINAPI DispatchJump(void)
+{
+    emu_log("DispatchJump: x64 code transfer requested - Wine-side plumbing proven; exiting (stub).");
+    RtlExitUserProcess(0);
+}
+
+void WINAPI RetToEntryThunk(void)
+{
+    emu_log("RetToEntryThunk: return into x64 requested - Wine-side plumbing proven; exiting (stub).");
+    RtlExitUserProcess(0);
+}
