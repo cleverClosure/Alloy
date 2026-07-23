@@ -45,14 +45,23 @@ unknown-executable default work; rebase against another upstream revision succee
   the load-bearing MSVC `-target aarch64-windows` branch) and the hand-written arm64
   dispatchers. Analyses: `results/2026-07-23-03-macos26-exec-policy-and-va-floor.md`,
   `results/2026-07-23-04-teb-in-tsd-and-first-pe-execution.md`.
-- **Gate 3 (ARM64EC/WoW64 x64 layer): next.** Also carries the remaining EC-path x18 ref
-  and the `env.c`/LDT `limit_2g` sites.
+- **Gate 3 (ARM64EC/WoW64 x64 layer): in progress.** EC hybrid Wine (`--enable-archs=
+  arm64ec,aarch64`) builds on macOS (`work/build-2`); the 4 EC-side `[x18]` TEB reads in
+  `signal_arm64ec.c` are fixed. An Alloy-authored stub emulator (`emu-stub/`, exports the
+  `xtajit64.dll` BTCpu64/lifecycle ABI) stands in for FEX to test the loader→emulator
+  handshake. A minimal x86-64 console PE and the stub both **load**, but execution is
+  blocked at image mapping: `mprotect(PROT_EXEC)` on the cross-arch code sections returns
+  EACCES (macOS W^X / Mach max_protection). Root cause narrowed (not the reserved-area
+  allocator, not JIT entitlements); next step is a live `mach_vm_region` dump. Full
+  analysis: `results/2026-07-23-05-gate3-arm64ec-groundwork.md`. Still deferred to a
+  later gate-3 step: `env.c`/LDT `limit_2g` sites.
 - Follow-ups (not gate-2 blockers): full graphical boot needs a FreeType + `winemac.drv`
   build (font/GUI backend); service-subsystem autostart faults; `get_core_id_regs_arm64`
   stub for guest CPU features.
 
 Wine patches live on local branch `alloy/spike-wine-001` in `third_party/src/wine`
-(`0e693a0` loader flags + KUSD + teb_block; `efd41b9` TEB-from-TSD).
+(`0e693a0` loader flags + KUSD + teb_block; `efd41b9` TEB-from-TSD; plus uncommitted-at-
+writing EC `signal_arm64ec.c` TEB fixes + a `virtual.c` errno diagnostic).
 
 ## Results log
 

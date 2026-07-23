@@ -1,0 +1,22 @@
+LIBRARY xtajit64.dll
+EXPORTS
+    BTCpu64FlushInstructionCache
+    BTCpu64IsProcessorFeaturePresent
+    BTCpu64NotifyMemoryDirty
+    BTCpu64NotifyReadFile
+    BeginSimulation
+    FlushInstructionCacheHeavy
+    NotifyMapViewOfSection
+    NotifyMemoryAlloc
+    NotifyMemoryFree
+    NotifyMemoryProtect
+    NotifyUnmapViewOfSection
+    ProcessInit
+    ProcessTerm
+    ResetToConsistentState
+    ThreadInit
+    ThreadTerm
+    UpdateProcessorInformation
+    ExitToX64
+    DispatchJump
+    RetToEntryThunk
