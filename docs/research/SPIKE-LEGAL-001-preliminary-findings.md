@@ -13,7 +13,7 @@
 ## 1. Executive summary
 
 1. **No fatal blocker exists for the full-scope architecture.** Every component in the planned stack has a lawful development and distribution path, and the overall shape of doc 18's compliance plan survives contact with the actual license texts.
-2. **The bootstrap D3D12 path is the weakest link.** Apple's GPTK EULA limits distribution of the Apple Software (including D3DMetal) to *non-commercial purposes* and scopes use to developing/testing/evaluating games. A commercial product cannot bundle D3DMetal. The only existing pattern is the Whisky/Mythic model — the end user downloads GPTK from Apple under their own Apple ID — which is tolerated practice, never Apple-blessed, and clashes with MGCR's one-click + signed-immutable-runtime thesis. This strengthens the PRD's D3D11-first MVP and raises the strategic value of Metal12.
+2. **The bootstrap D3D12 path is the weakest link.** Apple's GPTK EULA limits distribution of the Apple Software (including D3DMetal) to *non-commercial purposes* and scopes use to developing/testing/evaluating games. A commercial product cannot bundle D3DMetal. The only existing pattern is the Whisky/Mythic model — the end user downloads GPTK from Apple under their own Apple ID — which is tolerated practice, never Apple-blessed, and clashes with Alloy's one-click + signed-immutable-runtime thesis. This strengthens the PRD's D3D11-first MVP and raises the strategic value of Metal12.
 3. **DXMT relicensed from MIT to LGPL-2.1-or-later after v0.80**, and its tree already contains a working LGPL'd D3D12-on-Metal implementation (`src/d3d12/`). Consequences: (a) DXMT must be handled like Wine — dynamically linked, source + diffs published per release; (b) DXMT's D3D12 code joins vkd3d/vkd3d-proton on the clean-room exclusion list for a proprietary Metal12.
 4. **The clean-room requirement is structurally hard for a solo founder.** A one-person company cannot staff a two-team clean room. Decision required now (§6), because it constrains what the founder may read starting today.
 5. **The Rosetta clock has a date.** Full Rosetta 2 ships through macOS 27 (~September 2026 release); macOS 28 (2027) retains only a subset for "older, unmaintained games." CrossOver publicly depends on Rosetta today and is racing to native ARM64. The production CPU path (FEX/ARM64EC) must be usable roughly when macOS 28 adopters appear (~fall 2027), or supported hosts must be pinned to macOS ≤ 27.
@@ -52,14 +52,14 @@ Distribution classes per doc 18 §3: **BUNDLE** (ship in product), **OFFICIAL-DO
 
 ## 3. Interoperability law baseline
 
-- **DMCA §1201(f)** permits circumvention solely for interoperability analysis of lawfully obtained programs — but MGCR's design (read unencrypted local metadata, launch official clients, never strip protections) mostly stays **outside §1201 entirely** because no technological protection measure is circumvented.
-- **EU Software Directive 2009/24/EC Art. 5(3)** grants lawful users the right to observe/study/test program behavior (black-box observation — MGCR's main mode); **Art. 6** permits decompilation only when indispensable for interoperability, and contract clauses overriding it are void.
+- **DMCA §1201(f)** permits circumvention solely for interoperability analysis of lawfully obtained programs — but Alloy's design (read unencrypted local metadata, launch official clients, never strip protections) mostly stays **outside §1201 entirely** because no technological protection measure is circumvented.
+- **EU Software Directive 2009/24/EC Art. 5(3)** grants lawful users the right to observe/study/test program behavior (black-box observation — Alloy's main mode); **Art. 6** permits decompilation only when indispensable for interoperability, and contract clauses overriding it are void.
 - **Sega v. Accolade (1992)** and **Sony v. Connectix (2000)**: intermediate copying during reverse engineering for interoperability is fair use — the doctrinal backbone if §1201 were ever reached.
 - Doc 18 §10's clean-room/documentation requirements are the right controls; add the exclusion list from §6 below.
 
 ## 4. Marketing, subscription, and trademark constraints
 
-- **FTC substantiation:** "Certified" claims require documented, repeatable test evidence proportional to the claim. MGCR's evidence-graph design *is* the substantiation — a genuine synergy. Until the lab exists, avoid the word "certified" in public copy; use "tested against [exact list]."
+- **FTC substantiation:** "Certified" claims require documented, repeatable test evidence proportional to the claim. Alloy's evidence-graph design *is* the substantiation — a genuine synergy. Until the lab exists, avoid the word "certified" in public copy; use "tested against [exact list]."
 - **Subscriptions:** the FTC click-to-cancel (Negative Option) Rule was vacated in full by the 8th Circuit (July 2025); as of July 2026 there is no binding federal rule (new ANPRM in March 2026). **California's Automatic Renewal Law (amended effective July 2025) is the operative design constraint**: cancel in the same medium as signup, prominent online cancel path with no forced retention flow, express-affirmative-consent records retained. Design the billing flow to CA ARL; FTC §5 dark-pattern enforcement remains active.
 - **Apple trademarks:** "Mac"/"macOS"/"Metal" only as referential phrases ("for Mac", "built with Metal"), less prominent than the product name; never in the product name as leading element; no Apple logo without written license. Attribution footer required.
 - **Steam branding:** plain-text nominative use ("works with your Steam library") + non-affiliation disclaimer; no Steam logo without Valve approval.
@@ -98,7 +98,7 @@ Options 1 and 3 compose. Whichever is chosen must be recorded as an ADR before a
 6. Steam SSA §4.C ("Automation") risk memo and acceptance record.
 7. Visual Studio Community eligibility check for the redistributable-terms gate (solo founder likely qualifies today; re-check at >$1M revenue / >250 seats).
 8. Clean-room protocol documentation for the chosen §6 option.
-9. Trademark screen for the eventual product name.
+9. Trademark screen and registration strategy for the product name **"Alloy"** (adopted 23 July 2026, D-021): knock-out search against software/games classes (Nice 9, 41, 42), including known adjacent-software "Alloy" marks (marketing-automation and identity-verification companies); clearance before any public use, registration filing thereafter; defensive domain/handle acquisition (alloyplay.com verified unregistered on 23 July 2026).
 
 ## 8. Source index (primary sources fetched during research)
 

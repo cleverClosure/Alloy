@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.example.invalid/mgcr/runtime-manifest.v1.schema.json",
-  "title": "Mac Gaming Compatibility Runtime Generation Manifest",
+  "$id": "https://schemas.example.invalid/alloy/runtime-manifest.v1.schema.json",
+  "title": "Alloy Generation Manifest",
   "type": "object",
   "additionalProperties": false,
   "required": ["schemaVersion", "generationId", "createdAt", "components", "hostRequirements", "provenance"],

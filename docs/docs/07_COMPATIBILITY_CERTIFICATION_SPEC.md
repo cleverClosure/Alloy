@@ -1,4 +1,4 @@
-# MGCR Compatibility Certification Specification
+# Alloy Compatibility Certification Specification
 
 **Version:** 1.0  
 **Status:** Proposed normative specification  

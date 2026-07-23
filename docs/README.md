@@ -1,8 +1,8 @@
-# Mac Gaming Compatibility Runtime — Product Documentation
+# Alloy — Product Documentation
 
 This repository-style package defines a product and engineering baseline for an Apple-silicon-only runtime that runs **supported Windows games on macOS as certified, reproducible per-game environments**.
 
-The working name **MGCR** is descriptive and not a final brand.
+The working name **Alloy** is descriptive and not a final brand.
 
 ## Start here
 
@@ -18,7 +18,7 @@ The working name **MGCR** is descriptive and not a final brand.
 
 ## Core thesis
 
-MGCR does not expose a mutable Wine bottle as the product. Its unit of support is:
+Alloy does not expose a mutable Wine bottle as the product. Its unit of support is:
 
 ```text
 exact game and launcher build

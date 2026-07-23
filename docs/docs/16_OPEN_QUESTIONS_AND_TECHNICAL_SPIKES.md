@@ -1,4 +1,4 @@
-# MGCR Open Questions and Technical Spikes
+# Alloy Open Questions and Technical Spikes
 
 **Version:** 1.0  
 **Status:** Active discovery backlog  

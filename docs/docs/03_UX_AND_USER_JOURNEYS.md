@@ -1,4 +1,4 @@
-# MGCR UX and User Journey Specification
+# Alloy UX and User Journey Specification
 
 **Version:** 1.0  
 **Status:** Proposed  
@@ -34,7 +34,7 @@ Know exact support → Install safely → Launch confidently
 
 ```mermaid
 flowchart TB
-    App[MGCR client] --> Library[Library]
+    App[Alloy client] --> Library[Library]
     App --> Discover[Compatibility catalog]
     App --> Activity[Downloads and activity]
     App --> Settings[Settings]
@@ -94,7 +94,7 @@ The canonical compatibility status model (nine statuses) is defined in PRD §14.
 - Never call an untested host “Certified” because a nearby model passed.
 - Never use “should work” as a status.
 - State whether a limitation affects installation, launcher, gameplay, performance, media, input, online services, mods, or multiplayer.
-- Distinguish an MGCR problem from a storefront outage or publisher restriction.
+- Distinguish an Alloy problem from a storefront outage or publisher restriction.
 - Avoid “bottle,” “prefix,” “winetricks,” “DLL override,” and backend acronyms in primary copy.
 - Technical details may include those terms in an expandable panel for advanced users and support.
 
@@ -316,7 +316,7 @@ When the storefront changes the build:
 > **This game updated and the new build is being tested.**  
 > Your previous certification applied to build X. The installed build is now Y. You may continue provisionally / use an available prior build / wait for testing, depending on this title’s policy.
 
-The UI must not blame MGCR for a publisher update or imply that certification remains current.
+The UI must not blame Alloy for a publisher update or imply that certification remains current.
 
 ### 12.3 macOS update
 
@@ -451,7 +451,7 @@ Critical flows must support:
 - controller navigation where feasible;
 - accessible diagnostic and compatibility tables.
 
-Third-party launchers may remain less accessible; MGCR should minimize unnecessary exposure and disclose unavoidable barriers.
+Third-party launchers may remain less accessible; Alloy should minimize unnecessary exposure and disclose unavoidable barriers.
 
 ## 20. Localization requirements
 

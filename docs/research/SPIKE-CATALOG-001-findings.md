@@ -48,7 +48,7 @@ Palworld's entry carries a sourcing conflict: the Wikipedia-verified 4 Mar 2025 
 
 Unresolved: Riven (2024 remake) — no source reachable this pass [U]; irrelevant to MVP scoring.
 
-Strategic reading: the native wave concentrated on prestige single-player ports and left the long tail — plus most of the 2015–2021 D3D11 back-catalog — untouched. What remains un-ported is exactly MGCR's addressable market.
+Strategic reading: the native wave concentrated on prestige single-player ports and left the long tail — plus most of the 2015–2021 D3D11 back-catalog — untouched. What remains un-ported is exactly Alloy's addressable market.
 
 ## 4. Demand evidence
 
@@ -74,15 +74,15 @@ Honorable mentions with thinner evidence: Fallout 76/New Vegas, Witcher 3 next-g
 
 ## 5. The anti-cheat ceiling (expectation-setting)
 
-Per the LEVVVEL database, EAC covers 187/393 tracked anti-cheat titles (47.6%) and BattlEye 50 (12.7%) — together ~60% of anti-cheat-protected games, and **neither vendor has any macOS/Wine opt-in as of July 2026** (consistent with doc 17 §15). Permanently blocked high-demand titles (honest "will not run" list for marketing/support): Fortnite, Valorant, League of Legends (post-Vanguard), CoD/Warzone (Ricochet), Apex, Destiny 2, R6 Siege, PUBG, Tarkov, GTA Online (SP works offline), Marvel Rivals (ACE; NetEase mass-banned Mac emulation users Jan 2025, then reversed), Marathon (BattlEye, Mar 2026 — new debt, not legacy), and — a fact-check correction to the demand list — **Elden Ring**: its EAC is required to *launch the game at all, including fully offline singleplayer* (unlike most EAC titles), so even SP-only certification is impossible without launch tampering, which MGCR's posture forbids. Demand rank 4 notwithstanding, it sits in the vendor-program bucket.
+Per the LEVVVEL database, EAC covers 187/393 tracked anti-cheat titles (47.6%) and BattlEye 50 (12.7%) — together ~60% of anti-cheat-protected games, and **neither vendor has any macOS/Wine opt-in as of July 2026** (consistent with doc 17 §15). Permanently blocked high-demand titles (honest "will not run" list for marketing/support): Fortnite, Valorant, League of Legends (post-Vanguard), CoD/Warzone (Ricochet), Apex, Destiny 2, R6 Siege, PUBG, Tarkov, GTA Online (SP works offline), Marvel Rivals (ACE; NetEase mass-banned Mac emulation users Jan 2025, then reversed), Marathon (BattlEye, Mar 2026 — new debt, not legacy), and — a fact-check correction to the demand list — **Elden Ring**: its EAC is required to *launch the game at all, including fully offline singleplayer* (unlike most EAC titles), so even SP-only certification is impossible without launch tampering, which Alloy's posture forbids. Demand rank 4 notwithstanding, it sits in the vendor-program bucket.
 
-Nuance from CrossOver 26 (Feb 2026): it broke nProtect GameGuard (Helldivers 2, Darktide incl. multiplayer), so kernel-anti-cheat impossibility is now **vendor-specific, not categorical**. For a *certified* runtime this changes little — reverse-engineered accommodation without vendor blessing cannot meet MGCR's certification bar (doc 17) — but it keeps demand-list titles like Helldivers 2 in the "revisit on vendor program" bucket rather than "never."
+Nuance from CrossOver 26 (Feb 2026): it broke nProtect GameGuard (Helldivers 2, Darktide incl. multiplayer), so kernel-anti-cheat impossibility is now **vendor-specific, not categorical**. For a *certified* runtime this changes little — reverse-engineered accommodation without vendor blessing cannot meet Alloy's certification bar (doc 17) — but it keeps demand-list titles like Helldivers 2 in the "revisit on vendor program" bucket rather than "never."
 
 ## 6. Market context
 
 - Steam Hardware Survey: macOS ≈ 2.0–2.35% and flat (Mar–May 2026); Linux overtook macOS. Within the Mac base: M4 19.4%, M1 15.5%, M2 11.4%, M5 8.2% and fastest-growing — demand spans all Apple Silicon generations, supporting ADR-0011's floor-by-memory (not floor-by-chip) posture.
 - **Whisky discontinued April 2025** (developer: free tools were "parasitic" on CrossOver's commercially-funded engineering); community successor Sikarugir. The field is CrossOver ($74/yr generalist, no certification model), cloud streaming (GeForce NOW 2,000+ titles — owns the anti-cheat-blocked segment), and Parallels (explicitly weak for modern AAA). A certified-quality runtime has an open lane.
-- Consistent genre-gap framing across Mac press: native ports now cover RPG/strategy/indie well; the unserved gap is modern AAA action and shooters — the former is MGCR's addressable segment, the latter is mostly anti-cheat-gated (§5).
+- Consistent genre-gap framing across Mac press: native ports now cover RPG/strategy/indie well; the unserved gap is modern AAA action and shooters — the former is Alloy's addressable segment, the latter is mostly anti-cheat-gated (§5).
 
 ## 7. Candidate engineering matrix
 
@@ -248,6 +248,6 @@ All 13 titles are on Steam. Seven are also on GOG (Witcher 3, GoW 2018, YLAD, DO
 | 1 | ~~KCD2 `windows arm app` verification~~ — **resolved**: `true`, with ARM support explicitly absent from the MS Store SKU; residual = confirm which storefront build carries ARM64 | Phase 0, with SPIKE-WINE-001 |
 | 2 | AoE IV EAC singleplayer-scope | Phase 0 investigation; gates a high-demand backup |
 | 3 | Palworld Mac App Store human check | optional; nothing depends on it |
-| 4 | FH5/FFXVI "Unplayable" prior-art flags | re-test under MGCR stack when it exists — CrossOver results don't transfer 1:1 |
+| 4 | FH5/FFXVI "Unplayable" prior-art flags | re-test under Alloy stack when it exists — CrossOver results don't transfer 1:1 |
 | 5 | Rosetta AVX2 status (macOS 15+) | SPIKE-CPU-001 lab-reference note |
 | 6 | Benchmark-mode verification for Forza-class titles | SPIKE-LAB-001 intake |

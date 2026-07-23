@@ -1,5 +1,14 @@
 # Documentation Changelog
 
+## 1.4 — 23 July 2026
+
+Product naming: **Alloy** adopted as the product name (decision D-021), replacing the working name "MGCR" package-wide.
+
+- all documents, schemas (`$id` URIs), examples, spike plans, and repository files renamed; the placeholder client name "GameHub.app" becomes "Alloy.app";
+- historical anchor retained in the document map, glossary, and provenance log ("early drafts used the working name MGCR");
+- counsel checklist item 9 concretized: trademark screen/registration for "Alloy" (Nice classes 9/41/42, adjacent-software knock-out check), clearance before public use; defensive domain acquisition noted;
+- manifests regenerated under the new package name.
+
 ## 1.3 — 23 July 2026
 
 Phase 0 target decisions: first storefront and MVP game portfolio.

@@ -1,8 +1,8 @@
-# MGCR Documentation Map and Governance
+# Alloy Documentation Map and Governance
 
 **Version:** 1.0  
 **Date:** 20 July 2026  
-**Working name:** Mac Gaming Compatibility Runtime (MGCR)
+**Product name:** Alloy — adopted 23 July 2026 (D-021); early drafts used the working name "MGCR"
 
 ---
 

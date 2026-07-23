@@ -1,4 +1,4 @@
-# MGCR Observability, Operations, and Release Plan
+# Alloy Observability, Operations, and Release Plan
 
 **Version:** 1.0  
 **Status:** Proposed  
@@ -10,7 +10,7 @@
 
 ## 1. Operational objective
 
-MGCR must remain dependable despite constant external change. The operating model is built around:
+Alloy must remain dependable despite constant external change. The operating model is built around:
 
 - local launch resilience;
 - precise component/session identity;
@@ -21,13 +21,13 @@ MGCR must remain dependable despite constant external change. The operating mode
 - actionable ownership by subsystem;
 - secure, auditable promotion.
 
-The installed game must not become unusable merely because the MGCR cloud is temporarily unavailable.
+The installed game must not become unusable merely because the Alloy cloud is temporarily unavailable.
 
 ## 2. Service map
 
 ### Local
 
-- GameHub.app;
+- Alloy.app;
 - RuntimeDaemon;
 - SessionAgent;
 - content-addressed store;

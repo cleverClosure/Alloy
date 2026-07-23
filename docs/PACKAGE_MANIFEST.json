@@ -1,43 +1,43 @@
 {
-  "package": "MGCR Product Documentation",
-  "version": "1.3",
+  "package": "Alloy Product Documentation",
+  "version": "1.4",
   "generatedAt": "2026-07-23",
   "fileCount": 45,
-  "markdownWords": 89190,
-  "markdownLines": 13681,
+  "markdownWords": 89459,
+  "markdownLines": 13693,
   "files": [
     {
       "path": "CHANGELOG.md",
-      "bytes": 6499,
-      "sha256": "292c85cfbfea47824acb46bcfc67d3d096bb8de1d6c6040dd58a017e6d54910b",
-      "lines": 64,
-      "words": 843
+      "bytes": 7183,
+      "sha256": "679da25d71cf7b619bcb2efe8de8bd382dd533b055d684250627c645fefab5c5",
+      "lines": 73,
+      "words": 936
     },
     {
       "path": "CONTRIBUTING.md",
-      "bytes": 3931,
-      "sha256": "84daab7aebbc61e40432113d53ceee26889581d5605cea02c20c4faf39e66534",
+      "bytes": 3932,
+      "sha256": "0e99a4c00f947b76d856219dc4988504df832702799cb408900dc86e2e1bbe5a",
       "lines": 108,
       "words": 541
     },
     {
       "path": "README.md",
-      "bytes": 4464,
-      "sha256": "9ed2ceaf2e06e04e7b7a6e62571d86d9dced2699d93577dc43c458b2ae95618b",
+      "bytes": 4439,
+      "sha256": "8a10f9a6c542ef49e2207c167f706a420ffafa85307a00107ff9d19048720745",
       "lines": 97,
-      "words": 461
+      "words": 458
     },
     {
       "path": "adr/ADR-0001-runtime-generation-unit-of-support.md",
-      "bytes": 2818,
-      "sha256": "9f6f3f47fb05f6b7fa75b056588027d38a812d07eaf3cba3e255e6cda488b91b",
+      "bytes": 2819,
+      "sha256": "cd5e40345bd9afcfeed992d54fb42ff44b8f9ac0a49cead736b2622d3e2db14f",
       "lines": 51,
       "words": 374
     },
     {
       "path": "adr/ADR-0002-per-process-policy-before-imports.md",
-      "bytes": 2662,
-      "sha256": "11580816559a05ed225a9c032036f1e9653fd80fdd26a9620e97efefc102aa21",
+      "bytes": 2663,
+      "sha256": "500e8f23f02a02e0307d872e1ff2935377e19fda9967a269a5fa46417d7c79e2",
       "lines": 50,
       "words": 345
     },
@@ -50,8 +50,8 @@
     },
     {
       "path": "adr/ADR-0004-thin-wine-fork-and-provider-hooks.md",
-      "bytes": 2068,
-      "sha256": "51f49f1e70fec0f8a3ed1a96c5d37576e13bbc9c7764c47d4584ee60a1bb7d1e",
+      "bytes": 2069,
+      "sha256": "f2841ad7b7949107b703890c1ec06729dab6a4be56ee5ec2e24c7a67c367d9b3",
       "lines": 49,
       "words": 276
     },
@@ -85,8 +85,8 @@
     },
     {
       "path": "adr/ADR-0009-cloud-not-on-launch-hot-path.md",
-      "bytes": 1883,
-      "sha256": "d1874a49fb0e490ecd23e6d89fb663c6486fd7f5a14913bbe1a6a381a4bd242a",
+      "bytes": 1885,
+      "sha256": "6e7fcd11e7fee6a483bc879ada793c5c40e970bec8feff386d4dcdf9d174cef6",
       "lines": 48,
       "words": 250
     },
@@ -99,15 +99,15 @@
     },
     {
       "path": "adr/ADR-0011-modern-baseline-only.md",
-      "bytes": 6542,
-      "sha256": "646518ab3218bc553b792292af19702e786fd42f66d573a7132b1a39231755bc",
+      "bytes": 6543,
+      "sha256": "308771cc6a5572195ff10d2ba4b648c4b053727202552e79e979a34d53de80b7",
       "lines": 67,
       "words": 894
     },
     {
       "path": "adr/ADR-0012-metal12-provenance-and-clean-room.md",
-      "bytes": 5487,
-      "sha256": "f7fc5eb9f7b13bbe65c228716d8a538d761861641746d568c5c899f5f08e1eff",
+      "bytes": 5488,
+      "sha256": "43e58786b4949b2f9b937fc45f8cb7b7848e1c106579030b384b5ae452fbe56e",
       "lines": 59,
       "words": 748
     },
@@ -135,141 +135,141 @@
     },
     {
       "path": "docs/00_DOCUMENT_MAP.md",
-      "bytes": 7970,
-      "sha256": "baf5f880dc61447e913af96ec54371a4b974fe61e7e430bb332f4cec25356b83",
+      "bytes": 8013,
+      "sha256": "ef6dde7a78446666f41e65e329b935757d1d58c14cb935493207358f9995d54d",
       "lines": 189,
-      "words": 907
+      "words": 916
     },
     {
       "path": "docs/01_PRODUCT_STRATEGY.md",
-      "bytes": 13665,
-      "sha256": "4a4eeacaada4bf07dd304874d202e9f466c92775fda88a8bfa956f0da29ac9ac",
+      "bytes": 13670,
+      "sha256": "9b00610b578ee86655ffef3618f8dbc886d9006d43343cda1ae840f201144cb1",
       "lines": 291,
       "words": 1881
     },
     {
       "path": "docs/02_PRD.md",
-      "bytes": 60675,
-      "sha256": "c583638462edd05918d1665d3daaa00b6c783c626e6f027aa4a9b8d6d2a2d324",
+      "bytes": 60645,
+      "sha256": "6b57127b76413e691debfa89089a1f5650fe2482939a1491f73232bb7bb2a28b",
       "lines": 661,
-      "words": 8928
+      "words": 8924
     },
     {
       "path": "docs/03_UX_AND_USER_JOURNEYS.md",
-      "bytes": 18694,
-      "sha256": "2b3eb17c2ebe9d223356a03ab627e0cd4c1d5bd55c8593acbce73b4eda0aae43",
+      "bytes": 18699,
+      "sha256": "c414ad86f8e0d9c954e0c27ad2f546e513c2fbe171732484d3d6f0d23d1237a4",
       "lines": 528,
       "words": 2678
     },
     {
       "path": "docs/04_TECHNICAL_ARCHITECTURE.md",
-      "bytes": 190157,
-      "sha256": "3feecf05d3412127dfe72c93c0304ddfabedd87c3acef92eef17d1c6eea45f26",
+      "bytes": 190175,
+      "sha256": "2b13b58745ac49743048e744c36da18d6ec2bc3a6fbbc94eadb15eacbe98bebe",
       "lines": 3721,
-      "words": 25076
+      "words": 25074
     },
     {
       "path": "docs/05_RUNTIME_PROFILE_AND_MANIFEST_SPEC.md",
-      "bytes": 23892,
-      "sha256": "f7a73e53fd9a8f9603299a2be2b80362f8c046f92583e1e0c94d055ebdf00f88",
+      "bytes": 23895,
+      "sha256": "c602f13030f37368fea4398cb27641382abb21026d8eadc029e47a2e056f0222",
       "lines": 673,
       "words": 3163
     },
     {
       "path": "docs/06_API_AND_DATA_CONTRACTS.md",
-      "bytes": 20584,
-      "sha256": "aa39724472a2818be5475135f31285a2e108b79f343b1c63924cd2497c7fe41e",
+      "bytes": 20588,
+      "sha256": "0d637d43bd3be50309db7ba3268639128771f9987b77bbfd66ad03db3e7d7960",
       "lines": 694,
       "words": 2439
     },
     {
       "path": "docs/07_COMPATIBILITY_CERTIFICATION_SPEC.md",
-      "bytes": 18727,
-      "sha256": "4030b258d3f7d0da496d832691975ddcac4b9d5e3e0bb0de30ec2542f430a88f",
+      "bytes": 18728,
+      "sha256": "6531b424de493711cdd92a9a54201ffc04944a7a23bf63878614806c90683797",
       "lines": 540,
       "words": 2631
     },
     {
       "path": "docs/08_TEST_AND_QUALITY_STRATEGY.md",
-      "bytes": 19930,
-      "sha256": "8e33077d089ea45bd5eab060d3f63a5b1a45065bd433c2248fedd3ea0aedf6d7",
+      "bytes": 19933,
+      "sha256": "2ad6a7d8e1a2b3516a18211a1b05f6c06f3e51f860c69d7e9aa1ae22abc7a8c8",
       "lines": 744,
       "words": 2742
     },
     {
       "path": "docs/09_SECURITY_PRIVACY_THREAT_MODEL.md",
-      "bytes": 21758,
-      "sha256": "cddc87bf81c1f66636d4210a1d6f98b424e105a2d38ae73083f3d83f82335639",
+      "bytes": 21759,
+      "sha256": "8a0b5f07c5a5ac62881202942bc9cf743f453a2d705204c2b2fb0aadd56ca594",
       "lines": 587,
       "words": 2880
     },
     {
       "path": "docs/10_OBSERVABILITY_OPERATIONS_AND_RELEASE.md",
-      "bytes": 16858,
-      "sha256": "6942a510dec05c1b5102e86bf2165e0cf521a275dcd6897f1efe393da1f0a653",
+      "bytes": 16859,
+      "sha256": "c8584e705d1792a16d2d35188eb612d572511325daf5cafe1c4718b8103e914b",
       "lines": 652,
       "words": 2312
     },
     {
       "path": "docs/11_ROADMAP_TEAM_AND_DELIVERY.md",
-      "bytes": 19133,
-      "sha256": "229f82d66695412a0926b60896f43dc425c1383d8cc7f36701ea6d3c10be5ea4",
+      "bytes": 19132,
+      "sha256": "b85a361100c53052224a8c37a7580b08531ae7f2f971f11f6f4b8e3bf38f4698",
       "lines": 640,
       "words": 2643
     },
     {
       "path": "docs/12_REQUIREMENTS_TRACEABILITY_MATRIX.md",
-      "bytes": 17061,
-      "sha256": "127da601b912645abd247072b9be5c8ca757c5c718e6a267542773035ad56c5b",
+      "bytes": 17062,
+      "sha256": "f6b7dc51337047e4fde721684432f3bcad7698d34550f12d6d30c12da3503c82",
       "lines": 199,
       "words": 3364
     },
     {
       "path": "docs/13_RISK_REGISTER.md",
-      "bytes": 17199,
-      "sha256": "136e08e2b71e60a604d195d408a7d67d0fb33ebf6140fb9196a61ff80c07cb6c",
+      "bytes": 17200,
+      "sha256": "8f34706fc5510e5a39d0fa2ce29abc5a48d7c1a3edc39dd79514c811a7d80f16",
       "lines": 131,
       "words": 2442
     },
     {
       "path": "docs/14_DECISION_LOG.md",
-      "bytes": 9733,
-      "sha256": "935211ec8be227333fae731d9225d60eed7e64bb1fb0233e2b1269dff9377845",
-      "lines": 78,
-      "words": 1269
+      "bytes": 10268,
+      "sha256": "ab5ca7c570fc856f01248b6b2f84cd6b61d44218437fc7671ed8539838bebc4e",
+      "lines": 79,
+      "words": 1344
     },
     {
       "path": "docs/15_GLOSSARY.md",
-      "bytes": 10862,
-      "sha256": "f37d22124f5629bb08b3f7ff23aec48ccc6e70266a82f4c4b488aef07ddfda07",
-      "lines": 208,
-      "words": 1371
+      "bytes": 11235,
+      "sha256": "ffcef096d258166667919ea0ddd3bf62c60d9adb1fd351bf1d839255c9681356",
+      "lines": 210,
+      "words": 1428
     },
     {
       "path": "docs/16_OPEN_QUESTIONS_AND_TECHNICAL_SPIKES.md",
-      "bytes": 14966,
-      "sha256": "c27566ace10838ec03e0b9376a2a8f4e3109fc7316dc87ac7c1f2aed863c5e01",
+      "bytes": 14967,
+      "sha256": "0e3ff590e826ce5f1f03f8685a8adaae280d7a0b09d1d387679c568e1a68f97c",
       "lines": 422,
       "words": 1962
     },
     {
       "path": "docs/17_PUBLISHER_AND_ANTI_CHEAT_INTEGRATION.md",
-      "bytes": 13644,
-      "sha256": "1d11b8bb92a88d88330d0550d3df60a4eef43c5574f536e913deb3afb121390d",
+      "bytes": 13654,
+      "sha256": "8bd86fb7d3bbc562b19851ec9f8321638ebcf7bd2587463781a5d7e01a448396",
       "lines": 471,
       "words": 1792
     },
     {
       "path": "docs/18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md",
-      "bytes": 14446,
-      "sha256": "dfb527edf7c2cd9aec85ab77813bdc871a97fd6b56a5aaf8bf49ecb6ecafb8b8",
+      "bytes": 14449,
+      "sha256": "30dfa6bc323c47c990c8e48c3b4cb4ccd14c20fe86ce4fba9867abfea0edad3e",
       "lines": 344,
       "words": 1792
     },
     {
       "path": "docs/19_MVP_EPICS_AND_BACKLOG.md",
-      "bytes": 13172,
-      "sha256": "83e65d9c03cbf555d3a93b6c9f7e037776dc584f49ad2e1f2b55dfe194bc610b",
+      "bytes": 13173,
+      "sha256": "682c7b08e65954c1aabee4c6ac77ada8624a866769085612f02be6dad3bf2f6c",
       "lines": 517,
       "words": 1701
     },
@@ -280,34 +280,34 @@
     },
     {
       "path": "research/SPIKE-CATALOG-001-findings.md",
-      "bytes": 27667,
-      "sha256": "6b067ec24b60576cd79367d4dcd5fbf0dcf1b9f5164c700e911e0ef39d19e9ec",
+      "bytes": 27672,
+      "sha256": "b9884816fc4c5f0134aadfd506e0fe9eff9174d5543ab986f6d4f5c09e1911a6",
       "lines": 253,
       "words": 4761
     },
     {
       "path": "research/SPIKE-LEGAL-001-preliminary-findings.md",
-      "bytes": 14967,
-      "sha256": "ce99d58a7aca34c72c9087b0cf960e129cb02b60b44924eb01468029409ed857",
+      "bytes": 15360,
+      "sha256": "c750f9ebe83626905cc3e0dbd68ce6dbc7121135724dfc1a7b2aea4e42320a58",
       "lines": 121,
-      "words": 2104
+      "words": 2148
     },
     {
       "path": "research/SPIKE-STORE-001-findings.md",
-      "bytes": 9901,
-      "sha256": "2f5496927064ad4c4e7d139b6f5563ff5626457b4657be6c608e37e828b8dd2d",
+      "bytes": 9905,
+      "sha256": "927d28973bd2e50258cc64e4e42d27778980074a9d11f548c87cb673564e0d9f",
       "lines": 74,
       "words": 1395
     },
     {
       "path": "schemas/game-profile.schema.json",
-      "bytes": 10296,
-      "sha256": "7a3d343c6e876b7b8aef7ca97716addc4f1e2d9e91023fcc0b848e23198cf731"
+      "bytes": 10270,
+      "sha256": "03a9a74e6b1a3224721c40ab0b18082693a8355bba7a4b94078c83c684cc7c6f"
     },
     {
       "path": "schemas/runtime-manifest.schema.json",
-      "bytes": 2583,
-      "sha256": "75d6291ffff892c85acb2c17461298cfbea37ead7d10bad8e00ce169e0ca73d5"
+      "bytes": 2557,
+      "sha256": "b749a437378b9228e5ab44b36914291f7d7c6f47db33ac72359a587dce9c036f"
     }
   ]
 }

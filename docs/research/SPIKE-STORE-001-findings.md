@@ -12,7 +12,7 @@
 
 ## 1. Question
 
-Which storefront does MGCR integrate first? Candidates: Steam, GOG, Epic Games Store. Criteria per doc 16: install discovery, authentication handoff, update/build identity, offline behavior, multiple library locations, launcher process complexity, client x64-purity (ADR-0011), terms and partner posture, addressable candidate catalog — decided on user value, integration reliability, legal clarity, automation, support burden.
+Which storefront does Alloy integrate first? Candidates: Steam, GOG, Epic Games Store. Criteria per doc 16: install discovery, authentication handoff, update/build identity, offline behavior, multiple library locations, launcher process complexity, client x64-purity (ADR-0011), terms and partner posture, addressable candidate catalog — decided on user value, integration reliability, legal clarity, automation, support burden.
 
 ## 2. Key facts
 
@@ -30,9 +30,9 @@ Which storefront does MGCR integrate first? Candidates: Steam, GOG, Epic Games S
 
 - **DRM-free single-player is verified policy, and Galaxy is optional by design**: GOG's developer FAQ states single-player/offline functionality "should work regardless of whether the user is using GOG GALAXY or not," with SDK calls failing catchably when Galaxy is absent [P — docs.gog.com/faq]. One historical breach (Hitman 2016, Sept 2021) was pulled within a month after backlash [S].
 - **Offline installers are generated server-side for every Master-branch publish** [P — docs.gog.com/offline-installers]. However, the official Galaxy SDK/API exposes **no build-ID, version, or update-detection endpoint at all** [P — docs.gog.com/galaxyapi, verified negative]: exact-build fingerprinting must come from installer filenames/metadata (embedded version strings; `build_id`/`version_name` fields observed in unofficial API captures) — a lab follow-up to standardize the method.
-- For MGCR this is the best structural fit of the three: the installer *is* the artifact — content-addressable into our CAS directly, no client required inside the runtime for DRM-free titles, fully offline by design.
+- For Alloy this is the best structural fit of the three: the installer *is* the artifact — content-addressable into our CAS directly, no client required inside the runtime for DRM-free titles, fully offline by design.
 - No automation/third-party-downloader ban was located; community downloaders (gogdl, lgogdownloader, Heroic) have operated for years untouched [U — the consumer-facing Galaxy Licence Agreement, effective 9 Mar 2026, blocked automated fetch and remains unread ⚖️].
-- Weaknesses: catalog ~12k titles [S — single source], modern AAA under-represented or delayed; the macOS Galaxy client is Intel-only (irrelevant to MGCR — we would run the Windows Galaxy client in-runtime, or skip Galaxy entirely for DRM-free installs).
+- Weaknesses: catalog ~12k titles [S — single source], modern AAA under-represented or delayed; the macOS Galaxy client is Intel-only (irrelevant to Alloy — we would run the Windows Galaxy client in-runtime, or skip Galaxy entirely for DRM-free installs).
 
 ### Epic Games Store
 
@@ -59,7 +59,7 @@ Steam's two 5s are the ones a commercial product cannot substitute: the users an
 
 ## 4. Proposed decision
 
-1. **First storefront: Steam.** The Windows Steam client runs inside the MGCR runtime (CrossOver-precedent pattern); install discovery via `libraryfolders.vdf` + ACF parsing; build fingerprinting via `buildid` + depot manifests on entitled lab accounts; never emulate Steam protocols (SSA §2.G) — the real client is a hard runtime dependency for Steam titles.
+1. **First storefront: Steam.** The Windows Steam client runs inside the Alloy runtime (CrossOver-precedent pattern); install discovery via `libraryfolders.vdf` + ACF parsing; build fingerprinting via `buildid` + depot manifests on entitled lab accounts; never emulate Steam protocols (SSA §2.G) — the real client is a hard runtime dependency for Steam titles.
 2. **Second storefront: GOG**, at MVP+1 rather than post-beta — earlier than doc 11's generic "second storefront in Phase 3" if catalog overlap justifies it. Rationale: near-zero integration cost for DRM-free installer-based titles, the cleanest possible lab/CAS fingerprinting story, and dual-storefront differential testing for titles on both (a certification-lab asset, not just reach).
 3. **Epic: deferred indefinitely.** Revisit only on partner interest or a catalog-exclusive must-have.
 4. **Mitigations for the Steam ToS gray zone** ⚖️ (feeds the existing counsel checklist): lab automation runs only on dedicated entitled lab accounts; no multiplayer/stat/achievement automation ever; no protocol emulation; document the CrossOver-precedent reliance; seek a Valve conversation once traction exists.

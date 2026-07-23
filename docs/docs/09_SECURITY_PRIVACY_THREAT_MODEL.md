@@ -1,4 +1,4 @@
-# MGCR Security, Privacy, and Threat Model
+# Alloy Security, Privacy, and Threat Model
 
 **Version:** 1.0  
 **Status:** Proposed  
@@ -10,7 +10,7 @@
 
 ## 1. Security objective
 
-MGCR intentionally executes untrusted Windows code, performs dynamic instruction and shader translation, parses complex guest-controlled data, integrates with storefront accounts, and distributes executable runtime components. Security is therefore a primary architecture constraint.
+Alloy intentionally executes untrusted Windows code, performs dynamic instruction and shader translation, parses complex guest-controlled data, integrates with storefront accounts, and distributes executable runtime components. Security is therefore a primary architecture constraint.
 
 The product must:
 
@@ -30,7 +30,7 @@ The product must:
 - The user controls their Mac account and may intentionally modify files.
 - The macOS kernel and platform security are trusted within the supported baseline, while OS vulnerabilities remain possible.
 - The cloud control plane, build pipeline, signing service, artifact registry, CDN, and lab runners are security-critical.
-- Storefront and publisher services can be unavailable or compromised outside MGCR control.
+- Storefront and publisher services can be unavailable or compromised outside Alloy control.
 - Network transport can be observed, blocked, replayed, or modified.
 - A local administrator can subvert many user-mode guarantees; Competitive Certified integrity is scoped and cannot claim protection against an owner with arbitrary kernel/hardware control.
 - Signed game binaries are not automatically safe.
@@ -58,7 +58,7 @@ The product must:
 ```mermaid
 flowchart TB
     subgraph Native["Signed native user-space boundary"]
-        UI[GameHub.app]
+        UI[Alloy.app]
         Daemon[RuntimeDaemon]
         Agent[SessionAgent]
         Verify[Verifier and update client]
@@ -143,7 +143,7 @@ Each arrow is a validation and authorization boundary.
 
 ## 7. Native process architecture
 
-### 7.1 GameHub.app
+### 7.1 Alloy.app
 
 - user-facing;
 - no broad privileged helper role;
@@ -321,7 +321,7 @@ The system must not imply that Custom Mode is insecure to the host by definition
 
 ### 14.1 Hard boundary
 
-MGCR does not load Windows kernel drivers or covertly bypass anti-cheat/DRM.
+Alloy does not load Windows kernel drivers or covertly bypass anti-cheat/DRM.
 
 ### 14.2 Approved enablement
 
@@ -564,7 +564,7 @@ Even with these controls:
 - parser/JIT vulnerabilities are possible;
 - local administrators can tamper with user-mode software;
 - anti-cheat vendors can change policy;
-- storefront launchers may collect/log data outside MGCR control;
+- storefront launchers may collect/log data outside Alloy control;
 - Apple security/platform behavior may change;
 - compatibility sometimes requires native libraries with their own risk;
 - no system can guarantee save integrity against a malicious or defective game itself.

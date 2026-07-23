@@ -11,7 +11,7 @@ A game installation contains heterogeneous processes: launcher, updater, embedde
 
 ## Decision
 
-MGCR will identify every Windows process and compile a policy before normal module initialization. The policy selects CPU, graphics, synchronization, DLL, native-service, filesystem, network, security, and diagnostics behavior. Matching uses exact executable digest and process lineage where available. Unknown processes receive a conservative default.
+Alloy will identify every Windows process and compile a policy before normal module initialization. The policy selects CPU, graphics, synchronization, DLL, native-service, filesystem, network, security, and diagnostics behavior. Matching uses exact executable digest and process lineage where available. Unknown processes receive a conservative default.
 
 ## Rationale
 

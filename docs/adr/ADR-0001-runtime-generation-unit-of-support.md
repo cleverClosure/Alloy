@@ -11,7 +11,7 @@ Wine-based products commonly expose a mutable prefix or bottle. That environment
 
 ## Decision
 
-MGCR will support and certify an immutable **runtime generation** bound to an exact game/launcher build and host class. Runtime layers are content-addressed and read-only. Saves, settings, game payload, derived caches, and session scratch are separate named volumes. Updates create a new generation; activation is atomic; rollback changes the active reference.
+Alloy will support and certify an immutable **runtime generation** bound to an exact game/launcher build and host class. Runtime layers are content-addressed and read-only. Saves, settings, game payload, derived caches, and session scratch are separate named volumes. Updates create a new generation; activation is atomic; rollback changes the active reference.
 
 ## Rationale
 

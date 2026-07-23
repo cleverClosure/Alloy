@@ -1,4 +1,4 @@
-# MGCR Legal, Open-Source, and Distribution Compliance Plan
+# Alloy Legal, Open-Source, and Distribution Compliance Plan
 
 **Version:** 1.0  
 **Status:** Planning baseline; requires qualified legal review  
@@ -10,7 +10,7 @@
 
 ## 1. Purpose and limitation
 
-MGCR depends on open-source runtimes, platform SDKs, third-party launchers, game binaries, codecs, redistributables, dynamic translation, and interoperability work. Legal feasibility is therefore a release gate, not a final packaging task.
+Alloy depends on open-source runtimes, platform SDKs, third-party launchers, game binaries, codecs, redistributables, dynamic translation, and interoperability work. Legal feasibility is therefore a release gate, not a final packaging task.
 
 This document is an engineering/compliance planning framework. It is not legal advice and does not replace jurisdiction-specific counsel.
 
@@ -149,7 +149,7 @@ Profiles must not silently download unapproved codec packs.
 ### Consumer product
 
 - user must own or be authorized to use the game;
-- MGCR does not redistribute game assets unless contracted;
+- Alloy does not redistribute game assets unless contracted;
 - runtime fingerprinting and compatibility behavior must be covered by terms and applicable interoperability law;
 - do not bypass ownership checks.
 

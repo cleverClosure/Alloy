@@ -1,4 +1,4 @@
-# MGCR MVP Epics and Initial Backlog
+# Alloy MVP Epics and Initial Backlog
 
 **Version:** 1.0  
 **Status:** Planning baseline  

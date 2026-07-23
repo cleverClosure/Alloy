@@ -1,4 +1,4 @@
-# MGCR Test and Quality Strategy
+# Alloy Test and Quality Strategy
 
 **Version:** 1.0  
 **Status:** Proposed  
@@ -10,7 +10,7 @@
 
 ## 1. Quality mission
 
-MGCR must prove more than “the process did not crash.” Quality means the exact game-visible behavior is sufficiently correct, performance is stable, saves are safe, runtime changes are reversible, and support can reproduce failure.
+Alloy must prove more than “the process did not crash.” Quality means the exact game-visible behavior is sufficiently correct, performance is stable, saves are safe, runtime changes are reversible, and support can reproduce failure.
 
 Testing is designed around five questions:
 
@@ -211,7 +211,7 @@ Run relevant Wine test suites on every rebase and downstream patch.
 
 ### 8.2 Differential harness
 
-Execute small Windows programs on native Windows and MGCR. Compare:
+Execute small Windows programs on native Windows and Alloy. Compare:
 
 - return values and errors;
 - process/thread behavior;

@@ -9,12 +9,12 @@
 `configure --with-mingw --without-x` with `PATH` prepending Homebrew bison 3.8.2 (Apple's 2.3 is
 below Wine's minimum) and llvm-mingw 20260616: **completes first try** — "Finished. Do 'make'."
 21 optional "not found" items (Vulkan/MoltenVK dev files among them — expected; MoltenVK arrives
-via MGCR's own bundling later, and the Wine build finds it via `--with-vulkan` when we choose).
+via Alloy's own bundling later, and the Wine build finds it via `--with-vulkan` when we choose).
 No X11 by design (`--without-x`); Wine's macOS driver is the target presentation path.
 
 In-tree policy check before any patching: Wine carries no CLAUDE.md/AGENTS.md/CONTRIBUTING —
 no in-tree AI-contribution policy (contrast FEX, CPU-001 result 01 §3). WineHQ submission rules
-are checked out-of-tree before any upstream submission; MGCR's baseline compliance model is
+are checked out-of-tree before any upstream submission; Alloy's baseline compliance model is
 fork-and-publish per doc 18 regardless.
 
 ## Build stage

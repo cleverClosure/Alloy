@@ -1,4 +1,4 @@
-# MGCR Requirements Traceability Matrix
+# Alloy Requirements Traceability Matrix
 
 **Version:** 1.0  
 **Status:** Planning baseline  

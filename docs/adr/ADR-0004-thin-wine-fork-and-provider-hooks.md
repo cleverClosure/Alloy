@@ -11,7 +11,7 @@ Wine contains decades of Windows user-mode behavior and an active upstream commu
 
 ## Decision
 
-MGCR will maintain a rebasing-friendly Wine fork with stable hooks for process policy, execution providers, graphics/native services, and diagnostics. Generic fixes are upstreamed where practical. Title-specific behavior lives in signed profiles or versioned providers.
+Alloy will maintain a rebasing-friendly Wine fork with stable hooks for process policy, execution providers, graphics/native services, and diagnostics. Generic fixes are upstreamed where practical. Title-specific behavior lives in signed profiles or versioned providers.
 
 ## Rationale
 

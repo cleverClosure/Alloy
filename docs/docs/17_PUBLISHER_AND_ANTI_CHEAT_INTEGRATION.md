@@ -1,4 +1,4 @@
-# MGCR Publisher and Anti-Cheat Integration Specification
+# Alloy Publisher and Anti-Cheat Integration Specification
 
 **Version:** 1.0  
 **Status:** Proposed GA-track capability  
@@ -10,7 +10,7 @@
 
 ## 1. Purpose
 
-The publisher program turns MGCR from an unsupported consumer compatibility tool into a controlled Mac release and validation channel. It gives publishers precise evidence without requiring an immediate native Mac port, while preserving confidentiality, protection policy, and final publisher authority over online support.
+The publisher program turns Alloy from an unsupported consumer compatibility tool into a controlled Mac release and validation channel. It gives publishers precise evidence without requiring an immediate native Mac port, while preserving confidentiality, protection policy, and final publisher authority over online support.
 
 The program does not guarantee that every Windows build can be certified. It identifies blockers early and provides scoped technical options.
 
@@ -146,7 +146,7 @@ Publisher provides:
 - anti-cheat/DRM details;
 - expected error/rejection behavior.
 
-MGCR converts these into versioned automated/manual scenarios. Publisher-specific hooks must degrade safely when absent from retail builds.
+Alloy converts these into versioned automated/manual scenarios. Publisher-specific hooks must degrade safely when absent from retail builds.
 
 ## 9. Report format
 
@@ -172,7 +172,7 @@ Windows reference behavior
 suspected causal subsystem
 trace/evidence links
 reproduction reliability
-recommended MGCR fix
+recommended Alloy fix
 recommended publisher fix or optional hook
 workaround/capability impact
 owner and target
@@ -202,7 +202,7 @@ Publishers may review:
 - integrity/mod policy;
 - public support copy.
 
-Publishers cannot directly ship unsigned arbitrary profile code into Certified Mode. MGCR remains responsible for profile safety, signing, and accuracy.
+Publishers cannot directly ship unsigned arbitrary profile code into Certified Mode. Alloy remains responsible for profile safety, signing, and accuracy.
 
 ## 11. Optional publisher SDK
 
@@ -239,7 +239,7 @@ Publisher assistance can reduce compatibility uncertainty through:
 - deterministic scene markers;
 - recommended performance preset.
 
-MGCR must still implement correct general semantics rather than encode one title as the API definition.
+Alloy must still implement correct general semantics rather than encode one title as the API definition.
 
 ## 13. Shader and pipeline prewarming
 
@@ -260,7 +260,7 @@ Publisher may provide:
 - stable shader identifiers;
 - engine pipeline library export.
 
-The client receives only legally redistributable derived metadata/artifacts. Cache identity and invalidation remain controlled by MGCR.
+The client receives only legally redistributable derived metadata/artifacts. Cache identity and invalidation remain controlled by Alloy.
 
 ## 14. Native optimization adapters
 
@@ -294,7 +294,7 @@ Only with validated inputs and licensing. No claim that proprietary APIs are aut
 
 ## 15. Anti-cheat integration principles
 
-As of mid-2026, EAC and BattlEye each offer a developer opt-in program for Linux/Proton but no macOS/Wine equivalent; enabling either vendor for MGCR requires a direct vendor agreement negotiated per title, consistent with the partner-enabled-only principles below.
+As of mid-2026, EAC and BattlEye each offer a developer opt-in program for Linux/Proton but no macOS/Wine equivalent; enabling either vendor for Alloy requires a direct vendor agreement negotiated per title, consistent with the partner-enabled-only principles below.
 
 1. No Windows kernel driver execution.
 2. No hidden bypass or patch that defeats vendor checks.
@@ -314,7 +314,7 @@ This is a design concept subject to vendor agreement.
 ```mermaid
 sequenceDiagram
     participant Game as Game / anti-cheat client
-    participant Agent as MGCR SessionAgent
+    participant Agent as Alloy SessionAgent
     participant Measure as Integrity service
     participant Vendor as Vendor service
 
@@ -380,7 +380,7 @@ Competitive Certified is revoked or downgraded immediately when vendor scope no 
 For a partnered title:
 
 - publisher shares release candidate by agreed lead time;
-- MGCR runs impact matrix;
+- Alloy runs impact matrix;
 - findings have joint severity/ownership;
 - profile/runtime candidate is prepared;
 - publisher reviews public limitations;

@@ -1,4 +1,4 @@
-# MGCR Risk Register
+# Alloy Risk Register
 
 **Version:** 1.0  
 **Status:** Active planning register  

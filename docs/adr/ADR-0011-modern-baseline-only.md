@@ -12,7 +12,7 @@ The v1.0 documentation carried a substantial legacy surface: 32-bit games as a d
 
 ## Decision
 
-MGCR supports a **modern baseline only**:
+Alloy supports a **modern baseline only**:
 
 1. **Guest executables:** x64 only. 32-bit x86 **game** executables are permanently out of certification scope — not a deferred tier. A narrow translated-WoW64 allowance exists solely for auxiliary helper processes (launcher, installer, DRM helper) that a supported x64 title requires; helpers receive conservative per-process policy and are never part of gameplay certification evidence.
 2. **Guest graphics APIs:** Direct3D 10/11 (DXMT), Direct3D 12 (Metal12), and Vulkan (MoltenVK). Direct3D 9 and earlier, DirectDraw, and OpenGL are out of product scope; no provider ships and the profile schema does not admit them.

@@ -1,4 +1,4 @@
-# MGCR Product Strategy
+# Alloy Product Strategy
 
 **Version:** 1.0  
 **Status:** Proposed  
@@ -42,7 +42,7 @@ input/audio/media services
 
 Traditional mutable compatibility environments collapse these dimensions into one installation. When behavior changes, the user and support team cannot reliably identify the cause or reconstruct the last working state.
 
-MGCR separates and versions those dimensions. The strategic asset is the resulting **compatibility evidence graph**: exact inputs, tests, results, regressions, fixes, and certified outputs.
+Alloy separates and versions those dimensions. The strategic asset is the resulting **compatibility evidence graph**: exact inputs, tests, results, regressions, fixes, and certified outputs.
 
 ## 3. Market wedge
 
@@ -125,15 +125,15 @@ Community wrappers can move quickly and offer broad experimentation. They usuall
 - systematic privacy and diagnostics;
 - a dedicated graphics/compiler roadmap.
 
-MGCR should remain friendly to open-source communities by upstreaming generic fixes and publishing accurate compatibility information, while reserving certified policy, evidence, and proprietary Metal12 work as commercial assets.
+Alloy should remain friendly to open-source communities by upstreaming generic fixes and publishing accurate compatibility information, while reserving certified policy, evidence, and proprietary Metal12 work as commercial assets.
 
 ### 6.3 Against cloud gaming
 
-Cloud gaming avoids local compatibility but introduces network latency, recurring infrastructure cost, availability dependence, image compression, library availability constraints, and no offline play. MGCR’s strategic advantage is local execution using the user’s Mac hardware. Cloud streaming may be a separate fallback partnership, but it should not blur the local-runtime thesis.
+Cloud gaming avoids local compatibility but introduces network latency, recurring infrastructure cost, availability dependence, image compression, library availability constraints, and no offline play. Alloy’s strategic advantage is local execution using the user’s Mac hardware. Cloud streaming may be a separate fallback partnership, but it should not blur the local-runtime thesis.
 
 ### 6.4 Against native ports
 
-A high-quality native port can outperform any compatibility layer and should be welcomed. MGCR provides value where a publisher will not fund a full port, wants a low-risk evaluation channel, or needs continuity for an existing Windows catalog. Publisher adapters can also become a bridge toward native optimization.
+A high-quality native port can outperform any compatibility layer and should be welcomed. Alloy provides value where a publisher will not fund a full port, wants a low-risk evaluation channel, or needs continuity for an existing Windows catalog. Publisher adapters can also become a bridge toward native optimization.
 
 ## 7. Moat model
 

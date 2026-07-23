@@ -1,4 +1,4 @@
-# MGCR Architecture and Product Decision Log
+# Alloy Architecture and Product Decision Log
 
 **Version:** 1.0  
 **Status:** Active  
@@ -52,6 +52,7 @@ An Accepted decision can still have validation gates.
 | D-018 | Continuous differential certification on physical fleets | Accepted | Physical Mac and Windows reference fleets with continuous differential runs are product architecture, not optional QA tooling; fleet scale follows catalog scale. | Certification must remain true over time; the Windows oracle enables attribution; the evidence graph is a moat layer. | [ADR-0013](../adr/ADR-0013-continuous-differential-certification.md) | Per-title lab cost makes the catalog plan uneconomic (R-026/R-027), or a cloud-Mac tier proves equivalent for defined evidence classes. |
 | D-019 | First storefront: Steam; GOG at MVP+1; Epic deferred | Accepted | Integrate Steam first (real Windows client in-runtime, ACF/depot build identity, no Steam-protocol emulation per SSA §2.G); pull GOG forward to MVP+1; defer Epic indefinitely. | Users and the addressable modern catalog concentrate on Steam; GOG's DRM-free installer model is the cleanest lab/CAS fingerprinting fit; Epic is weakest on every integration axis. | [SPIKE-STORE-001 findings](../research/SPIKE-STORE-001-findings.md) | Epic partner interest or must-have exclusive; Steam ToS/enforcement change; counsel review of the §4.C lab-automation mitigations. |
 | D-020 | MVP game portfolio: 13 titles | Accepted | Smoke test: Sir Brante. Certified core: Sekiro, The Witcher 3, God of War (2018), NieR: Automata, Yakuza: Like a Dragon (GOG build), Persona 5 Royal, Dark Souls III, DOOM Eternal, Red Dead Redemption 2. Metal12 lab targets: Manor Lords, Ghost of Tsushima DC, Kingdom Come: Deliverance II. Ordered backups recorded. | Satisfies the D3D11-first MVP with 12 engine families, Vulkan coverage (DOOM Eternal, RDR2), a benchmark anchor (RDR2), and floor-class coverage; demand-ranked with live-verified per-title protection/memory facts. | [SPIKE-CATALOG-001 findings](../research/SPIKE-CATALOG-001-findings.md) | Per title: native macOS port ships, protection/anti-cheat change, or SPIKE-GFX-001/SPIKE-LAB-001 validation failure promotes the named backup. |
+| D-021 | Product name: Alloy | Accepted | Adopt "Alloy" as the product and app name (Alloy.app), replacing working name "MGCR"; certification lockup "Alloy Certified". | Fusion story (x86 games bonded to Apple Silicon), Metal-API echo, premium engineering register; clear of consumer-gaming namespace on initial screen; alloyplay.com available at decision time. | CHANGELOG 1.4; [glossary](15_GLOSSARY.md) | Counsel trademark screen fails (SPIKE-LEGAL-001 §7 item 9) → fall back to shortlist (Sterling, Ingot, Flint, Portside). |
 
 ## 3. Governance
 

@@ -18,13 +18,13 @@ no real build errors have been observed yet because configuration stops by desig
 
 - `Source/Windows/` is a first-class host frontend containing `ARM64EC/`, `WOW64/`, `UnixLib/`,
   `Common/`, `Defs/`, and a shipped `wine_builtin.bin` — **upstream FEX already integrates with
-  Wine's ARM64EC loader for Windows-on-ARM hosts.** This is the same integration shape MGCR needs
+  Wine's ARM64EC loader for Windows-on-ARM hosts.** This is the same integration shape Alloy needs
   (FEX as the emulator interface behind Wine ARM64EC), with the host OS beneath it swapped.
 - `FEXCore/Source` (the JIT/emulation core) is nearly host-agnostic: **15 files** carry `_WIN32`
   conditionals — concentrated in `Utils/` (Allocator, AllocatorHooks, Profiler, FileLoading) and
   code-buffer/dispatch paths (CodeCache, SharedCodeBufferManager, Dispatcher, Core, CPUID) — and
   **one file** references epoll/futex/memfd. The Linux weight lives in the loader/syscall
-  frontends outside FEXCore, which MGCR's Wine-hosted model does not need in full.
+  frontends outside FEXCore, which Alloy's Wine-hosted model does not need in full.
 - Working hypothesis after survey: the port ≈ a Darwin host layer patterned on `Source/Windows/`'s
   seam plus Darwin branches in ~15 FEXCore files (allocator/W^X/code-buffer/profiler). The known
   hard problems remain Mach exceptions vs. signals, `MAP_JIT` + per-thread W^X, and 16 KB host
@@ -33,7 +33,7 @@ no real build errors have been observed yet because configuration stops by desig
 ## 3. Constraint discovered: FEX bans AI-generated contributions
 
 The FEX tree carries a project policy: **"AI must not be used to generate code for contributions
-to this project."** Adopted posture for MGCR (binding for this spike):
+to this project."** Adopted posture for Alloy (binding for this spike):
 
 - AI assistants may **read/analyze** the tree, run builds/tests, and author documents, harnesses,
   and tooling **outside** the FEX tree.

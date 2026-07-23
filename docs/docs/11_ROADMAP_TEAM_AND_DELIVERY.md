@@ -1,4 +1,4 @@
-# MGCR Roadmap, Team, and Delivery Plan
+# Alloy Roadmap, Team, and Delivery Plan
 
 **Version:** 1.0  
 **Status:** Planning baseline  
@@ -102,7 +102,7 @@ Build the reusable local platform and internal developer experience.
 
 ### Deliverables
 
-- GameHub.app skeleton and local XPC API;
+- Alloy.app skeleton and local XPC API;
 - RuntimeDaemon and operation journal;
 - CAS, verified artifact download, layer format, materialization;
 - save/settings/cache/scratch volumes;

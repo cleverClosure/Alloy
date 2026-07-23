@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.example.invalid/mgcr/game-profile.v1.schema.json",
-  "title": "Mac Gaming Compatibility Runtime Game Profile",
+  "$id": "https://schemas.example.invalid/alloy/game-profile.v1.schema.json",
+  "title": "Alloy Game Profile",
   "type": "object",
   "additionalProperties": false,
   "required": ["schemaVersion", "profileId", "revision", "game", "selectors", "runtime", "processPolicies", "certification"],

@@ -7,11 +7,11 @@
 
 ## Context
 
-A cloud-required compatibility layer would make locally installed games dependent on MGCR availability and create poor offline ownership. Profiles and artifacts are signed and can be verified locally.
+A cloud-required compatibility layer would make locally installed games dependent on Alloy availability and create poor offline ownership. Profiles and artifacts are signed and can be verified locally.
 
 ## Decision
 
-An installed title with cached valid metadata/objects and compatible storefront policy can resolve and launch locally without a live MGCR request. Cloud services distribute updates, certification, and optional diagnostics but are not required for normal launch.
+An installed title with cached valid metadata/objects and compatible storefront policy can resolve and launch locally without a live Alloy request. Cloud services distribute updates, certification, and optional diagnostics but are not required for normal launch.
 
 ## Rationale
 

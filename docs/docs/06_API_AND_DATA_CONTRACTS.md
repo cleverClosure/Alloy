@@ -1,4 +1,4 @@
-# MGCR API and Data Contracts
+# Alloy API and Data Contracts
 
 **Version:** 1.0  
 **Status:** Proposed  
@@ -10,7 +10,7 @@
 
 ## 1. Scope
 
-This document defines the service and data boundaries needed to implement MGCR:
+This document defines the service and data boundaries needed to implement Alloy:
 
 - local client-to-daemon API;
 - daemon-to-session-agent protocol;
@@ -42,7 +42,7 @@ It is not a complete source-code interface definition. Protobuf, Swift, Rust, C/
 
 ```mermaid
 flowchart LR
-    UI[GameHub.app] <-->|XPC typed API| Daemon[RuntimeDaemon]
+    UI[Alloy.app] <-->|XPC typed API| Daemon[RuntimeDaemon]
     Daemon <-->|Private XPC / bootstrap channel| Agent[SessionAgent]
     Agent <-->|Shared-memory snapshot + authenticated IPC| Loader[Wine loader]
     Loader --> Wine[Wine process]
@@ -72,7 +72,7 @@ Conceptual response:
   "requestId": "req_01...",
   "status": {
     "code": "OK",
-    "domain": "mgcr.runtime",
+    "domain": "alloy.runtime",
     "messageKey": "runtime.launch.accepted",
     "retryable": false,
     "supportCode": "RT-LAUNCH-0000"
@@ -104,7 +104,7 @@ Example:
 
 ```json
 {
-  "domain": "mgcr.profile",
+  "domain": "alloy.profile",
   "code": "PROFILE_BUILD_SELECTOR_MISMATCH",
   "messageKey": "compatibility.update_under_test",
   "retryable": false,
@@ -317,7 +317,7 @@ typedef struct {
     const char *command_line;
     uint64_t parent_policy_token;
     uint16_t pe_machine;
-} mgcr_process_identity_v1;
+} alloy_process_identity_v1;
 ```
 
 Response:
@@ -333,7 +333,7 @@ typedef struct {
     uint32_t feature_mask_id;
     uint32_t security_policy_id;
     uint32_t diagnostics_policy_id;
-} mgcr_process_policy_v1;
+} alloy_process_policy_v1;
 ```
 
 The actual ABI must avoid raw cross-process pointers and define ownership, encoding, alignment, and maximum lengths. The loader verifies the snapshot digest and session token before use.

@@ -6,7 +6,7 @@
 **Status:** Proposed architecture  
 **Technology baseline:** 20 July 2026  
 **Audience:** platform engineers, graphics engineers, compatibility engineers, security engineers, technical leadership, publisher-integration teams, and investors conducting technical diligence  
-**Working system name:** Mac Gaming Compatibility Runtime (MGCR); this is a descriptive placeholder rather than a product brand.
+**System name:** Alloy — the product brand (adopted 23 July 2026, D-021; trademark clearance pending ⚖️).
 
 **Related documents:** [PRD](02_PRD.md) · [Runtime profile specification](05_RUNTIME_PROFILE_AND_MANIFEST_SPEC.md) · [Certification specification](07_COMPATIBILITY_CERTIFICATION_SPEC.md) · [Security and privacy](09_SECURITY_PRIVACY_THREAT_MODEL.md) · [Roadmap](11_ROADMAP_TEAM_AND_DELIVERY.md)
 
@@ -32,7 +32,7 @@
 
 # Executive summary
 
-MGCR is a gaming-only compatibility platform that runs supported Windows games on Apple-silicon Macs. It is not a general Windows desktop, not a virtual machine, and not a user-facing Wine-prefix manager. Its primary product object is a **certified game runtime generation**: an exact game build, launcher build, host capability class, runtime component set, process policy, and validation record that can be installed, launched, observed, upgraded, and rolled back deterministically.
+Alloy is a gaming-only compatibility platform that runs supported Windows games on Apple-silicon Macs. It is not a general Windows desktop, not a virtual machine, and not a user-facing Wine-prefix manager. Its primary product object is a **certified game runtime generation**: an exact game build, launcher build, host capability class, runtime component set, process policy, and validation record that can be installed, launched, observed, upgraded, and rolled back deterministically.
 
 The architecture changes the compatibility abstraction in five fundamental ways.
 
@@ -68,7 +68,7 @@ When a title stops working, engineering can answer precisely whether the causal 
 
 ## 1.1 Product scope
 
-MGCR supports Windows games on Apple-silicon Macs. It includes:
+Alloy supports Windows games on Apple-silicon Macs. It includes:
 
 - game and storefront discovery;
 - game installation and update coordination;
@@ -160,7 +160,7 @@ Rosetta is useful for an early x86_64 Wine bootstrap and as a performance/correc
 
 ## 2.4 Wine and ARM64EC
 
-Wine supplies decades of user-mode Windows API behavior and remains the correct base rather than being rewritten. Wine’s ARM64EC and modern WoW64 work makes a mixed native-ARM64 and translated-x64 process architecture possible [R06, R16]. MGCR maintains a thin fork containing only changes that cannot yet be upstreamed, plus stable hooks for process policy, host services, diagnostics, and execution providers.
+Wine supplies decades of user-mode Windows API behavior and remains the correct base rather than being rewritten. Wine’s ARM64EC and modern WoW64 work makes a mixed native-ARM64 and translated-x64 process architecture possible [R06, R16]. Alloy maintains a thin fork containing only changes that cannot yet be upstreamed, plus stable hooks for process policy, host services, diagnostics, and execution providers.
 
 ## 2.5 CPU translation
 
@@ -174,7 +174,7 @@ DXMT is the initial Direct3D 10/11 Metal-native provider [R08]. MoltenVK is the 
 
 ## 2.7 Anti-cheat and publisher enablement
 
-User-mode compatibility does not make Windows kernel anti-cheat drivers portable. Official Proton guidance likewise distinguishes publisher-enabled anti-cheat paths from unsupported kernel-space designs [R10]. MGCR supports competitive multiplayer only through explicit vendor enablement, runtime measurement, signed certified mode, and title-specific test evidence.
+User-mode compatibility does not make Windows kernel anti-cheat drivers portable. Official Proton guidance likewise distinguishes publisher-enabled anti-cheat paths from unsupported kernel-space designs [R10]. Alloy supports competitive multiplayer only through explicit vendor enablement, runtime measurement, signed certified mode, and title-specific test evidence.
 
 ## 2.8 Distribution, signing, and dynamic code
 
@@ -326,7 +326,7 @@ flowchart LR
 
 ## 5.3 System boundary
 
-MGCR owns native runtime components, Wine integration, profiles, runtime distribution, observability, certification, and the owned Metal12 provider. It does not own game code, storefront services, macOS, anti-cheat policy, or external DRM. Failures at those boundaries are modeled and surfaced rather than hidden.
+Alloy owns native runtime components, Wine integration, profiles, runtime distribution, observability, certification, and the owned Metal12 provider. It does not own game code, storefront services, macOS, anti-cheat policy, or external DRM. Failures at those boundaries are modeled and surfaced rather than hidden.
 
 # 6. Core domain model
 
@@ -404,7 +404,7 @@ The resolved `HostClassId` is stable for the session and included in all diagnos
 
 ```mermaid
 flowchart TB
-    UI[GameHub.app] <-->|XPC| Daemon[RuntimeDaemon]
+    UI[Alloy.app] <-->|XPC| Daemon[RuntimeDaemon]
     Daemon --> Resolver[Runtime resolver]
     Daemon --> Store[Content-addressed object store]
     Daemon --> Materializer[Generation materializer]
@@ -432,7 +432,7 @@ The system has two major halves.
 
 The local platform owns launch correctness. It is composed of:
 
-- `GameHub.app`, the native UI;
+- `Alloy.app`, the native UI;
 - `RuntimeDaemon`, the single writer for local state;
 - `ContentStore`, `ProfileResolver`, `UpdateManager`, and `DiagnosticsAgent` services;
 - one `SessionAgent` per launch;
@@ -466,9 +466,9 @@ The cloud side owns distribution and evidence, not real-time gameplay decisions.
 
 # 8. Local control plane
 
-## 8.1 GameHub.app
+## 8.1 Alloy.app
 
-`GameHub.app` is a native Swift/AppKit or SwiftUI application. It is a presentation client, not the source of truth. It MUST NOT directly edit runtime files, Wine registry hives, or content-store references. All mutating operations use authenticated XPC calls to `RuntimeDaemon`.
+`Alloy.app` is a native Swift/AppKit or SwiftUI application. It is a presentation client, not the source of truth. It MUST NOT directly edit runtime files, Wine registry hives, or content-store references. All mutating operations use authenticated XPC calls to `RuntimeDaemon`.
 
 Responsibilities:
 
@@ -597,7 +597,7 @@ Every distributed layer is an object identified by SHA-256. A layer package uses
 The local layout is conceptually:
 
 ```text
-~/Library/Application Support/MGCR/
+~/Library/Application Support/Alloy/
   metadata/catalog.sqlite
   metadata/journal/
   objects/sha256/ab/cdef...        # immutable compressed objects
@@ -718,7 +718,7 @@ Quota policy is category-aware:
 ```mermaid
 sequenceDiagram
     actor Player
-    participant UI as GameHub.app
+    participant UI as Alloy.app
     participant D as RuntimeDaemon
     participant R as Resolver
     participant S as Object store
@@ -804,7 +804,7 @@ Certified Mode does not accept arbitrary environment or DLL overrides from the U
 
 ## 10.5 Loader integration
 
-The thin Wine fork adds a stable `mgcr_policy_bootstrap` hook at process initialization. Its responsibilities are intentionally narrow:
+The thin Wine fork adds a stable `alloy_policy_bootstrap` hook at process initialization. Its responsibilities are intentionally narrow:
 
 1. receive the session snapshot handle and process launch token;
 2. compute or retrieve normalized executable identity;
@@ -921,21 +921,21 @@ The architecture avoids translating the entire Wine implementation, reducing CPU
 
 ## 11.3 Stable host extension points
 
-MGCR adds versioned extension points rather than ad hoc hooks:
+Alloy adds versioned extension points rather than ad hoc hooks:
 
 ```c
-struct mgcr_process_policy_v1;
-struct mgcr_execution_provider_v1;
-struct mgcr_host_service_v1;
-struct mgcr_diagnostics_sink_v1;
-struct mgcr_clock_provider_v1;
+struct alloy_process_policy_v1;
+struct alloy_execution_provider_v1;
+struct alloy_host_service_v1;
+struct alloy_diagnostics_sink_v1;
+struct alloy_clock_provider_v1;
 ```
 
 ABI versions are explicit. Unsupported fields are rejected rather than silently ignored. Provider interfaces live at process boundaries or Wine Unix-library boundaries so they do not expose unstable internal C++ objects.
 
 ## 11.4 Wineserver
 
-Wineserver remains responsible for Windows object and process semantics. MGCR additions include:
+Wineserver remains responsible for Windows object and process semantics. Alloy additions include:
 
 - session and policy identity tags;
 - process-role events;
@@ -960,7 +960,7 @@ Only services required by a game profile are enabled. The base runtime does not 
 Every Wine rebase runs:
 
 - upstream Wine tests for relevant architectures;
-- MGCR process-policy and host-bridge tests;
+- Alloy process-policy and host-bridge tests;
 - install and launcher smoke tests;
 - differential file, registry, process, synchronization, and networking tests;
 - the certified game canary set;
@@ -1114,7 +1114,7 @@ Per-block data remains local by default. Uploaded diagnostics use module-relativ
 
 ## 13.1 Objectives
 
-Windows games create heavy contention through SRW locks, condition variables, events, semaphores, keyed-event-like mechanisms, thread pools, and `WaitOnAddress`. A single universal mapping is unlikely to be optimal across macOS versions and contention patterns. MGCR therefore treats synchronization as a measured provider.
+Windows games create heavy contention through SRW locks, condition variables, events, semaphores, keyed-event-like mechanisms, thread pools, and `WaitOnAddress`. A single universal mapping is unlikely to be optimal across macOS versions and contention patterns. Alloy therefore treats synchronization as a measured provider.
 
 ## 13.2 Adaptive synchronization provider
 
@@ -1557,7 +1557,7 @@ The capture format is versioned and content-addressed. Replay can target the sam
 
 ## 16.1 DXMT-derived Direct3D 10/11 provider
 
-The D3D10/11 provider starts from DXMT and is integrated into MGCR’s runtime, policy, presentation, cache, and diagnostic contracts [R08]. The project SHOULD upstream generic fixes and maintain a small integration layer for:
+The D3D10/11 provider starts from DXMT and is integrated into Alloy’s runtime, policy, presentation, cache, and diagnostic contracts [R08]. The project SHOULD upstream generic fixes and maintain a small integration layer for:
 
 - process-policy selection;
 - shared host capability records;
@@ -1646,7 +1646,7 @@ The service records callback deadline misses and buffer fill levels. A profile c
 
 ## 17.4 Media Foundation and video
 
-Game launchers and cutscenes use Media Foundation, DirectShow, proprietary codecs, embedded browsers, and protected media. MGCR provides a versioned media provider with:
+Game launchers and cutscenes use Media Foundation, DirectShow, proprietary codecs, embedded browsers, and protected media. Alloy provides a versioned media provider with:
 
 - Media Foundation source, transform, sample, timestamp, and topology behavior required by games;
 - native decode through VideoToolbox or AVFoundation when codec and semantics permit;
@@ -1669,11 +1669,11 @@ Launchers often use Chromium Embedded Framework, WebView2, or proprietary browse
 - cache and cookie volume;
 - crash isolation.
 
-Authentication tokens are stored by the launcher in its compatibility environment or, when an official adapter exists, in Keychain-backed native storage. MGCR never records user passwords in profiles or telemetry.
+Authentication tokens are stored by the launcher in its compatibility environment or, when an official adapter exists, in Keychain-backed native storage. Alloy never records user passwords in profiles or telemetry.
 
 ## 17.6 Networking
 
-Wine’s Winsock mapping remains the base. MGCR adds session policy and diagnostics without proxying ordinary game payload by default.
+Wine’s Winsock mapping remains the base. Alloy adds session policy and diagnostics without proxying ordinary game payload by default.
 
 Capabilities include:
 
@@ -1685,11 +1685,11 @@ Capabilities include:
 - voice-chat device and network correlation;
 - separation of game traffic from control-plane traffic.
 
-TLS is terminated by the game or launcher unless an official native adapter exists. MGCR does not intercept encrypted traffic for diagnostics.
+TLS is terminated by the game or launcher unless an official native adapter exists. Alloy does not intercept encrypted traffic for diagnostics.
 
 ## 17.7 Filesystem semantics
 
-Windows filesystem behavior includes case-insensitive lookup, alternate names, reserved characters, sharing modes, delete-pending state, byte-range locks, timestamps, reparse-like behavior, sparse files, and path normalization. Wine remains the primary implementation; MGCR supplies a constrained drive namespace and storage-generation model.
+Windows filesystem behavior includes case-insensitive lookup, alternate names, reserved characters, sharing modes, delete-pending state, byte-range locks, timestamps, reparse-like behavior, sparse files, and path normalization. Wine remains the primary implementation; Alloy supplies a constrained drive namespace and storage-generation model.
 
 Default Certified Mode drives are:
 
@@ -1788,9 +1788,9 @@ Adapters use official local interfaces, command-line contracts, URI schemes, or 
 
 Three deployment patterns are supported:
 
-1. **Windows storefront inside MGCR.** The launcher executes under Wine and installs games into the versioned payload volume.
-2. **Native storefront handoff.** A native Mac client supplies content or authentication, while the Windows game executes in MGCR.
-3. **Direct publisher package.** MGCR downloads or imports an entitled Windows build through a publisher integration.
+1. **Windows storefront inside Alloy.** The launcher executes under Wine and installs games into the versioned payload volume.
+2. **Native storefront handoff.** A native Mac client supplies content or authentication, while the Windows game executes in Alloy.
+3. **Direct publisher package.** Alloy downloads or imports an entitled Windows build through a publisher integration.
 
 Profiles declare the pattern. Credentials and update ownership are unambiguous.
 
@@ -1831,7 +1831,7 @@ If the service refuses an old launcher version, the runtime reports an upstream 
 
 ## 18.6 Account and secret handling
 
-MGCR prefers launcher-native OAuth or device-code flows. Native integrations store refresh tokens in Keychain with access restricted to the signed daemon or adapter. Windows launchers may retain their own encrypted state inside a launcher volume; that volume is excluded from diagnostics by default.
+Alloy prefers launcher-native OAuth or device-code flows. Native integrations store refresh tokens in Keychain with access restricted to the signed daemon or adapter. Windows launchers may retain their own encrypted state inside a launcher volume; that volume is excluded from diagnostics by default.
 
 Passwords, session cookies, authorization headers, and payment data are always redacted. Support personnel cannot request them through the diagnostic system.
 
@@ -1845,7 +1845,7 @@ Conceptual envelope:
 
 ```json
 {
-  "payloadType": "application/vnd.mgcr.game-profile.v1+json",
+  "payloadType": "application/vnd.alloy.game-profile.v1+json",
   "payload": "<base64 canonical JSON>",
   "signatures": [
     {"keyid": "profile-prod-2026-02", "sig": "<base64>"}
@@ -2349,7 +2349,7 @@ On a user-requested force quit, the SessionAgent captures a bounded snapshot bef
 
 ## 22.6 Diagnostic bundle
 
-The `.mgcrdiag` bundle contains:
+The `.alloydiag` bundle contains:
 
 ```text
 manifest.json
@@ -2394,7 +2394,7 @@ This output is generated from resolver proof data, not hand-written support text
 ```mermaid
 flowchart LR
     subgraph TrustedClient["Signed native client boundary"]
-        UI[GameHub.app]
+        UI[Alloy.app]
         Daemon[RuntimeDaemon]
         Agent[SessionAgent]
         Verify[Artifact and profile verifier]
@@ -2591,7 +2591,7 @@ Emergency rules are narrowly scoped and expire unless replaced by a reviewed rel
 
 ## 24.1 Reliability model
 
-MGCR assumes that game code, launchers, storefronts, macOS builds, and runtime components can fail independently. Reliability comes from isolation, precise health signals, immutable generations, and rollback—not from assuming every update is safe.
+Alloy assumes that game code, launchers, storefronts, macOS builds, and runtime components can fail independently. Reliability comes from isolation, precise health signals, immutable generations, and rollback—not from assuming every update is safe.
 
 A game is healthy only when its declared health plan passes. Process existence alone is insufficient.
 
@@ -2827,7 +2827,7 @@ Game tests do not replace API-level tests; API tests do not replace real games.
 
 ## 26.4 Wine and Win32 differential tests
 
-Relevant Wine tests run on every candidate. Additional tests compare native Windows and MGCR for:
+Relevant Wine tests run on every candidate. Additional tests compare native Windows and Alloy for:
 
 - process creation and inheritance;
 - file sharing, locking, deletion, timestamps, and case behavior;
@@ -2917,7 +2917,7 @@ A stable runtime component must pass:
 A possible monorepo split is:
 
 ```text
-/apps/gamehub
+/apps/alloy
 /daemon/runtime-daemon
 /daemon/session-agent
 /runtime/wine
@@ -3019,7 +3019,7 @@ Operation progress events are monotonic and replayable from the local journal af
 The guest-host protocol uses a session-scoped Unix-domain socket or Wine Unix-call bridge. The wire header includes:
 
 ```c
-struct mgcr_wire_header_v1 {
+struct alloy_wire_header_v1 {
     uint32_t magic;
     uint16_t major;
     uint16_t minor;
@@ -3067,7 +3067,7 @@ Telemetry and test events use a common envelope:
 
 ```json
 {
-  "schema": "mgcr.event.session-health.v2",
+  "schema": "alloy.event.session-health.v2",
   "eventId": "...",
   "occurredAt": "...",
   "sessionId": "pseudonymous-or-lab-id",
@@ -3087,17 +3087,17 @@ The ingest service rejects unknown major versions, payloads inconsistent with co
 Errors have stable machine codes, human-readable explanations, retry class, and support hints.
 
 ```text
-MGCR_PROFILE_NO_MATCH
-MGCR_PROFILE_CONFLICT
-MGCR_ARTIFACT_SIGNATURE_INVALID
-MGCR_RUNTIME_HOST_UNSUPPORTED
-MGCR_CPU_UNIMPLEMENTED_INSTRUCTION
-MGCR_GRAPHICS_SHADER_COMPILE_FAILED
-MGCR_GRAPHICS_DEVICE_LOST
-MGCR_LAUNCHER_AUTH_REQUIRED
-MGCR_ANTICHEAT_VENDOR_NOT_ENABLED
-MGCR_SAVE_SYNC_CONFLICT
-MGCR_UPDATE_ROLLED_BACK
+Alloy_PROFILE_NO_MATCH
+Alloy_PROFILE_CONFLICT
+Alloy_ARTIFACT_SIGNATURE_INVALID
+Alloy_RUNTIME_HOST_UNSUPPORTED
+Alloy_CPU_UNIMPLEMENTED_INSTRUCTION
+Alloy_GRAPHICS_SHADER_COMPILE_FAILED
+Alloy_GRAPHICS_DEVICE_LOST
+Alloy_LAUNCHER_AUTH_REQUIRED
+Alloy_ANTICHEAT_VENDOR_NOT_ENABLED
+Alloy_SAVE_SYNC_CONFLICT
+Alloy_UPDATE_ROLLED_BACK
 ```
 
 User-visible messages do not expose internal stack traces but include a correlation code.
@@ -3281,7 +3281,7 @@ Every open question has an owner, prototype plan, decision date, and fallback be
 
 This section summarizes the architectural—not cosmetic—difference from a traditional general-purpose compatibility product. It does not imply that existing products are poorly engineered; their constraints and scope differ.
 
-| Dimension | Traditional bottle-oriented compatibility | MGCR architecture |
+| Dimension | Traditional bottle-oriented compatibility | Alloy architecture |
 |---|---|---|
 | Supported object | mutable Windows-like bottle | exact game-build/runtime/host generation |
 | Scope | broad Windows applications | Apple-silicon gaming only |
@@ -3363,13 +3363,13 @@ runtime:
   rollbackGenerationId: "rtg_v1_example_20260702"
   cpuProvider:
     id: "fex-arm64ec"
-    version: "0.9.0-mgcr.18"
+    version: "0.9.0-alloy.18"
     artifactDigest: "sha256:..."
     guestCpuPreset: "x86-64-v3-conservative"
   providers:
     graphics:
       metal12: {version: "0.4.0", artifactDigest: "sha256:...", cacheEpoch: 19}
-      dxmt: {version: "0.60-mgcr.7", artifactDigest: "sha256:...", cacheEpoch: 12}
+      dxmt: {version: "0.60-alloy.7", artifactDigest: "sha256:...", cacheEpoch: 12}
     audio: {id: "xaudio-coreaudio-v3", artifactDigest: "sha256:..."}
     input: {id: "xinput-gamecontroller-v2", artifactDigest: "sha256:..."}
     media: {id: "mf-videotoolbox-v2", artifactDigest: "sha256:..."}
@@ -3618,7 +3618,7 @@ Foreign keys and uniqueness constraints prevent an active reference from pointin
 
 **ARM64EC** — Windows application binary interface allowing ARM64 code to interoperate with x64-oriented modules and conventions.
 
-**Bottle / prefix** — a mutable Wine environment containing a Windows-like filesystem and registry. MGCR uses layered per-game generations instead of making this the user-facing support unit.
+**Bottle / prefix** — a mutable Wine environment containing a Windows-like filesystem and registry. Alloy uses layered per-game generations instead of making this the user-facing support unit.
 
 **Capability preset / feature mask** — exact guest-visible API feature set and scoped deviations selected for a host and game build.
 
@@ -3636,7 +3636,7 @@ Foreign keys and uniqueness constraints prevent an active reference from pointin
 
 **Generation** — immutable runtime composition plus profile identity selected for an exact game/host combination.
 
-**GfxIR** — MGCR’s compact internal command/state representation used by Metal12.
+**GfxIR** — Alloy’s compact internal command/state representation used by Metal12.
 
 **Host class** — stable capability identity for architecture, macOS, Apple GPU, memory, and related services.
 
@@ -3710,7 +3710,7 @@ The architecture is principally a proposed design. The following primary or firs
 
 # Conclusion
 
-MGCR should be built as a **certified game-runtime platform**, not as another graphical wrapper around Wine prefixes. Its local architecture makes exact runtime state reproducible and applies policy at the process boundary before incompatible components initialize. Its graphics architecture owns the Direct3D 12-to-Metal control point and treats Apple unified memory, synchronization, presentation, and shader compilation as first-class design problems. Its cloud architecture turns every relevant update into a testable, attributable compatibility event and feeds signed, independently rollbackable generations back to users.
+Alloy should be built as a **certified game-runtime platform**, not as another graphical wrapper around Wine prefixes. Its local architecture makes exact runtime state reproducible and applies policy at the process boundary before incompatible components initialize. Its graphics architecture owns the Direct3D 12-to-Metal control point and treats Apple unified memory, synchronization, presentation, and shader compilation as first-class design problems. Its cloud architecture turns every relevant update into a testable, attributable compatibility event and feeds signed, independently rollbackable generations back to users.
 
 The architectural moat is the combination of three assets:
 

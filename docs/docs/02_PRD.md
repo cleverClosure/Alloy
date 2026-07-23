@@ -1,4 +1,4 @@
-# Mac Gaming Compatibility Runtime (MGCR)
+# Alloy
 
 ## Product Requirements Document
 
@@ -14,7 +14,7 @@
 
 ## 1. Executive summary
 
-MGCR is a Mac-gaming platform that runs supported Windows games on Apple-silicon Macs through a certified, reproducible compatibility runtime. It is not a general Windows application layer and it does not ask players to manage Wine prefixes, graphics backends, DLL overrides, registry keys, or command-line flags.
+Alloy is a Mac-gaming platform that runs supported Windows games on Apple-silicon Macs through a certified, reproducible compatibility runtime. It is not a general Windows application layer and it does not ask players to manage Wine prefixes, graphics backends, DLL overrides, registry keys, or command-line flags.
 
 The product object is an **exact certified game runtime generation**:
 
@@ -36,7 +36,7 @@ The initial commercial wedge is a narrow catalog of high-value single-player and
 
 Cross-platform compatibility products have historically exposed an environment-management abstraction: a mutable prefix or bottle containing a partial Windows installation. That model is flexible, but it makes game support hard to reproduce, hard to explain, and risky to update.
 
-MGCR uses a different abstraction:
+Alloy uses a different abstraction:
 
 > A supported title is a signed, independently versioned, continuously tested game runtime—not a user-maintained Windows environment.
 
@@ -75,7 +75,7 @@ Make a meaningful Windows gaming library feel like a first-class, dependable App
 
 ### 4.2 Positioning
 
-MGCR is positioned as:
+Alloy is positioned as:
 
 > **A certified Apple-silicon gaming runtime for supported Windows game builds.**
 
@@ -534,7 +534,7 @@ Events use stable machine-readable codes. Personally identifying data, credentia
 
 Commercial hypotheses — subscription structure, free-tier design, publisher revenue potential, and reseller posture — are owned by [01_PRODUCT_STRATEGY.md](01_PRODUCT_STRATEGY.md) §10. The following bind product design and are retained here as constraints on implementation, not as business strategy:
 
-- Offline installed launch must not depend on a live MGCR subscription check more frequently than the final commercial policy requires; entitlement design must preserve reasonable offline use.
+- Offline installed launch must not depend on a live Alloy subscription check more frequently than the final commercial policy requires; entitlement design must preserve reasonable offline use.
 - Compatibility status MUST never be paywalled in a misleading way — a title's certification level reflects test evidence, not entitlement or payment state.
 - The consumer runtime product should not depend on publisher revenue to remain viable.
 

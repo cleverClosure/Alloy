@@ -10,7 +10,7 @@
 FEX's Wine integration ships as **PE artifacts** (`libarm64ecfex.dll` and friends) that are
 cross-compiled regardless of host OS, plus a ~175-line unix-side bridge
 (`UnixLib/FEXUnixLib.cpp` → `libarm64ecfex.so`, currently Linux-only: links `librt`).
-MGCR does not need FEX's Linux frontend (ELF loader / syscall emulation) at all. The port
+Alloy does not need FEX's Linux frontend (ELF loader / syscall emulation) at all. The port
 therefore splits:
 
 1. **PE side — possibly zero porting.** Cross-compiling PE is host-independent; the Darwin

@@ -1,4 +1,4 @@
-# MGCR — Mac Gaming Compatibility Runtime
+# Alloy
 
 **Author:** Tim Isaev
 

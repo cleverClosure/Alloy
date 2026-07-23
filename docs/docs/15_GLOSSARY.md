@@ -1,4 +1,6 @@
-# MGCR Glossary
+# Alloy Glossary
+
+**Alloy** — The product name (adopted 23 July 2026, D-021) for the certified Windows-game compatibility runtime for Apple Silicon Macs that this package describes. Early drafts used the working name "MGCR"; the name evokes two things fused into one stronger material — x86 games bonded to Apple Silicon — and echoes the Metal API everything renders through.
 
 **Version:** 1.0  
 **Date:** 20 July 2026
@@ -25,19 +27,19 @@
 
 **LaunchSpecification** — Immutable local result of resolving game build, host class, runtime generation, profile, policy snapshot, volumes, grants, and certification for one session.
 
-**Modern baseline** — MGCR's certified scope floor: x64-only guest executables (WoW64 permitted only for auxiliary helper processes), Direct3D 10/11/12 and Vulkan renderers, Windows 10+ guest OS, storefront-managed installs, a 16 GB certified memory floor, and a rolling current-plus-previous-major macOS host window (ADR-0011).
+**Modern baseline** — Alloy's certified scope floor: x64-only guest executables (WoW64 permitted only for auxiliary helper processes), Direct3D 10/11/12 and Vulkan renderers, Windows 10+ guest OS, storefront-managed installs, a 16 GB certified memory floor, and a rolling current-plus-previous-major macOS host window (ADR-0011).
 
 **Playable** — Certification level in which a defined gameplay path passes with disclosed limitations.
 
 **Policy snapshot** — Compiled read-only representation of a profile used on the process startup hot path.
 
-**Support unit** — The smallest product identity to which compatibility and rollback promises apply; in MGCR, the runtime generation for an exact game/host selection.
+**Support unit** — The smallest product identity to which compatibility and rollback promises apply; in Alloy, the runtime generation for an exact game/host selection.
 
 **Workaround** — Scoped deviation from default behavior with owner, rationale, evidence, and review/removal condition.
 
 ## Runtime and storage
 
-**Bottle / Wine prefix** — Mutable Wine environment with Windows-like filesystem and registry. MGCR does not expose it as the primary support abstraction.
+**Bottle / Wine prefix** — Mutable Wine environment with Windows-like filesystem and registry. Alloy does not expose it as the primary support abstraction.
 
 **CAS (content-addressed store)** — Storage in which objects are named by cryptographic digest.
 
@@ -73,7 +75,7 @@
 
 **Wineserver** — Wine process that coordinates Windows object/process semantics.
 
-**WoW64** — Windows-on-Windows architecture for running 32-bit Windows code in a 64-bit environment. In MGCR, WoW64 is permitted only for auxiliary helper processes (launcher, installer, DRM helper) that a supported x64 title requires; 32-bit game executables are out of certified scope (ADR-0011).
+**WoW64** — Windows-on-Windows architecture for running 32-bit Windows code in a 64-bit environment. In Alloy, WoW64 is permitted only for auxiliary helper processes (launcher, installer, DRM helper) that a supported x64 title requires; 32-bit game executables are out of certified scope (ADR-0011).
 
 ## CPU execution
 
@@ -97,7 +99,7 @@
 
 **Barrier compiler / optimizer** — Metal12 subsystem that converts D3D12 resource state and synchronization semantics into correct Metal scheduling and hazards.
 
-**D3D / Direct3D** — Microsoft Windows graphics APIs. MGCR certifies Direct3D 10/11/12 and Vulkan (via MoltenVK) only; Direct3D 9 and earlier, DirectDraw, and OpenGL are out of certified scope and the profile schema does not admit them (ADR-0011).
+**D3D / Direct3D** — Microsoft Windows graphics APIs. Alloy certifies Direct3D 10/11/12 and Vulkan (via MoltenVK) only; Direct3D 9 and earlier, DirectDraw, and OpenGL are out of certified scope and the profile schema does not admit them (ADR-0011).
 
 **Descriptor heap** — D3D12 application-visible collection of descriptors; virtualized over Metal resource binding.
 
@@ -113,7 +115,7 @@
 
 **GfxIR** — Compact internal command/state representation used by Metal12.
 
-**Metal12** — Working name for MGCR’s owned Direct3D 12-to-Metal provider.
+**Metal12** — Working name for Alloy’s owned Direct3D 12-to-Metal provider.
 
 **MoltenVK** — Vulkan implementation over Metal used for games that expose Vulkan directly where certified.
 
@@ -151,7 +153,7 @@
 
 **Canary** — Restricted production release ring used to observe a candidate before stable promotion.
 
-**Differential test** — Test comparing MGCR-observable behavior with a native Windows reference.
+**Differential test** — Test comparing Alloy-observable behavior with a native Windows reference.
 
 **Evidence matrix digest** — Cryptographic identity of the certification matrix and results.
 

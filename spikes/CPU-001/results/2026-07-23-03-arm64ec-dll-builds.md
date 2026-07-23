@@ -24,7 +24,7 @@ llvm-mingw 20260616 sufficed for the DLL target.
 
 ## Gate 1 verdict
 
-**The buildable unit MGCR needs exists on macOS.** FEX's Wine-facing artifact set is
+**The buildable unit Alloy needs exists on macOS.** FEX's Wine-facing artifact set is
 host-OS-independent PE (this DLL) plus a ~175-line Linux unix-side bridge. Remaining port
 surface for the Wine-hosted model: a Darwin UnixLib variant, and the runtime behaviors
 (Mach exceptions, MAP_JIT/W^X, 16 KB pages) that only manifest under Wine at execution time.

@@ -1,4 +1,4 @@
-# MGCR Runtime Profile and Manifest Specification
+# Alloy Runtime Profile and Manifest Specification
 
 **Version:** 1.0  
 **Status:** Proposed normative companion  
@@ -72,7 +72,7 @@ Conceptual shape:
 
 ```json
 {
-  "payloadType": "application/vnd.mgcr.game-profile+json;version=1",
+  "payloadType": "application/vnd.alloy.game-profile+json;version=1",
   "payload": "<base64 canonical JSON>",
   "signatures": [
     {
@@ -90,7 +90,7 @@ Requirements:
 - Signatures are verified through the update metadata trust chain.
 - The envelope may carry multiple signatures during rotation.
 - Stable profiles require an authorized profile-release role.
-- Publisher approval, when contractually required, is evidence associated with release, not a substitute for MGCR signing.
+- Publisher approval, when contractually required, is evidence associated with release, not a substitute for Alloy signing.
 - Development profiles use a separate local or lab trust root and cannot be represented as stable.
 
 ## 6. Game build identity

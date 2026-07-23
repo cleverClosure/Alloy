@@ -1,4 +1,4 @@
-# MGCR pinned upstream dependencies
+# Alloy pinned upstream dependencies
 # Author: Tim Isaev
 #
 # Committed: this manifest + deps.lock (exact commits/versions, written by tools/fetch-deps.sh).

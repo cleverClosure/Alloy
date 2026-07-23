@@ -1,4 +1,4 @@
-# Contributing to the MGCR Documentation Baseline
+# Contributing to the Alloy Documentation Baseline
 
 ## 1. Change types
 
