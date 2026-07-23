@@ -8,6 +8,11 @@
 ARM64-native Wine/ARM64EC environment with correct exceptions, memory semantics, W^X, and
 commercially acceptable CPU overhead — on macOS, which upstream FEX does not support as a host.
 
+**Binding constraint (discovered 23 Jul 2026):** the FEX project prohibits AI-generated code in
+contributions. All FEX-tree modifications in this spike are founder-authored; AI assistance is
+limited to analysis, research, documentation, and tooling outside the FEX tree
+(see `results/2026-07-23-01-build-survey.md` §3).
+
 ## Method (incremental gates)
 
 1. **Build survey** — configure/build FEXCore + unit tests on macOS unmodified; catalogue every
