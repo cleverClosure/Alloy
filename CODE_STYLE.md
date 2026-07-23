@@ -1,6 +1,6 @@
 # Alloy Code Style
 
-**Author:** Tim Isaev
+**Author:** Timur Isaev
 **Enforced by:** `tools/lint.sh` (run on every commit via the versioned
 `tools/hooks/pre-commit`; installed by `tools/bootstrap.sh`).
 
@@ -51,7 +51,7 @@ Linters apply to **first-party code only**. Excluded always:
   formatting, `tools/lint.sh --fix && git add -u` and commit again.
 - `git commit --no-verify` is for genuine emergencies only; fix and amend
   immediately after.
-- New files carry an `Author: Tim Isaev` header where the format allows
+- New files carry an `Author: Timur Isaev` header where the format allows
   comments.
 - The lint script is CI-callable as-is (exit code discipline); wire it
   into CI unchanged when remote CI exists.

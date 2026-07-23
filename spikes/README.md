@@ -19,4 +19,8 @@ spikes/<ID>/
   work/         # scratch: builds, patches-in-progress, logs — NOT committed
 ```
 
+Evidence index: [Phase-0 status](PHASE-0-STATUS.md)
+
 Active: [CPU-001](CPU-001/SPIKE.md) · [WINE-001](WINE-001/SPIKE.md)
+
+Closed: [ROLLBACK-001](ROLLBACK-001/SPIKE.md)

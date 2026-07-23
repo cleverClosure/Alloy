@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Alloy repository linter
-# Author: Tim Isaev
+# Author: Timur Isaev
 #
 # Checks (default) or fixes (--fix) first-party sources against the repo
 # style configs (.editorconfig, .clang-format, .markdownlint-cli2.yaml,
@@ -115,8 +115,8 @@ SWIFT_FILES=$(files '\.swift$')
 if [[ -n "$SWIFT_FILES" ]]; then
   if need swiftlint; then
     note "swiftlint ($MODE)"
-    [[ $MODE == fix ]] && swiftlint --fix --quiet >/dev/null
-    swiftlint lint --strict --quiet || problem "swift findings"
+    [[ $MODE == fix ]] && swiftlint --fix --no-cache --quiet >/dev/null
+    swiftlint lint --strict --no-cache --quiet || problem "swift findings"
   fi
 fi
 
