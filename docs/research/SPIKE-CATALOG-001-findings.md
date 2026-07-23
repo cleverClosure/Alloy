@@ -92,7 +92,7 @@ Nuance from CrossOver 26 (Feb 2026): it broke nProtect GameGuard (Helldivers 2, 
 - **Reference-wiki staleness cuts both ways:** PCGamingWiki still tags Manor Lords as UE 4.27 though the UE5 migration completed Aug 2024 (v0.7.987), and claimed a DOOM: The Dark Ages Denuvo removal that Steam's live API contradicts (Denuvo present today). Live-API verification beats wiki citation for anything decision-bearing.
 - **Denuvo-today corrections:** Black Myth: Wukong, Monster Hunter Wilds, and Dragon's Dogma 2 all carry *active* Denuvo as of July 2026 (live-verified), contrary to community assumptions of quiet removal. Denuvo's ~5-activations/day machine limit is a direct lab-automation constraint (fleet activation budgeting) and scores as protection burden 2 in §8.
 - **"Finished" is title-specific, not vintage-specific:** Dragon's Dogma 2 (paid expansion Oct 2026 + monetization overhaul), Starfield (PS5 + paid DLC Apr 2026), Monster Hunter Wilds (title updates through 2026, expansion 2027), and S.T.A.L.K.E.R. 2 (engine upgrade + expansion summer 2026) are all still moving targets with correspondingly higher recertification burden.
-- **KCD2 may have a native ARM64 Windows build** (PCGamingWiki `windows arm app = true`; storefront unidentified) [U]. If real, it could run under ARM64EC Wine with little or no x86 translation — a uniquely valuable CPU-path test case. Follow up in Phase 0.
+- **KCD2 ships a native Windows-on-ARM build — confirmed** (PCGamingWiki `windows arm app = true`, re-verified via the wiki API; the field note says ARM support is *not* in the Microsoft Store version, leaving Steam/GOG as the likely carriers — exact SKU still [U]). This is a Windows ARM64 binary, not a macOS app; its value is architectural: under ARM64-native Wine it needs **no x86 CPU translation at all**, isolating the Wine + D3D12→Metal layers from FEX variables. Earmarked as a SPIKE-WINE-001 full-stack test case; confirm the carrying SKU in Phase 0.
 - **PSN-account requirements are title-specific and softened through 2025:** God of War Ragnarök mandatory→optional (Jan 2025); Horizon Forbidden West always optional; Ghost of Tsushima requires PSN only for the separate Legends co-op, never the SP campaign.
 
 ### 7.1 Per-title matrix
@@ -215,7 +215,7 @@ Composition-constraint check for the §9 portfolio: D3D11 core = 8 ✓ (≥6); M
 **Metal12 vertical-slice lab targets (not MVP-certified; graduate with Metal12 slices A→C):**
 10. **Manor Lords** ★ — lightest clean D3D12 title in the pool; slice-A bring-up target; early-access cadence exercises recertification machinery; GOG-dual.
 11. **Ghost of Tsushima DC** — clean Sony D3D12; 16 GB-viable per prior art; PSN only for the separate co-op mode; slice B.
-12. **Kingdom Come: Deliverance II** — demand #2 overall; CryEngine V; GOG-dual; possible ARM64 Windows build [U]; memory-gated to 32 GB hosts; slice C.
+12. **Kingdom Come: Deliverance II** — demand #2 overall; CryEngine V; GOG-dual; **confirmed Windows-on-ARM build** (carrying SKU TBD — SPIKE-WINE-001 test case); memory-gated to 32 GB hosts; slice C.
 
 ### 9.2 Backups (ordered, with the slot they'd fill)
 
@@ -245,7 +245,7 @@ All 13 titles are on Steam. Seven are also on GOG (Witcher 3, GoW 2018, YLAD, DO
 
 | # | Item | Where it lands |
 | --- | --- | --- |
-| 1 | KCD2 `windows arm app` PCGW field verification | pending (research agent) — pure curiosity value for the CPU path |
+| 1 | ~~KCD2 `windows arm app` verification~~ — **resolved**: `true`, with ARM support explicitly absent from the MS Store SKU; residual = confirm which storefront build carries ARM64 | Phase 0, with SPIKE-WINE-001 |
 | 2 | AoE IV EAC singleplayer-scope | Phase 0 investigation; gates a high-demand backup |
 | 3 | Palworld Mac App Store human check | optional; nothing depends on it |
 | 4 | FH5/FFXVI "Unplayable" prior-art flags | re-test under MGCR stack when it exists — CrossOver results don't transfer 1:1 |

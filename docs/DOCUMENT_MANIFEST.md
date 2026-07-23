@@ -3,7 +3,7 @@
 **Package version:** 1.3
 **Generated:** 23 July 2026
 **Files:** 45 plus this manifest and the JSON manifest
-**Markdown volume:** 89,125 words across 13,681 lines
+**Markdown volume:** 89,190 words across 13,681 lines
 
 The full SHA-256 values are in [`PACKAGE_MANIFEST.json`](PACKAGE_MANIFEST.json).
 
@@ -49,7 +49,7 @@ The full SHA-256 values are in [`PACKAGE_MANIFEST.json`](PACKAGE_MANIFEST.json).
 | docs/18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md | 14446 | 344 | 1792 | dfb527edf7c2cd9a… |
 | docs/19_MVP_EPICS_AND_BACKLOG.md | 13172 | 517 | 1701 | 83e65d9c03cbf555… |
 | examples/example-game-profile.yaml | 2873 | — | — | 2f5e7d1d196bd993… |
-| research/SPIKE-CATALOG-001-findings.md | 27215 | 253 | 4696 | a9527e30f9a6c166… |
+| research/SPIKE-CATALOG-001-findings.md | 27667 | 253 | 4761 | 6b067ec24b60576c… |
 | research/SPIKE-LEGAL-001-preliminary-findings.md | 14967 | 121 | 2104 | ce99d58a7aca34c7… |
 | research/SPIKE-STORE-001-findings.md | 9901 | 74 | 1395 | 2f5496927064ad4c… |
 | schemas/game-profile.schema.json | 10296 | — | — | 7a3d343c6e876b7b… |

@@ -3,7 +3,7 @@
   "version": "1.3",
   "generatedAt": "2026-07-23",
   "fileCount": 45,
-  "markdownWords": 89125,
+  "markdownWords": 89190,
   "markdownLines": 13681,
   "files": [
     {
@@ -280,10 +280,10 @@
     },
     {
       "path": "research/SPIKE-CATALOG-001-findings.md",
-      "bytes": 27215,
-      "sha256": "a9527e30f9a6c1660da68fe958d3e0ba8710dc5cbf20ae0468b27be2a79e46aa",
+      "bytes": 27667,
+      "sha256": "6b067ec24b60576cd79367d4dcd5fbf0dcf1b9f5164c700e911e0ef39d19e9ec",
       "lines": 253,
-      "words": 4696
+      "words": 4761
     },
     {
       "path": "research/SPIKE-LEGAL-001-preliminary-findings.md",
