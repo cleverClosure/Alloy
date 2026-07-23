@@ -61,15 +61,25 @@ unknown-executable default work; rebase against another upstream revision succee
   freestanding (ntdll-only imports), 64K-aligned, DbgPrint logging, noreturn trio.
   Full kill-chain + evidence: `results/2026-07-23-06-gate3-wine-side-proven.md`.
   Remaining for full gate 3: FEX Darwin port + swap-in (founder-only, = CPU-001 gate 4).
-  Still deferred: `env.c`/LDT `limit_2g` sites; `wineboot --init` service-spin follow-up.
+  Still deferred: `env.c`/LDT `limit_2g` sites.
+- **`wineboot`/explorer CPU-spin follow-up: RESOLVED 24 July 2026.** The spin was a
+  SIGSEGV storm: four modules (win32u message pump, kernelbase/kernel32) still read
+  `KUSER_SHARED_DATA` at the architectural `0x7ffe0000`, which is below the arm64-macOS
+  4 GB VA floor (empirically hard: exec SIGKILLs binaries with pagezero < 4 GB; the floor
+  is the task's min VM address, not a removable mapping). Repointed to the relocated USD;
+  cold boot 4–5 min/never → **12 s**, zero faults, no lingering processes. The VA floor is
+  a **standing FEX design input** (games inline `0x7ffe0000` reads; translate-time literal
+  remap + trap-and-emulate fallback). Full analysis:
+  `results/2026-07-24-07-wineboot-spin-va-floor-usd.md`.
 - Follow-ups (not gate-2 blockers): full graphical boot needs a FreeType + `winemac.drv`
   build (font/GUI backend); service-subsystem autostart faults; `get_core_id_regs_arm64`
   stub for guest CPU features.
 
 Wine patches live on local branch `alloy/spike-wine-001` in `third_party/src/wine`
 (`0e693a0` loader flags + KUSD + teb_block; `efd41b9` TEB-from-TSD; `8870df9` EC TEB
-dispatchers + errno logging; plus the gate-3 close: `mprotect_exec` RWX→RW fallback,
-dispatch-trio redirection, region-dump + low-pc-fault diagnostics).
+dispatchers + errno logging; `24bad68` gate-3 close: `mprotect_exec` RWX→RW fallback,
+dispatch-trio redirection, region-dump + low-pc-fault diagnostics; `b93a982` USD
+readers repointed above the VA floor + unresolved-fault storm detector).
 
 ## Results log
 
