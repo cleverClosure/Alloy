@@ -1,5 +1,16 @@
 # Documentation Changelog
 
+## 1.3 — 23 July 2026
+
+Phase 0 target decisions: first storefront and MVP game portfolio.
+
+- added `research/SPIKE-STORE-001-findings.md`: Steam/GOG/Epic evaluated from primary sources — Steam SSA §4.C automation and §2.G protocol-emulation clauses quoted (version 20 Apr 2026); Steam Windows client 64-bit since Dec 2025; GOG Galaxy API verified to expose no build identity (installer-metadata fingerprinting instead); Epic store EULA + account ToS both analyzed;
+- added `research/SPIKE-CATALOG-001-findings.md`: 44 titles fact-checked with live sources — native-port exclusion list, demand ranking, anti-cheat ceiling (EAC/BattlEye ≈ 60% of protected titles, no macOS opt-in), 42-candidate engineering matrix, weighted scoring, and the approved portfolio;
+- decisions D-019 (first storefront: Steam; GOG at MVP+1; Epic deferred) and D-020 (13-title portfolio: Sir Brante smoke test; certified core Sekiro, The Witcher 3, God of War 2018, NieR: Automata, Yakuza: Like a Dragon, Persona 5 Royal, Dark Souls III, DOOM Eternal, Red Dead Redemption 2; Metal12 lab targets Manor Lords, Ghost of Tsushima DC, Kingdom Come: Deliverance II); D-013 resolved to Accepted;
+- doc 16: SPIKE-STORE-001 and SPIKE-CATALOG-001 closed with findings pointers; decision schedule updated; doc 14 pending-decisions list updated;
+- cross-cutting findings recorded for later spikes: AVX2 boot requirements (FF VII Rebirth, FF XVI) scope the FEX conformance corpus; Elden Ring EAC applies even offline; live Denuvo verification corrected several stale community assumptions;
+- manifests regenerated.
+
 ## 1.2 — 23 July 2026
 
 Package-wide consolidation: one source of truth per fact, single-responsibility documents, conflict and redundancy removal.

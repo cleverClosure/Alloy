@@ -1,15 +1,15 @@
 # MGCR Documentation Package Manifest
 
-**Package version:** 1.2
+**Package version:** 1.3
 **Generated:** 23 July 2026
-**Files:** 43 plus this manifest and the JSON manifest
-**Markdown volume:** 82,436 words across 13,337 lines
+**Files:** 45 plus this manifest and the JSON manifest
+**Markdown volume:** 89,125 words across 13,681 lines
 
 The full SHA-256 values are in [`PACKAGE_MANIFEST.json`](PACKAGE_MANIFEST.json).
 
 | Path | Bytes | Lines | Words | SHA-256 prefix |
 | --- | --- | --- | --- | --- |
-| CHANGELOG.md | 4911 | 53 | 624 | 6525bdbff4e21021… |
+| CHANGELOG.md | 6499 | 64 | 843 | 292c85cfbfea4782… |
 | CONTRIBUTING.md | 3931 | 108 | 541 | 84daab7aebbc61e4… |
 | README.md | 4464 | 97 | 461 | 9ed2ceaf2e06e04e… |
 | adr/ADR-0001-runtime-generation-unit-of-support.md | 2818 | 51 | 374 | 9f6f3f47fb05f6b7… |
@@ -42,21 +42,22 @@ The full SHA-256 values are in [`PACKAGE_MANIFEST.json`](PACKAGE_MANIFEST.json).
 | docs/11_ROADMAP_TEAM_AND_DELIVERY.md | 19133 | 640 | 2643 | 229f82d66695412a… |
 | docs/12_REQUIREMENTS_TRACEABILITY_MATRIX.md | 17061 | 199 | 3364 | 127da601b912645a… |
 | docs/13_RISK_REGISTER.md | 17199 | 131 | 2442 | 136e08e2b71e60a6… |
-| docs/14_DECISION_LOG.md | 8067 | 76 | 1042 | 21a4306b1eafacd8… |
+| docs/14_DECISION_LOG.md | 9733 | 78 | 1269 | 935211ec8be22733… |
 | docs/15_GLOSSARY.md | 10862 | 208 | 1371 | f37d22124f5629bb… |
-| docs/16_OPEN_QUESTIONS_AND_TECHNICAL_SPIKES.md | 13789 | 418 | 1810 | 813be7b09f645b1c… |
+| docs/16_OPEN_QUESTIONS_AND_TECHNICAL_SPIKES.md | 14966 | 422 | 1962 | c27566ace10838ec… |
 | docs/17_PUBLISHER_AND_ANTI_CHEAT_INTEGRATION.md | 13644 | 471 | 1792 | 1d11b8bb92a88d88… |
 | docs/18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md | 14446 | 344 | 1792 | dfb527edf7c2cd9a… |
 | docs/19_MVP_EPICS_AND_BACKLOG.md | 13172 | 517 | 1701 | 83e65d9c03cbf555… |
 | examples/example-game-profile.yaml | 2873 | — | — | 2f5e7d1d196bd993… |
+| research/SPIKE-CATALOG-001-findings.md | 27215 | 253 | 4696 | a9527e30f9a6c166… |
 | research/SPIKE-LEGAL-001-preliminary-findings.md | 14967 | 121 | 2104 | ce99d58a7aca34c7… |
+| research/SPIKE-STORE-001-findings.md | 9901 | 74 | 1395 | 2f5496927064ad4c… |
 | schemas/game-profile.schema.json | 10296 | — | — | 7a3d343c6e876b7b… |
 | schemas/runtime-manifest.schema.json | 2583 | — | — | 75d6291ffff892c8… |
 
-## Validation performed (revision 1.2)
+## Validation performed (revision 1.3)
 
-- both JSON Schema files parse and pass Draft 2020-12 schema checks;
-- the example YAML profile parses and validates against the updated game-profile schema;
-- removed legacy provider identifiers (`d3d9on11-dxmt`, `native-opengl`, `wined3d`) appear only in ADR-0011 context and the spec's removal note;
-- all Markdown relative links resolve;
+- both JSON Schema files parse and pass Draft 2020-12 schema checks (unchanged since 1.2);
+- the example YAML profile validates against the game-profile schema (unchanged since 1.2);
+- all Markdown relative links resolve, including the new research findings documents;
 - all referenced companion files are present.

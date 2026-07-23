@@ -202,6 +202,8 @@ fallback
 
 ### SPIKE-CATALOG-001 — MVP game portfolio
 
+**Status:** Closed (decision D-020, 23 July 2026). [Findings](../research/SPIKE-CATALOG-001-findings.md): 13-title portfolio approved — Sir Brante as pipeline smoke test; a 9-title certified core (8 titles on the D3D11 path plus DOOM Eternal and Red Dead Redemption 2 exercising MoltenVK); Manor Lords, Ghost of Tsushima DC, and Kingdom Come: Deliverance II as Metal12 vertical-slice lab targets; ordered backups and per-title revisit triggers recorded. Scenario feasibility validation remains with SPIKE-GFX-001 and SPIKE-LAB-001.
+
 **Question:** Which 8–12 games maximize user value and technical learning while avoiding hard blockers?
 
 Hard filters (ADR-0011 modern baseline) applied before scoring:
@@ -228,6 +230,8 @@ Score candidates on:
 **Deliverable:** ranked portfolio with backup titles and scenario plan.
 
 ### SPIKE-STORE-001 — First storefront
+
+**Status:** Closed (decision D-019, 23 July 2026). [Findings](../research/SPIKE-STORE-001-findings.md): Steam first — real Windows Steam client runs inside the runtime (no protocol emulation per SSA §2.G), install discovery via `libraryfolders.vdf`/ACF, build identity via `buildid` + depot manifests on entitled lab accounts; GOG pulled forward to MVP+1 (7 of 13 portfolio titles, 5 certifiable DRM-free builds); Epic deferred indefinitely. SSA §4.C lab-automation mitigations added to the SPIKE-LEGAL-001 counsel checklist.
 
 Evaluate:
 
@@ -398,8 +402,8 @@ The output is a design-partner discussion package, not a bypass prototype.
 | --- | --- | --- |
 | Production CPU path | CPU-001, WINE-001 | End Phase 0 |
 | MVP legal distribution | LEGAL-001 | Before external binary (partially closed — preliminary findings drafted; counsel checklist pending) |
-| First storefront | STORE-001 | Day 45–60 |
-| MVP game catalog | CATALOG-001, GFX-001, LAB-001 | End Phase 0 |
+| First storefront | STORE-001 | **Decided** 23 Jul 2026 (D-019: Steam; GOG at MVP+1) |
+| MVP game catalog | CATALOG-001, GFX-001, LAB-001 | Portfolio selected 23 Jul 2026 (D-020); GFX-001/LAB-001 validation by end Phase 0 |
 | Runtime architecture go | ROLLBACK-001, DIAG-001 | End Phase 0/early Phase 1 |
 | Metal12 architecture | M12-001/002/003/004 | Sequential vertical-slice gates |
 | Telemetry default | PRIV-001 | Before external preview |

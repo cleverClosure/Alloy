@@ -44,12 +44,14 @@ An Accepted decision can still have validation gates.
 | D-010 | Developer ID distribution, no kernel extension/root daemon | Accepted | Distribute outside Mac App Store with signing/notarization and user-space services. | JIT/game directory requirements without unnecessary privilege. | [ADR-0010](../adr/ADR-0010-user-space-developer-id-distribution.md) | Review if Apple policy changes. |
 | D-011 | Signed declarative profiles, no arbitrary stable scripts | Accepted | Profiles express bounded data and are statically validated. | Security, determinism, explainability. | [05_RUNTIME_PROFILE_AND_MANIFEST_SPEC.md](05_RUNTIME_PROFILE_AND_MANIFEST_SPEC.md) | Review extensibility when new service classes appear. |
 | D-012 | Certification is exact, expiring evidence | Accepted | Title name alone is never certified; changes invalidate or stale evidence. | Honest support and continuous operations. | Certification specification | Review evidence equivalence and expiry policy. |
-| D-013 | One initial storefront and narrow catalog | Proposed | Start with one adapter and 8–12 games. | Concentrate reliability and reduce integration variance. | PRD/Roadmap | Approve after catalog/storefront discovery. |
+| D-013 | One initial storefront and narrow catalog | Accepted | Start with one adapter and 8–12 games. | Concentrate reliability and reduce integration variance. | PRD/Roadmap | Resolved concretely by D-019/D-020 (23 July 2026); revisit = second-storefront timing per D-019. |
 | D-014 | Anti-cheat through vendor enablement only | Accepted | No covert kernel/protection bypass; Competitive Certified requires explicit scope. | Legal, trust, and security. | [09_SECURITY_PRIVACY_THREAT_MODEL.md](09_SECURITY_PRIVACY_THREAT_MODEL.md) · [07_COMPATIBILITY_CERTIFICATION_SPEC.md](07_COMPATIBILITY_CERTIFICATION_SPEC.md) | Review partner-specific designs. |
 | D-015 | Publisher portal is GA-track, not MVP critical path | Accepted | Build consumer/runtime/lab foundation first. | Avoid premature B2B surface before evidence system works. | Roadmap | Advance for a strategic design partner only. |
 | D-016 | Modern baseline only | Accepted | x64-only guest games; D3D10/11/12/Vulkan renderers; rolling macOS window (current + previous); 16 GB certified memory floor; storefront-managed installs; legacy APIs and 32-bit game executables permanently excluded. | Depth over breadth at solo scale; shrinks permanent conformance, lab, legal, and support surface. | [ADR-0011](../adr/ADR-0011-modern-baseline-only.md) | Decisive commercial evidence for a legacy segment or team-scale change. |
 | D-017 | Metal12 provenance protocol | Accepted | Metal12 stays proprietary; vkd3d, vkd3d-proton, and DXMT `src/d3d12/` are excluded sources; spec-only approved inputs; provenance log; AI-assistant rules. | Preserve the technology moat while legally safe at team size one. | [ADR-0012](../adr/ADR-0012-metal12-provenance-and-clean-room.md) | Supersede with formal two-team clean room when headcount permits; revisit on open-core pivot or contamination event. |
 | D-018 | Continuous differential certification on physical fleets | Accepted | Physical Mac and Windows reference fleets with continuous differential runs are product architecture, not optional QA tooling; fleet scale follows catalog scale. | Certification must remain true over time; the Windows oracle enables attribution; the evidence graph is a moat layer. | [ADR-0013](../adr/ADR-0013-continuous-differential-certification.md) | Per-title lab cost makes the catalog plan uneconomic (R-026/R-027), or a cloud-Mac tier proves equivalent for defined evidence classes. |
+| D-019 | First storefront: Steam; GOG at MVP+1; Epic deferred | Accepted | Integrate Steam first (real Windows client in-runtime, ACF/depot build identity, no Steam-protocol emulation per SSA §2.G); pull GOG forward to MVP+1; defer Epic indefinitely. | Users and the addressable modern catalog concentrate on Steam; GOG's DRM-free installer model is the cleanest lab/CAS fingerprinting fit; Epic is weakest on every integration axis. | [SPIKE-STORE-001 findings](../research/SPIKE-STORE-001-findings.md) | Epic partner interest or must-have exclusive; Steam ToS/enforcement change; counsel review of the §4.C lab-automation mitigations. |
+| D-020 | MVP game portfolio: 13 titles | Accepted | Smoke test: Sir Brante. Certified core: Sekiro, The Witcher 3, God of War (2018), NieR: Automata, Yakuza: Like a Dragon (GOG build), Persona 5 Royal, Dark Souls III, DOOM Eternal, Red Dead Redemption 2. Metal12 lab targets: Manor Lords, Ghost of Tsushima DC, Kingdom Come: Deliverance II. Ordered backups recorded. | Satisfies the D3D11-first MVP with 12 engine families, Vulkan coverage (DOOM Eternal, RDR2), a benchmark anchor (RDR2), and floor-class coverage; demand-ranked with live-verified per-title protection/memory facts. | [SPIKE-CATALOG-001 findings](../research/SPIKE-CATALOG-001-findings.md) | Per title: native macOS port ships, protection/anti-cheat change, or SPIKE-GFX-001/SPIKE-LAB-001 validation failure promotes the named backup. |
 
 ## 3. Governance
 
@@ -65,12 +67,12 @@ An Accepted decision can still have validation gates.
 The highest-priority decisions still requiring evidence are:
 
 1. exact production CPU provider viability;
-2. first storefront;
-3. MVP game catalog;
-4. legally redistributable D3D12 bootstrap;
-5. Metal12 GA feature subset;
-6. minimum macOS version at first external release;
-7. certification expiry/provisional launch policy;
-8. consumer entitlement and offline policy;
-9. diagnostic telemetry defaults by region;
-10. scope of first publisher/anti-cheat design partner.
+2. formal leadership acceptance of the lab/reference-only D3D12 bootstrap scope (Phase 0 exit criterion; the redistribution question itself is settled by SPIKE-LEGAL-001);
+3. Metal12 GA feature subset;
+4. minimum macOS version at first external release;
+5. certification expiry/provisional launch policy;
+6. consumer entitlement and offline policy;
+7. diagnostic telemetry defaults by region;
+8. scope of first publisher/anti-cheat design partner.
+
+First storefront and MVP game catalog were decided 23 July 2026 (D-019, D-020).
