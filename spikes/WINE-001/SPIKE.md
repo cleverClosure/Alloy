@@ -28,8 +28,24 @@ mixed-architecture (ARM64 native + ARM64EC/WoW64 x64) provider integration on ma
 Hook small/testable; bounded patch plan; no global environment race; child-process identity and
 unknown-executable default work; rebase against another upstream revision succeeds.
 
+## Gate progress
+
+- **Gate 1 (toolchain proof): closed 23 July 2026** — full build on macOS/ARM64, zero source
+  changes (`results/2026-07-23-02-build-complete.md`).
+- **Gate 2 (boot proof): in progress, major blockers cleared 23 July 2026** — loader SIGKILL
+  root-caused to a macOS 26 exec-policy rule (sub-4 GB `__PAGEZERO` ⇒ denial) and fixed;
+  discovered the hard 4 GB VA floor for native arm64 processes; `KUSER_SHARED_DATA` relocated
+  and TEB-block low-placement lifted; `wineboot` now creates the prefix and runs multiple
+  processes. Remaining: thread-stack guard faults (16 KB host page vs 4 KB Windows page
+  suspicion). Full analysis: `results/2026-07-23-03-macos26-exec-policy-and-va-floor.md`.
+  Design consequence for the x64 guest path flagged for ADR at CPU-integration time.
+
+First Wine patches live on local branch `alloy/spike-wine-001` in `third_party/src/wine`
+(configure.ac loader flags, KUSD relocation, teb_block limit).
+
 ## Results log
 
 Dated notes in `results/`, newest last, pinned to `third_party/deps.lock` revisions.
 Compliance note: the public fork repo (LGPL source + diffs per release, doc 18 model) is created
-when the first non-throwaway patch lands — spike scratch patches live in `work/`, never shipped.
+when the first non-throwaway patch lands — spike scratch patches live in `work/` or on local
+branches in the pinned checkouts, never shipped.
