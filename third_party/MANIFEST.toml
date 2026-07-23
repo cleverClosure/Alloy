@@ -1,0 +1,36 @@
+# MGCR pinned upstream dependencies
+# Author: Tim Isaev
+#
+# Committed: this manifest + deps.lock (exact commits/versions, written by tools/fetch-deps.sh).
+# Not committed: third_party/src/* checkouts, downloaded toolchains.
+# Policy (docs 11 §17): every external dependency carries owner, pinned revision, license,
+# redistribution class (per docs/research/SPIKE-LEGAL-001-preliminary-findings.md §2),
+# upstream relationship, and replacement plan. Nothing stays "latest main" in stable generations.
+
+[fex]
+role = "Production CPU translation candidate (x64 -> ARM64, ARM64EC integration) — SPIKE-CPU-001"
+upstream = "https://github.com/FEX-Emu/FEX.git"
+license = "MIT"
+distribution_class = "BUNDLE"
+notes = "macOS host is unsupported upstream; the spike ports minimum host abstractions. Upstream-contribution strategy per ADR-0005 before any public fork."
+
+[wine]
+role = "Windows API layer (thin fork; ARM64 native + ARM64EC/WoW64) — SPIKE-WINE-001"
+upstream = "https://gitlab.winehq.org/wine/wine.git"
+license = "LGPL-2.1-or-later"
+distribution_class = "BUNDLE (public fork + diffs per release; dynamic boundary)"
+notes = "Compliance model per docs/docs/18 (CrossOver pattern). Fork repo is created when the first patch lands; until then this is a read/build checkout."
+
+[llvm-mingw]
+role = "PE cross-toolchain for Wine (aarch64 + arm64ec targets; Apple mingw-w64 brew package is x86-only)"
+upstream = "https://github.com/mstorsjo/llvm-mingw"
+license = "Apache-2.0 WITH LLVM-exception (toolchain); runtime libs various permissive"
+distribution_class = "Build tooling only (not shipped)"
+notes = "Fetched as a release binary into tools/toolchains/; exact release recorded in deps.lock."
+
+[dxmt]
+role = "D3D10/11 -> Metal provider (fork) — SPIKE-GFX-001; NOT FETCHED YET"
+upstream = "https://github.com/3Shain/dxmt.git"
+license = "LGPL-2.1-or-later (> v0.80; MIT at and before v0.80)"
+distribution_class = "BUNDLE (public fork + source per release; dynamic boundary)"
+notes = "DEFERRED until D3D11 provider work starts. On fetch, apply the ADR-0012 exclusion guard: delete or quarantine src/d3d12/ from the working checkout before any human or AI reads the tree; that subtree is a Metal12 clean-room excluded source."

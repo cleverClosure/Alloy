@@ -1,2 +1,8 @@
 .DS_Store
 .claude/settings.local.json
+
+# build/engineering artifacts
+third_party/src/
+tools/toolchains/
+spikes/*/work/
+build/

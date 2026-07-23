@@ -1,0 +1,8 @@
+# MGCR provenance log — append-only (ADR-0012)
+# Author: Tim Isaev
+# Every entry: date | actor | event. Metal12/D3D12-translation work additionally records
+# inputs consulted per session. Excluded sources (never read, never in AI context):
+# vkd3d, vkd3d-proton, DXMT src/d3d12/.
+
+2026-07-23 | Tim Isaev | Log initialized with repo engineering skeleton. No excluded source has been read or pasted into any AI-assistant context to date. Approved-input baseline for future Metal12 work: DirectX-Specs (CC-BY-4.0), DirectX-Headers (MIT), DXC (NCSA), Apple Metal documentation, own experiments.
+2026-07-23 | Tim Isaev | third_party fetch policy set: DXMT checkout deferred; on fetch, src/d3d12/ is quarantined before any human or AI reads the tree (MANIFEST.toml note).
