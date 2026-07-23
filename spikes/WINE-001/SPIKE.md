@@ -32,16 +32,27 @@ unknown-executable default work; rebase against another upstream revision succee
 
 - **Gate 1 (toolchain proof): closed 23 July 2026** — full build on macOS/ARM64, zero source
   changes (`results/2026-07-23-02-build-complete.md`).
-- **Gate 2 (boot proof): in progress, major blockers cleared 23 July 2026** — loader SIGKILL
-  root-caused to a macOS 26 exec-policy rule (sub-4 GB `__PAGEZERO` ⇒ denial) and fixed;
-  discovered the hard 4 GB VA floor for native arm64 processes; `KUSER_SHARED_DATA` relocated
-  and TEB-block low-placement lifted; `wineboot` now creates the prefix and runs multiple
-  processes. Remaining: thread-stack guard faults (16 KB host page vs 4 KB Windows page
-  suspicion). Full analysis: `results/2026-07-23-03-macos26-exec-policy-and-va-floor.md`.
-  Design consequence for the x64 guest path flagged for ADR at CPU-integration time.
+- **Gate 2 (boot proof): CLOSED 23 July 2026.** Native ARM64 PE binaries execute on macOS:
+  `wineboot -u` builds a complete prefix (48k-line registry, drive_c, shortcuts), and
+  `reg.exe`/`cmd.exe` run to completion with correct output and exit codes
+  (`reg.exe`→`Windows 10 Pro` exit 0; `cmd /c "... & exit 42"`→exit 42). Kill-chain:
+  loader SIGKILL (sub-4 GB `__PAGEZERO` denial) → shared-user-data map failure (KUSD at
+  0x7ffe0000, below the hard 4 GB arm64 VA floor) → TEB-block below-2 GB placement → PE
+  crash reading the TEB via **x18**, which Darwin zeroes on every kernel entry. Fixes:
+  drop the loader `-pagezero_size` on aarch64; relocate `KUSER_SHARED_DATA` to
+  0x7ffe00000000; lift the `limit_2g` TEB constraint; **source the TEB from pthread TSD
+  slot 6 (`[tpidrro_el0]+0x30`) instead of x18** across `NtCurrentTeb()` (both GNUC and
+  the load-bearing MSVC `-target aarch64-windows` branch) and the hand-written arm64
+  dispatchers. Analyses: `results/2026-07-23-03-macos26-exec-policy-and-va-floor.md`,
+  `results/2026-07-23-04-teb-in-tsd-and-first-pe-execution.md`.
+- **Gate 3 (ARM64EC/WoW64 x64 layer): next.** Also carries the remaining EC-path x18 ref
+  and the `env.c`/LDT `limit_2g` sites.
+- Follow-ups (not gate-2 blockers): full graphical boot needs a FreeType + `winemac.drv`
+  build (font/GUI backend); service-subsystem autostart faults; `get_core_id_regs_arm64`
+  stub for guest CPU features.
 
-First Wine patches live on local branch `alloy/spike-wine-001` in `third_party/src/wine`
-(configure.ac loader flags, KUSD relocation, teb_block limit).
+Wine patches live on local branch `alloy/spike-wine-001` in `third_party/src/wine`
+(`0e693a0` loader flags + KUSD + teb_block; `efd41b9` TEB-from-TSD).
 
 ## Results log
 
