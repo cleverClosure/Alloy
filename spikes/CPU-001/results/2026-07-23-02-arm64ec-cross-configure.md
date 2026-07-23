@@ -33,7 +33,7 @@ therefore splits:
 
 Working invocation (attempt 6, exit 0):
 
-```
+```sh
 PATH="<venv-with-setuptools>/bin:<llvm-mingw>/bin:$PATH" \
 cmake -S third_party/src/fex -B <build> -G Ninja -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_TOOLCHAIN_FILE=Data/CMake/toolchain_mingw.cmake \

@@ -1,0 +1,21 @@
+# Alloy first-party C/C++/Obj-C style (spikes, future runtime/Metal12 code).
+# Author: Tim Isaev
+# Enforced by tools/lint.sh with the clang-format pinned in tools/toolchains
+# (llvm-mingw), so the formatter version rides the toolchain pin.
+# Wine patches in third_party/src/wine follow Wine's upstream style instead —
+# never this file (third_party/.clang-format disables formatting there).
+BasedOnStyle: LLVM
+IndentWidth: 4
+ColumnLimit: 100
+BreakBeforeBraces: Allman
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+PointerAlignment: Right
+AlignAfterOpenBracket: Align
+SpaceBeforeParens: ControlStatements
+IndentCaseLabels: false
+AlignTrailingComments: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+# Windows headers are order-sensitive (windows.h before winternl.h etc.)
+SortIncludes: false

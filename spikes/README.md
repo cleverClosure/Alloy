@@ -12,7 +12,7 @@ Acceptance rules are doc 16 §8 — the binding ones here:
 
 Layout per spike:
 
-```
+```text
 spikes/<ID>/
   SPIKE.md      # hypothesis, method, pass/fail — committed
   results/      # dated findings notes + measurements — committed

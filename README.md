@@ -24,9 +24,16 @@ Product and architecture documentation lives in [`docs/`](docs/README.md) — st
 ## Getting started
 
 ```sh
-tools/bootstrap.sh     # verify/install host build dependencies (Homebrew)
+tools/bootstrap.sh     # verify/install host build deps + lint stack, install git hooks
 tools/fetch-deps.sh    # clone pinned upstreams into third_party/src/ and write deps.lock
 ```
+
+## Code style
+
+First-party code is linted on every commit (`tools/hooks/pre-commit` →
+`tools/lint.sh`; `tools/lint.sh --fix` repairs formatting). Rules, scope
+boundaries (third-party trees keep their upstream styles), and the workflow
+are in [`CODE_STYLE.md`](CODE_STYLE.md).
 
 ## Provenance rules (binding)
 

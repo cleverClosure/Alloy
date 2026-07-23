@@ -1,0 +1,5 @@
+# Guard file — Author: Tim Isaev
+# Upstream checkouts under third_party/ keep their own styles (Wine follows
+# Wine style, FEX is founder-only per its in-tree policy).  This file stops
+# editors and clang-format invocations from applying the repo root style here.
+DisableFormat: true

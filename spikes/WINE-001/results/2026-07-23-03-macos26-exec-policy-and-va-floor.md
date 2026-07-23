@@ -26,7 +26,7 @@ written. `wineserver` from the same build runs fine.
 
 Unified log (the decisive evidence):
 
-```
+```text
 kernel (AppleSystemPolicy) ASP: Sleep interrupted: ref 6532, signal 0, pid: 3969
 kernel (AppleSystemPolicy) ASP: Security policy would not allow process: 3969,
     .../spikes/WINE-001/work/build-1/loader/wine

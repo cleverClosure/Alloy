@@ -10,7 +10,7 @@
 Native ARM64 Windows PE executables run on macOS under the patched Wine, with
 correct output and exit codes (reproduced from a quiesced state):
 
-```
+```console
 $ WINEBOOTSTRAPMODE=1 wine reg.exe query \
     "HKLM\Software\Microsoft\Windows NT\CurrentVersion" /v ProductName
 HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion

@@ -202,6 +202,7 @@ Composition-constraint check for the §9 portfolio: D3D11 core = 8 ✓ (≥6); M
 0. **The Life and Suffering of Sir Brante** ★ — Unity/D3D11/1 GB/GOG-DRM-free; the end-to-end pipeline validation title: profile → install → policy → launch → save → evidence, at near-zero performance risk.
 
 **MVP certified core (D3D11 + MoltenVK track, ships with MVP):**
+
 1. **Sekiro** — flagship action; FromSoft engine; clean everything.
 2. **The Witcher 3** — flagship RPG; the D3D11↔D3D12 differential instrument; GOG-dual.
 3. **God of War (2018)** — flagship Sony; D3D11; GOG-dual; PSN-free.

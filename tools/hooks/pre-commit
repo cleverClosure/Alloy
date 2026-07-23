@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Alloy pre-commit hook — Author: Tim Isaev
+# Runs the repo linter before every commit.  Installed via
+#   git config core.hooksPath tools/hooks
+# (done by tools/bootstrap.sh).  Bypass for a true emergency with
+# `git commit --no-verify`, then fix and amend.
+set -euo pipefail
+exec "$(git rev-parse --show-toplevel)/tools/lint.sh"

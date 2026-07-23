@@ -8,7 +8,7 @@ hand-off — verified with the Alloy stub emulator, exit 0, no faults.
 
 ## Result
 
-```
+```console
 $ WINEDLLOVERRIDES=xtajit64=n WINEDEBUG=warn+debugstr wine C:\x64min.exe
 alloy-emu-stub: ProcessInit: EC loader reached the emulator; init OK
 alloy-emu-stub: ExitToX64: x64 code transfer requested - Wine-side plumbing proven; exiting (stub).
@@ -112,12 +112,14 @@ imports on 4K-aligned guest binaries, and transfers the first x64 execution
 needs from the loader is in place.
 
 **Remaining for full gate 3 / CPU-001 gate 4 (founder-only, FEX policy):**
+
 - FEX `FEXUnixLib` Darwin port; swap the stub for `libarm64ecfex.dll`.
 - FEX-side: verify x18 (TEB) handling on Darwin (x18 zeroed on kernel entry;
   Wine-side reads use TSD slot 6 — the FEX register model must match).
 - The trio-redirect fix (item 3) applies to FEX's dll as-is.
 
 **Deferred (noted, not gate-3 blockers):**
+
 - `wineboot --init` never exits (services subsystem spins; kill after prefix
   creation — same behavior as gate 2's follow-up list).
 - Known VA-floor noise: `try_map_free_area` ENOMEM at 0x100000000 and

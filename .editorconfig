@@ -1,0 +1,26 @@
+# Alloy repository editor baseline
+# Author: Tim Isaev
+# Applies to first-party code only in practice: third_party/ checkouts are
+# separate git repos with their own upstream styles (see CODE_STYLE.md).
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+[*.{c,h,cpp,hpp,m,mm,swift}]
+indent_size = 4
+
+[*.md]
+# markdown hard-breaks are trailing double-spaces; MD009 polices the rest
+trim_trailing_whitespace = false
+
+[*.def]
+indent_size = 4
+
+[Makefile]
+indent_style = tab

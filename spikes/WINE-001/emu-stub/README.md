@@ -60,7 +60,7 @@ WINEDLLOVERRIDES=xtajit64=n WINEDEBUG=warn+debugstr wine C:\\x64min.exe
 
 Expected:
 
-```
+```text
 alloy-emu-stub: ProcessInit: EC loader reached the emulator; init OK
 alloy-emu-stub: ExitToX64: x64 code transfer requested - Wine-side plumbing proven; exiting (stub).
 (exit 0)

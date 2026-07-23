@@ -1,0 +1,18 @@
+# Alloy YAML lint policy — Author: Tim Isaev
+# Targets first-party YAML (docs/examples, lint configs themselves).
+extends: default
+
+ignore: |
+  third_party/
+  tools/toolchains/
+  spikes/*/work/
+
+rules:
+  line-length: disable
+  document-start: disable
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: disable
+  truthy:
+    allowed-values: ["true", "false"]
+    check-keys: false

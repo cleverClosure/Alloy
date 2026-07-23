@@ -1,5 +1,5 @@
-#!/bin/zsh
-# MGCR pinned-dependency fetcher
+#!/usr/bin/env bash
+# Alloy pinned-dependency fetcher
 # Author: Tim Isaev
 # Clones spike upstreams into third_party/src/ (shallow), fetches the llvm-mingw
 # release toolchain, and records exact revisions in third_party/deps.lock.
@@ -24,7 +24,7 @@ clone_pin() { # name url
   local rev branch
   rev=$(git -C "$dir" rev-parse HEAD)
   branch=$(git -C "$dir" rev-parse --abbrev-ref HEAD)
-  echo "$name $rev $branch" >> "$LOCKTMP.entries"
+  echo "$name $rev $branch" >>"$LOCKTMP.entries"
 }
 
 fetch_llvm_mingw() {
@@ -41,15 +41,15 @@ fetch_llvm_mingw() {
     tar -xf "$TOOLCHAINS/$asset" -C "$TOOLCHAINS"
     rm "$TOOLCHAINS/$asset"
   fi
-  echo "llvm-mingw $tag release-binary" >> "$LOCKTMP.entries"
+  echo "llvm-mingw $tag release-binary" >>"$LOCKTMP.entries"
 }
 
-: > "$LOCKTMP.entries"
-echo "# MGCR dependency lock — written $(date -u +%Y-%m-%dT%H:%M:%SZ) by fetch-deps.sh" > "$LOCKTMP.header"
-clone_pin fex  https://github.com/FEX-Emu/FEX.git
+: >"$LOCKTMP.entries"
+echo "# Alloy dependency lock — written $(date -u +%Y-%m-%dT%H:%M:%SZ) by fetch-deps.sh" >"$LOCKTMP.header"
+clone_pin fex https://github.com/FEX-Emu/FEX.git
 clone_pin wine https://gitlab.winehq.org/wine/wine.git
 fetch_llvm_mingw
-cat "$LOCKTMP.header" "$LOCKTMP.entries" > "$LOCK"
+cat "$LOCKTMP.header" "$LOCKTMP.entries" >"$LOCK"
 rm -f "$LOCKTMP.header" "$LOCKTMP.entries"
 echo ""
 echo "== deps.lock:"

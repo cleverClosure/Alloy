@@ -1,0 +1,31 @@
+# Alloy markdown lint policy — Author: Tim Isaev
+# Codifies the existing docs-package voice; hygiene rules stay on.
+# Run bare (`markdownlint-cli2`) or via tools/lint.sh.
+
+globs:
+  - "**/*.md"
+
+ignores:
+  - "third_party/**"       # upstream checkouts, upstream styles
+  - "tools/toolchains/**"  # fetched toolchains
+  - "spikes/*/work/**"     # build artifacts and scratch (untracked)
+  - "node_modules/**"
+
+config:
+  default: true
+
+  # --- deliberate package style, kept as-is ---
+  MD013: false             # no line-length cap on prose
+  MD022: false             # headings without surrounding blank lines
+  MD025: false             # multiple H1s per document (per-section titles)
+  MD033: false             # inline HTML (tables, breaks)
+  MD034: false             # bare URLs are fine in research notes
+  MD051: false             # anchors use section symbols the checker can't resolve
+  MD060: false             # table column styling left to authors
+  MD024:                   # duplicate headings allowed across sections,
+    siblings_only: true    # not within the same parent
+
+  # --- hygiene rules that stay active (current tree passes) ---
+  # MD009 trailing spaces, MD010 tabs, MD012 blank-line runs,
+  # MD031/MD032 blanks around fences/lists, MD037 emphasis spacing,
+  # MD040 fenced-code language tags, MD046 code-block style

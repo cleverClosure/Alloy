@@ -27,12 +27,13 @@
 typedef struct _ARM64_NT_CONTEXT ARM64_NT_CONTEXT;
 
 /* NT internal, absent from the mingw SDK headers; only the first fields matter */
-typedef struct _SYSTEM_CPU_INFORMATION {
+typedef struct _SYSTEM_CPU_INFORMATION
+{
     USHORT ProcessorArchitecture;
     USHORT ProcessorLevel;
     USHORT ProcessorRevision;
     USHORT MaximumProcessors;
-    ULONG  ProcessorFeatureBits;
+    ULONG ProcessorFeatureBits;
 } SYSTEM_CPU_INFORMATION;
 
 /* ntdll-only logging/exit: ProcessInit runs during arm64ec_process_init,
@@ -54,7 +55,9 @@ static void emu_log(const char *msg)
  * imports only ntdll for the same reason. */
 BOOL WINAPI DllMainCRTStartup(HINSTANCE inst, DWORD reason, void *reserved)
 {
-    (void)inst; (void)reason; (void)reserved;
+    (void)inst;
+    (void)reason;
+    (void)reserved;
     return TRUE;
 }
 
@@ -73,12 +76,15 @@ NTSTATUS WINAPI ThreadInit(void)
 
 void WINAPI ProcessTerm(HANDLE h, BOOL b, NTSTATUS s)
 {
-    (void)h; (void)b; (void)s;
+    (void)h;
+    (void)b;
+    (void)s;
 }
 
 void WINAPI ThreadTerm(HANDLE h, LONG l)
 {
-    (void)h; (void)l;
+    (void)h;
+    (void)l;
 }
 
 /* ---- the hand-off point: where the real JIT would start running x64 ---- */
@@ -112,23 +118,76 @@ void WINAPI UpdateProcessorInformation(SYSTEM_CPU_INFORMATION *info)
 
 /* ---- cache / memory notifications: no-ops for the stub ---- */
 
-void WINAPI BTCpu64FlushInstructionCache(const void *addr, SIZE_T len) { (void)addr; (void)len; }
-void WINAPI FlushInstructionCacheHeavy(const void *addr, SIZE_T len) { (void)addr; (void)len; }
-void WINAPI BTCpu64NotifyMemoryDirty(void *addr, SIZE_T len) { (void)addr; (void)len; }
+void WINAPI BTCpu64FlushInstructionCache(const void *addr, SIZE_T len)
+{
+    (void)addr;
+    (void)len;
+}
+void WINAPI FlushInstructionCacheHeavy(const void *addr, SIZE_T len)
+{
+    (void)addr;
+    (void)len;
+}
+void WINAPI BTCpu64NotifyMemoryDirty(void *addr, SIZE_T len)
+{
+    (void)addr;
+    (void)len;
+}
 void WINAPI BTCpu64NotifyReadFile(HANDLE h, void *addr, SIZE_T len, BOOL b, NTSTATUS s)
-{ (void)h; (void)addr; (void)len; (void)b; (void)s; }
+{
+    (void)h;
+    (void)addr;
+    (void)len;
+    (void)b;
+    (void)s;
+}
 NTSTATUS WINAPI NotifyMapViewOfSection(void *a, void *b, void *c, SIZE_T d, ULONG e, ULONG f)
-{ (void)a; (void)b; (void)c; (void)d; (void)e; (void)f; return STATUS_SUCCESS; }
+{
+    (void)a;
+    (void)b;
+    (void)c;
+    (void)d;
+    (void)e;
+    (void)f;
+    return STATUS_SUCCESS;
+}
 void WINAPI NotifyMemoryAlloc(void *a, SIZE_T b, ULONG c, ULONG d, BOOL e, NTSTATUS f)
-{ (void)a; (void)b; (void)c; (void)d; (void)e; (void)f; }
+{
+    (void)a;
+    (void)b;
+    (void)c;
+    (void)d;
+    (void)e;
+    (void)f;
+}
 void WINAPI NotifyMemoryFree(void *a, SIZE_T b, ULONG c, BOOL d, NTSTATUS e)
-{ (void)a; (void)b; (void)c; (void)d; (void)e; }
+{
+    (void)a;
+    (void)b;
+    (void)c;
+    (void)d;
+    (void)e;
+}
 void WINAPI NotifyMemoryProtect(void *a, SIZE_T b, ULONG c, BOOL d, NTSTATUS e)
-{ (void)a; (void)b; (void)c; (void)d; (void)e; }
+{
+    (void)a;
+    (void)b;
+    (void)c;
+    (void)d;
+    (void)e;
+}
 void WINAPI NotifyUnmapViewOfSection(void *a, BOOL b, NTSTATUS c)
-{ (void)a; (void)b; (void)c; }
+{
+    (void)a;
+    (void)b;
+    (void)c;
+}
 void WINAPI ResetToConsistentState(EXCEPTION_RECORD *r, CONTEXT *c, ARM64_NT_CONTEXT *a)
-{ (void)r; (void)c; (void)a; }
+{
+    (void)r;
+    (void)c;
+    (void)a;
+}
 
 /* ---- ARM64<->x64 dispatch trio (resolved by name in arm64ec_process_init) ----
  * Real thunks transfer control INTO guest x64 code and never return normally.
@@ -145,12 +204,14 @@ void WINAPI ExitToX64(void)
 
 void WINAPI DispatchJump(void)
 {
-    emu_log("DispatchJump: x64 code transfer requested - Wine-side plumbing proven; exiting (stub).");
+    emu_log(
+        "DispatchJump: x64 code transfer requested - Wine-side plumbing proven; exiting (stub).");
     RtlExitUserProcess(0);
 }
 
 void WINAPI RetToEntryThunk(void)
 {
-    emu_log("RetToEntryThunk: return into x64 requested - Wine-side plumbing proven; exiting (stub).");
+    emu_log(
+        "RetToEntryThunk: return into x64 requested - Wine-side plumbing proven; exiting (stub).");
     RtlExitUserProcess(0);
 }
