@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.example.invalid/mgcr/runtime-manifest.v1.schema.json",
+  "title": "Mac Gaming Compatibility Runtime Generation Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "generationId", "createdAt", "components", "hostRequirements", "provenance"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "generationId": {"type": "string", "pattern": "^rtg_[a-zA-Z0-9_-]{16,96}$"},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "version", "digest", "mediaType", "size"],
+        "properties": {
+          "name": {"type": "string"},
+          "version": {"type": "string"},
+          "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+          "mediaType": {"type": "string"},
+          "size": {"type": "integer", "minimum": 0},
+          "licenseId": {"type": "string"},
+          "sourceRevision": {"type": "string"},
+          "sbomDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+          "symbolsDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "hostRequirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["architecture", "minimumMacOS"],
+      "properties": {
+        "architecture": {"const": "arm64"},
+        "minimumMacOS": {"type": "string"},
+        "metalFeatureSets": {"type": "array", "items": {"type": "string"}},
+        "requiredEntitlements": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["builderId", "sourceDigest", "buildRecipeDigest", "attestationDigest"],
+      "properties": {
+        "builderId": {"type": "string"},
+        "sourceDigest": {"type": "string"},
+        "buildRecipeDigest": {"type": "string"},
+        "attestationDigest": {"type": "string"},
+        "reproducible": {"type": "boolean"}
+      }
+    },
+    "activation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "minimumClientVersion": {"type": "string"},
+        "releaseRing": {"enum": ["development", "lab", "canary", "stable", "quarantined"]},
+        "rollbackGenerationId": {"type": "string"},
+        "healthWindowSessions": {"type": "integer", "minimum": 1}
+      }
+    }
+  }
+}

@@ -1,0 +1,299 @@
+{
+  "package": "MGCR Product Documentation",
+  "version": "1.2",
+  "generatedAt": "2026-07-23",
+  "fileCount": 43,
+  "markdownWords": 82436,
+  "markdownLines": 13337,
+  "files": [
+    {
+      "path": "CHANGELOG.md",
+      "bytes": 4911,
+      "sha256": "6525bdbff4e21021a9eda07a9f34fe1fcfe46b1a110314f1571a909c0c17a484",
+      "lines": 53,
+      "words": 624
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "bytes": 3931,
+      "sha256": "84daab7aebbc61e40432113d53ceee26889581d5605cea02c20c4faf39e66534",
+      "lines": 108,
+      "words": 541
+    },
+    {
+      "path": "README.md",
+      "bytes": 4464,
+      "sha256": "9ed2ceaf2e06e04e7b7a6e62571d86d9dced2699d93577dc43c458b2ae95618b",
+      "lines": 97,
+      "words": 461
+    },
+    {
+      "path": "adr/ADR-0001-runtime-generation-unit-of-support.md",
+      "bytes": 2818,
+      "sha256": "9f6f3f47fb05f6b7fa75b056588027d38a812d07eaf3cba3e255e6cda488b91b",
+      "lines": 51,
+      "words": 374
+    },
+    {
+      "path": "adr/ADR-0002-per-process-policy-before-imports.md",
+      "bytes": 2662,
+      "sha256": "11580816559a05ed225a9c032036f1e9653fd80fdd26a9620e97efefc102aa21",
+      "lines": 50,
+      "words": 345
+    },
+    {
+      "path": "adr/ADR-0003-apple-silicon-only.md",
+      "bytes": 1877,
+      "sha256": "080665af258f17dc90d89cbe9ca13a52ffefdb4fe13c422ecdd7fcbbae3ef2c7",
+      "lines": 49,
+      "words": 257
+    },
+    {
+      "path": "adr/ADR-0004-thin-wine-fork-and-provider-hooks.md",
+      "bytes": 2068,
+      "sha256": "51f49f1e70fec0f8a3ed1a96c5d37576e13bbc9c7764c47d4584ee60a1bb7d1e",
+      "lines": 49,
+      "words": 276
+    },
+    {
+      "path": "adr/ADR-0005-fex-arm64ec-execution-path.md",
+      "bytes": 2326,
+      "sha256": "3de2141d9808555c50455e3f715b74aaf1a47a39d5f38554e58de5d7e075ecaa",
+      "lines": 50,
+      "words": 309
+    },
+    {
+      "path": "adr/ADR-0006-owned-d3d12-metal-and-reused-d3d11.md",
+      "bytes": 3289,
+      "sha256": "e1e94eb51e6fb9b309c72bddb7ff0a55a13eb417e738e531d6be07b52d44b37a",
+      "lines": 54,
+      "words": 412
+    },
+    {
+      "path": "adr/ADR-0007-content-addressed-immutable-runtimes.md",
+      "bytes": 1990,
+      "sha256": "af4e59351c06eda18c3f043fef94e4888b21717f37996873ca7bc05758cd03f3",
+      "lines": 50,
+      "words": 236
+    },
+    {
+      "path": "adr/ADR-0008-certified-and-custom-mode-separation.md",
+      "bytes": 1919,
+      "sha256": "65c10383c572bb5f50ac8a14c2a90b6c2ab766b6fce9dd66b5e6018d22537345",
+      "lines": 49,
+      "words": 255
+    },
+    {
+      "path": "adr/ADR-0009-cloud-not-on-launch-hot-path.md",
+      "bytes": 1883,
+      "sha256": "d1874a49fb0e490ecd23e6d89fb663c6486fd7f5a14913bbe1a6a381a4bd242a",
+      "lines": 48,
+      "words": 250
+    },
+    {
+      "path": "adr/ADR-0010-user-space-developer-id-distribution.md",
+      "bytes": 2125,
+      "sha256": "3361b5d209103699a47b90e28c8bf59914d43c771877a2adf2e991d4810320c9",
+      "lines": 50,
+      "words": 284
+    },
+    {
+      "path": "adr/ADR-0011-modern-baseline-only.md",
+      "bytes": 6542,
+      "sha256": "646518ab3218bc553b792292af19702e786fd42f66d573a7132b1a39231755bc",
+      "lines": 67,
+      "words": 894
+    },
+    {
+      "path": "adr/ADR-0012-metal12-provenance-and-clean-room.md",
+      "bytes": 5487,
+      "sha256": "f7fc5eb9f7b13bbe65c228716d8a538d761861641746d568c5c899f5f08e1eff",
+      "lines": 59,
+      "words": 748
+    },
+    {
+      "path": "adr/ADR-0013-continuous-differential-certification.md",
+      "bytes": 3487,
+      "sha256": "d605ca499f8ca55c6710da1ec24efbca1fa7f952bdfa3fe66d8b672a92093c1d",
+      "lines": 48,
+      "words": 472
+    },
+    {
+      "path": "assets/diagrams/architecture_contact_sheet.png",
+      "bytes": 415262,
+      "sha256": "b53dd0eac95f2c52ea7f31d21eee2523b32586c2b9df4d8bf7dbf6234584b56b"
+    },
+    {
+      "path": "assets/diagrams/d3d12_pipeline.png",
+      "bytes": 286302,
+      "sha256": "09760bb12e3e673e5ff7b0f11a54c246e74182cd371b4a8aad757b8eb5c062e0"
+    },
+    {
+      "path": "assets/diagrams/system_context.png",
+      "bytes": 294223,
+      "sha256": "0b056682149b356773b0c11cb094460cb80eb6706426d39707164107c79d4425"
+    },
+    {
+      "path": "docs/00_DOCUMENT_MAP.md",
+      "bytes": 7970,
+      "sha256": "baf5f880dc61447e913af96ec54371a4b974fe61e7e430bb332f4cec25356b83",
+      "lines": 189,
+      "words": 907
+    },
+    {
+      "path": "docs/01_PRODUCT_STRATEGY.md",
+      "bytes": 13665,
+      "sha256": "4a4eeacaada4bf07dd304874d202e9f466c92775fda88a8bfa956f0da29ac9ac",
+      "lines": 291,
+      "words": 1881
+    },
+    {
+      "path": "docs/02_PRD.md",
+      "bytes": 60675,
+      "sha256": "c583638462edd05918d1665d3daaa00b6c783c626e6f027aa4a9b8d6d2a2d324",
+      "lines": 661,
+      "words": 8928
+    },
+    {
+      "path": "docs/03_UX_AND_USER_JOURNEYS.md",
+      "bytes": 18694,
+      "sha256": "2b3eb17c2ebe9d223356a03ab627e0cd4c1d5bd55c8593acbce73b4eda0aae43",
+      "lines": 528,
+      "words": 2678
+    },
+    {
+      "path": "docs/04_TECHNICAL_ARCHITECTURE.md",
+      "bytes": 190157,
+      "sha256": "3feecf05d3412127dfe72c93c0304ddfabedd87c3acef92eef17d1c6eea45f26",
+      "lines": 3721,
+      "words": 25076
+    },
+    {
+      "path": "docs/05_RUNTIME_PROFILE_AND_MANIFEST_SPEC.md",
+      "bytes": 23892,
+      "sha256": "f7a73e53fd9a8f9603299a2be2b80362f8c046f92583e1e0c94d055ebdf00f88",
+      "lines": 673,
+      "words": 3163
+    },
+    {
+      "path": "docs/06_API_AND_DATA_CONTRACTS.md",
+      "bytes": 20584,
+      "sha256": "aa39724472a2818be5475135f31285a2e108b79f343b1c63924cd2497c7fe41e",
+      "lines": 694,
+      "words": 2439
+    },
+    {
+      "path": "docs/07_COMPATIBILITY_CERTIFICATION_SPEC.md",
+      "bytes": 18727,
+      "sha256": "4030b258d3f7d0da496d832691975ddcac4b9d5e3e0bb0de30ec2542f430a88f",
+      "lines": 540,
+      "words": 2631
+    },
+    {
+      "path": "docs/08_TEST_AND_QUALITY_STRATEGY.md",
+      "bytes": 19930,
+      "sha256": "8e33077d089ea45bd5eab060d3f63a5b1a45065bd433c2248fedd3ea0aedf6d7",
+      "lines": 744,
+      "words": 2742
+    },
+    {
+      "path": "docs/09_SECURITY_PRIVACY_THREAT_MODEL.md",
+      "bytes": 21758,
+      "sha256": "cddc87bf81c1f66636d4210a1d6f98b424e105a2d38ae73083f3d83f82335639",
+      "lines": 587,
+      "words": 2880
+    },
+    {
+      "path": "docs/10_OBSERVABILITY_OPERATIONS_AND_RELEASE.md",
+      "bytes": 16858,
+      "sha256": "6942a510dec05c1b5102e86bf2165e0cf521a275dcd6897f1efe393da1f0a653",
+      "lines": 652,
+      "words": 2312
+    },
+    {
+      "path": "docs/11_ROADMAP_TEAM_AND_DELIVERY.md",
+      "bytes": 19133,
+      "sha256": "229f82d66695412a0926b60896f43dc425c1383d8cc7f36701ea6d3c10be5ea4",
+      "lines": 640,
+      "words": 2643
+    },
+    {
+      "path": "docs/12_REQUIREMENTS_TRACEABILITY_MATRIX.md",
+      "bytes": 17061,
+      "sha256": "127da601b912645abd247072b9be5c8ca757c5c718e6a267542773035ad56c5b",
+      "lines": 199,
+      "words": 3364
+    },
+    {
+      "path": "docs/13_RISK_REGISTER.md",
+      "bytes": 17199,
+      "sha256": "136e08e2b71e60a604d195d408a7d67d0fb33ebf6140fb9196a61ff80c07cb6c",
+      "lines": 131,
+      "words": 2442
+    },
+    {
+      "path": "docs/14_DECISION_LOG.md",
+      "bytes": 8067,
+      "sha256": "21a4306b1eafacd80b35d4a0fdbaf511a9d479cca242d6d68920cd233461d8c0",
+      "lines": 76,
+      "words": 1042
+    },
+    {
+      "path": "docs/15_GLOSSARY.md",
+      "bytes": 10862,
+      "sha256": "f37d22124f5629bb08b3f7ff23aec48ccc6e70266a82f4c4b488aef07ddfda07",
+      "lines": 208,
+      "words": 1371
+    },
+    {
+      "path": "docs/16_OPEN_QUESTIONS_AND_TECHNICAL_SPIKES.md",
+      "bytes": 13789,
+      "sha256": "813be7b09f645b1c8496e86fa9114ae93fed2b2436e789154f55ef5e04244c4e",
+      "lines": 418,
+      "words": 1810
+    },
+    {
+      "path": "docs/17_PUBLISHER_AND_ANTI_CHEAT_INTEGRATION.md",
+      "bytes": 13644,
+      "sha256": "1d11b8bb92a88d88330d0550d3df60a4eef43c5574f536e913deb3afb121390d",
+      "lines": 471,
+      "words": 1792
+    },
+    {
+      "path": "docs/18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md",
+      "bytes": 14446,
+      "sha256": "dfb527edf7c2cd9aec85ab77813bdc871a97fd6b56a5aaf8bf49ecb6ecafb8b8",
+      "lines": 344,
+      "words": 1792
+    },
+    {
+      "path": "docs/19_MVP_EPICS_AND_BACKLOG.md",
+      "bytes": 13172,
+      "sha256": "83e65d9c03cbf555d3a93b6c9f7e037776dc584f49ad2e1f2b55dfe194bc610b",
+      "lines": 517,
+      "words": 1701
+    },
+    {
+      "path": "examples/example-game-profile.yaml",
+      "bytes": 2873,
+      "sha256": "2f5e7d1d196bd99387ad2cd6f15b01760e0ba0a57b2172f4796b6e83f226f46f"
+    },
+    {
+      "path": "research/SPIKE-LEGAL-001-preliminary-findings.md",
+      "bytes": 14967,
+      "sha256": "ce99d58a7aca34c72c9087b0cf960e129cb02b60b44924eb01468029409ed857",
+      "lines": 121,
+      "words": 2104
+    },
+    {
+      "path": "schemas/game-profile.schema.json",
+      "bytes": 10296,
+      "sha256": "7a3d343c6e876b7b8aef7ca97716addc4f1e2d9e91023fcc0b848e23198cf731"
+    },
+    {
+      "path": "schemas/runtime-manifest.schema.json",
+      "bytes": 2583,
+      "sha256": "75d6291ffff892c85acb2c17461298cfbea37ead7d10bad8e00ce169e0ca73d5"
+    }
+  ]
+}
