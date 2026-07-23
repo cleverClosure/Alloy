@@ -1,6 +1,6 @@
 # ARM64EC emulator stub (`xtajit64.dll`)
 
-**Author:** Tim Isaev
+**Author:** Timur Isaev
 **Purpose:** SPIKE-WINE-001 gate 3 — prove the Wine ARM64EC loader→emulator
 handshake on macOS without the real x86-64 JIT (FEX, which is founder-integrated
 and subject to the FEX in-tree no-AI-code policy).

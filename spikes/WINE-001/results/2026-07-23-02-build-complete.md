@@ -1,6 +1,6 @@
 # WINE-001 result 02 — Wine 11.13 builds complete on macOS/ARM64; loader launch is the frontier
 
-**Author:** Tim Isaev
+**Author:** Timur Isaev
 **Date:** 23 July 2026
 **Wine revision:** 5bb70f2 (= Wine 11.13 per wineserver)
 

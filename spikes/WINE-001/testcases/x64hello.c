@@ -1,5 +1,5 @@
 /* Minimal x86-64 console PE for SPIKE-WINE-001 gate 3.
- * Author: Tim Isaev
+ * Author: Timur Isaev
  * Never expected to execute under the stub emulator — it only has to load. */
 #include <stdio.h>
 

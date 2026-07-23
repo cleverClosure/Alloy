@@ -13,10 +13,10 @@ measurement, review, or decision evidence proves the roadmap wording at its full
 | Deliverable | State | Current evidence | Missing proof |
 | --- | --- | --- | --- |
 | ARM64 host launches x64 Windows tests through bootstrap and production-candidate paths | In progress | WINE-001 reaches the stub emulator boundary; FEX ARM64EC DLL cross-builds | Real FEX Darwin integration and execution |
-| Wine ARM64EC/WoW64 architecture proof | In progress | WINE-001 gates 1–3 Wine side | Real CPU provider, policy hook, rebase drill |
+| Wine ARM64EC/WoW64 architecture proof | In progress | WINE-001 gates 1–4 Wine side; deterministic pre-import launcher/game/default policy proof | Real CPU provider; rebase drill awaits a newer official Wine master |
 | D3D11 game scene through a Metal-native provider | Missing | No GFX-001 spike directory | Measured scenes and provider integration |
 | D3D12 lab/reference scene and Metal12 micro-prototypes | Missing | Legal scope and clean-room protocol only | Reference scene plus descriptor, barrier, shader, and memory prototypes |
-| Per-process launcher/game backend split | Missing | Architecture and ADR-0002 only | Pre-import hook trace with different providers and unknown default |
+| Per-process launcher/game backend split | Complete at Phase-0 prototype scope | [WINE-001 gate-4 result](WINE-001/results/2026-07-24-08-policy-hook-and-rebase-readiness.md): same imported DLL routes to launcher/DXMT, game/Metal12, and restricted default before imports | SessionAgent productionization is Phase 1+ |
 | Content-addressed runtime and atomic reference prototype | Complete | [ROLLBACK-001 result](ROLLBACK-001/results/2026-07-24-01-transactional-generation-lifecycle.md) | Phase-1 productionization is out of this gate |
 | First storefront install/fingerprint proof | In progress | STORE-001 selects Steam and defines identity inputs | Entitled install, exact build fingerprint, rerun evidence |
 | Save separation proof | Complete at Phase-0 prototype scope | ROLLBACK-001 preserves a byte-identical external save across all fault cases | Production save discovery/snapshot qualification is Phase 1+ |
@@ -32,7 +32,7 @@ measurement, review, or decision evidence proves the roadmap wording at its full
 | No known fundamental macOS JIT/entitlement blocker | Open | FEX code-cache execution with supported W^X/MAP_JIT and exception behavior |
 | CPU path runs representative x64 code correctly with acceptable initial performance | Open | ISA/ABI corpus, stable exceptions/unwind, deterministic game scene, measured CPU gap |
 | D3D11 renders at least two representative games/scenes | Open | GFX-001 correctness, frame pacing, memory, and scene evidence |
-| Per-process policy selects different graphics providers early enough | Open | WINE-001 policy hook, launcher/game/unknown-child trace, provider load markers |
+| Per-process policy selects different graphics providers early enough | Complete | WINE-001: exact-image launcher/game plus unknown-child default select three physical provider DLLs before imports |
 | Transactional runtime survives injected termination | Complete | ROLLBACK-001: 18 action/journal death points plus failed-health rollback |
 | One exact game build is fingerprinted and reproduced in lab | Open | STORE-001 + LAB-001 entitled build and deterministic Mac/Windows evidence |
 | Leadership accepts lab-only bootstrap D3D12 and Metal12 strategic weight | Open | Explicit decision record approving the residual schedule/runway consequence |

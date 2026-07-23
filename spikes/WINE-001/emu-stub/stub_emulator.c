@@ -1,6 +1,6 @@
 /*
  * Alloy ARM64EC emulator stub ("xtajit64.dll" replacement)
- * Author: Tim Isaev
+ * Author: Timur Isaev
  *
  * PURPOSE (SPIKE-WINE-001 gate 3): prove the Wine ARM64EC loader plumbing on
  * macOS end-to-end WITHOUT the real x86-64 JIT. Wine's EC ntdll loads the DLL

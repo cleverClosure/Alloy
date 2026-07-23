@@ -1,6 +1,6 @@
 # WINE-001 result 01 — upstream Wine configures clean on macOS/ARM64
 
-**Author:** Tim Isaev
+**Author:** Timur Isaev
 **Date:** 23 July 2026
 **Wine revision:** 5bb70f2 (master, shallow) · **Host:** M2 Pro 16 GB, macOS 26.5.2
 

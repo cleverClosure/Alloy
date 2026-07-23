@@ -1,6 +1,6 @@
 # WINE-001 gate 3 groundwork — ARM64EC hybrid build and the emulator interface
 
-**Author:** Tim Isaev
+**Author:** Timur Isaev
 **Date:** 23 July 2026
 **Status:** in progress — EC hybrid Wine building; stub emulator ready; EC TEB fixes staged
 

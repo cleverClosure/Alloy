@@ -1,6 +1,6 @@
 # SPIKE-WINE-001 — ARM64-native Wine and the pre-import policy hook
 
-**Author:** Tim Isaev
+**Author:** Timur Isaev
 **Status:** Active (started 23 July 2026)
 **Canonical definition:** [doc 16 §3](../../docs/docs/16_OPEN_QUESTIONS_AND_TECHNICAL_SPIKES.md) · validates [ADR-0002](../../docs/adr/ADR-0002-per-process-policy-before-imports.md) / [ADR-0004](../../docs/adr/ADR-0004-thin-wine-fork-and-provider-hooks.md)
 
@@ -71,6 +71,24 @@ unknown-executable default work; rebase against another upstream revision succee
   a **standing FEX design input** (games inline `0x7ffe0000` reads; translate-time literal
   remap + trap-and-emulate fallback). Full analysis:
   `results/2026-07-24-07-wineboot-spin-va-floor-usd.md`.
+- **Gate 4 (pre-import process policy): CLOSED 24 July 2026.** Commit `47e4cdb`
+  adds an inherited, read-only policy snapshot hook in `ntdll` before WoW64 setup,
+  `kernel32`, or executable import resolution. One Wine session proves exact-image
+  routing of the same statically imported `alloygraphics.dll` name to a DXMT marker
+  for the launcher and a Metal12 marker for its game child, while an absent digest
+  selects the restricted default. The 2,968-byte snapshot is deterministic for
+  identical semantic input, is unlinked before launch, and never uses
+  `WINEDLLOVERRIDES`; writable descriptors and schema version 2 fail closed.
+  No-snapshot startup retains stock behavior. Patch footprint: 491 added lines
+  across eight Wine files, of which 99 are the PE startup/hash/apply path and 274
+  are the fixed-format Unix validator. Compiler, harness, limitations, and exact
+  traces: `results/2026-07-24-08-policy-hook-and-rebase-readiness.md`.
+- **Gate 5 (upstream rebase drill): waiting on a newer official revision.** A fresh
+  fetch and `ls-remote` at `2026-07-23T21:02:25Z` found Wine `master` still at the
+  patchset base, `5bb70f23d1278088d9ea55d44efe7d51f87d35bd`; rebasing onto the
+  identical commit would not measure drift. The six-commit evidence branch remains
+  clean and ready for `git rebase --onto <new-master> 5bb70f2` as soon as upstream
+  advances. This gate remains open.
 - Follow-ups (not gate-2 blockers): full graphical boot needs a FreeType + `winemac.drv`
   build (font/GUI backend); service-subsystem autostart faults; `get_core_id_regs_arm64`
   stub for guest CPU features.
@@ -79,7 +97,8 @@ Wine patches live on local branch `alloy/spike-wine-001` in `third_party/src/win
 (`0e693a0` loader flags + KUSD + teb_block; `efd41b9` TEB-from-TSD; `8870df9` EC TEB
 dispatchers + errno logging; `24bad68` gate-3 close: `mprotect_exec` RWX→RW fallback,
 dispatch-trio redirection, region-dump + low-pc-fault diagnostics; `b93a982` USD
-readers repointed above the VA floor + unresolved-fault storm detector).
+readers repointed above the VA floor + unresolved-fault storm detector; `47e4cdb`
+inherited pre-import policy snapshot + process-local provider/load-order routing).
 
 ## Results log
 

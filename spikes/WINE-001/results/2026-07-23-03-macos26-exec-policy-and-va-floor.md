@@ -1,6 +1,6 @@
 # WINE-001 gate 2 — loader SIGKILL root cause, macOS 26 exec policy, and the 4 GB VA floor
 
-**Author:** Tim Isaev
+**Author:** Timur Isaev
 **Date:** 23 July 2026
 **Build:** `spikes/WINE-001/work/build-1` (Wine 11.13, aarch64 host, `--with-mingw --without-x`)
 **Wine patches:** branch `alloy/spike-wine-001` in `third_party/src/wine`

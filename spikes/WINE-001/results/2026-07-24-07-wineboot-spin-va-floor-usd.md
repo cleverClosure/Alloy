@@ -1,6 +1,6 @@
 # WINE-001 follow-up — wineboot/explorer CPU spin: root cause and fix
 
-**Author:** Tim Isaev
+**Author:** Timur Isaev
 **Date:** 24 July 2026
 **Status:** Resolved. Cold prefix boot now completes in ~12 s with a clean
 process table; the fault storm behind the spin is eliminated at the source.

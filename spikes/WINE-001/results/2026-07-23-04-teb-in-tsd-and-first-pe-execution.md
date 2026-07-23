@@ -1,6 +1,6 @@
 # WINE-001 gate 2 CLOSED — TEB relocation and first native PE execution
 
-**Author:** Tim Isaev
+**Author:** Timur Isaev
 **Date:** 23 July 2026
 **Build:** `spikes/WINE-001/work/build-1` (Wine 11.13, aarch64 host)
 **Wine patches:** branch `alloy/spike-wine-001`, commits `0e693a0` (loader/VA) and `efd41b9` (TEB/TSD)

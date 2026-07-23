@@ -1,6 +1,6 @@
 # WINE-001 gate 3 — Wine-side loader→emulator handshake PROVEN on macOS
 
-**Author:** Tim Isaev
+**Author:** Timur Isaev
 **Date:** 23 July 2026
 **Status:** Wine-side gate 3 **closed**. x64 guest PEs load through the ARM64EC
 loader, the emulator interface initializes, and control reaches the emulator
