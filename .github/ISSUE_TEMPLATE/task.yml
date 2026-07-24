@@ -4,10 +4,24 @@ name: Task
 description: A unit of work sized for one agent, shaped for parallel execution
 body:
   - type: textarea
+    id: pm-summary
+    attributes:
+      label: PM summary
+      description: >-
+        Plain language, no jargon — written for the PM, not the engineer.
+        What is this about, why does it matter, and what will be different
+        when it is done?
+      placeholder: >-
+        We don't yet know how much speed games lose going through our CPU
+        translation compared to Apple's. This task measures that, so we can
+        decide which approach is fast enough to build on.
+    validations:
+      required: true
+  - type: textarea
     id: goal
     attributes:
       label: Goal
-      description: The outcome this task produces, in one or two sentences.
+      description: The technical outcome this task produces, in one or two sentences.
     validations:
       required: true
   - type: textarea

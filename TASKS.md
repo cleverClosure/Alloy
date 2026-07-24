@@ -22,6 +22,9 @@ per-agent swimlanes.
 
 Use the **Task** issue template. Every task must have, before it leaves Backlog:
 
+- A **PM summary**: plain language, no jargon — what it's about, why it
+  matters, what's different when it's done. If the PM can't tell why the task
+  exists from this paragraph alone, it isn't shaped yet.
 - One `area:*` label per track it touches (`area:cpu`, `area:gfx`, `area:wine`,
   `area:store`, `area:rollback`, `area:m12`, `area:docs`, `area:tools`,
   `area:ci`, `area:third-party`). The labels must match the **Touches** paths.
