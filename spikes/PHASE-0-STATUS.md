@@ -12,8 +12,8 @@ measurement, review, or decision evidence proves the roadmap wording at its full
 
 | Deliverable | State | Current evidence | Missing proof |
 | --- | --- | --- | --- |
-| ARM64 host launches x64 Windows tests through bootstrap and production-candidate paths | In progress | WINE-001 reaches the stub emulator boundary; FEX ARM64EC DLL cross-builds | Real FEX Darwin integration and execution |
-| Wine ARM64EC/WoW64 architecture proof | In progress | WINE-001 gates 1–4 Wine side; deterministic pre-import launcher/game/default policy proof | Real CPU provider; rebase drill awaits a newer official Wine master |
+| ARM64 host launches x64 Windows tests through bootstrap and production-candidate paths | In progress | [CPU-001 result 04](CPU-001/results/2026-07-24-04-fex-first-execution-and-shear-defect.md): real FEX (darwin-teb build) executes the ISA/exception/atomics smoke corpus exit-0 under EC Wine | 4 KB sub-page enforcement (shear defect), full FEX corpus, game-scale execution |
+| Wine ARM64EC/WoW64 architecture proof | In progress | WINE-001 gates 1–4 Wine side; deterministic pre-import launcher/game/default policy proof; real FEX mixed process runs (CPU-001 result 04) | Shear-enforcement decision; rebase drill awaits a newer official Wine master |
 | D3D11 game scene through a Metal-native provider | Missing | No GFX-001 spike directory | Measured scenes and provider integration |
 | D3D12 lab/reference scene and Metal12 micro-prototypes | Missing | Legal scope and clean-room protocol only | Reference scene plus descriptor, barrier, shader, and memory prototypes |
 | Per-process launcher/game backend split | Complete at Phase-0 prototype scope | [WINE-001 gate-4 result](WINE-001/results/2026-07-24-08-policy-hook-and-rebase-readiness.md): same imported DLL routes to launcher/DXMT, game/Metal12, and restricted default before imports | SessionAgent productionization is Phase 1+ |
@@ -29,8 +29,8 @@ measurement, review, or decision evidence proves the roadmap wording at its full
 
 | Exit criterion | State | Evidence needed to close |
 | --- | --- | --- |
-| No known fundamental macOS JIT/entitlement blocker | Open | FEX code-cache execution with supported W^X/MAP_JIT and exception behavior |
-| CPU path runs representative x64 code correctly with acceptable initial performance | Open | ISA/ABI corpus, stable exceptions/unwind, deterministic game scene, measured CPU gap |
+| No known fundamental macOS JIT/entitlement blocker | In progress | CPU-001 result 04 shows FEX code-cache execution with working exceptions at smoke scope; remaining: full corpus and an accepted shear-enforcement disposition |
+| CPU path runs representative x64 code correctly with acceptable initial performance | Open | ISA/ABI corpus (smoke subset green in result 04), stable exceptions/unwind, deterministic game scene, measured CPU gap |
 | D3D11 renders at least two representative games/scenes | Open | GFX-001 correctness, frame pacing, memory, and scene evidence |
 | Per-process policy selects different graphics providers early enough | Complete | WINE-001: exact-image launcher/game plus unknown-child default select three physical provider DLLs before imports |
 | Transactional runtime survives injected termination | Complete | ROLLBACK-001: 18 action/journal death points plus failed-health rollback |
