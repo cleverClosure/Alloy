@@ -54,9 +54,11 @@ scripts/next-task.sh --claim claude  # claim the top task as claude (or: codex)
 A task is eligible iff **all** of:
 
 1. Board status is **Todo**.
-2. It has **no assignee** — the assignee field is the lock; claiming = assigning.
-3. Every native **blocked by** issue is closed.
-4. Its `area:*` labels are disjoint from every task **In Progress or On Hold**.
+2. It is **not labeled `founder`** — founder-only work (FEX tree no-AI policy,
+   license acceptances, purchases, legal, sign-offs) is never agent-claimable.
+3. It has **no assignee** — the assignee field is the lock; claiming = assigning.
+4. Every native **blocked by** issue is closed.
+5. Its `area:*` labels are disjoint from every task **In Progress or On Hold**.
 
 `--claim` assigns the account, sets the **Agent** field, moves the card to
 In Progress, and comments the agent name. WIP limit: **one In Progress task

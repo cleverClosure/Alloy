@@ -60,6 +60,7 @@ issues=$(jq --argjson proj "$PROJECT" '
         number,
         title,
         assigned: ((.assignees.nodes | length) > 0),
+        founder: (([.labels.nodes[].name] | index("founder")) != null),
         areas: [.labels.nodes[].name | select(startswith("area:"))],
         prio: (([.labels.nodes[].name | select(startswith("priority:"))] | sort | .[0]) // "priority:P9"),
         open_blockers: [.blockedBy.nodes[] | select(.state == "OPEN") | .number],
@@ -74,6 +75,7 @@ locked=$(jq '[.[] | select(.status == "In Progress" or .status == "On Hold") | .
 eligible=$(jq --argjson locked "$locked" '
   [.[] | select(
       .status == "Todo"
+      and (.founder | not)
       and (.assigned | not)
       and (.open_blockers | length == 0)
       and ((.areas - $locked) == .areas)
@@ -89,11 +91,12 @@ jq -r 'to_entries[] | "  \(.key + 1). #\(.value.number) \(.value.prio | sub("pri
 
 echo "── Waiting (open Todo, not eligible) ─────────────────"
 jq -r --argjson locked "$locked" '.[]
-  | select(.status == "Todo" and ((.assigned)
+  | select(.status == "Todo" and ((.assigned) or (.founder)
       or (.open_blockers | length > 0)
       or ((.areas - $locked) != .areas)))
   | "  #\(.number) — " +
     (if .assigned then "already claimed"
+     elif .founder then "founder-only"
      elif (.open_blockers | length > 0) then "blocked by " + (.open_blockers | map("#\(.)") | join(", "))
      else "area lock held: " + ((.areas - (.areas - $locked)) | join(",")) end)' <<<"$issues"
 
