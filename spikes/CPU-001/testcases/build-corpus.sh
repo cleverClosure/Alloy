@@ -43,4 +43,6 @@ build seh_deep "$SEH_FLAGS"
 build seh_concurrent "$SEH_FLAGS"
 build seh_worker "$SEH_FLAGS"
 build seh_multi "$SEH_FLAGS"
+build seh_repeat "$SEH_FLAGS"
+build seh_nullcall "$SEH_FLAGS"
 echo corpus-built
