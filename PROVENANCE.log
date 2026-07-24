@@ -7,3 +7,4 @@
 2026-07-23 | Tim Isaev | Log initialized with repo engineering skeleton. No excluded source has been read or pasted into any AI-assistant context to date. Approved-input baseline for future Metal12 work: DirectX-Specs (CC-BY-4.0), DirectX-Headers (MIT), DXC (NCSA), Apple Metal documentation, own experiments.
 2026-07-23 | Tim Isaev | third_party fetch policy set: DXMT checkout deferred; on fetch, src/d3d12/ is quarantined before any human or AI reads the tree (MANIFEST.toml note).
 2026-07-23 | Tim Isaev | Product name adopted: Alloy (D-021). Entries above this line were written under the working name MGCR.
+2026-07-24 | Tim Isaev | DXMT fetched for SPIKE-GFX-001 at e520fea (main, LGPL, CodeWeavers). src/d3d12/ deleted at clone time per MANIFEST.toml/ADR-0012, before any human or AI read of the tree. Submodules: nvapi, DirectX-Headers (approved input).

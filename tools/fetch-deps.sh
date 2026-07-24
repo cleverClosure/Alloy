@@ -3,7 +3,11 @@
 # Author: Tim Isaev
 # Clones spike upstreams into third_party/src/ (shallow), fetches the llvm-mingw
 # release toolchain, and records exact revisions in third_party/deps.lock.
-# DXMT is deliberately NOT fetched (deferred; ADR-0012 exclusion guard — see MANIFEST.toml).
+# DXMT is fetched with the ADR-0012 exclusion guard: src/d3d12/ is deleted at clone
+# time, before any human or AI reads the tree (MANIFEST.toml note).
+# CAUTION: revisions are recorded from the current checkout HEAD; the wine checkout
+# lives on the alloy fork branch once patches land, so rerunning this script rewrites
+# the wine lock line with the fork tip rather than the original upstream pin.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -44,10 +48,29 @@ fetch_llvm_mingw() {
   echo "llvm-mingw $tag release-binary" >>"$LOCKTMP.entries"
 }
 
+clone_pin_dxmt() {
+  local dir="$SRC/dxmt"
+  if [[ -d "$dir/.git" ]]; then
+    echo "== dxmt: already cloned"
+  else
+    echo "== dxmt: cloning (shallow) with ADR-0012 quarantine"
+    git clone --depth 1 --recurse-submodules --shallow-submodules \
+      https://github.com/3Shain/dxmt.git "$dir"
+  fi
+  # ADR-0012 exclusion guard: the d3d12 subtree is a Metal12 clean-room excluded
+  # source and must be gone before any human or AI reads the checkout.
+  rm -rf "$dir/src/d3d12"
+  local rev branch
+  rev=$(git -C "$dir" rev-parse HEAD)
+  branch=$(git -C "$dir" rev-parse --abbrev-ref HEAD)
+  echo "dxmt $rev $branch" >>"$LOCKTMP.entries"
+}
+
 : >"$LOCKTMP.entries"
 echo "# Alloy dependency lock — written $(date -u +%Y-%m-%dT%H:%M:%SZ) by fetch-deps.sh" >"$LOCKTMP.header"
 clone_pin fex https://github.com/FEX-Emu/FEX.git
 clone_pin wine https://gitlab.winehq.org/wine/wine.git
+clone_pin_dxmt
 fetch_llvm_mingw
 cat "$LOCKTMP.header" "$LOCKTMP.entries" >"$LOCK"
 rm -f "$LOCKTMP.header" "$LOCKTMP.entries"
