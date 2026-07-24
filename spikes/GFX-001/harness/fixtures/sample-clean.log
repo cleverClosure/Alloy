@@ -1,0 +1,6 @@
+anchor (32,32): b=0 g=0 r=255 (expected 0 0 255: red wins depth)
+frames: 600 measured (60 warmup), 202 draws + 202 cbuffer maps per frame
+first frame (device->present, cold pipelines): 23.7 ms
+frame time ms: mean=3.04 p50=1.95 p95=10.52 p99=16.53 max=22.71
+throughput: 329 fps mean
+memory MB: working set 158.3 -> 180.1, pagefile 1200.4 -> 1204.2

@@ -1,0 +1,7 @@
+commit step at frame 481: 1200.4 -> 2510.4 MB pagefile
+anchor (32,32): b=255 g=0 r=0 (expected 0 0 255: red wins depth)
+frames: 600 measured (60 warmup), 202 draws + 202 cbuffer maps per frame
+first frame (device->present, cold pipelines): 38.3 ms
+frame time ms: mean=4.30 p50=2.10 p95=16.30 p99=20.70 max=24.40
+throughput: 233 fps mean
+memory MB: working set 158.0 -> 180.2, pagefile 1200.4 -> 2514.2

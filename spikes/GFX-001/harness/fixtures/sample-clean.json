@@ -1,0 +1,21 @@
+{
+  "first_frame_ms": 23.7,
+  "frame_ms": {
+    "mean": 3.04,
+    "p50": 1.95,
+    "p95": 10.52,
+    "p99": 16.53,
+    "max": 22.71
+  },
+  "fps_mean": 329,
+  "memory_mb": {
+    "working_set_start": 158.3,
+    "working_set_end": 180.1,
+    "pagefile_start": 1200.4,
+    "pagefile_end": 1204.2,
+    "pagefile_delta": 3.8
+  },
+  "anchor_pass": true,
+  "commit_steps": 0,
+  "exit_code": 0
+}
