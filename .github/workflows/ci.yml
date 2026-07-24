@@ -1,0 +1,53 @@
+# Alloy lightweight continuous integration
+# Author: Timur Isaev
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint and test
+    runs-on: macos-15
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install missing lint tools
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+        run: |
+          formulas=()
+          command -v clang-format >/dev/null || formulas+=(clang-format)
+          command -v shellcheck >/dev/null || formulas+=(shellcheck)
+          command -v shfmt >/dev/null || formulas+=(shfmt)
+          command -v markdownlint-cli2 >/dev/null || formulas+=(markdownlint-cli2)
+          command -v yamllint >/dev/null || formulas+=(yamllint)
+          command -v swiftlint >/dev/null || formulas+=(swiftlint)
+          command -v jq >/dev/null || formulas+=(jq)
+
+          if ((${#formulas[@]})); then
+            brew install "${formulas[@]}"
+          fi
+
+      - name: Lint
+        run: tools/lint.sh
+
+      - name: Test rollback prototype
+        run: swift test --package-path spikes/ROLLBACK-001/prototype --parallel
