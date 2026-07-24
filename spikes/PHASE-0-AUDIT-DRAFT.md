@@ -34,13 +34,13 @@ executes the items in §3 and signs §4.
 | E4 | Per-process policy early enough | **Complete** |
 | E5 | Transactional runtime survives injected termination | **Complete** |
 | E6 | One exact build fingerprinted + reproduced in lab | **Half: fingerprint + exact rerun done; lab (Windows) reproduction awaits LAB-001 hardware** |
-| E7 | Leadership accepts bootstrap D3D12 lab-only + Metal12 weight | **Decision record drafted (§3.1) — founder signature required** |
+| E7 | Leadership accepts bootstrap D3D12 lab-only + Metal12 weight | **Complete** — D-021 signed 24 July 2026 (§3.1) |
 | E8 | Metal12 spikes show credible path | **Complete at prototype scope** (M12-001..004 measured) |
 | E9 | Remaining existential risks have owners + deadlines | **Draft dispositions in §3.2 — founder ratification required** |
 
 ## 3. Founder-only closure items (everything else is done or in evidence)
 
-### 3.1 Decision record draft — D-02X: bootstrap D3D12 scope and Metal12 weight
+### 3.1 Decision record — D-021: bootstrap D3D12 scope and Metal12 weight (SIGNED)
 
 > Accepted: GPTK/D3DMetal remains lab/reference-only (non-commercial license,
 > LEGAL-001); the commercial D3D12 path is Metal12, now evidenced by four green
@@ -48,7 +48,7 @@ executes the items in §3 and signs §4.
 > weight into Phases 1–2 with the ADR-0012 discipline-model clean room as its legal
 > posture pending counsel item 8. Fallback remains open-sourcing Metal12 (ADR-0012
 > alternative 1) if a contamination event or counsel rejection materializes.
-> — *sign/date to close E7*
+> — **Signed: Tim Isaev, 24 July 2026 — recorded as [D-021](../docs/docs/14_DECISION_LOG.md). E7 closed.**
 
 ### 3.2 Risk-register deadline drafts (E9)
 
@@ -68,7 +68,7 @@ executes the items in §3 and signs §4.
 2. GPTK lab install + reference scene (non-commercial, lab-only).
 3. Entitled title under the runtime → E3's two game scenes + real-title census.
 4. Counsel engagement on the nine-item checklist.
-5. Sign §3.1; ratify §3.2. *(Perturbed STORE-001 rerun: done 24 Jul, EXACT MATCH.)*
+5. Ratify §3.2 risk deadlines. *(§3.1 signed as D-021; perturbed STORE-001 rerun EXACT MATCH — both 24 Jul.)*
 
 ## 4. Go / narrow / pivot recommendation (draft)
 

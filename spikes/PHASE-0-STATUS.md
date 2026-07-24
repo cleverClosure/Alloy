@@ -35,7 +35,7 @@ measurement, review, or decision evidence proves the roadmap wording at its full
 | Per-process policy selects different graphics providers early enough | Complete | WINE-001: exact-image launcher/game plus unknown-child default select three physical provider DLLs before imports |
 | Transactional runtime survives injected termination | Complete | ROLLBACK-001: 18 action/journal death points plus failed-health rollback |
 | One exact game build is fingerprinted and reproduced in lab | Half complete | Fingerprint + exact rerun done (STORE-001 result 01); LAB-001 Windows-side reproduction remains (founder hardware) |
-| Leadership accepts lab-only bootstrap D3D12 and Metal12 strategic weight | Open | Explicit decision record approving the residual schedule/runway consequence |
+| Leadership accepts lab-only bootstrap D3D12 and Metal12 strategic weight | Complete | [D-021](../docs/docs/14_DECISION_LOG.md) accepted 24 July 2026; audit §3.1 signed |
 | Metal12 descriptor/barrier/shader spikes show a credible path | Complete at prototype scope | M12-001..004 measured prototypes green (results 01 in each spike dir); remaining depth (trace replay, texture classes, wave ops, multi-tier hardware) is Phase-1 scope |
 | Remaining existential risks have owners and deadlines | In progress | Owners exist in risk register; evidence-bound deadlines/dispositions remain missing |
 
