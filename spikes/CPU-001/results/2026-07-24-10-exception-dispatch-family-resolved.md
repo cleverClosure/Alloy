@@ -111,12 +111,18 @@ a wine-side sink pointer through an existing exported slot instead.
    crash at a fixed address) — any unhandled guest exception currently orphans
    the process instead of producing a backtrace. Pre-title item: disable
    auto-launch properly (AeDebug `Auto=0` string did not) or fix winedbg.
-2. `d3d11_draw`/`win_smoke` failed tonight with `D3D11CreateDevice` →
-   `80004005` **on stock builds of both forks and in two prefixes** — the exact
-   configuration that was pixel-exact this morning. Environmental
-   (Metal device creation without an interactive WindowServer session — the
-   machine was likely locked); re-verify in an interactive session before
-   reading it as a regression.
+2. `d3d11_draw` "failed" tonight with `80004005` — RESOLVED, no regression:
+   the batteries ran the CPU corpus environment against the CPU prefix, but
+   the graphics tests require the full GFX-001 recipe: prefix-gui with
+   `WINEDLLPATH=<dxmt-install>`, `WINEDLLOVERRIDES="xtajit64=n;d3d11,dxgi=n"`
+   and `DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib`; without the overrides
+   wine silently loads its builtin d3d11 instead of DXMT's native one.
+   Re-run with the recipe: **pixel-exact, exit 0** through the full stack
+   including tonight's FEX/wine fixes — regression-neutral confirmed.
+   `win_smoke` separately reports a degenerate client rect (32866x0, window
+   created and visible) — green this morning on equivalent code, unrelated to
+   tonight's signal-path changes; winemac.drv geometry quirk, likely
+   display-arrangement sensitive; retest next session.
 3. FEX derives wine syscall IDs by sorting `Nt*` exports by RVA
    (`Module.cpp` `InitSyscalls`) — fragile against wine export changes; worth a
    runtime cross-check eventually.
