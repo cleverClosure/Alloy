@@ -17,7 +17,7 @@ executes the items in §3 and signs §4.
 | D4 | D3D12 bootstrap reference scene + Metal12 micro-prototypes | **Prototypes complete (all four); GPTK scene founder-gated** | M12-001..004 results 01: descriptor heap 1.34M probes clean; barrier tracker 90% elision at 0 uncovered; DXIL→MSL corpus exact; residency bounded, budget-is-advisory |
 | D5 | Per-process launcher/game backend split | **Complete at prototype scope** | WINE-001 gate 4 + GFX-001 launcher_split (D3D11 provider in spawned child) |
 | D6 | Content-addressed runtime + atomic reference | **Complete** | ROLLBACK-001 result 01 |
-| D7 | First storefront install/fingerprint proof | **Substantially complete** | STORE-001 result 01: entitled Sir Brante build 24280929, per-file+aggregate SHA-256, rerun EXACT MATCH; founder 5-min perturbed rerun remains |
+| D7 | First storefront install/fingerprint proof | **Complete at Phase-0 scope** | STORE-001 result 01: entitled Sir Brante build 24280929, per-file+aggregate SHA-256; rerun EXACT MATCH unperturbed *and* after Steam restart + integrity verification (founder, 24 Jul) |
 | D8 | Save separation proof | **Complete at prototype scope** | ROLLBACK-001 byte-identical external save across fault cases |
 | D9 | Windows/Mac deterministic test-runner proof | **Open — founder-gated** | LAB-001 needs Windows lab hardware + a title; STORE-001 fingerprint JSON is the ready identity anchor; FMA/MXCSR findings (CPU-001 result 08) are pre-registered determinism risks |
 | D10 | Legal memo | **Preliminary done; counsel pending** | LEGAL-001 findings; nine-item counsel checklist is the founder/external dependency |
@@ -64,12 +64,11 @@ executes the items in §3 and signs §4.
 
 ### 3.3 Remaining founder execution list
 
-1. Perturbed STORE-001 rerun (5 min, runbook step 5).
+1. FEX tree fixes (no-AI policy), exception-dispatch deadlock family first.
 2. GPTK lab install + reference scene (non-commercial, lab-only).
 3. Entitled title under the runtime → E3's two game scenes + real-title census.
-4. FEX tree fixes (no-AI policy): guard granularity, MXCSR, FMA, exclusives backoff.
-5. Counsel engagement on the nine-item checklist.
-6. Sign §3.1; ratify §3.2.
+4. Counsel engagement on the nine-item checklist.
+5. Sign §3.1; ratify §3.2. *(Perturbed STORE-001 rerun: done 24 Jul, EXACT MATCH.)*
 
 ## 4. Go / narrow / pivot recommendation (draft)
 

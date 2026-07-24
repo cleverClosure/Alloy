@@ -26,7 +26,7 @@ Full record: [`fingerprint-1272160-first.json`](fingerprint-1272160-first.json)
 | --- | --- |
 | Entitled install | ✅ real client, entitled account, real title |
 | Exact build fingerprint | ✅ buildid + depot manifest + per-file and aggregate SHA-256 |
-| Rerun evidence | ✅ unperturbed EXACT MATCH; **founder 5-min step remains:** rerun `--verify` after a Steam client restart + "Verify integrity of game files" (the realistic perturbation) |
+| Rerun evidence | ✅ unperturbed EXACT MATCH; ✅ **perturbed EXACT MATCH** — after a full Steam client restart + "Verify integrity of game files" (founder-executed, 24 July 2026), buildid, depot manifests, and the content aggregate all reproduced identically. Steam's own maintenance pass does not rewrite installed content, so the fingerprint is a stable certification identity |
 | Runtime-hosted client (Lane B) | Phase-1 scope; this fingerprint is its comparison anchor |
 
 LAB-001's Windows-side reproduction consumes the same JSON as its identity anchor.
