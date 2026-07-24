@@ -4,6 +4,9 @@
 
 Work is tracked as GitHub issues on the [Alloy board](https://github.com/users/cleverClosure/projects/1).
 The system is designed for up to **two agents working in parallel** on this repo.
+Both agents share one GitHub account; the board's **Agent** field (`claude` |
+`codex`) records who holds a claimed task. Group the board by Agent for
+per-agent swimlanes.
 
 ## Board columns
 
@@ -41,8 +44,8 @@ Shaping rules that keep two agents busy:
 Run the deterministic picker:
 
 ```bash
-scripts/next-task.sh              # see what is eligible and why others are not
-scripts/next-task.sh --claim bob  # claim the top task as agent "bob"
+scripts/next-task.sh                 # see what is eligible and why others are not
+scripts/next-task.sh --claim claude  # claim the top task as claude (or: codex)
 ```
 
 A task is eligible iff **all** of:
@@ -52,8 +55,12 @@ A task is eligible iff **all** of:
 3. Every native **blocked by** issue is closed.
 4. Its `area:*` labels are disjoint from every task **In Progress or On Hold**.
 
-`--claim` assigns you, moves the card to In Progress, and comments the agent
-name. WIP limit: **one task per agent**.
+`--claim` assigns the account, sets the **Agent** field, moves the card to
+In Progress, and comments the agent name. WIP limit: **one In Progress task
+per agent** — the script refuses a claim while that agent already holds one.
+
+Optional planning fields on the board: **Iteration** (weekly cycle, starts
+Mondays) and **Estimate** (hours; column headers can sum it).
 
 ## Finishing
 
