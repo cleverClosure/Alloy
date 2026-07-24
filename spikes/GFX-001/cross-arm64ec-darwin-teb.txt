@@ -1,0 +1,29 @@
+# GFX-001 arm64ec cross file with the darwin-teb configuration.
+# Author: Tim Isaev
+#
+# Same toolchain as DXMT's in-tree build-arm64ec.txt, plus the two flags that
+# retarget the Windows x18=TEB convention for Darwin (result 02 policy):
+#   -ffixed-x18        compiler never allocates or reads x18
+#   -I darwin-teb-overlay   patched winnt.h shadows the toolchain's; NtCurrentTeb()
+#                           compiles to tpidrro_el0 + TSD slot 6 instead of x18
+# Kept outside third_party/src/dxmt so the DXMT tree stays zero-change.
+
+[binaries]
+c = 'arm64ec-w64-mingw32-gcc'
+cpp = 'arm64ec-w64-mingw32-g++'
+ar = 'arm64ec-w64-mingw32-ar'
+strip = 'arm64ec-w64-mingw32-strip'
+windres = 'arm64ec-w64-mingw32-windres'
+
+[built-in options]
+c_args = ['-ffixed-x18', '-I/Users/cleverclosure/Developer/macgaming/spikes/CPU-001/work/darwin-teb-overlay']
+cpp_args = ['-ffixed-x18', '-I/Users/cleverclosure/Developer/macgaming/spikes/CPU-001/work/darwin-teb-overlay']
+
+[properties]
+needs_exe_wrapper = true
+
+[host_machine]
+system = 'windows'
+cpu_family = 'aarch64'
+cpu = 'aarch64'
+endian = 'little'
