@@ -1,0 +1,42 @@
+# Author: Tim Isaev
+# Task template shaped for parallel agent execution — see TASKS.md for the protocol.
+name: Task
+description: A unit of work sized for one agent, shaped for parallel execution
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: The outcome this task produces, in one or two sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: depends
+    attributes:
+      label: Depends on
+      description: >-
+        Blocking issues, or "none". After creating the issue, ALSO set the
+        native "blocked by" relationship (issue sidebar → Relationships) —
+        the picker script reads the native relationship, not this text.
+      placeholder: "#12, #14 — or: none"
+    validations:
+      required: true
+  - type: textarea
+    id: touches
+    attributes:
+      label: Touches
+      description: >-
+        Paths this task will modify. Must match the issue's area:* labels —
+        one label per top-level track it touches.
+      placeholder: |
+        spikes/CPU-001/
+        docs/research/
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      description: Verifiable completion criteria.
+    validations:
+      required: true
