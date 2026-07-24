@@ -1,6 +1,6 @@
 # STORE-001 result 01 — first entitled-build fingerprint and exact-match rerun
 
-**Author:** Tim Isaev
+**Author:** Timur Isaev
 **Date:** 24 July 2026
 
 ## Verdict
