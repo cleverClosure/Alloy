@@ -42,6 +42,9 @@ typedef struct _SYSTEM_CPU_INFORMATION
 ULONG WINAPIV DbgPrint(const char *fmt, ...);
 DECLSPEC_NORETURN void WINAPI RtlExitUserProcess(NTSTATUS status);
 
+typedef void(__cdecl *FEX_LOG_SINK)(const char *message);
+FEX_LOG_SINK FEXWineLogSink;
+
 static void emu_log(const char *msg)
 {
     DbgPrint("alloy-emu-stub: %s\n", msg);
@@ -66,6 +69,10 @@ BOOL WINAPI DllMainCRTStartup(HINSTANCE inst, DWORD reason, void *reserved)
 NTSTATUS WINAPI ProcessInit(void)
 {
     emu_log("ProcessInit: EC loader reached the emulator; init OK");
+    if (FEXWineLogSink)
+        FEXWineLogSink("alloy-emu-stub: injected FEX log sink reached\n");
+    else
+        emu_log("ProcessInit: injected FEX log sink is missing");
     return STATUS_SUCCESS;
 }
 

@@ -42,8 +42,13 @@ $TC/arm64ec-w64-mingw32-clang -shared -nostdlib -O2 \
    exist yet.
 
 Produces a PE32+ ARM64EC DLL (`file` reports "x86-64" — correct: ARM64EC
-carries the AMD64 machine type). Verify with `llvm-objdump -p xtajit64.dll`:
-20 exports, imports ntdll.dll only.
+carries the AMD64 machine type). Verify with `llvm-readobj --coff-exports
+--coff-imports xtajit64.dll`: 21 exports, imports ntdll.dll only.
+
+`FEXWineLogSink` is a writable data export used to validate Wine's optional
+native logging callback injection before the matching founder-authored hook is
+added to FEX. `ProcessInit` calls the injected pointer and emits
+`alloy-emu-stub: injected FEX log sink reached`.
 
 ## Install & test
 
@@ -62,6 +67,7 @@ Expected:
 
 ```text
 alloy-emu-stub: ProcessInit: EC loader reached the emulator; init OK
+alloy-emu-stub: injected FEX log sink reached
 alloy-emu-stub: ExitToX64: x64 code transfer requested - Wine-side plumbing proven; exiting (stub).
 (exit 0)
 ```
