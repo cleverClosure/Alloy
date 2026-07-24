@@ -37,7 +37,7 @@ measurement, review, or decision evidence proves the roadmap wording at its full
 | One exact game build is fingerprinted and reproduced in lab | Half complete | Fingerprint + exact rerun done (STORE-001 result 01); LAB-001 Windows-side reproduction remains (founder hardware) |
 | Leadership accepts lab-only bootstrap D3D12 and Metal12 strategic weight | Complete | [D-021](../docs/docs/14_DECISION_LOG.md) accepted 24 July 2026; audit §3.1 signed |
 | Metal12 descriptor/barrier/shader spikes show a credible path | Complete at prototype scope | M12-001..004 measured prototypes green (results 01 in each spike dir); remaining depth (trace replay, texture classes, wave ops, multi-tier hardware) is Phase-1 scope |
-| Remaining existential risks have owners and deadlines | In progress | Owners exist in risk register; evidence-bound deadlines/dispositions remain missing |
+| Remaining existential risks have owners and deadlines | Complete | Ratified 24 July 2026 — [risk register §2.1](../docs/docs/13_RISK_REGISTER.md) per audit §3.2; open items track as issues #6/#7/#8/#13/#15 |
 
 ## Critical sequence
 

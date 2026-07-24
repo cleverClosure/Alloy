@@ -36,7 +36,7 @@ executes the items in §3 and signs §4.
 | E6 | One exact build fingerprinted + reproduced in lab | **Half: fingerprint + exact rerun done; lab (Windows) reproduction awaits LAB-001 hardware** |
 | E7 | Leadership accepts bootstrap D3D12 lab-only + Metal12 weight | **Complete** — D-021 signed 24 July 2026 (§3.1) |
 | E8 | Metal12 spikes show credible path | **Complete at prototype scope** (M12-001..004 measured) |
-| E9 | Remaining existential risks have owners + deadlines | **Draft dispositions in §3.2 — founder ratification required** |
+| E9 | Remaining existential risks have owners + deadlines | **Complete — ratified 24 July 2026** (risk register §2.1; FMA fusion and rip-modify retired at ratification) |
 
 ## 3. Founder-only closure items (everything else is done or in evidence)
 
@@ -50,7 +50,13 @@ executes the items in §3 and signs §4.
 > alternative 1) if a contamination event or counsel rejection materializes.
 > — **Signed: Tim Isaev, 24 July 2026 — recorded as [D-021](../docs/docs/14_DECISION_LOG.md). E7 closed.**
 
-### 3.2 Risk-register deadline drafts (E9)
+### 3.2 Risk-register deadlines (E9) — RATIFIED
+
+> Ratified: Tim Isaev, 24 July 2026 — recorded in
+> [13_RISK_REGISTER.md §2.1](../docs/docs/13_RISK_REGISTER.md). Corrections applied at
+> ratification: FMA fusion retired as a non-defect (result 12); rip-modify
+> continue-execution retired as green (result 10). E9 closed. Open items track as
+> issues #6, #7, #8, #13, #15.
 
 | Risk | Owner | Proposed evidence-bound deadline |
 | --- | --- | --- |
@@ -68,7 +74,7 @@ executes the items in §3 and signs §4.
 2. GPTK lab install + reference scene (non-commercial, lab-only).
 3. Entitled title under the runtime → E3's two game scenes + real-title census.
 4. Counsel engagement on the nine-item checklist.
-5. Ratify §3.2 risk deadlines. *(§3.1 signed as D-021; perturbed STORE-001 rerun EXACT MATCH — both 24 Jul.)*
+5. ~~Ratify §3.2 risk deadlines.~~ *(Done 24 Jul — risk register §2.1. §3.1 signed as D-021; perturbed STORE-001 rerun EXACT MATCH — both 24 Jul.)*
 
 ## 4. Go / narrow / pivot recommendation (draft)
 

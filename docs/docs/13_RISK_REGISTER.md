@@ -57,6 +57,22 @@
 | R-035 | Product becomes a wrapper before moat arrives | Strategy | High | Critical | Commercial pressure ships UI around third-party stack with no deterministic system or Metal12 path. | Architecture gates; investor/board milestone definitions; separate bootstrap from strategic deliverables. | Narrow/extend preview rather than misposition; publish roadmap honestly. | CEO / CTO | Continuous |
 | R-036 | Metal12 IP contamination under solo provenance discipline | Legal/Strategy | Medium | Critical | The Metal12 author reads an excluded LGPL source (vkd3d, vkd3d-proton, DXMT `src/d3d12/`), or a similarity claim is raised against Metal12. | ADR-0012 protocol: exclusion list, spec-only approved inputs (DirectX-Specs/Headers, DXC, Apple docs), append-only provenance log, AI-assistant rules, DXMT-internal boundary. | Incident review with counsel; open-source or rewrite affected modules; adopt formal two-team clean room once headcount permits. | CEO/CTO (founder) / Legal | Continuous from first Metal12 code |
 
+### 2.1 Ratified Phase-0 risk dispositions — 24 July 2026
+
+Ratified by the founder per Phase-0 audit §3.2 (exit criterion E9). Deadlines are
+evidence-bound orderings, not calendar dates; changing one requires a new recorded
+decision, not an edit to this table.
+
+| Risk | Anchor | Ratified disposition | Tracking |
+| --- | --- | --- | --- |
+| FEX 4 KB guard granularity | R-001 | CLOSED 24 Jul 2026 — host-page-sized, validated by `guard_enforce` (CPU-001 result 09) | — |
+| Multi-worker guest-AV dispatch deadlock | R-001 | Fix lands before any real title boots under the runtime | issue #6 → blocks #10 |
+| MXCSR sticky exception-status flags | R-001, R-014 | Fix lands before LAB-001 determinism runs. FMA fusion RETIRED at ratification as a non-defect (CPU-001 result 12: bit-exact single-rounded) | issue #7 → blocks #15 |
+| Rip-modify continue-execution hang | R-001 | RETIRED at ratification — green since CPU-001 result 10; no further work scheduled | — |
+| Dispatcher-gadget x18 fault tax | R-001, R-007 | Fix lands before Phase-1 performance baselining; fault telemetry stays absorbed in the fork meanwhile | issue #8 |
+| Counsel checklist (nine items) | R-010, R-036 | Complete before any external binary distribution | issue #13 → blocks #16 |
+| LAB-001 Windows lab hardware | R-014, R-015 | Purchase in Phase-1 week 1 | issue #15 |
+
 ## 3. Top program risks
 
 The current top risks requiring executive visibility are:
