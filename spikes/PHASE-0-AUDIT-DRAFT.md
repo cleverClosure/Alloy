@@ -54,7 +54,7 @@ executes the items in §3 and signs §4.
 
 | Risk | Owner | Proposed evidence-bound deadline |
 | --- | --- | --- |
-| FEX guard granularity (4 KB) | Founder | before first real-title census (gate: STORE-001 title under runtime) |
+| FEX guard granularity (4 KB) | Founder | DONE 24 Jul (result 09): host-page-sized, validated by guard_enforce.c (4K unenforced / 16K enforced) |
 | Multi-thread guest-AV dispatch deadlock | Founder | **before any real title** — games fault with live threads routinely (JIT, copy protection); repro = seh_concurrent.c + two samples |
 | MXCSR flags + FMA fusion | Founder | before LAB-001 determinism runs (pre-registered divergence sources) |
 | Rip-modify continue-execution hang | Founder | with the dispatch-deadlock work (same exception-dispatch area) |
