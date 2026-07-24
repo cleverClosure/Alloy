@@ -8,3 +8,4 @@
 2026-07-23 | Tim Isaev | third_party fetch policy set: DXMT checkout deferred; on fetch, src/d3d12/ is quarantined before any human or AI reads the tree (MANIFEST.toml note).
 2026-07-23 | Tim Isaev | Product name adopted: Alloy (D-021). Entries above this line were written under the working name MGCR.
 2026-07-24 | Tim Isaev | DXMT fetched for SPIKE-GFX-001 at e520fea (main, LGPL, CodeWeavers). src/d3d12/ deleted at clone time per MANIFEST.toml/ADR-0012, before any human or AI read of the tree. Submodules: nvapi, DirectX-Headers (approved input).
+2026-07-24 | Tim Isaev | Founder authorization: AI agent (codex) cleared to work issue #6 (FEX exception-dispatch deadlock, FEX fork tree) notwithstanding the audit §3.3 founder-only/no-AI note. Scope: issue #6 only; FEX-upstream contribution implications to be assessed before any upstreaming of AI-authored changes. ADR-0012 excluded-source list unchanged.
