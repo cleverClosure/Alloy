@@ -74,3 +74,24 @@ Mondays) and **Estimate** (hours; column headers can sum it).
   card lands in Done automatically.
 - Abandoning a task cleanly (no branch kept): unassign yourself and move it
   back to Todo. Pausing with a branch: move to On Hold, stay assigned.
+
+### Merging is automatic
+
+`.github/workflows/auto-merge.yml` squash-merges **every** non-draft PR into
+`main` as soon as CI is green. There is no label or approval gate: **opening a
+ready PR is the decision to merge it.**
+
+- **A PR that needs a human call must be opened as a draft**, or converted back
+  to one (`gh pr ready --undo <n>`). Drafts are skipped, and are re-evaluated
+  when marked ready. This is the only brake — use it whenever the PR body asks
+  the founder to decide something.
+- Merges are squashes, so one commit lands on `main` per PR. A single-commit PR
+  keeps its original message verbatim; a multi-commit PR gets all of its
+  messages concatenated under the PR title. Shape the branch accordingly.
+- Nothing merges on a red or still-running check: the workflow requires
+  GitHub's `CLEAN` merge state, which means mergeable *and* every check passed.
+  Conflicts (`DIRTY`) and failing checks (`UNSTABLE`) are left alone.
+- This is a workflow rather than GitHub's native auto-merge because native
+  auto-merge needs branch protection with required checks, and protected
+  branches need GitHub Pro on a private repo. If the repo ever moves to Pro,
+  replace this with branch protection plus `gh pr merge --auto`.

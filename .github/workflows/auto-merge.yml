@@ -1,0 +1,113 @@
+# Alloy automatic merge on green CI
+# Author: Tim Isaev
+#
+# Every non-draft pull request into main squash-merges itself as soon as CI is
+# green. There is no label gate: opening a PR is the decision to merge it. If a
+# PR needs a human call before landing, open it as a draft (or convert it back
+# to draft) - drafts are skipped and re-evaluated when marked ready.
+#
+# This is a workflow rather than GitHub's native auto-merge because native
+# auto-merge requires branch protection with required status checks, and
+# protected branches need GitHub Pro on a private repository (the REST API
+# returns 403 "Upgrade to GitHub Pro" for this repo today).
+#
+# NOTE: workflow_run only fires for workflow files that exist on the default
+# branch, so this file does nothing until it is on main.
+
+name: Auto-merge
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: auto-merge-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    name: Squash-merge when CI is green
+    # Only successful CI runs, only PR runs (a push to main also runs CI, and
+    # must not re-enter here), and only branches in this repository.
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Squash-merge the pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+
+          pr=$(gh api "repos/$REPO/commits/$SHA/pulls" \
+            --jq 'map(select(.state == "open" and .base.ref == "main")) | .[0].number // empty')
+          if [[ -z $pr ]]; then
+            echo "No open pull request into main for $SHA; nothing to merge."
+            exit 0
+          fi
+          echo "Candidate: PR #$pr at $SHA"
+
+          # mergeStateStatus is computed lazily and reports UNKNOWN until GitHub
+          # has finished; poll rather than guess. CLEAN is the only state that
+          # means "mergeable AND every commit status passed" - UNSTABLE is the
+          # state a failing check produces on an unprotected branch.
+          state=""
+          for attempt in $(seq 1 12); do
+            read -r prstate draft merge_state mergeable head <<<"$(gh pr view "$pr" --repo "$REPO" \
+              --json state,isDraft,mergeStateStatus,mergeable,headRefOid \
+              --jq '[.state, .isDraft, .mergeStateStatus, .mergeable, .headRefOid] | @tsv')"
+
+            if [[ $prstate != OPEN ]]; then
+              echo "PR #$pr is $prstate; nothing to do."
+              exit 0
+            fi
+            if [[ $head != "$SHA" ]]; then
+              echo "PR #$pr has moved on ($head != $SHA); a newer CI run will handle it."
+              exit 0
+            fi
+            if [[ $draft == true ]]; then
+              echo "PR #$pr is a draft; leaving it for a human."
+              exit 0
+            fi
+
+            state=$merge_state
+            if [[ $merge_state != UNKNOWN && $mergeable != UNKNOWN ]]; then
+              break
+            fi
+            echo "Merge state still being computed (attempt $attempt); waiting."
+            sleep 10
+          done
+
+          echo "PR #$pr merge state: $state (mergeable: $mergeable)"
+          case "$state" in
+            CLEAN)
+              ;;
+            DIRTY)
+              echo "PR #$pr conflicts with main; not merging."
+              exit 0
+              ;;
+            UNSTABLE)
+              echo "PR #$pr has a failing or incomplete check; not merging."
+              exit 0
+              ;;
+            *)
+              echo "PR #$pr is in state $state; not merging."
+              exit 0
+              ;;
+          esac
+
+          echo "Merging PR #$pr."
+          gh pr merge "$pr" --repo "$REPO" --squash
+          echo "Merged PR #$pr."
