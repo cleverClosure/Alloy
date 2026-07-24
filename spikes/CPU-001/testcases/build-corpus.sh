@@ -18,16 +18,20 @@ SEH_FLAGS="-fms-extensions -Xclang -fasync-exceptions"
 
 build() {
   echo "cc $1"
-  # shellcheck disable=SC2086 # $2 carries per-test flag lists
-  "$CC" -O2 $2 -o "$OUT/$1.exe" "$SRC/$1.c"
+  # $2 carries per-test flag/lib lists; it MUST follow the source so that
+  # import libraries (-luser32 -lgdi32) resolve — lld discards a -l listed
+  # before the object that references it. Compile flags are position-neutral.
+  # shellcheck disable=SC2086 # deliberate word-splitting of the flag/lib list
+  "$CC" -O2 -o "$OUT/$1.exe" "$SRC/$1.c" $2
 }
 
-build x64hello ""
-build win_smoke ""
+# x64hello is the WINE-001 first-execution smoke (spikes/WINE-001/testcases),
+# not a CPU-001 corpus member; it is built by that spike's own flow.
+build win_smoke "-luser32 -lgdi32"
 build memory_semantics ""
 build fault_cost ""
 build noaccess_inventory ""
-build jit_pages ""
+build jit_pages "-mavx2"
 build isa_smoke "-msse4.2 -mavx2 -mbmi -mbmi2"
 build x87_fp_edge "-ffp-contract=off"
 build threads_tls ""
