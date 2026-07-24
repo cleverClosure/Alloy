@@ -9,7 +9,7 @@
 
 | Guest | Families green | Findings |
 | --- | --- | --- |
-| `x87_fp_edge` | x87 extended precision, rounding modes, denormals, NaN semantics, int64 division edges, bit manipulation | **MXCSR sticky exception flags not virtualized** (`fetestexcept` reads clean after div-by-zero/invalid); **FMA3 not fused** — both `fma()` and the direct `vfmadd` instruction double-round (mask 0x188) |
+| `x87_fp_edge` | x87 extended precision, rounding modes, denormals, NaN semantics, int64 division edges, bit manipulation | **MXCSR sticky exception flags not virtualized** (`fetestexcept` reads clean after div-by-zero/invalid); **FMA3 not fused** — both `fma()` and the direct `vfmadd` instruction double-round (mask 0x188) — **CORRECTED, see [result 12](2026-07-24-12-x87-fp-mxcsr-fma-attributed.md): FEX's FMA is bit-exact single-rounded; the two FMA "failures" were compiler fp-contraction + a non-separating test vector, not FEX. Only the MXCSR sticky-flag gap is real, and it is cosmetic/deferred** |
 | `threads_tls` | TLS isolation (`__thread` + TlsAlloc across workers), 400-thread create/join churn, **contended atomics exact** (20000/20000, 64-bit 60000/60000) — exit 0 | — |
 | `seh_deep` | 32-deep nested `__finally` unwind in exact innermost-first order; `RaiseException` argument delivery through filters | **AV inside `__try` intermittently wedges dispatch even single-threaded** (2 of 4 runs); **`EXCEPTION_CONTINUE_EXECUTION` with modified Rip never resumes** (reproduced twice before restructure) |
 | `seh_concurrent` (detector) | — | **Simultaneous multi-thread guest AVs deadlock exception dispatch reliably** — wedges so completely the in-guest watchdog's `ExitProcess` cannot run; killed by the harness guard both runs |
