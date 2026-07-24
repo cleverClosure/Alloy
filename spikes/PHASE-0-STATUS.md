@@ -12,7 +12,7 @@ measurement, review, or decision evidence proves the roadmap wording at its full
 
 | Deliverable | State | Current evidence | Missing proof |
 | --- | --- | --- | --- |
-| ARM64 host launches x64 Windows tests through bootstrap and production-candidate paths | In progress | [CPU-001 result 04](CPU-001/results/2026-07-24-04-fex-first-execution-and-shear-defect.md): real FEX (darwin-teb build) executes the ISA/exception/atomics smoke corpus exit-0 under EC Wine | 4 KB sub-page enforcement (shear defect), full FEX corpus, game-scale execution |
+| ARM64 host launches x64 Windows tests through bootstrap and production-candidate paths | In progress | [CPU-001 result 04](CPU-001/results/2026-07-24-04-fex-first-execution-and-shear-defect.md): real FEX (darwin-teb build) executes the ISA/exception/atomics smoke corpus exit-0 under EC Wine | Shear disposition per [result 05](CPU-001/results/2026-07-24-05-shear-cost-and-census.md) (stack-barrier alignment, census on real titles), full FEX corpus, game-scale execution |
 | Wine ARM64EC/WoW64 architecture proof | In progress | WINE-001 gates 1–4 Wine side; deterministic pre-import launcher/game/default policy proof; real FEX mixed process runs (CPU-001 result 04) | Shear-enforcement decision; rebase drill awaits a newer official Wine master |
 | D3D11 game scene through a Metal-native provider | Missing | No GFX-001 spike directory | Measured scenes and provider integration |
 | D3D12 lab/reference scene and Metal12 micro-prototypes | Missing | Legal scope and clean-room protocol only | Reference scene plus descriptor, barrier, shader, and memory prototypes |
