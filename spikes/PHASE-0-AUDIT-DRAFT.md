@@ -1,11 +1,20 @@
 # Phase-0 completion audit — DRAFT for founder go/narrow/pivot review
 
 **Author:** Tim Isaev
-**As of:** 24 July 2026
+**As of:** 25 July 2026 (evidence refreshed; **still unsigned**)
 **Authority:** requirement-by-requirement audit against
 [roadmap §4](../docs/docs/11_ROADMAP_TEAM_AND_DELIVERY.md); evidence index in
 [PHASE-0-STATUS.md](PHASE-0-STATUS.md). This draft becomes final when the founder
 executes the items in §3 and signs §4.
+
+> **State: prepared to signature-ready, not signed.** Evidence below is current as of
+> 25 July 2026 and every §3.3 item carries its closure status. The go/narrow/pivot
+> call in §4 is the founder's and has deliberately been left unexecuted — §4 carries
+> an empty signature block. Nothing here records a decision.
+>
+> Two things still gate a *final* audit: issue #13 (counsel engagement) is open, and
+> E3's title evidence depends on #10/#11. §4 states how the draft recommendation
+> handles each.
 
 ## 1. Deliverables (roadmap §4 wording, verbatim → verdict)
 
@@ -19,8 +28,8 @@ executes the items in §3 and signs §4.
 | D6 | Content-addressed runtime + atomic reference | **Complete** | ROLLBACK-001 result 01 |
 | D7 | First storefront install/fingerprint proof | **Complete at Phase-0 scope** | STORE-001 result 01: entitled Sir Brante build 24280929, per-file+aggregate SHA-256; rerun EXACT MATCH unperturbed *and* after Steam restart + integrity verification (founder, 24 Jul) |
 | D8 | Save separation proof | **Complete at prototype scope** | ROLLBACK-001 byte-identical external save across fault cases |
-| D9 | Windows/Mac deterministic test-runner proof | **Open — founder-gated** | LAB-001 needs Windows lab hardware + a title; STORE-001 fingerprint JSON is the ready identity anchor; the MXCSR sticky-flag finding (result 12) is a pre-registered determinism risk (FMA cleared as bit-exact, result 12; CPU throughput/scaling now measured, results 14–15) |
-| D10 | Legal memo | **Preliminary done; counsel pending** | LEGAL-001 findings; nine-item counsel checklist is the founder/external dependency |
+| D9 | Windows/Mac deterministic test-runner proof | **Open — founder-gated** | LAB-001 needs Windows lab hardware + a title; STORE-001 fingerprint JSON is the ready identity anchor; the MXCSR sticky-flag finding (result 12) is a pre-registered determinism risk — **an implementation was attempted and did not land** (issue #7): correct in shape and regression-free, but a verified experiment shows FEX's `STMXCSR` handler is not what services the guest instruction in this ARM64EC configuration, so the risk stays open and un-mitigated for LAB-001 (FMA cleared as bit-exact, result 12; CPU throughput/scaling measured, results 14–15) |
+| D10 | Legal memo | **Preliminary + pre-counsel review done; qualified counsel still pending** | LEGAL-001 findings, counsel brief 0.2, and a recorded [pre-counsel assessment](../docs/research/SPIKE-LEGAL-001-verdict.md) that is explicitly *not* an attorney opinion. It moved four items — codecs escalated to a release gate, GPTK user-fetch closed as do-not-ship, VS thresholds corrected, and **the product name assessed as a conflict requiring a rename before first external binary**. Issue #13 remains open; this deliverable cannot close without counsel |
 | D11 | Game shortlist + scenario feasibility | **Shortlist decided (D-020); feasibility partially proven** | CATALOG-001; GFX-001 synthetic feasibility done; per-title scenarios need entitled installs |
 | D12 | Threat-model draft | **Complete as draft** | docs/docs/09 |
 
@@ -28,8 +37,8 @@ executes the items in §3 and signs §4.
 
 | # | Criterion | Verdict |
 | --- | --- | --- |
-| E1 | No known fundamental macOS JIT/entitlement blocker | **Holds.** MAP_JIT + code-cache execution + exceptions proven at corpus scope; no blocker class found. Known non-fundamental defects with founder-scoped fixes: FEX 4 KB guard granularity (results 06/13) and MXCSR sticky flags (cosmetic, result 12). FMA fusion was retired as a non-defect — FEX's FMA is bit-exact single-rounded (result 12) |
-| E2 | CPU path runs representative x64 code, correct exceptions, acceptable initial perf | **Holds — proven correct and performant at synthetic/prototype scope.** Corpus is full green and bit-exact (16 tests, results 12–15); CPU throughput measured native-parity on integer to ~2.7x worst-case single-thread (result 14) and linear multi-thread scaling to 8 cores at 100% efficiency (result 15). Remaining FEX/EC defects are founder-scoped, none architectural: 4 KB guard granularity (shear, results 06/13), MXCSR sticky exception-status flags (cosmetic — no title reads them, result 12), and the **multi-thread guest-AV exception-dispatch defect** (item #24 — the most game-relevant; wine-side amplifier fixed and logging groundwork committed, FEX-side root founder-authored; result 11 + FEX-LOG-SINK-HANDOFF). Two earlier-listed defects were **retired**: FMA is bit-exact single-rounded (result 12 — the reported non-fusion was compiler contraction, not FEX) and Rip-modify continue-execution is green (result 10) |
+| E1 | No known fundamental macOS JIT/entitlement blocker | **Holds.** MAP_JIT + code-cache execution + exceptions proven at corpus scope; no blocker class found. Known non-fundamental defects: FEX 4 KB guard granularity (results 06/13) and MXCSR sticky flags (cosmetic, result 12 — implementation attempted and did not land, issue #7). FMA fusion was retired as a non-defect — FEX's FMA is bit-exact single-rounded (result 12) |
+| E2 | CPU path runs representative x64 code, correct exceptions, acceptable initial perf | **Holds — proven correct and performant at synthetic/prototype scope.** Corpus is full green and bit-exact (18 tests built, results 12–17; `seh_concurrent` and `seh_multi` moved from *excluded by design* to green, and `seh_repeat` added for the repeated-AV axis); CPU throughput measured native-parity on integer to ~2.7x worst-case single-thread (result 14) and linear multi-thread scaling to 8 cores at 100% efficiency (result 15). Remaining FEX/EC defects are founder-scoped, none architectural: 4 KB guard granularity (shear, results 06/13), MXCSR sticky exception-status flags (cosmetic — no title reads them, result 12), and the **multi-thread guest-AV exception-dispatch defect** (item #24) — which **no longer reproduces**: with the spike toolchain repaired and the FEX log sink live, 63 runs across every concurrency shape, both FEX builds and logging on/off are green, and the failure signature is *positively* absent (all four workers now pack the valid guest RIP that result 11 saw from only one). The root cause was **not** identified and six candidate explanations were eliminated, so it is closed as not-reproducible-at-HEAD with regression tests retained (`seh_repeat`, 800 caught AVs per shape), not as understood — see result 16. A separate pre-existing red was charted while testing it: guest calls through a null function pointer are never dispatched to the guest handler (issue #20). Two earlier-listed defects were **retired**: FMA is bit-exact single-rounded (result 12 — the reported non-fusion was compiler contraction, not FEX) and Rip-modify continue-execution is green (result 10) |
 | E3 | D3D11 renders ≥2 representative games/scenes | **Scenes: synthetic proven. Games: blocked on entitled installs under the runtime** — the one criterion that cannot close without founder title work |
 | E4 | Per-process policy early enough | **Complete** |
 | E5 | Transactional runtime survives injected termination | **Complete** |
@@ -70,10 +79,28 @@ executes the items in §3 and signs §4.
 
 ### 3.3 Remaining founder execution list
 
-1. FEX tree fixes (no-AI policy), exception-dispatch deadlock family first.
-2. GPTK lab install + reference scene (non-commercial, lab-only).
-3. Entitled title under the runtime → E3's two game scenes + real-title census.
-4. Counsel engagement on the nine-item checklist.
+Status refreshed 25 July 2026. The FEX-tree items were worked under a founder
+authorization extending the fork's AI carve-out to specific issues; all such
+commits are fork-local and listed in `third_party/src/fex/PROVENANCE-ALLOY.md`.
+
+1. ~~FEX tree fixes, exception-dispatch deadlock family first.~~ **Substantially
+   closed.** Item #24 no longer reproduces (result 16, issue #6) and the
+   dispatcher-gadget fault tax was measured and found not to exist as framed
+   (result 17, issue #8). Two items remain open and are *not* Phase-0 blockers:
+   MXCSR sticky flags (issue #7 — attempted, verified dead end) and the newly
+   charted null-function-pointer dispatch gap (issue #20).
+2. ~~GPTK lab install + reference scene (non-commercial, lab-only).~~ **Done**
+   (issue #9). Note the pre-counsel assessment has since closed GPTK
+   *user-fetch* as do-not-ship; lab-only use is unaffected.
+3. **Open.** Entitled title under the runtime → E3's two game scenes +
+   real-title census (issues #10 in progress, #11, #12).
+4. **Open — and now the widest item.** Counsel engagement on the nine-item
+   checklist (issue #13). A pre-counsel assessment is on file and has already
+   tightened what we may do today, but it is not an attorney opinion and D10
+   cannot close on it. It also added release gates that are Phase-1 execution
+   work: prove the LGPL modified-runtime path (#23), an SBOM/codec-clean build
+   (#24), narrow Steam to read-only discovery (#25), and **rename the product
+   before any external binary** (#26).
 5. ~~Ratify §3.2 risk deadlines.~~ *(Done 24 Jul — risk register §2.1. §3.1 signed as D-021; perturbed STORE-001 rerun EXACT MATCH — both 24 Jul.)*
 
 ## 4. Go / narrow / pivot recommendation (draft)
@@ -85,3 +112,51 @@ No fundamental blocker surfaced anywhere in the stack. The open items are execut
 work (titles, counsel, one hardware purchase, founder-scoped FEX fixes), not
 viability questions. **Draft recommendation: GO, with E3 title evidence as the first
 Phase-1 milestone rather than a Phase-0 blocker — subject to founder sign-off.**
+
+### What changed since the 24 July draft
+
+The recommendation is unchanged; the evidence under it moved in three ways, one
+of which strengthens it and two of which do not.
+
+- **Strengthens it.** The defect the audit called "the most game-relevant"
+  (item #24, multi-thread guest-AV dispatch) no longer reproduces, and the
+  corpus now covers the repeated-AV axis it never did. E2's residual defect list
+  is materially shorter.
+- **Does not.** The root cause of #24 was never found — it is closed as
+  not-reproducible, which is a weaker claim than fixed, and the regression tests
+  are what protect it. Two CPU items also failed to land: MXCSR sticky flags
+  (a verified dead end) and the x18 fault tax (a premise that measurement did
+  not support).
+- **Does not.** The pre-counsel assessment did not clear D10; it narrowed what
+  we may ship and added a rename to the critical path. A GO signed today is a GO
+  on *viability*, not on readiness to distribute anything.
+
+### Signature — go / narrow / pivot
+
+Deliberately unexecuted. This audit is prepared to signature-ready by an agent;
+the decision is founder-only per the task board's `founder` gate, which scopes
+sign-offs to the founder specifically.
+
+Before signing, two dependencies should be resolved explicitly rather than
+implicitly:
+
+- **Issue #13 (counsel) is open**, and #16 lists it as a blocker. Signing GO
+  while D10 is open is defensible — the counsel checklist gates the first
+  external binary, not Phase-0 viability — but that reading should be stated in
+  the signature rather than assumed.
+- **E3 title evidence is still absent** (#10 in progress). The draft
+  recommendation moves it to the first Phase-1 milestone; rejecting that makes
+  this audit additionally blocked by #10/#11/#12, as issue #16 notes.
+
+```text
+Decision (GO / NARROW / PIVOT): ______________________________
+
+E3 disposition (Phase-1 milestone / Phase-0 blocker): ________
+
+D10 disposition (gates external binary only / gates GO): _____
+
+Signed: ______________________  Date: ______________
+
+Then: drop "DRAFT" from this file's title and header, record the decision in
+docs/docs/14_DECISION_LOG.md, and close issue #16.
+```
