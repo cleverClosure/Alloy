@@ -4,7 +4,7 @@
 **Date:** 24 July 2026
 **Hardware:** MacBook Pro (Mac14,10), M2 Pro 12-core, 16 GB
 **OS:** macOS 26.5.2 (25F84)
-**Status:** Green baseline on the installed D3DMetal 3.0 provider; direct GPTK 4 package refresh pending Apple ID sign-in
+**Status:** Green predecessor baseline on CrossOver's bundled D3DMetal 3.0; superseded for current-package comparison by [result 02](2026-07-25-02-gptk4-reference-green.md)
 
 ## Why this exists
 
@@ -77,10 +77,9 @@ single-machine engineering baseline, not a product performance claim.
 - The runner uses a dedicated bottle and does not modify the user's Steam
   bottle.
 
-## Remaining refresh
+## Refresh complete
 
-The official GPTK 4 evaluation-environment download currently stops at Apple
-ID sign-in. Once the founder completes that account-bound step, rerun this
-same scene against the package's D3DMetal version and append a second result;
-the current D3DMetal 3.0 baseline remains useful for version-to-version
-comparison.
+The founder completed the account-bound download and personal installation.
+[Result 02](2026-07-25-02-gptk4-reference-green.md) records the same workload
+under GPTK 4.0 beta 1. This D3DMetal 3.0 result remains the predecessor
+version-to-version comparison point.
