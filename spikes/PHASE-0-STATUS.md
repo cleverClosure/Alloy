@@ -30,7 +30,7 @@ measurement, review, or decision evidence proves the roadmap wording at its full
 | Exit criterion | State | Evidence needed to close |
 | --- | --- | --- |
 | No known fundamental macOS JIT/entitlement blocker | In progress | CPU-001 result 04 shows FEX code-cache execution with working exceptions at smoke scope; remaining: full corpus and an accepted shear-enforcement disposition |
-| CPU path runs representative x64 code correctly with acceptable initial performance | Open | ISA/ABI corpus (smoke subset green in result 04), stable exceptions/unwind, deterministic game scene, measured CPU gap |
+| CPU path runs representative x64 code correctly with acceptable initial performance | In progress | ISA/ABI corpus now FULL GREEN (15 tests, [result 13](CPU-001/results/2026-07-24-13-win-smoke-build-artifact-corpus-rehabilitated.md)), stable exceptions/unwind; CPU gap MEASURED ([result 14](CPU-001/results/2026-07-24-14-fex-cpu-throughput-gap.md): FEX translation tax native-parity on integer, ~1.6x on FP/memory, ~2.7x worst-case on branchy code, and bit-exact correct vs native); remaining = deterministic real-title scene (founder E3 titles) |
 | D3D11 renders at least two representative games/scenes | Open | GFX-001 correctness, frame pacing, memory, and scene evidence |
 | Per-process policy selects different graphics providers early enough | Complete | WINE-001: exact-image launcher/game plus unknown-child default select three physical provider DLLs before imports |
 | Transactional runtime survives injected termination | Complete | ROLLBACK-001: 18 action/journal death points plus failed-health rollback |
