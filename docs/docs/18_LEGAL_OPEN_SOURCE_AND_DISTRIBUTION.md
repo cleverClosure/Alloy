@@ -124,6 +124,8 @@ For each dependency such as Visual C++ runtime, .NET, DirectX helper, Media Foun
 - test unsupported/expired installer behavior;
 - distinguish open reimplementations from Microsoft binaries.
 
+**Visual Studio Community eligibility (pre-counsel assessment, [verdict](../research/SPIKE-LEGAL-001-verdict.md) item 7).** An individual may use VS Community to build free or paid applications; a non-enterprise organization may have up to **five** Community users. "Enterprise" means **more than 250 PCs *or* more than US$1M annual revenue** — not "250 seats". Eligibility ends at a **sixth** Community user, **>250 PCs**, or **>US$1M** annual revenue; re-check at fundraising, acquisition, substantial growth, and annually. Redistribute only unmodified files on Microsoft's applicable Distributable List — debug and non-redistributable files are outside it — and preserve the licence and Distributable List for the exact toolchain release used.
+
 ## 7. Codecs and media patents
 
 Media support may implicate:
@@ -143,6 +145,15 @@ The approved design may:
 - negotiate publisher coverage.
 
 Profiles must not silently download unapproved codec packs.
+
+**Release gate (pre-counsel assessment, [verdict](../research/SPIKE-LEGAL-001-verdict.md) item 5 — escalated from "expected clean").** Routing decode through VideoToolbox/AudioToolbox is a strong factual argument, **not** a discharge of codec-patent obligations: the macOS licence itself notes that Apple's supplied AVC functionality is licensed for personal and non-commercial consumer use and that other uses may require a separate patent licence. Before any external binary:
+
+- SBOM and binary scan proving the runtime contains no FFmpeg/libav codec implementation, no fallback decoder, and no GStreamer plug-in implementing a relevant patented codec;
+- proof that VideoToolbox failure does not silently fall back to a bundled software decoder;
+- a written architectural question to each relevant licensing administrator (Via LA for AVC/H.264, Access Advance for HEVC), with replies preserved in the release record;
+- until a sufficiently clear written answer arrives, **H.264/HEVC and other unconfirmed patented-codec paths are disabled in external builds**, or item 5 is held as a release blocker.
+
+A EULA disclaimer does not grant patent rights.
 
 ## 8. Game binaries and test data
 
@@ -174,6 +185,8 @@ For each storefront:
 - use approved trademarks/badges;
 - handle regional availability and refunds accurately;
 - keep ownership and purchases with the storefront unless a reseller agreement exists.
+
+**Steam, v1 posture (pre-counsel assessment, [verdict](../research/SPIKE-LEGAL-001-verdict.md) item 6).** The SSA's automation provision prohibits scripts, bots and other non-human-controlled systems from interacting with Steam Content and Services; published SteamCMD documentation is not authorisation for a consumer product to automate a user's account. Absence of credential interception does not resolve it. **Permitted:** read local unencrypted `appmanifest_*.acf` without modification; detect installed game paths; let the user launch the official client; let login, install, update and account actions happen in Steam's own UI; launch an already-installed local executable after a user action. **Not shipped without Valve's written permission:** automatic login; storing or relaying credentials; driving the client by simulated input or process control; background SteamCMD to install/update/manage consumer games; automating purchases, accounts, reviews, achievements, playtime, trading or rewards; interfering with DRM or anti-cheat. **Automated SteamCMD orchestration is removed from the v1 design.**
 
 ## 10. Reverse engineering and interoperability
 
@@ -313,23 +326,37 @@ Before stable promotion:
 - regional privacy/consumer/export approvals complete;
 - archive includes source/provenance/approvals.
 
+Added by the pre-counsel assessment ([verdict](../research/SPIKE-LEGAL-001-verdict.md)); each is a hard gate on the first external binary:
+
+- **LGPL modified-runtime path proven on a clean Mac** — CI builds the published corresponding-source package, substitutes a deliberately modified LGPL library, signs the resulting runtime as documented, and verifies it launches (item 4);
+- **corresponding source, notices and EULA carve-outs published** for every LGPL component, with the elected LGPL version recorded per "2.1-or-later" component, and GStreamer audited **per plug-in** (item 4);
+- **SBOM complete and codec-clean** — no bundled codec implementation or fallback decoder; patented-codec paths disabled unless written administrator coverage is on file (item 5);
+- **FEX and MoltenVK obligations discharged** — both ship but were outside the original item-4 scope (item 4);
+- **product renamed** and no external distribution under a mark that has not cleared (item 9);
+- **Apple, Microsoft and third-party licence versions archived** for the exact build, including the Metal Shader Converter package licence (items 1, 2, 7).
+
 ## 19. Open compliance questions
 
-- exact Apple Game Porting Toolkit redistribution/use boundary for the bootstrap plan (preliminary answer: see [SPIKE-LEGAL-001 preliminary findings](../research/SPIKE-LEGAL-001-preliminary-findings.md));
+- ~~exact Apple Game Porting Toolkit redistribution/use boundary~~ — **closed, not a legal question we still price**: GPTK/D3DMetal ships in no form and stays in the evaluation lab ([verdict](../research/SPIKE-LEGAL-001-verdict.md) item 3). Reopens only if Apple publishes terms expressly authorising a commercial third-party user-fetch flow;
 - shader conversion output rights (preliminary answer: see [SPIKE-LEGAL-001 preliminary findings](../research/SPIKE-LEGAL-001-preliminary-findings.md));
 - FEX macOS port distribution obligations (preliminary answer: see [SPIKE-LEGAL-001 preliminary findings](../research/SPIKE-LEGAL-001-preliminary-findings.md));
 - DXMT integration/linking model (preliminary answer: see [SPIKE-LEGAL-001 preliminary findings](../research/SPIKE-LEGAL-001-preliminary-findings.md));
-- codec/patent coverage (preliminary answer: see [SPIKE-LEGAL-001 preliminary findings](../research/SPIKE-LEGAL-001-preliminary-findings.md); still ⚖️ counsel item);
+- codec/patent coverage — **escalated to a release gate** ([verdict](../research/SPIKE-LEGAL-001-verdict.md) item 5): system-decoder-only is a good argument, not a discharge; needs written administrator coverage or the affected paths disabled (§7). Still a ⚖️ counsel item;
 - Microsoft redistributable packaging (preliminary answer: see [SPIKE-LEGAL-001 preliminary findings](../research/SPIKE-LEGAL-001-preliminary-findings.md));
-- storefront automation and private branch use (preliminary answer: see [SPIKE-LEGAL-001 preliminary findings](../research/SPIKE-LEGAL-001-preliminary-findings.md); Steam SSA §4.C remains a ⚖️ counsel item);
+- storefront automation and private branch use — **v1 posture decided** ([verdict](../research/SPIKE-LEGAL-001-verdict.md) item 6): read-only local discovery plus user-operated official-client actions; automated SteamCMD orchestration removed (§9). Steam SSA §4.C remains a ⚖️ counsel item for anything beyond that;
 - game fingerprinting and interoperability analysis by jurisdiction (preliminary answer: see [SPIKE-LEGAL-001 preliminary findings](../research/SPIKE-LEGAL-001-preliminary-findings.md));
 - anti-cheat measurement contracts (preliminary answer: see [SPIKE-LEGAL-001 preliminary findings](../research/SPIKE-LEGAL-001-preliminary-findings.md) — no macOS/Wine vendor opt-in program exists today);
 - public use of game images/benchmarks;
 - subscription support-change/refund policy (preliminary answer: see [SPIKE-LEGAL-001 preliminary findings](../research/SPIKE-LEGAL-001-preliminary-findings.md));
 - privacy regions and subprocessors;
-- export classification.
+- export classification;
+- **trademark clearance for the product name** — the pre-counsel assessment reads the current name as a conflict and recommends renaming before the first external binary ([verdict](../research/SPIKE-LEGAL-001-verdict.md) item 9); ⚖️ counsel item, tracked as founder work.
+
+**Explicitly outside the nine-item review.** The assessment clears none of: privacy and data protection, consumer terms and refunds, export controls and sanctions, game-publisher agreements, anti-cheat restrictions, tax, accessibility, security representations, or any non-U.S. law. Several already appear above and in §20; none are addressed by the nine items.
 
 ## 20. Required legal deliverables before external MVP
+
+Sequenced per the pre-counsel assessment ([verdict](../research/SPIKE-LEGAL-001-verdict.md), "Recommended release sequence"): rename the product and repository; permanently remove GPTK user-fetch from the release configuration; limit Steam support to read-only local discovery and user-operated client actions; produce the full SBOM and remove unapproved codec implementations and GStreamer plug-ins; build and test the LGPL modified-runtime path on a clean Mac; publish the corresponding-source bundle, notices and EULA carve-outs; obtain written codec guidance or ship the first beta with the affected media paths disabled; archive the Apple, Microsoft and third-party licence versions for the build; and continue the Metal12 protocol indefinitely — item 8 never becomes "finished". Only after those controls is a limited external beta a reasonable risk decision, **and then only on these nine questions**.
 
 - written component distribution matrix;
 - open-source policy and notice/source pipeline;

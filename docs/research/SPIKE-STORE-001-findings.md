@@ -7,6 +7,8 @@
 **Related:** [Open questions / SPIKE-STORE-001](../docs/16_OPEN_QUESTIONS_AND_TECHNICAL_SPIKES.md) · [Legal findings](SPIKE-LEGAL-001-preliminary-findings.md) · [Publisher integration](../docs/17_PUBLISHER_AND_ANTI_CHEAT_INTEGRATION.md) · [ADR-0011](../adr/ADR-0011-modern-baseline-only.md)
 
 > Compiled from primary sources fetched 23 July 2026 (storefront agreements, developer documentation) plus dated secondary reporting. Confidence per claim: **[P]** primary-fetched, **[S]** secondary/consistent press, **[U]** unverified this pass. ⚖️ marks items for the SPIKE-LEGAL-001 counsel checklist.
+>
+> **Superseded in part (24 July 2026) — read before implementing any `steamcmd` flow.** These findings are preserved as the research record of 23 July. The **shipped-product** posture has since narrowed: the [pre-counsel assessment](SPIKE-LEGAL-001-verdict.md) item 6 restricts Alloy to read-only local `appmanifest_*.acf` discovery and user-operated official-client actions, and **removes automated `steamcmd` orchestration from the v1 design** ([doc 18 §9](../docs/18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md)). `steamcmd` use against our own entitled **lab** accounts is a separate question, still governed by doc 18 §8 (documented automated test-account use) and still exposed to the same SSA automation clause.
 
 ---
 

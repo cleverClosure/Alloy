@@ -78,7 +78,7 @@ fallback
 
 ### SPIKE-LEGAL-001 — Redistribution and reverse-engineering matrix
 
-**Status:** Partially closed. [Preliminary findings](../research/SPIKE-LEGAL-001-preliminary-findings.md) drafted 23 July 2026: no fatal blocker for the overall architecture; GPTK/D3DMetal bootstrap distribution is non-commercial-only (lab/reference use only, per the updated [ADR-0006](../adr/ADR-0006-owned-d3d12-metal-and-reused-d3d11.md)); DXMT relicensed MIT→LGPL-2.1-or-later and its `src/d3d12/` subtree joins the Metal12 clean-room exclusion list ([ADR-0012](../adr/ADR-0012-metal12-provenance-and-clean-room.md)). Remaining: the nine-item counsel checklist (findings §7) before any external binary ships.
+**Status:** Partially closed. [Preliminary findings](../research/SPIKE-LEGAL-001-preliminary-findings.md) drafted 23 July 2026: no fatal blocker for the overall architecture; GPTK/D3DMetal bootstrap distribution is non-commercial-only (lab/reference use only, per the updated [ADR-0006](../adr/ADR-0006-owned-d3d12-metal-and-reused-d3d11.md)); DXMT relicensed MIT→LGPL-2.1-or-later and its `src/d3d12/` subtree joins the Metal12 clean-room exclusion list ([ADR-0012](../adr/ADR-0012-metal12-provenance-and-clean-room.md)). A [counsel brief](../research/SPIKE-LEGAL-001-counsel-brief.md) turning §7 into per-item questions landed 24 July 2026, and a [pre-counsel risk assessment](../research/SPIKE-LEGAL-001-verdict.md) against it was recorded the same day — **not counsel's answer, and it does not close deliverable D10**. It closed item 3 (GPTK user-fetch: do not ship), escalated item 5 (codecs) to a release gate, corrected item 7's eligibility thresholds, and escalated item 9 to "rename before launch"; items 4 (LGPL relink) and 8 (clean room) carry the binding engineering work. Remaining: **qualified counsel engaged and all nine items answered** (issue #13) before any external binary ships.
 
 **Question:** Which components may be developed with, linked against, bundled, downloaded by the user, or used only in lab environments?
 
@@ -401,7 +401,7 @@ The output is a design-partner discussion package, not a bypass prototype.
 | Decision | Required spikes | Target gate |
 | --- | --- | --- |
 | Production CPU path | CPU-001, WINE-001 | End Phase 0 |
-| MVP legal distribution | LEGAL-001 | Before external binary (partially closed — preliminary findings drafted; counsel checklist pending) |
+| MVP legal distribution | LEGAL-001 | Before external binary (partially closed — preliminary findings, counsel brief and pre-counsel assessment drafted; **qualified counsel still pending**) |
 | First storefront | STORE-001 | **Decided** 23 Jul 2026 (D-019: Steam; GOG at MVP+1) |
 | MVP game catalog | CATALOG-001, GFX-001, LAB-001 | Portfolio selected 23 Jul 2026 (D-020); GFX-001/LAB-001 validation by end Phase 0 |
 | Runtime architecture go | ROLLBACK-001, DIAG-001 | End Phase 0/early Phase 1 |

@@ -1,5 +1,17 @@
 # Documentation Changelog
 
+## 1.5 — 24 July 2026
+
+SPIKE-LEGAL-001: a pre-counsel risk assessment against the nine-item counsel brief is recorded, and its corrections are propagated into the binding engineering constraints. **It is not counsel's answer — deliverable D10 stays incomplete and issue #13 stays open.**
+
+- added `research/SPIKE-LEGAL-001-verdict.md`: the assessment recorded verbatim, with its own stated limits (no attorney-client relationship, no privilege, reviewer did not read the ADR, provenance log, source tree, SBOM, package EULAs or binaries; assumes Developer ID distribution);
+- counsel brief revised to 0.2 — per-item **Pre-counsel verdict** lines; item 5 (codec decode) moved Tier C → **B** because the macOS licence's own AVC notice means system-decoder-only is a good argument, not a discharge; item 3 (GPTK user-fetch) moved to **Closed — do not ship**, removing the ambiguity rather than paying to justify it; item 7's eligibility threshold corrected (">250 seats" was wrong: it is **>250 PCs or >US$1M revenue**, with a five-user Community limit); item 9 escalated from "commission a search" to **rename before launch**; §6 constraints extended with the Steam, codec, GPTK and AI-provenance rules;
+- doc 18: VS Community thresholds corrected (§6); codec release gate added — SBOM/binary scan, no silent fallback decoder, written administrator coverage or disabled patented-codec paths (§7); Steam narrowed to read-only local discovery plus user-operated client actions, automated SteamCMD orchestration removed from v1 (§9); release-compliance gate extended with the LGPL modified-runtime CI test, per-plug-in GStreamer audit, FEX/MoltenVK obligations, rename and licence archival (§18); open questions and deliverables re-sequenced, and the assessment's explicit non-coverage recorded (§19–§20);
+- ADR-0012: evidence-hardening clauses 7–13 added — the protocol is **evidence, not a safe harbour**: hashed/timestamped input lists, externally timestamped provenance log, per-feature spec→design→implementation→test chain, recorded AI-tool use, verified-clean AI indexes, exposure-free similarity testing, contributor certification, candid exposure history;
+- risk register R-010 and R-036 updated; doc 16 SPIKE-LEGAL-001 status updated; `research/SPIKE-STORE-001-findings.md` carries a supersession note so its `steamcmd` material is not implemented as written;
+- decision log: **D-021 "Product name: Alloy" marked at risk** — its revisit trigger has fired; the old fallback shortlist is recorded as unscreened. A pre-existing defect is now flagged in the log: **the identifier D-021 is used twice**, and resolving it requires touching a signed audit block or a historical changelog entry, so it is a founder call;
+- added `tools/gen-doc-manifests.py`; manifests regenerated with it rather than by hand. It reproduces every unchanged 1.4 entry byte-identically, and regenerating surfaced that **the 1.4 manifests were already stale by two files** — `research/SPIKE-LEGAL-001-counsel-brief.md` was never listed, and `research/SPIKE-CATALOG-001-findings.md` changed in the repo-wide lint pass after 1.4 was generated. Both are correct as of 1.5; `--check` now makes that drift detectable.
+
 ## 1.4 — 23 July 2026
 
 Product naming: **Alloy** adopted as the product name (decision D-021), replacing the working name "MGCR" package-wide.

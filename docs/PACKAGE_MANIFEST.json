@@ -1,17 +1,17 @@
 {
   "package": "Alloy Product Documentation",
-  "version": "1.4",
-  "generatedAt": "2026-07-23",
-  "fileCount": 45,
-  "markdownWords": 89459,
-  "markdownLines": 13693,
+  "version": "1.5",
+  "generatedAt": "2026-07-24",
+  "fileCount": 47,
+  "markdownWords": 99652,
+  "markdownLines": 14310,
   "files": [
     {
       "path": "CHANGELOG.md",
-      "bytes": 7183,
-      "sha256": "679da25d71cf7b619bcb2efe8de8bd382dd533b055d684250627c645fefab5c5",
-      "lines": 73,
-      "words": 936
+      "bytes": 10409,
+      "sha256": "1388c261bdb4a5c8faec1f35a13b3b5c28a81e8ca945c9d1b9e7bd34eb30315c",
+      "lines": 85,
+      "words": 1373
     },
     {
       "path": "CONTRIBUTING.md",
@@ -106,10 +106,10 @@
     },
     {
       "path": "adr/ADR-0012-metal12-provenance-and-clean-room.md",
-      "bytes": 5488,
-      "sha256": "43e58786b4949b2f9b937fc45f8cb7b7848e1c106579030b384b5ae452fbe56e",
-      "lines": 59,
-      "words": 748
+      "bytes": 8335,
+      "sha256": "250cfd6d80813aa07b42f3610dc51484d83574ac722a397f24fca72dc527539f",
+      "lines": 73,
+      "words": 1149
     },
     {
       "path": "adr/ADR-0013-continuous-differential-certification.md",
@@ -226,17 +226,17 @@
     },
     {
       "path": "docs/13_RISK_REGISTER.md",
-      "bytes": 17200,
-      "sha256": "8f34706fc5510e5a39d0fa2ce29abc5a48d7c1a3edc39dd79514c811a7d80f16",
-      "lines": 131,
-      "words": 2442
+      "bytes": 19450,
+      "sha256": "10e2186776c9def314ccba0d5f6d569f705b64efbdbf9e52b29b4cd0c4264906",
+      "lines": 147,
+      "words": 2782
     },
     {
       "path": "docs/14_DECISION_LOG.md",
-      "bytes": 10268,
-      "sha256": "ab5ca7c570fc856f01248b6b2f84cd6b61d44218437fc7671ed8539838bebc4e",
-      "lines": 79,
-      "words": 1344
+      "bytes": 12518,
+      "sha256": "c4b59407e4d506df9100d5de00230b2cc2f33d1da599f471f7dd4993a5703992",
+      "lines": 83,
+      "words": 1640
     },
     {
       "path": "docs/15_GLOSSARY.md",
@@ -247,10 +247,10 @@
     },
     {
       "path": "docs/16_OPEN_QUESTIONS_AND_TECHNICAL_SPIKES.md",
-      "bytes": 14967,
-      "sha256": "0e3ff590e826ce5f1f03f8685a8adaae280d7a0b09d1d387679c568e1a68f97c",
+      "bytes": 15607,
+      "sha256": "e2fd42b182aec027f663b18977c89b22f7566842a65cc202fa8cf03f07d5d2ec",
       "lines": 422,
-      "words": 1962
+      "words": 2050
     },
     {
       "path": "docs/17_PUBLISHER_AND_ANTI_CHEAT_INTEGRATION.md",
@@ -261,10 +261,10 @@
     },
     {
       "path": "docs/18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md",
-      "bytes": 14449,
-      "sha256": "30dfa6bc323c47c990c8e48c3b4cb4ccd14c20fe86ce4fba9867abfea0edad3e",
-      "lines": 344,
-      "words": 1792
+      "bytes": 20524,
+      "sha256": "43ae7d841d13a7cc67f1c398bf7dc2993788ebcc258204b237ca69355d9d9d50",
+      "lines": 371,
+      "words": 2620
     },
     {
       "path": "docs/19_MVP_EPICS_AND_BACKLOG.md",
@@ -280,10 +280,17 @@
     },
     {
       "path": "research/SPIKE-CATALOG-001-findings.md",
-      "bytes": 27672,
-      "sha256": "b9884816fc4c5f0134aadfd506e0fe9eff9174d5543ab986f6d4f5c09e1911a6",
-      "lines": 253,
+      "bytes": 27673,
+      "sha256": "3a91aaa6d6ae19dc66d1b46978ff3de06671f602e355a6fef73482570b7c07c8",
+      "lines": 254,
       "words": 4761
+    },
+    {
+      "path": "research/SPIKE-LEGAL-001-counsel-brief.md",
+      "bytes": 30082,
+      "sha256": "dd986f0d986bbd326891325b05848f458d3a01b5f4c6b1be1ff2f5355cf99818",
+      "lines": 177,
+      "words": 4241
     },
     {
       "path": "research/SPIKE-LEGAL-001-preliminary-findings.md",
@@ -293,11 +300,18 @@
       "words": 2148
     },
     {
+      "path": "research/SPIKE-LEGAL-001-verdict.md",
+      "bytes": 25435,
+      "sha256": "e8f977baa0da40aee82613fc8d0e5f06d76d1eabf6062b34d97d26f570765c4c",
+      "lines": 364,
+      "words": 3471
+    },
+    {
       "path": "research/SPIKE-STORE-001-findings.md",
-      "bytes": 9905,
-      "sha256": "927d28973bd2e50258cc64e4e42d27778980074a9d11f548c87cb673564e0d9f",
-      "lines": 74,
-      "words": 1395
+      "bytes": 10624,
+      "sha256": "26c1e48f9851314ed2ab0b9d4d16fa8c2f3cd08e61ed4820ca2b9c1b92559ad3",
+      "lines": 76,
+      "words": 1486
     },
     {
       "path": "schemas/game-profile.schema.json",
