@@ -1,0 +1,90 @@
+{
+  "issue": 11,
+  "title": "Deus Ex: Mankind Divided",
+  "disposition": "blocked-before-first-present",
+  "store": {
+    "vendor": "GOG",
+    "gameID": "1296690054",
+    "buildID": "53307442018838439",
+    "gameVersion": "v1.19 build 801.0",
+    "executableSHA256": "cf4805608f9cc7129a8f04ade8eeefdf1f0cd849a1f702dfe8f0cd06f2f53ee8",
+    "manifestSHA256": "9f277c156af56d0ba48ba1745423f315e7e3cc1e32b79023d26d47f60722d75c"
+  },
+  "runtime": {
+    "wineCommit": "54048cbd2bf69aee8cc7be2beb14c5ab63a17842",
+    "ntdllSHA256": "a18c09d581ca9b5f4c8c30c64b7aaee84c9396cda9498c437a89668696ad9646",
+    "fexSHA256": "ef4ce1be195296ae2e1bd6612efba8fae4b8f3eb37d25985b1275aae52ef7aa6",
+    "d3d11SHA256": "603ed07d01f5d501180d5710841fabe82c4ef46cb4c949bda6b683367e2fd458",
+    "dxgiSHA256": "9c222f6ab4ae76487395f86de185c9757c6c415a42e44f53163608070d30861a",
+    "winemetalPESHA256": "b44baf51f4c21590310f1f94154a8125b8a7213985ce858d0720ee303193c085",
+    "winemetalUnixSHA256": "8167ac25fbc01c9a243972a67b98e0eb60f058a937c7d52d7713079053fd5089",
+    "policySnapshotSHA256": "299f2e0fc8ec36f9e39e8c3401364764132ac30fde958101e4099880364a1634"
+  },
+  "scene": {
+    "commandLine": [
+      "-benchmark"
+    ],
+    "enableDX12": false,
+    "fullscreen": false,
+    "width": 1280,
+    "height": 720
+  },
+  "host": {
+    "machine": "MacBook Pro (M2 Pro, 12 cores, 16 GB)",
+    "macOS": "26.5.2 (25F84)"
+  },
+  "policySelected": "dxmd-gog-53307442018838439",
+  "observed": {
+    "lastGameLogStage": "[Steam] Initializing.",
+    "secondsFromStartupToCrash": 15.4,
+    "gameReportedException": {
+      "code": "0xc0000005",
+      "address": "0x00000000fe934aac"
+    },
+    "faultingModule": "rpcrt4.dll",
+    "faultingRVA": "0x64aac",
+    "faultingSymbol": "NdrContextHandleUnmarshall",
+    "faultingSource": "dlls/rpcrt4/ndr_marshall.c:7024",
+    "callerSymbol": "client_do_args",
+    "callerSource": "dlls/rpcrt4/ndr_stubless.c:529",
+    "faultKind": "write to 0x10",
+    "rpcInterfaceShape": "ROpenSCManagerW(in unique wstr, in unique wstr, in DWORD, out FC_BIND_CONTEXT simple-ref, out DWORD return)",
+    "contextHandleFlags": "0xa0 (VIA_PTR|IS_OUT)",
+    "argumentsSeenByStub": {
+      "param0": "0x0",
+      "param1": "0x0",
+      "param2": "0x1c36f040",
+      "param3": "0x10",
+      "param4": "0x0"
+    },
+    "argumentsExpected": {
+      "param0": "NULL machine name",
+      "param1": "NULL database name",
+      "param2": "access mask",
+      "param3": "&SC_HANDLE",
+      "param4": "return"
+    },
+    "presentsRecorded": 0,
+    "dxmtMetricsFileWritten": false,
+    "crashCount": 5,
+    "crashRunsUTC": [
+      "2026-07-25T11:27:49",
+      "2026-07-25T11:31:07",
+      "2026-07-25T11:48:07",
+      "2026-07-25T11:52:02",
+      "2026-07-25T13:11:26"
+    ]
+  },
+  "reproducer": {
+    "guest": "spikes/WINE-001/testcases/ec_delay_import.c",
+    "result": "FAIL raised 0xc0000005 at 00006FFFFE934AAC",
+    "exitCode": 3,
+    "runs": 2,
+    "sameFaultAddressAsTitle": true
+  },
+  "digests": {
+    "titleLogSHA256": "0be5619c027c87aa9432658789f8f463d9a66e81414cacb7c0063f17d49a8348",
+    "runtimeLogSHA256": "b30f0c7f7c819b2765ee915a1d43e7310b2557342208b1fde441011761057597",
+    "runtimeLogBytes": 59948
+  }
+}

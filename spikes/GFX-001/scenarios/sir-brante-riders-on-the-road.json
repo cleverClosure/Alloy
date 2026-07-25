@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "author": "Timur Isaev",
+  "title": "The Life and Suffering of Sir Brante",
+  "appid": "1272160",
+  "buildID": "24280929",
+  "renderer": "Direct3D 11",
+  "scene": {
+    "chapter": "II — Adolescence",
+    "event": "Riders on the Road",
+    "year": 1127
+  },
+  "preconditions": {
+    "entitledSaveImported": true,
+    "steamClientRequired": false,
+    "window": {
+      "screenMode": 3,
+      "contentWidth": 1280,
+      "contentHeight": 720,
+      "captureWidth": 1280,
+      "captureHeight": 752,
+      "titleBarHeight": 32
+    },
+    "targetFramerate": 60,
+    "vSync": 0,
+    "audioMuted": true
+  },
+  "actions": [
+    {
+      "screen": "main-menu",
+      "waitFor": "CONTINUE",
+      "click": {
+        "x": 1040,
+        "y": 480
+      }
+    },
+    {
+      "screen": "continue-game",
+      "waitFor": "Mark. Chapter II. Adolescence.",
+      "click": {
+        "x": 640,
+        "y": 175
+      }
+    },
+    {
+      "screen": "chapter-timeline",
+      "waitFor": "9 years",
+      "click": {
+        "x": 645,
+        "y": 607
+      }
+    }
+  ],
+  "steadyStateAnchor": {
+    "heading": "RIDERS ON THE ROAD",
+    "rightPage": "wrought-iron gate illustration"
+  },
+  "transitionProbe": {
+    "action": {
+      "x": 542,
+      "y": 650,
+      "repeat": 4,
+      "waitSecondsBetweenClicks": 1
+    },
+    "expectedRightPage": "mounted riders approaching a fallen child"
+  },
+  "measurement": {
+    "shortSteadyHoldSeconds": 60,
+    "longMemoryHoldSeconds": 1800,
+    "markerRule": "Read the last DXMT timestamp after the final visual anchor is foreground-stable; analyze intervals strictly after that marker.",
+    "foregroundCadence": {
+      "intervalSeconds": 10,
+      "click": {
+        "x": 800,
+        "y": 400
+      },
+      "reason": "Unity pauses Present while this title window is inactive. The inert illustration click keeps the measured window foreground-active without advancing the scene."
+    }
+  }
+}

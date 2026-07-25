@@ -1,0 +1,167 @@
+{
+  "author": "Timur Isaev",
+  "generatedAt": "2026-07-25T07:15:59.601609+00:00",
+  "label": "sir-brante-riders-warm-full",
+  "memory": null,
+  "metrics": {
+    "eventCount": 15780,
+    "failedEventCount": 0,
+    "framePacing": {
+      "firstPresentTimestampMs": 13.063,
+      "intervalMs": {
+        "count": 15757,
+        "max": 25998.826,
+        "mean": 16.84,
+        "p50": 16.311,
+        "p95": 18.631,
+        "p99": 21.378
+      },
+      "lastPresentTimestampMs": 265367.346,
+      "longestFrames": [
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 43218.927,
+          "intervalMs": 25998.826,
+          "presentObject": 2563
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "graphics",
+              "durationMs": 0.162,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.567,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 17085.843,
+          "intervalMs": 1703.416,
+          "presentObject": 2561
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 8986.334,
+          "intervalMs": 1275.626,
+          "presentObject": 1305
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 126670.042,
+          "intervalMs": 1063.604,
+          "presentObject": 7453
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 6749.312,
+          "intervalMs": 752.318,
+          "presentObject": 1199
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 43915.665,
+          "intervalMs": 470.639,
+          "presentObject": 2578
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "graphics",
+              "durationMs": 1.502,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 7710.708,
+          "intervalMs": 467.344,
+          "presentObject": 1304
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 132705.398,
+          "intervalMs": 303.811,
+          "presentObject": 7779
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 132931.934,
+          "intervalMs": 226.535,
+          "presentObject": 7780
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 127591.68,
+          "intervalMs": 191.701,
+          "presentObject": 7489
+        }
+      ],
+      "meanFps": 59.381,
+      "presentCallMs": {
+        "count": 15758,
+        "max": 5.779,
+        "mean": 0.093,
+        "p50": 0.088,
+        "p95": 0.15,
+        "p99": 0.261
+      },
+      "presentCount": 15758,
+      "thresholdCounts": {
+        "over100ms": 13,
+        "over16_667ms": 5969,
+        "over20_833ms": 201,
+        "over33_333ms": 41,
+        "over50ms": 25
+      },
+      "thresholdPercentages": {
+        "over100ms": 0.083,
+        "over16_667ms": 37.882,
+        "over20_833ms": 1.276,
+        "over33_333ms": 0.26,
+        "over50ms": 0.159
+      }
+    },
+    "pipeline": {
+      "byType": {
+        "graphics": 9
+      },
+      "durationMs": {
+        "count": 9,
+        "max": 1.502,
+        "mean": 0.395,
+        "p50": 0.196,
+        "p95": 1.128,
+        "p99": 1.427
+      },
+      "eventCount": 9,
+      "failureCount": 0
+    },
+    "sha256": "87ba446cd2e75a52877e602e7938b211aea617b9db3a7984477c3a95ebb53938",
+    "shader": {
+      "cacheHitCount": 13,
+      "compileCount": 0,
+      "compileDurationMs": {
+        "count": 0,
+        "max": null,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null
+      },
+      "eventCount": 13,
+      "failureCount": 0
+    },
+    "source": "spikes/STORE-001/work/issue-11-sir-brante/pairs/riders-20260725-c/metrics/warm.tsv",
+    "window": {
+      "durationSeconds": 265.366,
+      "firstEventTimestampMs": 1.4,
+      "lastEventTimestampMs": 265367.346,
+      "requestedEndSeconds": null,
+      "requestedStartSeconds": null
+    }
+  },
+  "schemaVersion": 1
+}

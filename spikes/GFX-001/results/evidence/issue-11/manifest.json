@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "author": "Timur Isaev",
+  "title": "The Life and Suffering of Sir Brante",
+  "appid": "1272160",
+  "buildID": "24280929",
+  "capture": {
+    "renderer": "Direct3D 11 through instrumented DXMT",
+    "contentResolution": "1280x720",
+    "windowCaptureResolution": "1280x752",
+    "scene": "Chapter II — Riders on the Road"
+  },
+  "files": [
+    {
+      "path": "2026-07-25-sir-brante-riders-on-the-road.jpg",
+      "sha256": "a7c824b209a57a637416fb34e9a820278a01ef32ccf38ddbd53a11f6431b09b9",
+      "anchor": "wrought-iron gate narrative page"
+    },
+    {
+      "path": "2026-07-25-sir-brante-riders-illustration.jpg",
+      "sha256": "122b1d28e3cdc79470aa37b1c50912a00075242698fc55b153486064b8c108bc",
+      "anchor": "mounted riders approaching a fallen child"
+    }
+  ]
+}
