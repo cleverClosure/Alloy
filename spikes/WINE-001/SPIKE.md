@@ -99,6 +99,12 @@ dispatchers + errno logging; `24bad68` gate-3 close: `mprotect_exec` RWX→RW fa
 dispatch-trio redirection, region-dump + low-pc-fault diagnostics; `b93a982` USD
 readers repointed above the VA floor + unresolved-fault storm detector; `47e4cdb`
 inherited pre-import policy snapshot + process-local provider/load-order routing).
+The list above covers gates 1-3 only; `git log alloy/spike-wine-001` is the
+authority for later work. Issue #30 added `de36e21` (emulate translated stores
+into a separate Darwin MAP_JIT view) and `8d5974a` (make the rejection paths
+terminate instead of livelocking, report the first unwritable byte, and split
+the store decoder into `dlls/ntdll/unix/arm64_jit_store.h` so the shipped
+decoder is the one under unit test) — see `results/2026-07-25-10-*.md`.
 
 ## Results log
 
