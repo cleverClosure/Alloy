@@ -1,0 +1,83 @@
+D3D11 MSAA sample-count clamp (DXMT).
+
+Author: Tim Isaev
+Applies to: third_party/src/dxmt at e520fea415ba4b82b0c346dae77bbb1be4897453
+
+Why
+  DXMT reports D3D_FEATURE_LEVEL_11_0, and 11_0 guarantees 8x MSAA for every
+  render target format except R32G32B32A32.  A conformant title may therefore
+  ask for 8 samples without calling CheckMultisampleQualityLevels first, and
+  Deus Ex: Mankind Divided does exactly that while initializing Scaleform.
+  Apple silicon does not go past 4 - measured on this M2 Pro, sample counts 1,
+  2 and 4 are supported and 8 is not - so CreateMTLTextureDescriptorInternal
+  returned E_INVALIDARG, the title wrapped it in a C++ exception and died
+  before its first frame.
+
+  CheckMultisampleQualityLevels1 itself is honest: it consults
+  supportsTextureSampleCount and reports 0 quality levels for 8.  The gap is
+  that the feature level advertised one layer up promises what the device
+  cannot do.
+
+What it does
+  Clamps an unsupported sample count down to the highest the device supports
+  and reports it once, instead of failing the creation.
+
+  This renders with fewer samples than the title asked for.  That is a visible
+  difference and is why it is logged rather than done silently - but it is the
+  honest end of a promise already made by advertising 11_0.
+
+Effect
+  Deus Ex: Mankind Divided reaches its -benchmark scene and sustains ~73 FPS
+  over 20,213 presents with no non-ok DXMT event.  See
+  ../results/2026-07-25-08-deus-ex-msaa-clamp.md.
+
+diff --git a/src/d3d11/d3d11_resource_helper.cpp b/src/d3d11/d3d11_resource_helper.cpp
+index 6624ed6..025bf0a 100644
+--- a/src/d3d11/d3d11_resource_helper.cpp
++++ b/src/d3d11/d3d11_resource_helper.cpp
+@@ -431,19 +431,38 @@ CreateMTLTextureDescriptorInternal(
+         pDescOut->type = WMTTextureTypeCube;
+       }
+     } else {
+-      if (SampleCount > 1) {
+-        if (!pDevice->GetMTLDevice().supportsTextureSampleCount(SampleCount)) {
+-          ERR("CreateMTLTextureDescriptorInternal: sample count ", SampleCount,
+-              " is not supported.");
+-          return E_INVALIDARG;
+-        }
++      UINT effective_samples = SampleCount;
++      if (effective_samples > 1 &&
++          !pDevice->GetMTLDevice().supportsTextureSampleCount(effective_samples)) {
++        // Alloy fork-local (issue #65): D3D11 feature level 11_0 guarantees 8x
++        // MSAA for every render target format except R32G32B32A32, and this
++        // device reports 11_0, so a conformant title may ask for 8 without
++        // calling CheckMultisampleQualityLevels first. Deus Ex: Mankind
++        // Divided does exactly that while initializing Scaleform. Apple
++        // silicon does not go past 4 (measured on M2 Pro: 1, 2 and 4
++        // supported, 8 not), so refusing turned a capability gap we created by
++        // advertising 11_0 into the title throwing and dying.
++        //
++        // Clamp to the highest count this device does support. That renders
++        // with fewer samples than asked for, which is a visible difference and
++        // is why it is reported rather than done silently - but it is the
++        // honest end of a promise already made one level up.
++        UINT clamped = effective_samples;
++        while (clamped > 1 &&
++               !pDevice->GetMTLDevice().supportsTextureSampleCount(clamped))
++          clamped >>= 1;
++        ERR_ONCE("CreateMTLTextureDescriptorInternal: sample count ",
++                 SampleCount, " is not supported; clamping to ", clamped);
++        effective_samples = clamped;
++      }
++      if (effective_samples > 1) {
+         if (ArraySize > 1) {
+           pDescOut->type = WMTTextureType2DMultisampleArray;
+           pDescOut->array_length = ArraySize;
+         } else {
+           pDescOut->type = WMTTextureType2DMultisample;
+         }
+-        pDescOut->sample_count = SampleCount;
++        pDescOut->sample_count = effective_samples;
+       } else {
+         if (ArraySize > 1) {
+           pDescOut->type = WMTTextureType2DArray;
