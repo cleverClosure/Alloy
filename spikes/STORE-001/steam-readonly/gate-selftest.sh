@@ -104,7 +104,19 @@ Fetch the depot with steamcmd once the user links their account.
 EOF
 run_case undocumented-steamcmd-plan fail "not the legal or research record"
 
-# 6. Nothing planted: the gate must still be able to pass.
+# 6. A document on the allowlist that names steamcmd but never records that it is
+#    prohibited. This is the case that actually happened: the preliminary
+#    findings said "steamcmd fine" and check 5 exempted the file by path.
+root=$(make_repo stale-legal-record)
+mkdir -p "$root/docs/research"
+cat >"$root/docs/research/SPIKE-STORE-001-findings.md" <<'EOF'
+# Storefront findings
+
+Steam: launch the official client, read the local ACFs, steamcmd fine.
+EOF
+run_case stale-legal-record fail "no supersession banner"
+
+# 7. Nothing planted: the gate must still be able to pass.
 root=$(make_repo clean-repository)
 run_case clean-repository pass "STEAM-AUTOMATION: pass"
 

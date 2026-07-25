@@ -5,6 +5,12 @@
 **Scope:** counsel checklist item 6, Steam automation (issue #25)
 **Gate:** `spikes/STORE-001/steam-readonly/steam-automation-gate.sh`
 
+> **Incomplete — see [result 04](2026-07-25-04-steam-readonly-second-sweep.md).** A
+> second sweep found four more places the design described prohibited Steam
+> interaction, including `steamcmd fine` in the preliminary findings, which the
+> gate's check-5 allowlist was exempting. The document sweep recorded below
+> covered less than it implies.
+
 ## Verdict
 
 **GREEN, with one substantive correction to the design.**

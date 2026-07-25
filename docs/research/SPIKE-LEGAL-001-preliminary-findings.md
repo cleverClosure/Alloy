@@ -7,6 +7,8 @@
 **Related:** [Legal plan](../docs/18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md) · [Open questions / SPIKE-LEGAL-001](../docs/16_OPEN_QUESTIONS_AND_TECHNICAL_SPIKES.md) · [ADR-0006](../adr/ADR-0006-owned-d3d12-metal-and-reused-d3d11.md) · [Risk register R-010](../docs/13_RISK_REGISTER.md)
 
 > **This is not legal advice.** It is an engineering-grade pre-counsel review compiled from primary sources (repository LICENSE files, vendor license pages, statutes, and official statements) as of 23 July 2026. Items marked ⚖️ require counsel sign-off before the first external release.
+>
+> **Superseded in part (24 July 2026) — read before implementing any `steamcmd` or storefront-authentication flow.** This document is preserved as the research record of 23 July; several of its preliminary positions were corrected by the [pre-counsel assessment](SPIKE-LEGAL-001-verdict.md). Item 3 (GPTK user-fetch) became **do not ship**, item 5 (codecs) became a **release gate**, item 7's Visual Studio threshold was misstated here, and item 9 (trademark) became **rename before launch**. Item 6 restricts Steam to read-only local `appmanifest_*.acf` discovery plus actions the user takes in Steam's own UI, which **withdraws the "steamcmd fine" entry in §2 below** ([doc 18 §9](../docs/18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md)). The §4.C automation clause is the operative prohibition, not a residual gray area.
 
 ---
 
@@ -45,7 +47,7 @@ Distribution classes per doc 18 §3: **BUNDLE** (ship in product), **OFFICIAL-DO
 | Media Foundation / any Windows system DLL | Windows EULA (not on any redist list) | AVOID / REIMPLEMENT | winegstreamer + VideoToolbox; USER-SUPPLIED escape hatch only, user's own Windows license |
 | Software codecs (H.264/HEVC/VC-1/AAC decoders) | Patent pools (Via LA, Access Advance) | AVOID bundling | Decode via VideoToolbox/AudioToolbox only; HEVC is dual-pool and active; 2026 content-royalty push unsettled ⚖️ |
 | corefonts (Arial et al.) | Terminated MS program | AVOID | Bundle Liberation Fonts (SIL OFL 1.1) instead |
-| Steam integration | SSA + Steamworks terms | Integrate | Launch official client; read local `appmanifest_*.acf`; steamcmd fine; §4.C "Automation" text is the residual gray ⚖️ |
+| Steam integration | SSA + Steamworks terms | Integrate | Let the user launch the official client; read local `appmanifest_*.acf` without modifying it; ~~steamcmd fine~~ — **withdrawn 25 July 2026**: §4.C "Automation" is the operative prohibition rather than a residual gray, automated `steamcmd` is out of the v1 design, and no Steam credential or token is stored or relayed ([verdict](SPIKE-LEGAL-001-verdict.md) item 6, [doc 18 §9](../docs/18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md)) ⚖️ |
 | Epic integration | EGS EULA | Integrate | Legendary/Heroic precedent (full protocol reimplementation, unenforced); no confirmed Sweeney endorsement — do not cite one |
 | GOG integration | DRM-free by design | Integrate | Friendliest storefront; do not scrape the website |
 | EAC / BattlEye / Denuvo | Vendor programs | Partner-enabled only | Linux/Proton opt-in programs exist; **no macOS/Wine equivalent**; CrossOver 26's anti-cheat wins are CodeWeavers engineering, not vendor sanction — never market as "officially supported" |

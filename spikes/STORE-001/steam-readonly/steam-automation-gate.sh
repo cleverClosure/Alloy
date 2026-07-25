@@ -59,7 +59,7 @@ code_files() {
 # records that carry the narrowing, the research findings it superseded, and this
 # gate's own evidence. Anything else naming steamcmd is a new plan to automate
 # Steam, which is what this check exists to catch.
-STEAMCMD_ALLOWED='^(docs/research/SPIKE-LEGAL-001-(verdict|counsel-brief|preliminary-findings)\.md|docs/research/SPIKE-STORE-001-findings\.md|docs/docs/(14_DECISION_LOG|16_OPEN_QUESTIONS_AND_TECHNICAL_SPIKES|18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION)\.md|docs/CHANGELOG\.md|spikes/STORE-001/steam-readonly/.*|spikes/STORE-001/results/.*)$'
+STEAMCMD_ALLOWED='^(docs/research/SPIKE-LEGAL-001-(verdict|counsel-brief|preliminary-findings)\.md|docs/research/SPIKE-STORE-001-findings\.md|docs/docs/(04_TECHNICAL_ARCHITECTURE|14_DECISION_LOG|16_OPEN_QUESTIONS_AND_TECHNICAL_SPIKES|18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION)\.md|docs/CHANGELOG\.md|spikes/STORE-001/steam-readonly/.*|spikes/STORE-001/results/.*)$'
 
 echo "== 1. steamcmd orchestration in shipped code"
 hits=$(code_files | xargs grep -l -i 'steamcmd' 2>/dev/null || true)
@@ -232,8 +232,8 @@ ACF
 fi
 
 echo "== 5. steamcmd named outside the legal and research record"
-hits=$(git ls-files -- '*.md' | xargs grep -l -i 'steamcmd' 2>/dev/null |
-  grep -Ev "$STEAMCMD_ALLOWED" || true)
+naming=$(git ls-files -- '*.md' | xargs grep -l -i 'steamcmd' 2>/dev/null || true)
+hits=$(grep -Ev "$STEAMCMD_ALLOWED" <<<"$naming" || true)
 if [[ -n $hits ]]; then
   bad "steamcmd appears in a document that is not the legal or research record:"
   indent "$hits" >&2
@@ -242,6 +242,35 @@ if [[ -n $hits ]]; then
   printf '        prohibition rather than proposing the flow.\n' >&2
 else
   note "steamcmd appears only where the prohibition is recorded"
+fi
+
+echo "== 6. superseded research records say so"
+# Check 5 exempts a document by path, which is not enough on its own: the
+# preliminary findings carried the line "steamcmd fine" after the assessment had
+# withdrawn it, and the path-based exemption waved it through.
+#
+# This check is deliberately narrow. Deciding from prose whether a paragraph
+# permits or forbids something is not a thing grep can do, and the first attempt
+# here proved it - a whole-file search for words like "prohibit" passed that very
+# file, because "prohibited" appears in an unrelated row about GPTK. So the check
+# tests the one property that is actually decidable: a research *findings*
+# document records a conclusion that can later be overturned, so one that still
+# names steamcmd must carry a supersession banner. Prohibition sources such as
+# doc 18 and the verdict are not in scope - being the prohibition is their job.
+stale=""
+while IFS= read -r doc; do
+  [[ -z $doc ]] && continue
+  case $doc in docs/research/*findings*.md) ;; *) continue ;; esac
+  grep -q 'Superseded' "$doc" || stale+="$doc"$'\n'
+done <<<"$naming"
+stale=${stale%$'\n'}
+if [[ -n $stale ]]; then
+  bad "a research record names steamcmd with no supersession banner:"
+  indent "$stale" >&2
+  printf '        Its conclusion may predate the assessment. Add the banner, or\n' >&2
+  printf '        correct the entry, before anyone implements from it.\n' >&2
+else
+  note "every research record naming steamcmd carries a supersession banner"
 fi
 
 echo

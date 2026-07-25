@@ -148,6 +148,8 @@ CollectGarbage(policy) -> Operation
 
 `InstallPlan` includes object digests, byte estimates, temporary/rollback space, grants, dependencies, and expected resulting generation.
 
+These operations act on Alloy's own runtime generations and install records — never on a storefront-managed game payload. `RepairInstallation` repairs runtime layers and the install record; a damaged game payload is repaired by the user in the storefront's own client, and Alloy does not invoke a storefront's verify-or-repair function on their behalf ([doc 18 §9](18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md)).
+
 ### 6.3 Runtime and launch
 
 ```text
