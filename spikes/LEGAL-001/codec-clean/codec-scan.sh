@@ -71,7 +71,11 @@ else
 fi
 
 echo "== 4. FFmpeg at configure time"
-if rg -Nq '#define HAVE_FFMPEG 1' "$BUILD/config.log" 2>/dev/null; then
+# A missing config.log must not read as a pass. "The file is not there" and
+# "the option is off" are different facts, and only one of them is evidence.
+if [[ ! -f $BUILD/config.log ]]; then
+  bad "no config.log in $BUILD - build configuration cannot be verified"
+elif rg -Nq '#define HAVE_FFMPEG 1' "$BUILD/config.log" 2>/dev/null; then
   bad "HAVE_FFMPEG is set - configure the external build with --without-ffmpeg"
 else
   note "HAVE_FFMPEG is not set"
