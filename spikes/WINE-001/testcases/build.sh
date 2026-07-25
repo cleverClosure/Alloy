@@ -27,4 +27,6 @@ build() {
 build x64min -nostdlib -Wl,-e,entry
 build x64hello
 build jit_cross_view "${SEH_FLAGS[@]}"
+# ec_delay_import MUST keep a short output stem and plain flags; see its header.
+build ec_delay_import -ladvapi32
 echo wine-testcases-built
