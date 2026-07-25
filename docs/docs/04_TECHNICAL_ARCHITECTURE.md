@@ -493,7 +493,7 @@ Primary responsibilities:
 - resolve game build and host capability identity;
 - download and verify signed metadata and artifacts;
 - materialize immutable runtime generations;
-- coordinate storefront installation and updates;
+- sequence runtime work around storefront-performed installation and updates, observing them through local manifests rather than driving them (doc 18 §9);
 - compile signed profiles into local policy snapshots;
 - create and monitor per-session agents;
 - perform atomic generation activation and rollback;
@@ -1810,7 +1810,7 @@ PRECHECK
 → READY
 ```
 
-Recipes may identify windows, processes, files, registry keys, or log events as milestones. They cannot click arbitrary desktop coordinates in production. UI automation is reserved for the compatibility lab and experimental adapters.
+Recipes may identify windows, processes, files, registry keys, or log events as milestones. They cannot click arbitrary desktop coordinates in production. UI automation is reserved for the compatibility lab and experimental adapters. That reservation is not an exemption from a storefront's own terms: simulated input against a **storefront client** is prohibited in the product (doc 18 §9), and it is not thereby cleared for the lab. It sits with the open SSA §4.C lab-automation question in doc 18 §8 and needs that answer before any lab recipe relies on it.
 
 ## 18.4 Redistributables and dependencies
 

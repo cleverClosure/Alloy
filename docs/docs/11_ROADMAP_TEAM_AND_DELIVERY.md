@@ -48,7 +48,7 @@ A graphics demo without product/runtime operations is not an MVP. A polished cli
 | Compatibility lab | Mac/Windows runners, scenarios, evidence, comparison, bisection |
 | Control plane | Catalog, profiles, artifacts, release, telemetry, publisher portal |
 | Security/release | Signing, provenance, threat model, privacy, incident, notarization |
-| Storefront/publisher | Install/auth/update adapters, partner integration, anti-cheat |
+| Storefront/publisher | Discovery, handoff and build-identity adapters (installation, sign-in and updates stay in the storefront's own client — doc 18 §9), partner integration, anti-cheat |
 | Quality/program | Test strategy, release gates, requirements/ADR governance |
 
 ## 4. Phase 0 — Foundational validation

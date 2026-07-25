@@ -485,7 +485,7 @@ Initial planning objectives for top-catalog titles:
 
 | Event | Objective |
 | --- | --- |
-| Update detected | Within 1 hour of storefront visibility where automation allows |
+| Update detected | Within 1 hour of storefront visibility, by the permitted detection route for that storefront. For Steam that is polling the local manifests we may already read; it is not automated querying of Steam's services (doc 18 §9) |
 | Impacted plan scheduled | Within 2 hours |
 | Smoke result | Within 6 hours |
 | Safe rollback/profile mitigation | Within 24–48 hours for reproducible critical regressions |

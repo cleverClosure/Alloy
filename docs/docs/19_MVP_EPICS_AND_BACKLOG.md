@@ -371,28 +371,34 @@ flowchart TB
 
 ## 16. EPIC-013 — First storefront adapter
 
-**Outcome:** Ownership, install, update, repair, authentication, and build identity work for one storefront.
+**Outcome:** Read-only library discovery, build identity, and user-driven handoff
+to the official client work for one storefront. Ownership, installation, updates,
+repair and sign-in stay inside the storefront's own application, which is what
+INS-008 already requires and what [doc 18 §9](18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md)
+binds us to.
 
 **Requirements:** INS-001, INS-008, CAT-001, CMP-011.
 
 **Stories:**
 
-- installation/library discovery;
-- account/launcher handoff;
-- manifest/build identity;
-- game update detection;
-- launcher update;
-- verify/repair;
-- offline mode;
+- library discovery by reading local manifests without modifying them;
 - multiple library locations;
+- manifest/build identity;
+- game update **detection** — the storefront performs the update, we notice it;
+- user-initiated handoff to the official client for install, update, repair and sign-in;
+- offline mode;
 - process roles;
 - secret redaction.
 
 **Acceptance:**
 
-- clean install and existing install pass;
-- game and launcher update invalidate exact selectors;
-- no credential interception;
+- an existing install is discovered without a single write to the library,
+  proven by `spikes/STORE-001/steam-readonly/steam-automation-gate.sh`;
+- a game or launcher update performed by the storefront invalidates exact selectors;
+- no automated account interaction: no background depot tooling, no stored or
+  relayed credentials, no simulated input or process control against the client.
+  Absence of credential interception on its own does **not** satisfy this — SSA
+  §4.C is a separate prohibition and the pre-counsel verdict says so explicitly;
 - second launch/offline path works where storefront permits.
 
 ## 17. EPIC-014 — MVP title certification

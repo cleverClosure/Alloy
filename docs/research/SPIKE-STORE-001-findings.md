@@ -70,7 +70,7 @@ Steam's two 5s are the ones a commercial product cannot substitute: the users an
 
 | # | Item | Where it lands |
 | --- | --- | --- |
-| 1 | `steamservice.exe` bitness; credentialed `steamcmd` depot flow re-verification; Valve's own 64-bit-client patch notes (Dec 2025 claim rests on consistent press only) | Phase 0 storefront install/fingerprint proof (doc 11) |
+| 1 | `steamservice.exe` bitness; ~~credentialed `steamcmd` depot flow re-verification~~ — **withdrawn 25 July 2026**: the shipped flow it would have verified is out of the v1 design ([verdict](SPIKE-LEGAL-001-verdict.md) item 6, [doc 18 §9](../docs/18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md)), so verifying it would schedule work we have decided not to do; Valve's own 64-bit-client patch notes (Dec 2025 claim rests on consistent press only) | Phase 0 storefront install/fingerprint proof (doc 11) |
 | 2 | Standardize GOG installer-metadata → build fingerprint method (no official API exists — verified negative) | Lab fingerprinting follow-up in the same proof |
 | 3 | GOG consumer legal texts (User Agreement; Galaxy Licence Agreement, 9 Mar 2026) — support.gog.com blocked all automated fetches; the one remaining unread primary ToS | ⚖️ counsel checklist addition |
 | 4 | ~~Catalog cross-check~~ — **resolved** by SPIKE-CATALOG-001 §9.5: all 13 portfolio titles on Steam; 7 also on GOG (5 with DRM-free builds to certify directly) — supports GOG at MVP+1 | Closed |
