@@ -1,0 +1,16 @@
+{
+  "author": "Timur Isaev",
+  "automation": {
+    "extrasMenuTarget": "BENCHMARK",
+    "mainMenuTarget": "EXTRAS",
+    "selectionVerification": "Vision OCR and selected-row luminance"
+  },
+  "benchmarkStartedLogLine": "03:26:47:357 (00000036) > [Benchmark] Benchmark started.",
+  "benchmarkStoppedLogLine": "03:28:31:524 (00000036) > [Benchmark] Benchmark stopped.",
+  "pid": 75279,
+  "sceneDurationSeconds": 101.76488639999999,
+  "sceneEndTimestampNs": 149112723400,
+  "sceneStartTimestampNs": 47347837000,
+  "schemaVersion": 1,
+  "statisticsStartedLogLine": "03:26:49:383 (00000036) > [Benchmark] Benchmark delay expired; starting statistics capture."
+}

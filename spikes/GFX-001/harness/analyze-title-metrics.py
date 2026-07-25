@@ -53,6 +53,12 @@ class MemorySample:
     percent_mem: float
 
 
+@dataclass(frozen=True)
+class MetricInputOrdering:
+    adjacent_reversal_count: int
+    maximum_backward_ns: int
+
+
 def percentile(values: Sequence[float], fraction: float) -> float | None:
     if not values:
         return None
@@ -112,7 +118,7 @@ def validate_columns(
         )
 
 
-def read_metrics(path: Path) -> list[MetricEvent]:
+def read_metrics(path: Path) -> tuple[list[MetricEvent], MetricInputOrdering]:
     events: list[MetricEvent] = []
     with path.open(newline="", encoding="utf-8-sig") as source:
         reader = csv.DictReader(source, delimiter="\t")
@@ -133,12 +139,16 @@ def read_metrics(path: Path) -> list[MetricEvent]:
                 raise ValueError(f"{path}:{line_number}: invalid metric row") from error
     if not events:
         raise ValueError(f"{path}: telemetry contains no events")
-    if any(
-        current.timestamp_ns < previous.timestamp_ns
+    backward_deltas = [
+        previous.timestamp_ns - current.timestamp_ns
         for previous, current in zip(events, events[1:])
-    ):
-        raise ValueError(f"{path}: timestamps are not monotonic")
-    return events
+        if current.timestamp_ns < previous.timestamp_ns
+    ]
+    ordering = MetricInputOrdering(
+        adjacent_reversal_count=len(backward_deltas),
+        maximum_backward_ns=max(backward_deltas, default=0),
+    )
+    return sorted(events, key=lambda event: event.timestamp_ns), ordering
 
 
 def read_memory(path: Path) -> list[MemorySample]:
@@ -246,6 +256,7 @@ def summarize_memory(
 def summarize_metrics(
     events: Sequence[MetricEvent],
     path: Path,
+    input_ordering: MetricInputOrdering,
     start_seconds: float | None,
     end_seconds: float | None,
     longest_count: int,
@@ -340,6 +351,11 @@ def summarize_metrics(
     return {
         "source": str(path),
         "sha256": sha256(path),
+        "inputOrdering": {
+            "adjacentReversalCount": input_ordering.adjacent_reversal_count,
+            "maximumBackwardNs": input_ordering.maximum_backward_ns,
+            "stablySortedByTimestamp": True,
+        },
         "window": {
             "requestedStartSeconds": start_seconds,
             "requestedEndSeconds": end_seconds,
@@ -417,7 +433,7 @@ def main() -> int:
     if args.longest_frames < 1:
         raise ValueError("--longest-frames must be positive")
 
-    metrics = read_metrics(args.metrics)
+    metrics, input_ordering = read_metrics(args.metrics)
     payload: dict[str, object] = {
         "schemaVersion": 1,
         "author": "Timur Isaev",
@@ -426,6 +442,7 @@ def main() -> int:
         "metrics": summarize_metrics(
             metrics,
             args.metrics,
+            input_ordering,
             args.start_seconds,
             args.end_seconds,
             args.longest_frames,

@@ -1,0 +1,914 @@
+{
+  "schemaVersion": 1,
+  "author": "Timur Isaev",
+  "cycleCount": 15,
+  "cycles": [
+    {
+      "cycle": 1,
+      "pid": 85589,
+      "sceneDurationSeconds": 99.786975499999997,
+      "sceneStartTimestampNs": 46145022000,
+      "sceneEndTimestampNs": 145931997500,
+      "titleLog": {
+        "benchmarkStarted": "22:45:45:092 (00000036) > [Benchmark] Benchmark started.",
+        "statisticsStarted": "22:45:47:115 (00000036) > [Benchmark] Benchmark delay expired; starting statistics capture.",
+        "benchmarkStopped": "22:47:26:843 (00000036) > [Benchmark] Benchmark stopped."
+      },
+      "metrics": {
+        "windowSeconds": 99.784,
+        "presentCount": 5265,
+        "meanFPS": 52.761,
+        "intervalMs": {
+          "count": 5264,
+          "max": 605.933,
+          "mean": 18.953,
+          "p50": 17.207,
+          "p95": 30.162,
+          "p99": 37.228
+        },
+        "thresholdCounts": {
+          "over100ms": 9,
+          "over16_667ms": 2791,
+          "over20_833ms": 1690,
+          "over33_333ms": 119,
+          "over50ms": 21
+        },
+        "shader": {
+          "cacheHitCount": 589,
+          "compileCount": 3,
+          "compileDurationMs": {
+            "count": 3,
+            "max": 53.1,
+            "mean": 23.71,
+            "p50": 13.351,
+            "p95": 49.125,
+            "p99": 52.305
+          },
+          "eventCount": 592,
+          "failureCount": 0
+        },
+        "pipeline": {
+          "byType": {
+            "compute": 5,
+            "graphics": 834
+          },
+          "durationMs": {
+            "count": 839,
+            "max": 94.775,
+            "mean": 1.172,
+            "p50": 0.178,
+            "p95": 1.18,
+            "p99": 36.887
+          },
+          "eventCount": 839,
+          "failureCount": 0
+        },
+        "nonOkEventCount": 0
+      }
+    },
+    {
+      "cycle": 2,
+      "pid": 85589,
+      "sceneDurationSeconds": 98.795791600000001,
+      "sceneStartTimestampNs": 174266028600,
+      "sceneEndTimestampNs": 273061820200,
+      "titleLog": {
+        "benchmarkStarted": "22:47:54:013 (00000036) > [Benchmark] Benchmark started.",
+        "statisticsStarted": "22:47:56:014 (00000036) > [Benchmark] Benchmark delay expired; starting statistics capture.",
+        "benchmarkStopped": "22:49:34:713 (00000036) > [Benchmark] Benchmark stopped."
+      },
+      "metrics": {
+        "windowSeconds": 98.766,
+        "presentCount": 5098,
+        "meanFPS": 51.607,
+        "intervalMs": {
+          "count": 5097,
+          "max": 295.24,
+          "mean": 19.377,
+          "p50": 18.062,
+          "p95": 31.515,
+          "p99": 38.81
+        },
+        "thresholdCounts": {
+          "over100ms": 4,
+          "over16_667ms": 2994,
+          "over20_833ms": 1734,
+          "over33_333ms": 171,
+          "over50ms": 18
+        },
+        "shader": {
+          "cacheHitCount": 1,
+          "compileCount": 0,
+          "compileDurationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 1,
+          "failureCount": 0
+        },
+        "pipeline": {
+          "byType": {
+            "graphics": 1
+          },
+          "durationMs": {
+            "count": 1,
+            "max": 1.061,
+            "mean": 1.061,
+            "p50": 1.061,
+            "p95": 1.061,
+            "p99": 1.061
+          },
+          "eventCount": 1,
+          "failureCount": 0
+        },
+        "nonOkEventCount": 0
+      }
+    },
+    {
+      "cycle": 3,
+      "pid": 85589,
+      "sceneDurationSeconds": 97.566920699999997,
+      "sceneStartTimestampNs": 303613335300,
+      "sceneEndTimestampNs": 401180256000,
+      "titleLog": {
+        "benchmarkStarted": "22:50:02:907 (00000036) > [Benchmark] Benchmark started.",
+        "statisticsStarted": "22:50:04:912 (00000036) > [Benchmark] Benchmark delay expired; starting statistics capture.",
+        "benchmarkStopped": "22:51:43:083 (00000036) > [Benchmark] Benchmark stopped."
+      },
+      "metrics": {
+        "windowSeconds": 97.54,
+        "presentCount": 5217,
+        "meanFPS": 53.475,
+        "intervalMs": {
+          "count": 5216,
+          "max": 345.935,
+          "mean": 18.7,
+          "p50": 17.013,
+          "p95": 30.155,
+          "p99": 36.822
+        },
+        "thresholdCounts": {
+          "over100ms": 1,
+          "over16_667ms": 2729,
+          "over20_833ms": 1657,
+          "over33_333ms": 122,
+          "over50ms": 4
+        },
+        "shader": {
+          "cacheHitCount": 1,
+          "compileCount": 0,
+          "compileDurationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 1,
+          "failureCount": 0
+        },
+        "pipeline": {
+          "byType": {
+            "graphics": 2
+          },
+          "durationMs": {
+            "count": 2,
+            "max": 4.537,
+            "mean": 3.003,
+            "p50": 3.003,
+            "p95": 4.384,
+            "p99": 4.507
+          },
+          "eventCount": 2,
+          "failureCount": 0
+        },
+        "nonOkEventCount": 0
+      }
+    },
+    {
+      "cycle": 4,
+      "pid": 85589,
+      "sceneDurationSeconds": 97.789854300000002,
+      "sceneStartTimestampNs": 432726487700,
+      "sceneEndTimestampNs": 530516342000,
+      "titleLog": {
+        "benchmarkStarted": "22:52:12:093 (00000036) > [Benchmark] Benchmark started.",
+        "statisticsStarted": "22:52:14:095 (00000036) > [Benchmark] Benchmark delay expired; starting statistics capture.",
+        "benchmarkStopped": "22:53:52:298 (00000036) > [Benchmark] Benchmark stopped."
+      },
+      "metrics": {
+        "windowSeconds": 97.768,
+        "presentCount": 5160,
+        "meanFPS": 52.768,
+        "intervalMs": {
+          "count": 5159,
+          "max": 254.591,
+          "mean": 18.951,
+          "p50": 17.496,
+          "p95": 30.551,
+          "p99": 37.836
+        },
+        "thresholdCounts": {
+          "over100ms": 1,
+          "over16_667ms": 2836,
+          "over20_833ms": 1673,
+          "over33_333ms": 126,
+          "over50ms": 6
+        },
+        "shader": {
+          "cacheHitCount": 0,
+          "compileCount": 0,
+          "compileDurationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "pipeline": {
+          "byType": {},
+          "durationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "nonOkEventCount": 0
+      }
+    },
+    {
+      "cycle": 5,
+      "pid": 85589,
+      "sceneDurationSeconds": 99.557535599999994,
+      "sceneStartTimestampNs": 560384123600,
+      "sceneEndTimestampNs": 659941659200,
+      "titleLog": {
+        "benchmarkStarted": "22:54:19:949 (00000036) > [Benchmark] Benchmark started.",
+        "statisticsStarted": "22:54:21:965 (00000036) > [Benchmark] Benchmark delay expired; starting statistics capture.",
+        "benchmarkStopped": "22:56:01:037 (00000036) > [Benchmark] Benchmark stopped."
+      },
+      "metrics": {
+        "windowSeconds": 99.533,
+        "presentCount": 5160,
+        "meanFPS": 51.832,
+        "intervalMs": {
+          "count": 5159,
+          "max": 594.452,
+          "mean": 19.293,
+          "p50": 17.63,
+          "p95": 30.369,
+          "p99": 36.035
+        },
+        "thresholdCounts": {
+          "over100ms": 3,
+          "over16_667ms": 2870,
+          "over20_833ms": 1834,
+          "over33_333ms": 110,
+          "over50ms": 6
+        },
+        "shader": {
+          "cacheHitCount": 0,
+          "compileCount": 0,
+          "compileDurationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "pipeline": {
+          "byType": {},
+          "durationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "nonOkEventCount": 0
+      }
+    },
+    {
+      "cycle": 6,
+      "pid": 85589,
+      "sceneDurationSeconds": 99.191845700000002,
+      "sceneStartTimestampNs": 689064726200,
+      "sceneEndTimestampNs": 788256571900,
+      "titleLog": {
+        "benchmarkStarted": "22:56:29:139 (00000036) > [Benchmark] Benchmark started.",
+        "statisticsStarted": "22:56:31:152 (00000036) > [Benchmark] Benchmark delay expired; starting statistics capture.",
+        "benchmarkStopped": "22:58:09:424 (00000036) > [Benchmark] Benchmark stopped."
+      },
+      "metrics": {
+        "windowSeconds": 99.177,
+        "presentCount": 4860,
+        "meanFPS": 48.993,
+        "intervalMs": {
+          "count": 4859,
+          "max": 253.341,
+          "mean": 20.411,
+          "p50": 19.147,
+          "p95": 31.847,
+          "p99": 38.774
+        },
+        "thresholdCounts": {
+          "over100ms": 2,
+          "over16_667ms": 3145,
+          "over20_833ms": 2002,
+          "over33_333ms": 189,
+          "over50ms": 7
+        },
+        "shader": {
+          "cacheHitCount": 0,
+          "compileCount": 0,
+          "compileDurationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "pipeline": {
+          "byType": {},
+          "durationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "nonOkEventCount": 0
+      }
+    },
+    {
+      "cycle": 7,
+      "pid": 85589,
+      "sceneDurationSeconds": 98.690052899999998,
+      "sceneStartTimestampNs": 818133471400,
+      "sceneEndTimestampNs": 916823524300,
+      "titleLog": {
+        "benchmarkStarted": "22:58:37:101 (00000036) > [Benchmark] Benchmark started.",
+        "statisticsStarted": "22:58:39:107 (00000036) > [Benchmark] Benchmark delay expired; starting statistics capture.",
+        "benchmarkStopped": "23:00:17:843 (00000036) > [Benchmark] Benchmark stopped."
+      },
+      "metrics": {
+        "windowSeconds": 98.652,
+        "presentCount": 5040,
+        "meanFPS": 51.079,
+        "intervalMs": {
+          "count": 5039,
+          "max": 220.339,
+          "mean": 19.578,
+          "p50": 18.063,
+          "p95": 33.682,
+          "p99": 42.359
+        },
+        "thresholdCounts": {
+          "over100ms": 4,
+          "over16_667ms": 2910,
+          "over20_833ms": 1859,
+          "over33_333ms": 272,
+          "over50ms": 19
+        },
+        "shader": {
+          "cacheHitCount": 0,
+          "compileCount": 0,
+          "compileDurationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "pipeline": {
+          "byType": {},
+          "durationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "nonOkEventCount": 0
+      }
+    },
+    {
+      "cycle": 8,
+      "pid": 85589,
+      "sceneDurationSeconds": 98.507392999999993,
+      "sceneStartTimestampNs": 941087239400,
+      "sceneEndTimestampNs": 1039594632400,
+      "titleLog": {
+        "benchmarkStarted": "23:00:40:078 (00000036) > [Benchmark] Benchmark started.",
+        "statisticsStarted": "23:00:42:093 (00000036) > [Benchmark] Benchmark delay expired; starting statistics capture.",
+        "benchmarkStopped": "23:02:20:612 (00000036) > [Benchmark] Benchmark stopped."
+      },
+      "metrics": {
+        "windowSeconds": 98.481,
+        "presentCount": 4920,
+        "meanFPS": 49.949,
+        "intervalMs": {
+          "count": 4919,
+          "max": 384.006,
+          "mean": 20.021,
+          "p50": 18.782,
+          "p95": 31.475,
+          "p99": 37.752
+        },
+        "thresholdCounts": {
+          "over100ms": 2,
+          "over16_667ms": 3086,
+          "over20_833ms": 1909,
+          "over33_333ms": 160,
+          "over50ms": 8
+        },
+        "shader": {
+          "cacheHitCount": 0,
+          "compileCount": 0,
+          "compileDurationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "pipeline": {
+          "byType": {},
+          "durationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "nonOkEventCount": 0
+      }
+    },
+    {
+      "cycle": 9,
+      "pid": 85589,
+      "sceneDurationSeconds": 98.131793000000002,
+      "sceneStartTimestampNs": 1063833243600,
+      "sceneEndTimestampNs": 1161965036600,
+      "titleLog": {
+        "benchmarkStarted": "23:02:43:315 (00000036) > [Benchmark] Benchmark started.",
+        "statisticsStarted": "23:02:45:336 (00000036) > [Benchmark] Benchmark delay expired; starting statistics capture.",
+        "benchmarkStopped": "23:04:24:131 (00000036) > [Benchmark] Benchmark stopped."
+      },
+      "metrics": {
+        "windowSeconds": 98.116,
+        "presentCount": 4980,
+        "meanFPS": 50.746,
+        "intervalMs": {
+          "count": 4979,
+          "max": 581.051,
+          "mean": 19.706,
+          "p50": 18.003,
+          "p95": 31.214,
+          "p99": 39.792
+        },
+        "thresholdCounts": {
+          "over100ms": 3,
+          "over16_667ms": 2919,
+          "over20_833ms": 1783,
+          "over33_333ms": 153,
+          "over50ms": 14
+        },
+        "shader": {
+          "cacheHitCount": 0,
+          "compileCount": 0,
+          "compileDurationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "pipeline": {
+          "byType": {},
+          "durationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "nonOkEventCount": 0
+      }
+    },
+    {
+      "cycle": 10,
+      "pid": 85589,
+      "sceneDurationSeconds": 97.2699815,
+      "sceneStartTimestampNs": 1188152533500,
+      "sceneEndTimestampNs": 1285422515000,
+      "titleLog": {
+        "benchmarkStarted": "23:04:47:049 (00000036) > [Benchmark] Benchmark started.",
+        "statisticsStarted": "23:04:49:073 (00000036) > [Benchmark] Benchmark delay expired; starting statistics capture.",
+        "benchmarkStopped": "23:06:27:739 (00000036) > [Benchmark] Benchmark stopped."
+      },
+      "metrics": {
+        "windowSeconds": 97.242,
+        "presentCount": 5100,
+        "meanFPS": 52.436,
+        "intervalMs": {
+          "count": 5099,
+          "max": 476.596,
+          "mean": 19.071,
+          "p50": 17.517,
+          "p95": 30.693,
+          "p99": 37.894
+        },
+        "thresholdCounts": {
+          "over100ms": 4,
+          "over16_667ms": 2827,
+          "over20_833ms": 1593,
+          "over33_333ms": 136,
+          "over50ms": 9
+        },
+        "shader": {
+          "cacheHitCount": 0,
+          "compileCount": 0,
+          "compileDurationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "pipeline": {
+          "byType": {},
+          "durationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "nonOkEventCount": 0
+      }
+    },
+    {
+      "cycle": 11,
+      "pid": 85589,
+      "sceneDurationSeconds": 98.371048400000006,
+      "sceneStartTimestampNs": 1311693114200,
+      "sceneEndTimestampNs": 1410064162600,
+      "titleLog": {
+        "benchmarkStarted": "23:06:51:072 (00000036) > [Benchmark] Benchmark started.",
+        "statisticsStarted": "23:06:53:086 (00000036) > [Benchmark] Benchmark delay expired; starting statistics capture.",
+        "benchmarkStopped": "23:08:32:107 (00000036) > [Benchmark] Benchmark stopped."
+      },
+      "metrics": {
+        "windowSeconds": 98.35,
+        "presentCount": 5640,
+        "meanFPS": 57.336,
+        "intervalMs": {
+          "count": 5639,
+          "max": 548.086,
+          "mean": 17.441,
+          "p50": 15.52,
+          "p95": 28.706,
+          "p99": 33.318
+        },
+        "thresholdCounts": {
+          "over100ms": 4,
+          "over16_667ms": 2422,
+          "over20_833ms": 1426,
+          "over33_333ms": 57,
+          "over50ms": 8
+        },
+        "shader": {
+          "cacheHitCount": 0,
+          "compileCount": 0,
+          "compileDurationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "pipeline": {
+          "byType": {},
+          "durationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "nonOkEventCount": 0
+      }
+    },
+    {
+      "cycle": 12,
+      "pid": 85589,
+      "sceneDurationSeconds": 98.886775200000002,
+      "sceneStartTimestampNs": 1435169430100,
+      "sceneEndTimestampNs": 1534056205300,
+      "titleLog": {
+        "benchmarkStarted": "23:08:54:546 (00000036) > [Benchmark] Benchmark started.",
+        "statisticsStarted": "23:08:56:550 (00000036) > [Benchmark] Benchmark delay expired; starting statistics capture.",
+        "benchmarkStopped": "23:10:35:111 (00000036) > [Benchmark] Benchmark stopped."
+      },
+      "metrics": {
+        "windowSeconds": 98.86,
+        "presentCount": 5220,
+        "meanFPS": 52.792,
+        "intervalMs": {
+          "count": 5219,
+          "max": 392.865,
+          "mean": 18.942,
+          "p50": 16.988,
+          "p95": 31.042,
+          "p99": 38.876
+        },
+        "thresholdCounts": {
+          "over100ms": 3,
+          "over16_667ms": 2724,
+          "over20_833ms": 1665,
+          "over33_333ms": 167,
+          "over50ms": 6
+        },
+        "shader": {
+          "cacheHitCount": 0,
+          "compileCount": 0,
+          "compileDurationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "pipeline": {
+          "byType": {},
+          "durationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "nonOkEventCount": 0
+      }
+    },
+    {
+      "cycle": 13,
+      "pid": 85589,
+      "sceneDurationSeconds": 97.5242772,
+      "sceneStartTimestampNs": 1563042073800,
+      "sceneEndTimestampNs": 1660566351000,
+      "titleLog": {
+        "benchmarkStarted": "23:11:02:164 (00000036) > [Benchmark] Benchmark started.",
+        "statisticsStarted": "23:11:04:171 (00000036) > [Benchmark] Benchmark delay expired; starting statistics capture.",
+        "benchmarkStopped": "23:12:42:660 (00000036) > [Benchmark] Benchmark stopped."
+      },
+      "metrics": {
+        "windowSeconds": 97.511,
+        "presentCount": 5160,
+        "meanFPS": 52.907,
+        "intervalMs": {
+          "count": 5159,
+          "max": 351.011,
+          "mean": 18.901,
+          "p50": 17.636,
+          "p95": 30.053,
+          "p99": 37.413
+        },
+        "thresholdCounts": {
+          "over100ms": 3,
+          "over16_667ms": 2889,
+          "over20_833ms": 1652,
+          "over33_333ms": 120,
+          "over50ms": 6
+        },
+        "shader": {
+          "cacheHitCount": 0,
+          "compileCount": 0,
+          "compileDurationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "pipeline": {
+          "byType": {},
+          "durationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "nonOkEventCount": 0
+      }
+    },
+    {
+      "cycle": 14,
+      "pid": 85589,
+      "sceneDurationSeconds": 99.105128800000003,
+      "sceneStartTimestampNs": 1686448629900,
+      "sceneEndTimestampNs": 1785553758700,
+      "titleLog": {
+        "benchmarkStarted": "23:13:06:014 (00000036) > [Benchmark] Benchmark started.",
+        "statisticsStarted": "23:13:08:023 (00000036) > [Benchmark] Benchmark delay expired; starting statistics capture.",
+        "benchmarkStopped": "23:14:46:891 (00000036) > [Benchmark] Benchmark stopped."
+      },
+      "metrics": {
+        "windowSeconds": 99.083,
+        "presentCount": 5160,
+        "meanFPS": 52.067,
+        "intervalMs": {
+          "count": 5159,
+          "max": 784.763,
+          "mean": 19.206,
+          "p50": 17.751,
+          "p95": 30.014,
+          "p99": 36.505
+        },
+        "thresholdCounts": {
+          "over100ms": 3,
+          "over16_667ms": 2929,
+          "over20_833ms": 1718,
+          "over33_333ms": 105,
+          "over50ms": 8
+        },
+        "shader": {
+          "cacheHitCount": 0,
+          "compileCount": 0,
+          "compileDurationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "pipeline": {
+          "byType": {},
+          "durationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "nonOkEventCount": 0
+      }
+    },
+    {
+      "cycle": 15,
+      "pid": 85589,
+      "sceneDurationSeconds": 96.919991999999993,
+      "sceneStartTimestampNs": 1814425445200,
+      "sceneEndTimestampNs": 1911345437200,
+      "titleLog": {
+        "benchmarkStarted": "23:15:13:417 (00000036) > [Benchmark] Benchmark started.",
+        "statisticsStarted": "23:15:15:432 (00000036) > [Benchmark] Benchmark delay expired; starting statistics capture.",
+        "benchmarkStopped": "23:16:53:725 (00000036) > [Benchmark] Benchmark stopped."
+      },
+      "metrics": {
+        "windowSeconds": 96.902,
+        "presentCount": 5160,
+        "meanFPS": 53.24,
+        "intervalMs": {
+          "count": 5159,
+          "max": 315.083,
+          "mean": 18.783,
+          "p50": 17.319,
+          "p95": 29.748,
+          "p99": 36.19
+        },
+        "thresholdCounts": {
+          "over100ms": 1,
+          "over16_667ms": 2806,
+          "over20_833ms": 1693,
+          "over33_333ms": 95,
+          "over50ms": 5
+        },
+        "shader": {
+          "cacheHitCount": 0,
+          "compileCount": 0,
+          "compileDurationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "pipeline": {
+          "byType": {},
+          "durationMs": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "eventCount": 0,
+          "failureCount": 0
+        },
+        "nonOkEventCount": 0
+      }
+    }
+  ]
+}

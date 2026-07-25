@@ -30,8 +30,9 @@ must reuse that exact directory.
 
 ## Analysis
 
-`analyze-title-metrics.py` validates the TSV schema and monotonic timestamps, then
-reports:
+`analyze-title-metrics.py` validates the TSV schema, stably restores timestamp
+order when worker threads write adjacent rows out of order, records the reversal
+count and maximum backward delta, then reports:
 
 - present-interval and present-call mean/p50/p95/p99/max;
 - mean FPS and frame-budget threshold counts;
@@ -81,6 +82,33 @@ The deterministic UI sequence and visual anchors are recorded in
 The scenario also records a safe foreground cadence: this Unity build stops
 presenting while inactive, so wall-clock waiting is not a valid scene hold. Mark and
 trim the pacing window only after foreground rendering is stable.
+
+## Deus Ex benchmark scene
+
+`run-deus-ex-cache-pair.sh PAIR_ID DURATION_SECONDS` applies the same cache-pair
+contract to the title's deterministic built-in benchmark. The `-benchmark`
+argument skips the launcher and intro videos; it does not select the benchmark.
+`drive-deus-ex-benchmark.swift` captures only the exact DXMD window, uses Vision
+OCR to find `EXTRAS` and `BENCHMARK`, verifies the selected row by background
+luminance, and retries dropped keys. A run is accepted only when the title log
+reports benchmark statistics start and stop and both gates pair with completed
+DXMT Presents.
+
+The pair prepares the isolated prefix once, starts cold with a new cache
+directory, keeps the wineserver alive, and starts warm with that exact cache
+and server. It emits a full-stream summary plus a marker-bounded scene summary
+for each partner. The launcher localizes Wine's Documents directory inside the
+ignored prefix so title logs and crash artifacts do not mix with another
+runtime.
+
+`run-deus-ex-soak.sh RUN_ID DURATION_SECONDS` keeps one exact DXMD process alive
+and repeats that verified benchmark scene. Sampling begins at the first title
+statistics gate, runs once per second for the requested duration, and verifies
+the original PID's `DXMD.exe -benchmark` command on every sample. Result-dialog
+recovery returns through the main menu; every cycle uses new title-log
+occurrence baselines and gets its own marker-bounded scene summary. Point
+`ALLOY_DXMT_SHADER_CACHE_PATH` at the completed pair's cache for a warm
+long-session run.
 
 ## Visual capture wrapper
 

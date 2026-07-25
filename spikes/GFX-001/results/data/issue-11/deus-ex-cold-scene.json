@@ -1,0 +1,242 @@
+{
+  "author": "Timur Isaev",
+  "generatedAt": "2026-07-25T22:28:32.744651+00:00",
+  "label": "deus-ex-2026-07-26-title-scene-final-v2-cold-scene",
+  "memory": null,
+  "metrics": {
+    "eventCount": 6799,
+    "failedEventCount": 0,
+    "framePacing": {
+      "firstPresentTimestampMs": 47364.898,
+      "intervalMs": {
+        "count": 5385,
+        "max": 762.259,
+        "mean": 18.895,
+        "p50": 16.452,
+        "p95": 30.266,
+        "p99": 55.532
+      },
+      "lastPresentTimestampMs": 149112.723,
+      "longestFrames": [
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 118704.515,
+          "intervalMs": 762.259,
+          "presentObject": 7915
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "compile:vs_822a5033_1afa955e0b4a8e5fd0bff8e4bb5dfc4b7878be99",
+              "durationMs": 9.171,
+              "event": "shader",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.152,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.148,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 255.078,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 47638.135,
+          "intervalMs": 273.237,
+          "presentObject": 4181
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 58320.149,
+          "intervalMs": 228.408,
+          "presentObject": 4642
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 79992.759,
+          "intervalMs": 224.108,
+          "presentObject": 5669
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "compile:vs_7f4a7ffc_e2aa150ca02ab59275945c5b3c37bb24c18e45e6",
+              "durationMs": 174.548,
+              "event": "shader",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.194,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 122138.389,
+          "intervalMs": 184.897,
+          "presentObject": 8091
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "compile:ps_b4c9f021_09294cb027c6533290aba4a0ddbac736ab3dd05e",
+              "durationMs": 170.447,
+              "event": "shader",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.195,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 120906.95,
+          "intervalMs": 183.39,
+          "presentObject": 8020
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 118927.636,
+          "intervalMs": 177.301,
+          "presentObject": 7918
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 73769.16,
+          "intervalMs": 167.915,
+          "presentObject": 5353
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "compile:ps_a9e56ee0_3ff906cddc3067a495def9fa1badba70d8fd2b0d",
+              "durationMs": 90.584,
+              "event": "shader",
+              "status": "ok"
+            },
+            {
+              "detail": "compile:ps_c92d2178_3ff906cddc3067a495def9fa1badba70d8fd2b0d",
+              "durationMs": 63.045,
+              "event": "shader",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 33.284,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 33.584,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 74018.15,
+          "intervalMs": 162.932,
+          "presentObject": 5356
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "compile:ps_edc9507f_3ff906cddc3067a495def9fa1badba70d8fd2b0d",
+              "durationMs": 144.905,
+              "event": "shader",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.314,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 119242.36,
+          "intervalMs": 159.302,
+          "presentObject": 7929
+        }
+      ],
+      "meanFps": 52.925,
+      "presentCallMs": {
+        "count": 5386,
+        "max": 258.413,
+        "mean": 7.618,
+        "p50": 5.997,
+        "p95": 16.924,
+        "p99": 27.969
+      },
+      "presentCount": 5386,
+      "thresholdCounts": {
+        "over100ms": 20,
+        "over16_667ms": 2604,
+        "over20_833ms": 1481,
+        "over33_333ms": 127,
+        "over50ms": 64
+      },
+      "thresholdPercentages": {
+        "over100ms": 0.371,
+        "over16_667ms": 48.357,
+        "over20_833ms": 27.502,
+        "over33_333ms": 2.358,
+        "over50ms": 1.188
+      }
+    },
+    "inputOrdering": {
+      "adjacentReversalCount": 71,
+      "maximumBackwardNs": 14901000,
+      "stablySortedByTimestamp": true
+    },
+    "pipeline": {
+      "byType": {
+        "compute": 4,
+        "graphics": 825
+      },
+      "durationMs": {
+        "count": 829,
+        "max": 255.078,
+        "mean": 4.171,
+        "p50": 0.212,
+        "p95": 30.599,
+        "p99": 80.402
+      },
+      "eventCount": 829,
+      "failureCount": 0
+    },
+    "sha256": "a3eda9a5ed5887151963fc3d8c0830b9ebdc86bc6e8f8c117c93857b785f38b9",
+    "shader": {
+      "cacheHitCount": 0,
+      "compileCount": 584,
+      "compileDurationMs": {
+        "count": 584,
+        "max": 174.548,
+        "mean": 12.186,
+        "p50": 4.738,
+        "p95": 61.746,
+        "p99": 103.418
+      },
+      "eventCount": 584,
+      "failureCount": 0
+    },
+    "source": "spikes/STORE-001/work/issue-11-deus-ex/pairs/2026-07-26-title-scene-final-v2/metrics/cold.tsv",
+    "window": {
+      "durationSeconds": 101.758,
+      "firstEventTimestampMs": 47354.509,
+      "lastEventTimestampMs": 149112.723,
+      "requestedEndSeconds": 149.1127234,
+      "requestedStartSeconds": 47.347837
+    }
+  },
+  "schemaVersion": 1
+}

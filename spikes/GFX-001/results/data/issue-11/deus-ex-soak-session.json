@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "author": "Timur Isaev",
+  "cycleCount": 15,
+  "requestedMemoryDurationSeconds": 1800,
+  "metricsSHA256": "51ffd719725382075e30ec3570a7d25bccdbc877dcf0bc66fea367d13c2f7c08",
+  "memorySHA256": "583034fe462f1133f456085848dfb9c2cd900afb6977e8ece9ee6aefd6cf0253"
+}

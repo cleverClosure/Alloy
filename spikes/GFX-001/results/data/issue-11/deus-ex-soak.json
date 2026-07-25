@@ -1,0 +1,2373 @@
+{
+  "author": "Timur Isaev",
+  "generatedAt": "2026-07-25T23:16:55.455771+00:00",
+  "label": "deus-ex-2026-07-26-title-scene-30m-final-full-session",
+  "memory": {
+    "durationSeconds": 1800,
+    "pid": 85589,
+    "rssMiB": {
+      "delta": -259.844,
+      "end": 971.141,
+      "linearSlopeMiBPerHour": 193.646,
+      "minimum": 570.312,
+      "peak": 1919.016,
+      "start": 1230.984,
+      "tailHalf": {
+        "delta": -19.125,
+        "durationSeconds": 900,
+        "end": 971.141,
+        "linearSlopeMiBPerHour": 114.838,
+        "peak": 1919.016,
+        "start": 990.266
+      }
+    },
+    "sampleCount": 1801,
+    "sha256": "583034fe462f1133f456085848dfb9c2cd900afb6977e8ece9ee6aefd6cf0253",
+    "source": "spikes/STORE-001/work/issue-11-deus-ex/soaks/2026-07-26-title-scene-30m-final/memory.tsv",
+    "virtualMiB": {
+      "delta": 1550.109,
+      "end": 1056310.0,
+      "peak": 1056517.406,
+      "start": 1054759.891,
+      "tailHalf": {
+        "delta": 26.797,
+        "end": 1056310.0,
+        "peak": 1056517.406,
+        "start": 1056283.203
+      }
+    }
+  },
+  "metrics": {
+    "eventCount": 111960,
+    "failedEventCount": 0,
+    "framePacing": {
+      "firstPresentTimestampMs": 49.551,
+      "intervalMs": {
+        "count": 108823,
+        "max": 863.503,
+        "mean": 17.579,
+        "p50": 15.591,
+        "p95": 32.536,
+        "p99": 39.199
+      },
+      "lastPresentTimestampMs": 1913013.429,
+      "longestFrames": [
+        {
+          "correlatedEvents": [
+            {
+              "detail": "graphics",
+              "durationMs": 0.308,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.115,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.28,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.288,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.208,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.168,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.221,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.244,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.257,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.058,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.056,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.472,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.31,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.162,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.2,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.551,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.074,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.251,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.172,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.237,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.037,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.037,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.247,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.284,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.46,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.487,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.232,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.088,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.048,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.035,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.009,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.069,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.327,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.443,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.48,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.6,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.225,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.232,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.042,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.049,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.08,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 1.002,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.826,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 1.101,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.825,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 1.126,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.296,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.068,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.09,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.64,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.539,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.512,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.262,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.43,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.247,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.29,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.35,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.388,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.413,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.414,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.503,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.159,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.659,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.228,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.321,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.696,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.234,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.745,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.051,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.044,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.038,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.057,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.071,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.073,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 3030.484,
+          "intervalMs": 863.503,
+          "presentObject": 67
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 1739815.333,
+          "intervalMs": 784.763,
+          "presentObject": 99296
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 119726.856,
+          "intervalMs": 605.933,
+          "presentObject": 7969
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 599764.364,
+          "intervalMs": 594.452,
+          "presentObject": 35044
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 1139678.549,
+          "intervalMs": 581.051,
+          "presentObject": 64472
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 1319644.437,
+          "intervalMs": 548.086,
+          "presentObject": 75088
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 659683.793,
+          "intervalMs": 519.521,
+          "presentObject": 38205
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 1259537.09,
+          "intervalMs": 476.596,
+          "presentObject": 71334
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "compute",
+              "durationMs": 0.576,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.329,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.222,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.423,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.266,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.408,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.226,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.794,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.057,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "compute",
+              "durationMs": 0.211,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.085,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.025,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.026,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.123,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.604,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.123,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.151,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.379,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.62,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.845,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.028,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.987,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.02,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.279,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.044,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.308,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.062,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.137,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.034,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.535,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.523,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.512,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.544,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.038,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.835,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.455,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.837,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 2.663,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 2.141,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 2.561,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 3.075,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 2.64,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 3.144,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.843,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.049,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.058,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.254,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.742,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.37,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.054,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 3.387,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.084,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.133,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.273,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.489,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.393,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.06,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.056,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.039,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.184,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.03,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.017,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.269,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.144,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.324,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.235,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.228,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.26,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.206,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.217,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.497,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.329,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.097,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.411,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.405,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.167,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.246,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.205,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.049,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.037,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.036,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.042,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.045,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.01,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.045,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.042,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.053,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.176,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.151,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.159,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.081,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.059,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.016,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.197,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.014,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.196,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.331,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.25,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.043,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.011,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.548,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.015,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.014,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.218,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.648,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.05,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.835,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.016,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.054,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.784,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.129,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.78,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.041,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.033,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.205,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.215,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.05,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.188,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.238,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.043,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.17,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.346,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.043,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.202,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.084,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.23,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.211,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.057,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.055,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.018,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.013,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.013,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.472,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.011,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.184,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.202,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.257,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.22,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.227,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.038,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.009,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.231,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.06,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.221,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.013,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.013,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.297,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.01,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.681,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.347,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.381,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.767,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.718,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.024,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.926,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.047,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.013,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.892,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.013,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.019,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.31,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.409,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.339,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.231,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.047,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.034,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.011,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.009,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.01,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.702,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.539,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.011,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.173,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.446,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.717,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.733,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.014,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.03,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.303,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.087,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.772,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.583,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.713,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.03,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.195,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.426,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.189,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.239,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.014,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.046,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.043,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.009,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.043,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.009,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.01,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.008,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.014,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.011,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.02,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.036,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.031,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.035,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.04,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.032,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.036,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.037,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.011,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.043,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.039,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.037,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.042,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.008,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.196,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.145,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.01,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.224,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.01,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.223,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.258,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.208,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.245,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.054,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.299,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.037,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.042,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.019,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.047,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.039,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.059,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.049,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.072,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.035,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.082,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.045,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.05,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.057,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.083,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.046,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.041,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.04,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.046,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.036,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.016,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.028,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.325,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.171,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.139,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.022,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.046,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.062,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.048,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.045,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.235,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.022,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.293,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.231,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.292,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.282,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.071,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.047,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.092,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.232,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.196,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.214,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.12,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.177,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.325,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.053,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.081,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.218,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.042,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.226,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.465,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.461,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.603,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.605,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.22,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.142,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.225,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.171,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.083,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.075,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.099,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.056,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.241,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.807,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.758,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.915,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.797,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.1,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 44509.844,
+          "intervalMs": 444.875,
+          "presentObject": 4115
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 788951.571,
+          "intervalMs": 412.637,
+          "presentObject": 45183
+        }
+      ],
+      "meanFps": 56.887,
+      "presentCallMs": {
+        "count": 108824,
+        "max": 337.055,
+        "mean": 7.723,
+        "p50": 6.911,
+        "p95": 17.224,
+        "p99": 23.698
+      },
+      "presentCount": 108824,
+      "thresholdCounts": {
+        "over100ms": 82,
+        "over16_667ms": 48523,
+        "over20_833ms": 31139,
+        "over33_333ms": 4471,
+        "over50ms": 268
+      },
+      "thresholdPercentages": {
+        "over100ms": 0.075,
+        "over16_667ms": 44.589,
+        "over20_833ms": 28.614,
+        "over33_333ms": 4.109,
+        "over50ms": 0.246
+      }
+    },
+    "inputOrdering": {
+      "adjacentReversalCount": 71,
+      "maximumBackwardNs": 102800,
+      "stablySortedByTimestamp": true
+    },
+    "pipeline": {
+      "byType": {
+        "compute": 60,
+        "graphics": 1692
+      },
+      "durationMs": {
+        "count": 1752,
+        "max": 94.775,
+        "mean": 0.737,
+        "p50": 0.18,
+        "p95": 1.197,
+        "p99": 24.826
+      },
+      "eventCount": 1752,
+      "failureCount": 0
+    },
+    "sha256": "51ffd719725382075e30ec3570a7d25bccdbc877dcf0bc66fea367d13c2f7c08",
+    "shader": {
+      "cacheHitCount": 1381,
+      "compileCount": 3,
+      "compileDurationMs": {
+        "count": 3,
+        "max": 53.1,
+        "mean": 23.71,
+        "p50": 13.351,
+        "p95": 49.125,
+        "p99": 52.305
+      },
+      "eventCount": 1384,
+      "failureCount": 0
+    },
+    "source": "spikes/STORE-001/work/issue-11-deus-ex/soaks/2026-07-26-title-scene-30m-final/metrics.tsv",
+    "window": {
+      "durationSeconds": 1913.012,
+      "firstEventTimestampMs": 1.569,
+      "lastEventTimestampMs": 1913013.429,
+      "requestedEndSeconds": null,
+      "requestedStartSeconds": null
+    }
+  },
+  "schemaVersion": 1
+}

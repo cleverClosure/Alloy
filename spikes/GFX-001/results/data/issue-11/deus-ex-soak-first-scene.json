@@ -1,0 +1,326 @@
+{
+  "author": "Timur Isaev",
+  "generatedAt": "2026-07-25T22:47:27.139951+00:00",
+  "label": "deus-ex-2026-07-26-title-scene-30m-final-cycle-01",
+  "memory": null,
+  "metrics": {
+    "eventCount": 6696,
+    "failedEventCount": 0,
+    "framePacing": {
+      "firstPresentTimestampMs": 46161.445,
+      "intervalMs": {
+        "count": 5264,
+        "max": 605.933,
+        "mean": 18.953,
+        "p50": 17.207,
+        "p95": 30.162,
+        "p99": 37.228
+      },
+      "lastPresentTimestampMs": 145931.997,
+      "longestFrames": [
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 119726.856,
+          "intervalMs": 605.933,
+          "presentObject": 7969
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 59397.903,
+          "intervalMs": 225.494,
+          "presentObject": 4760
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "graphics",
+              "durationMs": 94.775,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 48825.791,
+          "intervalMs": 173.344,
+          "presentObject": 4276
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 119860.624,
+          "intervalMs": 133.768,
+          "presentObject": 7970
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "graphics",
+              "durationMs": 0.144,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.147,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.123,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.114,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.118,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.151,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 132500.567,
+          "intervalMs": 132.463,
+          "presentObject": 8817
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 140172.225,
+          "intervalMs": 122.354,
+          "presentObject": 9193
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "graphics",
+              "durationMs": 0.203,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.165,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.09,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 107749.927,
+          "intervalMs": 116.823,
+          "presentObject": 7410
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 63812.276,
+          "intervalMs": 107.377,
+          "presentObject": 4968
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "graphics",
+              "durationMs": 0.163,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.168,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.159,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.098,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.162,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.105,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.358,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.413,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.303,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.379,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 96826.318,
+          "intervalMs": 104.154,
+          "presentObject": 6981
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "graphics",
+              "durationMs": 31.049,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 31.049,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.161,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.163,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.107,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.152,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.161,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.255,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 52596.372,
+          "intervalMs": 91.687,
+          "presentObject": 4448
+        }
+      ],
+      "meanFps": 52.761,
+      "presentCallMs": {
+        "count": 5265,
+        "max": 160.735,
+        "mean": 8.735,
+        "p50": 8.21,
+        "p95": 17.996,
+        "p99": 23.647
+      },
+      "presentCount": 5265,
+      "thresholdCounts": {
+        "over100ms": 9,
+        "over16_667ms": 2791,
+        "over20_833ms": 1690,
+        "over33_333ms": 119,
+        "over50ms": 21
+      },
+      "thresholdPercentages": {
+        "over100ms": 0.171,
+        "over16_667ms": 53.021,
+        "over20_833ms": 32.105,
+        "over33_333ms": 2.261,
+        "over50ms": 0.399
+      }
+    },
+    "inputOrdering": {
+      "adjacentReversalCount": 71,
+      "maximumBackwardNs": 102800,
+      "stablySortedByTimestamp": true
+    },
+    "pipeline": {
+      "byType": {
+        "compute": 5,
+        "graphics": 834
+      },
+      "durationMs": {
+        "count": 839,
+        "max": 94.775,
+        "mean": 1.172,
+        "p50": 0.178,
+        "p95": 1.18,
+        "p99": 36.887
+      },
+      "eventCount": 839,
+      "failureCount": 0
+    },
+    "sha256": "db7c085c561ef3cda8ce893a3c05b5351f6a17989d9ba833db02fbcf1a668985",
+    "shader": {
+      "cacheHitCount": 589,
+      "compileCount": 3,
+      "compileDurationMs": {
+        "count": 3,
+        "max": 53.1,
+        "mean": 23.71,
+        "p50": 13.351,
+        "p95": 49.125,
+        "p99": 52.305
+      },
+      "eventCount": 592,
+      "failureCount": 0
+    },
+    "source": "spikes/STORE-001/work/issue-11-deus-ex/soaks/2026-07-26-title-scene-30m-final/metrics.tsv",
+    "window": {
+      "durationSeconds": 99.784,
+      "firstEventTimestampMs": 46147.667,
+      "lastEventTimestampMs": 145931.997,
+      "requestedEndSeconds": 145.9319975,
+      "requestedStartSeconds": 46.145022
+    }
+  },
+  "schemaVersion": 1
+}

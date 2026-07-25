@@ -1,6 +1,6 @@
 # Phase-0 completion audit — founder go/narrow/pivot review
 
-**Author:** Tim Isaev
+**Author:** Timur Isaev
 **As of:** 25 July 2026 (evidence refreshed; **SIGNED — GO**, §4)
 **Authority:** requirement-by-requirement audit against
 [roadmap §4](../docs/docs/11_ROADMAP_TEAM_AND_DELIVERY.md); evidence index in
@@ -15,6 +15,14 @@
 > #13 (counsel) remains open and gates the first external binary, not this decision;
 > E3's remaining title evidence moves to the first Phase-1 milestone. §4 states both
 > explicitly so neither is read as having been satisfied.
+>
+> **Post-signature milestone update, 26 July 2026:** issue #11 is complete.
+> [GFX-001 result 09](GFX-001/results/2026-07-26-09-deus-ex-title-scene.md)
+> adds the second entitled D3D11 title with equivalent pacing, memory,
+> shader-attribution, and visual evidence, so E3 now holds literally. The
+> signed 25 July verdict and its then-current E3 disposition remain below as
+> the historical decision record; this update does not alter that signature or
+> D10's open status.
 
 ## 1. Deliverables (roadmap §4 wording, verbatim → verdict)
 

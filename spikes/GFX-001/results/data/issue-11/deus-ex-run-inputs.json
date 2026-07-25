@@ -1,0 +1,28 @@
+{
+  "gogGameID": "1296690054",
+  "gogBuildID": "53307442018838439",
+  "executableSHA256": "cf4805608f9cc7129a8f04ade8eeefdf1f0cd849a1f702dfe8f0cd06f2f53ee8",
+  "gogManifestSHA256": "9f277c156af56d0ba48ba1745423f315e7e3cc1e32b79023d26d47f60722d75c",
+  "fexSHA256": "ef4ce1be195296ae2e1bd6612efba8fae4b8f3eb37d25985b1275aae52ef7aa6",
+  "d3d11SHA256": "f2ec299a66cc3152692de814091ffdc4d66c44ab0fba92610881c4f92cf6401e",
+  "dxgiSHA256": "9c222f6ab4ae76487395f86de185c9757c6c415a42e44f53163608070d30861a",
+  "windowsCodecsSHA256": "e67f093aa532cac2b6aed105fb949f4526f23c4252a692fd537f1f4bc176e8e0",
+  "winemetalPESHA256": "b44baf51f4c21590310f1f94154a8125b8a7213985ce858d0720ee303193c085",
+  "winemetalUnixSHA256": "8167ac25fbc01c9a243972a67b98e0eb60f058a937c7d52d7713079053fd5089",
+  "ntdllSHA256": "f24783b4be0d7c3d8fd8cb69674a125a38a5498735b1077e5209743e0690100d",
+  "policySnapshotSHA256": "bcebffc53a3fedeb475f604d9eb8044703cd985e83ffa1471259b2e975b8e9c2",
+  "timezone": "UTC",
+  "dxmtMetricsPath": "spikes/STORE-001/work/issue-11-deus-ex/pairs/2026-07-26-title-scene-final-v2/metrics/prepare.tsv",
+  "dxmtShaderCachePath": "spikes/STORE-001/work/issue-11-deus-ex/pairs/2026-07-26-title-scene-final-v2/cache",
+  "titleLogPath": "spikes/STORE-001/work/issue-11-deus-ex/prefix/drive_c/users/cleverclosure/Documents/Deus Ex -  Mankind Divided/Deus Ex -  Mankind Divided.log",
+  "scene": {
+    "commandLine": [
+      "-benchmark"
+    ],
+    "enableDX12": false,
+    "fullscreen": false,
+    "width": 1280,
+    "height": 720
+  },
+  "wineCommit": "420c70bdcb7615c3dc0395d162f93645f098fe56"
+}

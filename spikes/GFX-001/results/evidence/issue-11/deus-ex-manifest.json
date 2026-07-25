@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "author": "Timur Isaev",
+  "title": "Deus Ex: Mankind Divided",
+  "store": "GOG",
+  "buildID": "53307442018838439",
+  "executableSHA256": "cf4805608f9cc7129a8f04ade8eeefdf1f0cd849a1f702dfe8f0cd06f2f53ee8",
+  "capture": {
+    "renderer": "Direct3D 11 through instrumented DXMT",
+    "logicalContentResolution": "1280x720",
+    "logicalWindowResolution": "1280x752",
+    "capturePixelResolution": "2696x1640",
+    "method": "exact macOS window capture",
+    "soakRun": "2026-07-26-title-scene-30m-final",
+    "pid": 85589
+  },
+  "files": [
+    {
+      "path": "2026-07-26-deus-ex-benchmark-frame-a.jpg",
+      "sha256": "672bce6abe946a6f6705815edceecc56f52894bf74060eb5b8e95b0be9ca8f9b",
+      "cycle": 2,
+      "anchor": "open market with hanging lights, security figures, and seated civilian"
+    },
+    {
+      "path": "2026-07-26-deus-ex-benchmark-frame-b.jpg",
+      "sha256": "c1f4e9feec0e13f286bd9980376bc03c9cc906aa5b64567bf662cc9f1c4a9f73",
+      "cycle": 7,
+      "anchor": "guarded corridor with seated civilians and wet-floor reflections"
+    }
+  ]
+}
