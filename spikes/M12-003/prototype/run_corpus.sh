@@ -5,17 +5,42 @@
 set -u
 
 SPIKE="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$SPIKE/../.." && pwd)"
 WORK="$SPIKE/work"
-PROBE=/Users/cleverclosure/Developer/macgaming/spikes/CPU-001/work/fex-runtime-probe
-WINE=/Users/cleverclosure/Developer/macgaming/spikes/WINE-001/work/build-2/loader/wine
-DXC="$WORK/dxc-win/bin/x64/dxc.exe"
+
+# Everything below used to be an absolute path under Developer/macgaming, which
+# stopped existing at the rename and took this driver with it. Derive from the
+# repo root, and let a caller override: the Wine build and the FEX probe prefix
+# are gitignored machine state, so a worktree that has never built them has to
+# borrow another checkout's.
+ALLOY_WINE=${ALLOY_WINE:-"$ROOT/spikes/WINE-001/work/build-2/wine"}
+ALLOY_FEX_PREFIX=${ALLOY_FEX_PREFIX:-"$ROOT/spikes/CPU-001/work/fex-runtime-probe"}
+DXC=${ALLOY_DXC:-"$ROOT/tools/toolchains/dxc-v1.9.2602.24/bin/x64/dxc.exe"}
+
+if [ ! -x "$ALLOY_WINE" ]; then
+  echo "missing Wine loader: $ALLOY_WINE" >&2
+  echo "  set ALLOY_WINE to a checkout with a built spikes/WINE-001/work/build-2" >&2
+  exit 2
+fi
+# dxc.exe is a guest PE run through Wine, so it is tested for presence rather
+# than for the host execute bit, which unzip does not set.
+if [ ! -f "$DXC" ]; then
+  echo "missing dxc: $DXC" >&2
+  echo "  set ALLOY_DXC, or run tools/fetch-deps.sh" >&2
+  exit 2
+fi
+if [ ! -d "$ALLOY_FEX_PREFIX/prefix-gui" ]; then
+  echo "missing FEX probe prefix: $ALLOY_FEX_PREFIX/prefix-gui" >&2
+  echo "  set ALLOY_FEX_PREFIX to a checkout that has one" >&2
+  exit 2
+fi
 mkdir -p "$WORK/out"
 
 run_dxc() {
-  (cd "$PROBE" && WINEPREFIX="$PROBE/prefix-gui" \
+  (cd "$ALLOY_FEX_PREFIX" && WINEPREFIX="$ALLOY_FEX_PREFIX/prefix-gui" \
     DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib \
     WINEDLLOVERRIDES="xtajit64=n" \
-    "$WINE" "$DXC" "$@") 2>>"$WORK/out/dxc-stderr.log"
+    "$ALLOY_WINE" "$DXC" "$@") 2>>"$WORK/out/dxc-stderr.log"
 }
 
 clang -fobjc-arc -O2 -o "$WORK/msl_run" "$SPIKE/prototype/msl_run.m" \

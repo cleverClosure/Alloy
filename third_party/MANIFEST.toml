@@ -28,6 +28,13 @@ license = "Apache-2.0 WITH LLVM-exception (toolchain); runtime libs various perm
 distribution_class = "Build tooling only (not shipped)"
 notes = "Fetched as a release binary into tools/toolchains/; exact release recorded in deps.lock."
 
+[dxc]
+role = "HLSL -> DXIL compiler, used as an unmodified tool to produce the shader path's input — SPIKE-M12-003, SPIKE-M12-005"
+upstream = "https://github.com/microsoft/DirectXShaderCompiler"
+license = "NCSA (University of Illinois/NCSA Open Source License)"
+distribution_class = "Build tooling only (not shipped)"
+notes = "Pinned to release v1.9.2602.24, asset dxc_2026_05_27.zip, extracted to tools/toolchains/dxc-v1.9.2602.24/. The x64 dxc.exe runs under Alloy's own Wine/FEX stack. Pinned to an exact tag, not latest: its output is compared against committed image digests, so a silent compiler bump reads as a translation regression. Upstream publishes no checksum with the release, so the binding pin is the dxc.exe SHA-256 in deps.lock. ADR-0012: approved input, used as a tool only — no DXC source is read for design. Replacement plan: none needed while it stays a build-time tool; if a shipped compiler is ever required, the NCSA terms already permit redistribution."
+
 [dxmt]
 role = "D3D10/11 -> Metal provider (fork) — SPIKE-GFX-001"
 upstream = "https://github.com/3Shain/dxmt.git"

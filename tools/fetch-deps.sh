@@ -48,6 +48,38 @@ fetch_llvm_mingw() {
   echo "llvm-mingw $tag release-binary" >>"$LOCKTMP.entries"
 }
 
+# DXC is pinned to an exact tag rather than tracking latest: it is a *tool* whose
+# output is compared against committed digests, so a silent compiler bump would
+# read as a translation regression. The asset name does not follow from the tag,
+# so both are stated. Upstream publishes no checksum alongside the release, so
+# the pin that actually holds is the extracted binary's hash in deps.lock —
+# compare it, do not trust the tag alone.
+DXC_TAG=v1.9.2602.24
+DXC_ASSET=dxc_2026_05_27.zip
+
+fetch_dxc() {
+  local dir="$TOOLCHAINS/dxc-${DXC_TAG}"
+  local url="https://github.com/microsoft/DirectXShaderCompiler/releases/download/${DXC_TAG}/${DXC_ASSET}"
+  local sha
+
+  if [[ -x "$dir/bin/x64/dxc.exe" ]]; then
+    echo "== dxc ${DXC_TAG}: already present"
+  else
+    echo "== dxc: fetching ${DXC_ASSET}"
+    curl -fL --retry 3 -o "$TOOLCHAINS/$DXC_ASSET" "$url"
+    rm -rf "$dir"
+    mkdir -p "$dir"
+    unzip -q "$TOOLCHAINS/$DXC_ASSET" -d "$dir"
+    rm "$TOOLCHAINS/$DXC_ASSET"
+  fi
+  if [[ ! -x "$dir/bin/x64/dxc.exe" ]]; then
+    echo "dxc archive did not contain bin/x64/dxc.exe: $dir" >&2
+    exit 1
+  fi
+  sha=$(shasum -a 256 "$dir/bin/x64/dxc.exe" | awk '{print $1}')
+  echo "dxc $DXC_TAG release-binary $sha" >>"$LOCKTMP.entries"
+}
+
 clone_pin_dxmt() {
   local dir="$SRC/dxmt"
   if [[ -d "$dir/.git" ]]; then
@@ -72,6 +104,7 @@ clone_pin fex https://github.com/FEX-Emu/FEX.git
 clone_pin wine https://gitlab.winehq.org/wine/wine.git
 clone_pin_dxmt
 fetch_llvm_mingw
+fetch_dxc
 cat "$LOCKTMP.header" "$LOCKTMP.entries" >"$LOCK"
 rm -f "$LOCKTMP.header" "$LOCKTMP.entries"
 echo ""
