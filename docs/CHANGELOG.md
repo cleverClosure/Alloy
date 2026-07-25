@@ -1,5 +1,17 @@
 # Documentation Changelog
 
+## 1.6 — 25 July 2026
+
+Counsel item 6 (Steam automation) is applied to the v1 design, and doc 18 §9 is enforced by a CI gate rather than asserted. What the product *runs* against Steam was already inside the permitted posture; what the documents *specified* was not.
+
+- doc 19 **EPIC-013 restated**. The first-storefront epic committed us to "ownership, install, update, repair, authentication ... for one storefront", with stories for `installation`, `launcher update` and `verify/repair`, and accepted itself on "no credential interception" — the exact argument the pre-counsel assessment names and rejects, because SSA §4.C is a separate prohibition that the absence of credential interception does not answer. It also contradicted INS-008, the requirement it cited. Outcome, stories and acceptance are now read-only discovery, build identity, update *detection*, and user-initiated handoff to the official client;
+- doc 04: `RuntimeDaemon` no longer "coordinates storefront installation and updates" — it sequences runtime work around storefront-performed installs and observes them through local manifests (§7); the UI-automation carve-out no longer reads as blanket permission — simulated input against a **storefront client** is prohibited in the product, and is not thereby cleared for the lab; the lab case is routed to the open SSA §4.C question in doc 18 §8 rather than decided here (§18.3);
+- doc 11: the storefront workstream owns discovery, handoff and build-identity adapters rather than "install/auth/update adapters" (§3);
+- doc 07: the recertification update-detection objective names the permitted detection route instead of hedging with "where automation allows" (§18);
+- doc 14: **D-019 marked scope-narrowed (25 July 2026)** — the Steam decision record now carries the item 6 limits itself rather than leaving them only in doc 18; doc 16's SPIKE-STORE-001 closure records that `steamcmd` against entitled lab accounts stays an open §4.C question under doc 18 §8 rather than a completed mitigation;
+- `research/SPIKE-STORE-001-findings.md` §5: the credentialed `steamcmd` depot-flow re-verification open item is **withdrawn** — it scheduled verification of a flow the design no longer contains;
+- doc 18 §9 gains an **evidence** paragraph. `spikes/STORE-001/steam-readonly/steam-automation-gate.sh` runs on every CI build: it proves discovery is read-only by running the shipped discovery tool over a synthetic two-folder Steam library and failing if any byte, size, mode or mtime moved, and it fails if shipped code acquires a SteamCMD invocation, a credential or session surface, or a means of driving the client. Its companion `gate-selftest.sh` plants each prohibited flow in a synthetic repository, so the gate is known to reject what it claims to reject rather than merely known to be green. Recorded in `spikes/STORE-001/results/2026-07-25-03-steam-readonly-conformance.md`.
+
 ## 1.5 — 24 July 2026
 
 SPIKE-LEGAL-001: a pre-counsel risk assessment against the nine-item counsel brief is recorded, and its corrections are propagated into the binding engineering constraints. **It is not counsel's answer — deliverable D10 stays incomplete and issue #13 stays open.**

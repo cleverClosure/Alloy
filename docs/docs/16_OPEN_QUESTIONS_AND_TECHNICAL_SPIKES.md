@@ -231,7 +231,7 @@ Score candidates on:
 
 ### SPIKE-STORE-001 — First storefront
 
-**Status:** Closed (decision D-019, 23 July 2026). [Findings](../research/SPIKE-STORE-001-findings.md): Steam first — real Windows Steam client runs inside the runtime (no protocol emulation per SSA §2.G), install discovery via `libraryfolders.vdf`/ACF, build identity via `buildid` + depot manifests on entitled lab accounts; GOG pulled forward to MVP+1 (7 of 13 portfolio titles, 5 certifiable DRM-free builds); Epic deferred indefinitely. SSA §4.C lab-automation mitigations added to the SPIKE-LEGAL-001 counsel checklist.
+**Status:** Closed (decision D-019, 23 July 2026). [Findings](../research/SPIKE-STORE-001-findings.md): Steam first — real Windows Steam client runs inside the runtime (no protocol emulation per SSA §2.G), install discovery via `libraryfolders.vdf`/ACF, build identity via `buildid` + depot manifests on entitled lab accounts; GOG pulled forward to MVP+1 (7 of 13 portfolio titles, 5 certifiable DRM-free builds); Epic deferred indefinitely. SSA §4.C lab-automation mitigations added to the SPIKE-LEGAL-001 counsel checklist. **Scope narrowed 25 July 2026** (pre-counsel [verdict](../research/SPIKE-LEGAL-001-verdict.md) item 6, [doc 18 §9](18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md)): the shipped integration is read-only local discovery plus actions the user takes in Steam's own UI, and automated SteamCMD orchestration is out of the v1 design. `steamcmd` against our own entitled lab accounts is not thereby settled — it remains an open §4.C question under doc 18 §8, not a completed mitigation.
 
 Evaluate:
 

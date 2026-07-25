@@ -1,17 +1,17 @@
 {
   "package": "Alloy Product Documentation",
-  "version": "1.5",
-  "generatedAt": "2026-07-24",
+  "version": "1.6",
+  "generatedAt": "2026-07-25",
   "fileCount": 47,
-  "markdownWords": 99993,
-  "markdownLines": 14313,
+  "markdownWords": 100933,
+  "markdownLines": 14333,
   "files": [
     {
       "path": "CHANGELOG.md",
-      "bytes": 10409,
-      "sha256": "1388c261bdb4a5c8faec1f35a13b3b5c28a81e8ca945c9d1b9e7bd34eb30315c",
-      "lines": 85,
-      "words": 1373
+      "bytes": 13337,
+      "sha256": "2db1b455ecaa840aa565d9a22aedd2f970ab9284ec4f10b58171f2f68cf48816",
+      "lines": 97,
+      "words": 1795
     },
     {
       "path": "CONTRIBUTING.md",
@@ -163,10 +163,10 @@
     },
     {
       "path": "docs/04_TECHNICAL_ARCHITECTURE.md",
-      "bytes": 190175,
-      "sha256": "2b13b58745ac49743048e744c36da18d6ec2bc3a6fbbc94eadb15eacbe98bebe",
+      "bytes": 190611,
+      "sha256": "537e9d3829091c053c666a4e890be864be0dfca7e0ca7323b3231afcebb33852",
       "lines": 3721,
-      "words": 25074
+      "words": 25147
     },
     {
       "path": "docs/05_RUNTIME_PROFILE_AND_MANIFEST_SPEC.md",
@@ -184,10 +184,10 @@
     },
     {
       "path": "docs/07_COMPATIBILITY_CERTIFICATION_SPEC.md",
-      "bytes": 18728,
-      "sha256": "6531b424de493711cdd92a9a54201ffc04944a7a23bf63878614806c90683797",
+      "bytes": 18888,
+      "sha256": "17e984e2714fb65a333ff5476f632c267458784ad165a43a3d6360b42abef6c7",
       "lines": 540,
-      "words": 2631
+      "words": 2659
     },
     {
       "path": "docs/08_TEST_AND_QUALITY_STRATEGY.md",
@@ -212,10 +212,10 @@
     },
     {
       "path": "docs/11_ROADMAP_TEAM_AND_DELIVERY.md",
-      "bytes": 19132,
-      "sha256": "b85a361100c53052224a8c37a7580b08531ae7f2f971f11f6f4b8e3bf38f4698",
+      "bytes": 19237,
+      "sha256": "225765a7f55489e8becb554a05dcfade39c7a7db9b4f5abfcaa38265cca4c6ec",
       "lines": 640,
-      "words": 2643
+      "words": 2660
     },
     {
       "path": "docs/12_REQUIREMENTS_TRACEABILITY_MATRIX.md",
@@ -233,10 +233,10 @@
     },
     {
       "path": "docs/14_DECISION_LOG.md",
-      "bytes": 14063,
-      "sha256": "d335bc192f227617fd32e3b79dd97bec550589613b0b2be278a64bb7fb9f270e",
+      "bytes": 14586,
+      "sha256": "534b54990eaf1bc25045439dbcc524b262b910f1c2c8d5d5cb56910e6ae23edb",
       "lines": 86,
-      "words": 1871
+      "words": 1935
     },
     {
       "path": "docs/15_GLOSSARY.md",
@@ -247,10 +247,10 @@
     },
     {
       "path": "docs/16_OPEN_QUESTIONS_AND_TECHNICAL_SPIKES.md",
-      "bytes": 15607,
-      "sha256": "e2fd42b182aec027f663b18977c89b22f7566842a65cc202fa8cf03f07d5d2ec",
+      "bytes": 16085,
+      "sha256": "1fb8f52dec325b5095520884e742ffffd65975cc102fb36b2d11b843f9117015",
       "lines": 422,
-      "words": 2050
+      "words": 2114
     },
     {
       "path": "docs/17_PUBLISHER_AND_ANTI_CHEAT_INTEGRATION.md",
@@ -261,17 +261,17 @@
     },
     {
       "path": "docs/18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md",
-      "bytes": 21362,
-      "sha256": "f8b243c84a11833b9cc84a59690714d423a9efdcb7e263a79d4c5ff45b459c41",
-      "lines": 371,
-      "words": 2730
+      "bytes": 22316,
+      "sha256": "8d2fa8423c2af029ecfbf1ac09f2ba123fd698d30ea9bf265a05154d81e1977a",
+      "lines": 373,
+      "words": 2857
     },
     {
       "path": "docs/19_MVP_EPICS_AND_BACKLOG.md",
-      "bytes": 13173,
-      "sha256": "682c7b08e65954c1aabee4c6ac77ada8624a866769085612f02be6dad3bf2f6c",
-      "lines": 517,
-      "words": 1701
+      "bytes": 13955,
+      "sha256": "4d67ee5abe15073b5a8a8026bf0e9c8676fa0bf3dddb206e5872183c4d22f1b5",
+      "lines": 523,
+      "words": 1810
     },
     {
       "path": "examples/example-game-profile.yaml",
@@ -308,10 +308,10 @@
     },
     {
       "path": "research/SPIKE-STORE-001-findings.md",
-      "bytes": 10624,
-      "sha256": "26c1e48f9851314ed2ab0b9d4d16fa8c2f3cd08e61ed4820ca2b9c1b92559ad3",
+      "bytes": 10898,
+      "sha256": "0fd3c3973e808629de726f46977e9a7d9c90fd878d977c4a5f97b26497223d2a",
       "lines": 76,
-      "words": 1486
+      "words": 1522
     },
     {
       "path": "schemas/game-profile.schema.json",

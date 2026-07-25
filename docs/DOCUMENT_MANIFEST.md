@@ -1,15 +1,15 @@
 # Alloy Documentation Package Manifest
 
-**Package version:** 1.5
-**Generated:** 24 July 2026
+**Package version:** 1.6
+**Generated:** 25 July 2026
 **Files:** 47 plus this manifest and the JSON manifest
-**Markdown volume:** 99,993 words across 14,313 lines
+**Markdown volume:** 100,933 words across 14,333 lines
 
 The full SHA-256 values are in [`PACKAGE_MANIFEST.json`](PACKAGE_MANIFEST.json).
 
 | Path | Bytes | Lines | Words | SHA-256 prefix |
 | --- | --- | --- | --- | --- |
-| CHANGELOG.md | 10409 | 85 | 1373 | 1388c261bdb4a5c8… |
+| CHANGELOG.md | 13337 | 97 | 1795 | 2db1b455ecaa840a… |
 | CONTRIBUTING.md | 3932 | 108 | 541 | 0e99a4c00f947b76… |
 | README.md | 4439 | 97 | 458 | 8a10f9a6c542ef49… |
 | adr/ADR-0001-runtime-generation-unit-of-support.md | 2819 | 51 | 374 | cd5e40345bd9afcf… |
@@ -32,28 +32,28 @@ The full SHA-256 values are in [`PACKAGE_MANIFEST.json`](PACKAGE_MANIFEST.json).
 | docs/01_PRODUCT_STRATEGY.md | 13670 | 291 | 1881 | 9b00610b578ee866… |
 | docs/02_PRD.md | 60645 | 661 | 8924 | 6b57127b76413e69… |
 | docs/03_UX_AND_USER_JOURNEYS.md | 18699 | 528 | 2678 | c414ad86f8e0d9c9… |
-| docs/04_TECHNICAL_ARCHITECTURE.md | 190175 | 3721 | 25074 | 2b13b58745ac4974… |
+| docs/04_TECHNICAL_ARCHITECTURE.md | 190611 | 3721 | 25147 | 537e9d3829091c05… |
 | docs/05_RUNTIME_PROFILE_AND_MANIFEST_SPEC.md | 23895 | 673 | 3163 | c602f13030f37368… |
 | docs/06_API_AND_DATA_CONTRACTS.md | 20588 | 694 | 2439 | 0d637d43bd3be503… |
-| docs/07_COMPATIBILITY_CERTIFICATION_SPEC.md | 18728 | 540 | 2631 | 6531b424de493711… |
+| docs/07_COMPATIBILITY_CERTIFICATION_SPEC.md | 18888 | 540 | 2659 | 17e984e2714fb65a… |
 | docs/08_TEST_AND_QUALITY_STRATEGY.md | 19933 | 744 | 2742 | 2ad6a7d8e1a2b351… |
 | docs/09_SECURITY_PRIVACY_THREAT_MODEL.md | 21759 | 587 | 2880 | 8a0b5f07c5a5ac62… |
 | docs/10_OBSERVABILITY_OPERATIONS_AND_RELEASE.md | 16859 | 652 | 2312 | c8584e705d1792a1… |
-| docs/11_ROADMAP_TEAM_AND_DELIVERY.md | 19132 | 640 | 2643 | b85a361100c53052… |
+| docs/11_ROADMAP_TEAM_AND_DELIVERY.md | 19237 | 640 | 2660 | 225765a7f55489e8… |
 | docs/12_REQUIREMENTS_TRACEABILITY_MATRIX.md | 17062 | 199 | 3364 | f6b7dc51337047e4… |
 | docs/13_RISK_REGISTER.md | 19450 | 147 | 2782 | 10e2186776c9def3… |
-| docs/14_DECISION_LOG.md | 14063 | 86 | 1871 | d335bc192f227617… |
+| docs/14_DECISION_LOG.md | 14586 | 86 | 1935 | 534b54990eaf1bc2… |
 | docs/15_GLOSSARY.md | 11235 | 210 | 1428 | ffcef096d2581666… |
-| docs/16_OPEN_QUESTIONS_AND_TECHNICAL_SPIKES.md | 15607 | 422 | 2050 | e2fd42b182aec027… |
+| docs/16_OPEN_QUESTIONS_AND_TECHNICAL_SPIKES.md | 16085 | 422 | 2114 | 1fb8f52dec325b50… |
 | docs/17_PUBLISHER_AND_ANTI_CHEAT_INTEGRATION.md | 13654 | 471 | 1792 | 8bd86fb7d3bbc562… |
-| docs/18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md | 21362 | 371 | 2730 | f8b243c84a11833b… |
-| docs/19_MVP_EPICS_AND_BACKLOG.md | 13173 | 517 | 1701 | 682c7b08e65954c1… |
+| docs/18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md | 22316 | 373 | 2857 | 8d2fa8423c2af029… |
+| docs/19_MVP_EPICS_AND_BACKLOG.md | 13955 | 523 | 1810 | 4d67ee5abe15073b… |
 | examples/example-game-profile.yaml | 2873 | — | — | 2f5e7d1d196bd993… |
 | research/SPIKE-CATALOG-001-findings.md | 27673 | 254 | 4761 | 3a91aaa6d6ae19dc… |
 | research/SPIKE-LEGAL-001-counsel-brief.md | 30082 | 177 | 4241 | dd986f0d986bbd32… |
 | research/SPIKE-LEGAL-001-preliminary-findings.md | 15360 | 121 | 2148 | c750f9ebe8362690… |
 | research/SPIKE-LEGAL-001-verdict.md | 25435 | 364 | 3471 | e8f977baa0da40ae… |
-| research/SPIKE-STORE-001-findings.md | 10624 | 76 | 1486 | 26c1e48f9851314e… |
+| research/SPIKE-STORE-001-findings.md | 10898 | 76 | 1522 | 0fd3c3973e808629… |
 | schemas/game-profile.schema.json | 10270 | — | — | 03a9a74e6b1a3224… |
 | schemas/runtime-manifest.schema.json | 2557 | — | — | b749a437378b9228… |
 

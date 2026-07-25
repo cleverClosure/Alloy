@@ -51,3 +51,12 @@ jobs:
 
       - name: Test rollback prototype
         run: swift test --package-path spikes/ROLLBACK-001/prototype --parallel
+
+      # Counsel item 6: the shipped Steam posture is read-only discovery plus
+      # user-driven actions in Steam's own UI (doc 18 section 9). The gate runs
+      # against a synthetic library, so it needs no Steam install.
+      - name: Steam automation gate
+        run: spikes/STORE-001/steam-readonly/steam-automation-gate.sh
+
+      - name: Steam automation gate selftest
+        run: spikes/STORE-001/steam-readonly/gate-selftest.sh
