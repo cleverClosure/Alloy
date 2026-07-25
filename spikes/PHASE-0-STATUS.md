@@ -32,6 +32,11 @@ measurement, review, or decision evidence proves the roadmap wording at its full
 | Game shortlist and scenario feasibility | In progress | CATALOG-001 portfolio decision D-020 | GFX-001/LAB-001 scenario feasibility |
 | Threat-model draft | Complete as a draft | `docs/docs/09_SECURITY_PRIVACY_THREAT_MODEL.md` | Formal approval remains a later release gate |
 
+> **CPU anomaly census correction:** [CPU-001 result 22](CPU-001/results/2026-07-25-22-arm64ec-anomaly-telemetry-calibrated.md)
+> supersedes result 19's telemetry timing diagnosis. Supported split flags fire
+> on ARM64EC and are flags, not frequencies; uncalibrated CAS-tear zeros remain
+> excluded from clean-run claims (issue #37).
+
 ## Exit criteria
 
 | Exit criterion | State | Evidence needed to close |

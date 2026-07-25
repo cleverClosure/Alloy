@@ -45,10 +45,10 @@ build seh_worker "$SEH_FLAGS"
 build seh_multi "$SEH_FLAGS"
 build seh_repeat "$SEH_FLAGS"
 build seh_nullcall "$SEH_FLAGS"
-# Census calibration guests (issue #12). census_probe proves the census counts
-# decodes rather than executions; telemetry_probe provokes unaligned locked
-# operations so the anomaly counters can be checked against a known answer
-# instead of being trusted because they read zero.
+# Census calibration guests (issues #12 and #37). census_probe proves the
+# census counts decodes rather than executions; telemetry_probe calibrates the
+# split flags against aligned and cross-boundary operations and guards the
+# currently unsupported unaligned cmpxchg16b path.
 build census_probe "-msse4.2"
 build telemetry_probe "-mcx16"
 # nullcall_probe (issue #20) reports what a VEH and an __except filter each
