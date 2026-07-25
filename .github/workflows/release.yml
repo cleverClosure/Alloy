@@ -1,0 +1,69 @@
+# Lab release: versioned artifact plus its corresponding-source bundle.
+#
+# This deliberately runs on a self-hosted macOS/Apple-silicon runner, not a
+# GitHub-hosted one. The bundle is produced from the lab Wine build tree and the
+# substitution proof needs the llvm-mingw toolchain and a configured ~10 GB Wine
+# build; a hosted runner cannot do either. Declaring a hosted job that silently
+# skipped the real work would be worse than having no workflow, because the
+# green tick would be read as compliance.
+#
+# Until a self-hosted runner is registered this workflow will not run, which is
+# the honest state: the pipeline exists and is proven locally (LEGAL-001), and
+# the CI wiring is pending infrastructure that does not exist yet.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version, e.g. 0.1.0-lab"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    # Requires: macOS 26+, Apple silicon, llvm-mingw on PATH, a configured Wine
+    # build tree, and the FEX and Wine fork checkouts under third_party/src.
+    runs-on: [self-hosted, macos, arm64, alloy-lab]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: ver
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Codec-clean gate
+        # Item 5 is a release gate: a build containing a reachable codec
+        # implementation must not proceed to bundling.
+        run: |
+          spikes/LEGAL-001/codec-clean/stage-runtime.sh \
+            "$ALLOY_WINE_BUILD" "$RUNNER_TEMP/staged-runtime"
+
+      - name: Corresponding-source bundle
+        run: |
+          tools/release/make-release.sh "${{ steps.ver.outputs.version }}" \
+            "$RUNNER_TEMP/release" third_party/src/wine third_party/src/fex \
+            "${ALLOY_DXMT_SRC:-}"
+
+      - name: Prove the modified-runtime path still works
+        # LGPL-2.1 section 6: a recipient must be able to substitute their own
+        # build. Proven per release, not once.
+        run: |
+          spikes/LEGAL-001/lgpl-substitution/prove-substitution.sh \
+            third_party/src/wine "$ALLOY_WINE_BUILD" \
+            "$ALLOY_RUNTIME_ROOT" "$ALLOY_GUEST_EXE"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: alloy-release-${{ steps.ver.outputs.version }}
+          path: ${{ runner.temp }}/release
+          if-no-files-found: error
