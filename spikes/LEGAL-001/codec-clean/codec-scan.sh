@@ -70,13 +70,24 @@ else
   fi
 fi
 
-echo "== 4. FFmpeg at configure time"
+echo "== 4. build provenance"
 # A missing config.log must not read as a pass. "The file is not there" and
 # "the option is off" are different facts, and only one of them is evidence.
-if [[ ! -f $BUILD/config.log ]]; then
-  bad "no config.log in $BUILD - build configuration cannot be verified"
+#
+# A staged tree is judged differently from a development build. What item 5's
+# factual claim is about is the runtime that ships, so a staged tree carrying a
+# recorded exclusion passes on its *contents* - checks 1 and 2 above - even
+# though the build it came from had FFmpeg available. A development tree gets no
+# such latitude, because nothing has excluded anything from it.
+if [[ -f $BUILD/CODEC-EXCLUSIONS.txt ]]; then
+  note "staged tree with recorded codec exclusions:"
+  while IFS= read -r line; do note "    $line"; done \
+    < <(rg -N '^  \S+\.so' "$BUILD/CODEC-EXCLUSIONS.txt" 2>/dev/null || true)
+  note "contents verified by checks 1-2; source build provenance is in the file"
+elif [[ ! -f $BUILD/config.log ]]; then
+  bad "no config.log and no CODEC-EXCLUSIONS.txt in $BUILD - cannot be verified"
 elif rg -Nq '#define HAVE_FFMPEG 1' "$BUILD/config.log" 2>/dev/null; then
-  bad "HAVE_FFMPEG is set - configure the external build with --without-ffmpeg"
+  bad "HAVE_FFMPEG is set - stage with stage-runtime.sh or configure --without-ffmpeg"
 else
   note "HAVE_FFMPEG is not set"
 fi

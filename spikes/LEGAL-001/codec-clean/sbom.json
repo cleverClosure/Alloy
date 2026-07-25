@@ -12,7 +12,7 @@
     {"name":"dxmt-dxgi","version":"prebuilt","licenses":[{"license":{"id":"LGPL-2.1-or-later"}}],"hashes":[{"alg":"SHA-256","content":"6aeb949b529f0581ca2e4d1ba40bcd2ac3c5628553457857e26b3c7ae11c07ee"}],"description":"prebuilt provider"},
     {"name":"dxmt-winemetal","version":"prebuilt","licenses":[{"license":{"id":"LGPL-2.1-or-later"}}],"hashes":[{"alg":"SHA-256","content":"1a5cd19dbb64e726b8a8fef9665ba0ced6fb190511883712778531ac0d38153f"}],"description":"unixlib"},
     {"name":"moltenvk","version":"absent","licenses":[{"license":{"id":"NONE"}}],"hashes":[{"alg":"SHA-256","content":"absent"}],"description":"not shipped; only wine's own libvulkan-1.a stub is present"},
-    {"name":"ffmpeg","version":"REACHABLE via winedmo.so","licenses":[{"license":{"id":"LGPL-2.1-or-later"}}],"hashes":[{"alg":"SHA-256","content":"eb53178af41164d8a328ce21661dd45cdbe8ecd7f86dc32e8c2cfa46e2b3713e"}],"description":"codec implementation; must be absent from external builds - see codec-scan.sh"},
+    {"name":"ffmpeg","version":"absent","licenses":[{"license":{"id":"LGPL-2.1-or-later"}}],"hashes":[{"alg":"SHA-256","content":"absent"}],"description":"codec implementation; must be absent from external builds - see codec-scan.sh"},
     {"name":"gstreamer","version":"absent","licenses":[{"license":{"id":"NONE"}}],"hashes":[{"alg":"SHA-256","content":"absent"}],"description":"not linked; GSTREAMER_LIBS empty and no loadable winegstreamer module"}
   ]
 }

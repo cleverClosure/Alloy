@@ -133,6 +133,43 @@ of them is evidence. The check now fails when the build configuration cannot be
 verified. This is the same class of defect the census work kept finding, in a
 gate written by someone who had just spent a day finding them.
 
+## Resolution: the paths are disabled
+
+Item 5's Done-when offers a branch — written answers from the administrators
+**or the paths disabled**. The second branch is taken, because it is available
+now and the first is not.
+
+`stage-runtime.sh` assembles the shippable runtime and omits every module that
+links or implements a codec, recording each exclusion and its reason in
+`CODEC-EXCLUSIONS.txt` inside the staged tree, so the exclusion is auditable
+from the artifact rather than only from the script. `codec-scan.sh` then passes
+against the staged tree on its contents:
+
+```text
+== 1. dynamic dependencies on codec libraries
+  no shipped binary links a codec library
+== 2. codec-implementation symbols
+  no codec-implementation symbols in any shipped binary
+== 3. GStreamer media path
+  configure found no GStreamer (GSTREAMER_LIBS empty)
+== 4. build provenance
+  staged tree with recorded codec exclusions
+CODEC-CLEAN: pass
+```
+
+The gate judges a staged tree differently from a development build, and the
+distinction is the point: item 5's factual claim is about the runtime that
+ships. A development tree with FFmpeg available on the machine gets no latitude,
+because nothing has excluded anything from it. A staged tree carrying a recorded
+exclusion passes on what it actually contains.
+
+Removing the module is proven harmless rather than assumed — see the no-fallback
+section above.
+
+**This is a disabling, not a clearance.** No written coverage from Via LA or
+Access Advance is on file, doc 18's gate is ticked on that explicit basis, and
+issue #49 must be revisited before any build ships with those paths enabled.
+
 ## Fix
 
 `--without-ffmpeg` is an existing Wine configure option. External builds must
