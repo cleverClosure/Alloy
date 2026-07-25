@@ -5,6 +5,14 @@
 **Canonical definition:** [doc 16 §4](../../docs/docs/16_OPEN_QUESTIONS_AND_TECHNICAL_SPIKES.md)
 · validates [ADR-0007](../../docs/adr/ADR-0007-content-addressed-immutable-runtimes.md)
 
+## Production successor
+
+The reusable Phase-1 implementation now lives in
+[`runtime/content-store/`](../../runtime/content-store/). It carries this
+spike's lifecycle invariant and process-death matrix into the production
+source layout, with versioned layer, generation-manifest, and journal
+contracts. This prototype remains the closed Phase-0 evidence artifact.
+
 **Hypothesis:** A user-space runtime store on APFS can publish verified content-addressed
 objects, materialize immutable generations, switch the active generation atomically, and
 recover after process death at every lifecycle boundary without changing save data.
