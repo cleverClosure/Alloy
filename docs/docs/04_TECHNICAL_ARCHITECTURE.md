@@ -1772,7 +1772,7 @@ Each storefront is isolated behind an adapter interface:
 
 ```text
 Discover installed client and games
-Authenticate or hand off to official client
+Hand off to the official client for sign-in and account actions
 Resolve app, branch, and build identity
 Plan installation location
 Observe download/update progress
@@ -1782,7 +1782,7 @@ Coordinate cloud saves where permitted
 Report account or service errors without exposing secrets
 ```
 
-Adapters use official local interfaces, command-line contracts, URI schemes, or publisher agreements. Screen scraping is a last-resort experimental technique and is not part of a stable certification contract.
+Adapters use official local interfaces, URI schemes, and publisher agreements. Command-line contracts are available **only where the storefront's own terms authorise them**; Steam's do not, so running `steamcmd` or any equivalent from an adapter is **prohibited** ([doc 18 §9](18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md)). Screen scraping is a last-resort experimental technique, is never applied to a storefront client, and is not part of a stable certification contract.
 
 ## 18.2 Native versus Windows launcher
 
@@ -1831,7 +1831,7 @@ If the service refuses an old launcher version, the runtime reports an upstream 
 
 ## 18.6 Account and secret handling
 
-Alloy prefers launcher-native OAuth or device-code flows. Native integrations store refresh tokens in Keychain with access restricted to the signed daemon or adapter. Windows launchers may retain their own encrypted state inside a launcher volume; that volume is excluded from diagnostics by default.
+Alloy prefers launcher-native OAuth or device-code flows. Native integrations store refresh tokens in Keychain with access restricted to the signed daemon or adapter. **That pattern is available only where the storefront publishes an official integration whose terms authorise it. Steam does not:** Alloy stores and relays no Steam credential, token or session artefact, and sign-in happens solely in the Steam client's own UI ([doc 18 §9](18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md)). Windows launchers may retain their own encrypted state inside a launcher volume; that volume is excluded from diagnostics by default.
 
 Passwords, session cookies, authorization headers, and payment data are always redacted. Support personnel cannot request them through the diagnostic system.
 

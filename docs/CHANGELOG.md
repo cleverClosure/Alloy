@@ -1,5 +1,16 @@
 # Documentation Changelog
 
+## 1.7 — 25 July 2026
+
+Completes counsel item 6. The 1.6 sweep was incomplete: four further places described prohibited Steam interaction, and the gate 1.6 shipped was exempting the most direct one.
+
+- `research/SPIKE-LEGAL-001-preliminary-findings.md` gains the **supersession banner** it never received, naming the four positions the assessment overturned (GPTK user-fetch, codecs, the Visual Studio threshold, the trademark call). Its §2 matrix row said **"steamcmd fine"** — a flat statement written the day before the assessment said the opposite, in a document an engineer would implement from. Struck and replaced: §4.C automation is the operative prohibition rather than a residual gray, automated `steamcmd` is out of the v1 design, and no Steam credential or token is stored or relayed;
+- doc 04 §18.1: the storefront adapter contract listed "**Authenticate** or hand off to official client" as co-equal options and permitted adapters to use "**command-line contracts**" and last-resort screen scraping. The contract is now handoff-only for sign-in and account actions; command-line contracts are available only where a storefront's own terms authorise them, and running `steamcmd` from an adapter is named as prohibited; screen scraping is never applied to a storefront client;
+- doc 04 §18.6: token storage is scoped to storefronts publishing an official integration whose terms authorise it, with an explicit Steam carve-out — no credential, token or session artefact is stored or relayed, and sign-in happens solely in Steam's own UI;
+- ADR-0011 §6 cited "the no-UI-automation rule in the architecture", which does not exist as stated — doc 04 §18.3 has a lab carve-out. Replaced with what the architecture actually says, including why the storefront-client exclusion is stated separately;
+- doc 06 §6.2: `StartInstall`/`RepairInstallation` scoped to Alloy's own runtime generations and install records; Alloy does not invoke a storefront's verify-or-repair function on the user's behalf;
+- the gate gains **check 6**. Check 5 exempts a document by path, so the allowlisted preliminary findings passed while saying `steamcmd fine`. Check 6 requires a research *findings* document naming `steamcmd` to carry a `Superseded` banner. Two earlier designs were rejected and the reasons recorded: a whole-file keyword search passed the real defect (because "prohibited" appears in an unrelated GPTK row), and a same-line rule failed the verdict for quoting the prohibition accurately. Validated against the actual pre-fix file, not only a fixture. Recorded in `spikes/STORE-001/results/2026-07-25-04-steam-readonly-second-sweep.md`.
+
 ## 1.6 — 25 July 2026
 
 Counsel item 6 (Steam automation) is applied to the v1 design, and doc 18 §9 is enforced by a CI gate rather than asserted. What the product *runs* against Steam was already inside the permitted posture; what the documents *specified* was not.

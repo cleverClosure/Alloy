@@ -1,17 +1,17 @@
 {
   "package": "Alloy Product Documentation",
-  "version": "1.6",
+  "version": "1.7",
   "generatedAt": "2026-07-25",
   "fileCount": 47,
-  "markdownWords": 100933,
-  "markdownLines": 14333,
+  "markdownWords": 101653,
+  "markdownLines": 14348,
   "files": [
     {
       "path": "CHANGELOG.md",
-      "bytes": 13337,
-      "sha256": "2db1b455ecaa840aa565d9a22aedd2f970ab9284ec4f10b58171f2f68cf48816",
-      "lines": 97,
-      "words": 1795
+      "bytes": 15993,
+      "sha256": "b7b2b534415975f8ee9ee39f89db2937da9d77e5db74d4404afd1112934046c4",
+      "lines": 108,
+      "words": 2179
     },
     {
       "path": "CONTRIBUTING.md",
@@ -99,10 +99,10 @@
     },
     {
       "path": "adr/ADR-0011-modern-baseline-only.md",
-      "bytes": 6543,
-      "sha256": "308771cc6a5572195ff10d2ba4b648c4b053727202552e79e979a34d53de80b7",
+      "bytes": 6952,
+      "sha256": "3735488b9fe9a5a90eeed634db3a4d05f8c926051169b9f45cf3c083c8423047",
       "lines": 67,
-      "words": 894
+      "words": 941
     },
     {
       "path": "adr/ADR-0012-metal12-provenance-and-clean-room.md",
@@ -163,10 +163,10 @@
     },
     {
       "path": "docs/04_TECHNICAL_ARCHITECTURE.md",
-      "bytes": 190611,
-      "sha256": "537e9d3829091c053c666a4e890be864be0dfca7e0ca7323b3231afcebb33852",
+      "bytes": 191211,
+      "sha256": "c930e99e15afc4f70ff85af34476b2e23c7e3774fdf4e2272efe5a81382c312e",
       "lines": 3721,
-      "words": 25147
+      "words": 25228
     },
     {
       "path": "docs/05_RUNTIME_PROFILE_AND_MANIFEST_SPEC.md",
@@ -177,10 +177,10 @@
     },
     {
       "path": "docs/06_API_AND_DATA_CONTRACTS.md",
-      "bytes": 20588,
-      "sha256": "0d637d43bd3be50309db7ba3268639128771f9987b77bbfd66ad03db3e7d7960",
-      "lines": 694,
-      "words": 2439
+      "bytes": 21001,
+      "sha256": "517e1ea827ae87060026dfac19ec16a57a4085836223f87d9536b0c55086cae5",
+      "lines": 696,
+      "words": 2494
     },
     {
       "path": "docs/07_COMPATIBILITY_CERTIFICATION_SPEC.md",
@@ -294,10 +294,10 @@
     },
     {
       "path": "research/SPIKE-LEGAL-001-preliminary-findings.md",
-      "bytes": 15360,
-      "sha256": "c750f9ebe83626905cc3e0dbd68ce6dbc7121135724dfc1a7b2aea4e42320a58",
-      "lines": 121,
-      "words": 2148
+      "bytes": 16501,
+      "sha256": "868b790843611938ecc14d851e401364ef648e811707a77967865d8215838627",
+      "lines": 123,
+      "words": 2301
     },
     {
       "path": "research/SPIKE-LEGAL-001-verdict.md",
