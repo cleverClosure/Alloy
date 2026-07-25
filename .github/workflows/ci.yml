@@ -49,6 +49,9 @@ jobs:
       - name: Lint
         run: tools/lint.sh
 
+      - name: Title format self-test
+        run: bash .github/workflows/title-format.sh --selftest
+
       - name: Test rollback prototype
         run: swift test --package-path spikes/ROLLBACK-001/prototype --parallel
 
