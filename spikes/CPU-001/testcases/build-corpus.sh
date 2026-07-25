@@ -1,6 +1,6 @@
 #!/bin/bash
 # CPU-001 guest corpus build script.
-# Author: Tim Isaev
+# Author: Timur Isaev
 #
 # __try/__except tests MUST be built with -Xclang -fasync-exceptions: without
 # it clang only anchors SEH scopes at call sites, so a __try guarding a bare
@@ -33,7 +33,7 @@ build fault_cost ""
 build noaccess_inventory ""
 build jit_pages "-mavx2"
 build isa_smoke "-msse4.2 -mavx2 -mbmi -mbmi2"
-build x87_fp_edge "-ffp-contract=off"
+build x87_fp_edge "-ffp-contract=off -fno-math-errno"
 build cpu_throughput "-ffp-contract=off"
 build cpu_scaling ""
 build threads_tls ""

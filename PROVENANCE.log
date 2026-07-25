@@ -1,5 +1,5 @@
 # Alloy provenance log — append-only (ADR-0012)
-# Author: Tim Isaev
+# Author: Timur Isaev
 # Every entry: date | actor | event. Metal12/D3D12-translation work additionally records
 # inputs consulted per session. Excluded sources (never read, never in AI context):
 # vkd3d, vkd3d-proton, DXMT src/d3d12/.
@@ -10,3 +10,4 @@
 2026-07-24 | Tim Isaev | DXMT fetched for SPIKE-GFX-001 at e520fea (main, LGPL, CodeWeavers). src/d3d12/ deleted at clone time per MANIFEST.toml/ADR-0012, before any human or AI read of the tree. Submodules: nvapi, DirectX-Headers (approved input).
 2026-07-24 | Tim Isaev | Founder authorization: AI agent (codex) cleared to work issue #6 (FEX exception-dispatch deadlock, FEX fork tree) notwithstanding the audit §3.3 founder-only/no-AI note. Scope: issue #6 only; FEX-upstream contribution implications to be assessed before any upstreaming of AI-authored changes. ADR-0012 excluded-source list unchanged.
 2026-07-24 | Tim Isaev | Issue #6 handed over from codex to AI agent (claude) at founder direction; same authorization and scope as the entry above (issue #6 only, alloy/* fork branches, fork-local, never upstreamed without independent founder reimplementation). FEX fork commits from this session: 71d19ad (wine log-sink bridge), 6f8268f (null-RIP guest-dispatch refusal); both listed in third_party/src/fex PROVENANCE-ALLOY.md. See spikes/CPU-001/results/2026-07-24-16-*.md.
+2026-07-25 | Timur Isaev | Founder authorization applied to issue #7 (MXCSR sticky exception-status flags) on the fork-local alloy/task-7-mxcsr branch. FEX commit 98d5e2d maps host FPSR cumulative exceptions to guest MXCSR status, is listed in third_party/src/fex/PROVENANCE-ALLOY.md, and must never be upstreamed without independent founder reimplementation. Validation and the stale Wine builtin attribution are recorded in CPU-001 result 18. ADR-0012 excluded-source list unchanged.

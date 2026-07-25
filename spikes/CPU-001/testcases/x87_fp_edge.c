@@ -14,8 +14,16 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <xmmintrin.h>
 
 static int failures;
+
+enum
+{
+    MXCSR_STATUS_MASK = 0x3f,
+    MXCSR_IE = 1 << 0,
+    MXCSR_ZE = 1 << 2,
+};
 
 __attribute__((target("fma"))) static double fma3_direct(double a, double b, double c)
 {
@@ -62,25 +70,31 @@ int main(void)
         check(half > 0.0 && half < DBL_MIN && back == d, "denormals", 2);
     }
 
-    /* FP exception *values* are mandatory: div-by-zero -> +inf, sqrt(-1) -> NaN.
-     * The MXCSR sticky exception-status *flags* are a KNOWN, deferred FEX gap:
-     * FEXCore GetMXCSR() masks the low 6 status bits (& 0xFFC0), so fetestexcept
-     * always reads clean under FEX. Real games mask FP exceptions and never read
-     * these flags, so the flag half is reported as an advisory and never fails
-     * the corpus; only the value half is asserted. */
+    /* FP exceptions produce the right values and accumulate sticky MXCSR status.
+     * Clear first so startup activity cannot satisfy the assertions, then prove
+     * divide-by-zero sticks, invalid accumulates without erasing it, and an
+     * explicit ldmxcsr clear removes the complete status field. */
     {
-        feclearexcept(FE_ALL_EXCEPT);
+        unsigned int saved_mxcsr = _mm_getcsr();
+        _mm_setcsr(saved_mxcsr & ~MXCSR_STATUS_MASK);
+
+        volatile double one = 1.0;
         volatile double zero = 0.0;
-        volatile double inf = 1.0 / zero;
-        int raised_div = fetestexcept(FE_DIVBYZERO) != 0;
-        feclearexcept(FE_ALL_EXCEPT);
-        volatile double nan_v = sqrt(-1.0);
-        int raised_inv = fetestexcept(FE_INVALID) != 0;
+        volatile double negative_one = -1.0;
+        volatile double inf = one / zero;
+        unsigned int after_div = _mm_getcsr();
+        volatile double nan_v = __builtin_sqrt(negative_one);
+        unsigned int accumulated = _mm_getcsr();
+
+        _mm_setcsr(accumulated & ~MXCSR_STATUS_MASK);
+        unsigned int after_clear = _mm_getcsr();
+        _mm_setcsr(saved_mxcsr);
+
         check(isinf(inf) && isnan(nan_v), "fp exception values", 3);
-        printf("fp sticky flags: %s\n",
-               (raised_div && raised_inv)
-                   ? "observed (native-equivalent)"
-                   : "KNOWN FEX GAP - MXCSR status unvirtualized, non-fatal");
+        check((after_div & MXCSR_ZE) != 0 &&
+                  (accumulated & (MXCSR_IE | MXCSR_ZE)) == (MXCSR_IE | MXCSR_ZE),
+              "fp sticky flags accumulate", 3);
+        check((after_clear & MXCSR_STATUS_MASK) == 0, "fp sticky flags clear", 3);
     }
 
     /* NaN propagation + comparisons */
