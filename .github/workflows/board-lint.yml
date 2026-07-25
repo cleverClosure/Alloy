@@ -1,0 +1,106 @@
+name: Board lint
+
+# Sweeps the project board's invariants and reports drift within a day, rather
+# than at the next human audit. The 25 July 2026 manual review found five kinds
+# of silent drift that had been invisible for days; all of them are mechanically
+# checkable.
+#
+# The report is a single pinned comment that is edited in place. It is not a new
+# comment per run: a bot that posts daily gets muted, and a muted report is worse
+# than none because it looks like coverage. When the board is clean the comment
+# is removed and nothing is posted.
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: board-lint
+  cancel-in-progress: true
+
+env:
+  REPORT_ISSUE: "56" # where the pinned report lives
+  MARKER: "<!-- board-lint-report -->"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # branch-merge and branch-age checks need real history
+
+      - name: Self-test the checks
+        # Proves each violation class still fires before trusting a clean board.
+        # A linter whose checks silently stopped working reports "clean".
+        run: python3 tools/board-lint.py --selftest
+
+      - name: Run the linter
+        id: lint
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          python3 tools/board-lint.py > findings.txt 2>lint.err || {
+            echo "linter failed:" >&2; cat lint.err >&2; exit 1; }
+          cat findings.txt
+          if grep -q '^board clean' findings.txt; then
+            echo "clean=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "clean=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update the pinned report
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # Find an existing report comment by its marker.
+          existing=$(gh api "repos/${{ github.repository }}/issues/${REPORT_ISSUE}/comments" \
+            --paginate --jq "[.[] | select(.body | contains(\"${MARKER}\"))] | last | .id // empty")
+
+          if [ "${{ steps.lint.outputs.clean }}" = "true" ]; then
+            # Clean board produces no output. Remove a stale report so the
+            # absence of findings is visible as an absence.
+            if [ -n "$existing" ]; then
+              gh api -X DELETE "repos/${{ github.repository }}/issues/comments/$existing"
+              echo "board clean — removed the stale report"
+            else
+              echo "board clean — nothing to post"
+            fi
+            exit 0
+          fi
+
+          {
+            echo "${MARKER}"
+            echo "## Board lint — $(date -u +%Y-%m-%d)"
+            echo
+            echo '```text'
+            cat findings.txt
+            echo '```'
+            echo
+            echo "Edited in place by \`.github/workflows/board-lint.yml\`."
+            echo "Items labelled \`founder\` are exempt from the Agent check and"
+            echo "\`hold:external\` from the staleness and Estimate checks."
+          } > body.md
+
+          if [ -n "$existing" ]; then
+            # Post only when the findings changed, so an unchanged board does
+            # not generate notification noise.
+            gh api "repos/${{ github.repository }}/issues/comments/$existing" --jq .body > old.md || true
+            if diff -q <(tail -n +2 old.md) <(tail -n +2 body.md) >/dev/null 2>&1; then
+              echo "findings unchanged — not editing"
+              exit 0
+            fi
+            gh api -X PATCH "repos/${{ github.repository }}/issues/comments/$existing" \
+              -F body=@body.md >/dev/null
+            echo "report updated"
+          else
+            gh issue comment "${REPORT_ISSUE}" --body-file body.md
+            echo "report created"
+          fi
