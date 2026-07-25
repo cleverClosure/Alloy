@@ -1,0 +1,113 @@
+# LEGAL-001 result 01 — the codec-clean claim is false for the current build: Wine's winedmo links libavcodec, and the item 5 letters would have asserted otherwise in writing
+
+**Author:** Tim Isaev
+**Date:** 25 July 2026
+**Scope:** counsel checklist item 5, measurable half (issue #24); correspondence
+half split to #49 ·
+**Runtime scanned:** Wine `spikes/WINE-001/work/build-2`, FEX
+`libarm64ecfex.dll`, DXMT `d3d11.dll` / `dxgi.dll` / `winemetal.so`
+
+## Outcome
+
+The pre-counsel verdict's factual argument for item 5 is that this product
+"distributes no encoder, decoder implementation or encoded content" and merely
+passes game-provided bitstreams to the operating system. **That assertion is
+false for the current build**, and it was going to be made in writing to the two
+organisations most motivated to check it.
+
+```text
+winedmo.so links:
+  /opt/homebrew/opt/ffmpeg/lib/libavformat.62.dylib
+  /opt/homebrew/opt/ffmpeg/lib/libavcodec.62.dylib
+  /opt/homebrew/opt/ffmpeg/lib/libavutil.60.dylib
+config.log:  #define HAVE_FFMPEG 1
+```
+
+Wine's `winedmo` media module references 12 codec-implementation symbols and
+links `libavcodec` — a full software codec implementation — because configure
+found FFmpeg on the build machine and enabled it **silently**. Nobody chose
+this; it is the default when the library is present.
+
+## What is and is not shipped
+
+Precision matters here, because the claim is legal rather than technical:
+
+- FFmpeg is **dynamically linked from Homebrew**, so today's lab build does not
+  *distribute* it. A packaged external build must either bundle it or fail to
+  load `winedmo`.
+- The verdict's no-fallback requirement is about whether a software decoder is
+  **reachable**, not whether it is bundled. It is reachable.
+- So "we ship no decoder" is not something this configuration can honestly
+  claim, in either reading.
+
+## Everything else is clean
+
+| component | ffmpeg | codec impl syms | gstreamer | videotoolbox |
+| --- | --- | --- | --- | --- |
+| `libarm64ecfex.dll` | 0 | 0 | 0 | 0 |
+| DXMT `d3d11.dll` | 0 | 0 | 0 | 0 |
+| DXMT `dxgi.dll` | 0 | 0 | 0 | 0 |
+| `winemetal.so` | 0 | 0 | 0 | 0 |
+| `ntdll.so` | 0 | 0 | 0 | 0 |
+| `winemac.so` | 0 | 0 | 0 | 0 |
+
+`winedmo.so` is the **only** hit across 31 Wine shared objects and every DXMT
+and FEX binary.
+
+**GStreamer is absent**, which the issue required auditing per plug-in. There is
+nothing to audit: `GSTREAMER_CFLAGS` and `GSTREAMER_LIBS` are empty in
+`config.log`, GStreamer is not installed on the host, and `dlls/winegstreamer`
+has no loadable module built — only a static archive that nothing loads. The
+per-plug-in audit is therefore vacuously satisfied *for this build* and must be
+redone if GStreamer is ever linked.
+
+**MoltenVK is not present.** The only Vulkan artefact is Wine's own
+`libvulkan-1.a` stub. FEX and MoltenVK were named in the issue as belonging in
+the same SBOM; FEX is present and codec-clean, MoltenVK does not ship.
+
+## The gate
+
+`spikes/LEGAL-001/codec-clean/codec-scan.sh` fails when a codec implementation
+is reachable from the shipped runtime. It checks four things: dynamic
+dependencies on codec libraries, codec-implementation symbols, whether a
+GStreamer media path is built, and whether `HAVE_FFMPEG` was set at configure
+time.
+
+It is written as a **release gate, not a report**. A green run is what licenses
+the factual claim, and the claim must not be made in writing without one. On the
+current build it fails, correctly, on three of the four checks.
+
+## Fix
+
+`--without-ffmpeg` is an existing Wine configure option. External builds must
+use it, and the gate must pass before the item 5 letters are sent. That is not
+done here: this result establishes the defect and the check, not the remediation,
+because the external build configuration does not exist yet (#47).
+
+## Why this ordering mattered
+
+Issue #49 (the letters) was put On Hold behind this issue on the argument that a
+factual assertion should be verified before it is made. That argument was
+speculative when it was made and is now demonstrated: had the letters gone out
+on the schedule the issue originally implied, they would have contained a
+statement contradicted by our own binaries, in writing, dated, to Via LA and
+Access Advance.
+
+## What remains for item 5
+
+- **Remediation**: configure external builds `--without-ffmpeg` and re-run the
+  gate. Blocked on a release build configuration existing (#47).
+- **VideoToolbox usage**: whether shortlist titles invoke it at all. If they do
+  not, the verdict's alternative applies — disable the paths and the
+  correspondence becomes unnecessary for a first beta. Not yet measured.
+- **The letters** (#49), which stay On Hold and must not precede a green gate.
+- Doc 18 §18's codec gate stays **unticked**.
+
+## Doctrine reinforced
+
+Result 21 ended on inference outrunning measurement. This one is the same shape
+in a different register: a *legal* argument resting on a factual premise nobody
+had checked. The premise was reasonable, the architecture does mostly support
+it, and it was still wrong — because a build system enabled a dependency by
+default and no one looked. An assertion about binaries is only as good as the
+last time someone read the binaries.
