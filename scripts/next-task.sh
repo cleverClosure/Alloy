@@ -11,17 +11,37 @@
 #   3. every native "blocked by" issue is closed     (dependency edges)
 #   4. its area:* labels are disjoint from every     (area mutexes; On Hold
 #      task that is In Progress or On Hold            still holds its locks)
+#   5. it has an Estimate                            (shaping gate, see below)
 #
 # Usage:
 #   scripts/next-task.sh                        # list eligible tasks, best first
-#   scripts/next-task.sh --claim claude|codex   # claim the top task: assign, set
-#                                               #  Agent, move to In Progress
-# WIP limit: one In Progress task per agent — claims over that are refused.
+#   scripts/next-task.sh --claim claude|codex   # claim the top eligible task
+#   scripts/next-task.sh --claim claude 45      # claim a named task, same gates
+#
+# Claiming assigns the account, sets Agent, moves the card to In Progress, and
+# comments the agent name.  Finish with scripts/finish-task.sh, which sets
+# Actual and reconciles closure.
+#
+# Two gates are enforced here rather than left to documentation, because a rule
+# that lives only in a document keeps being skipped (#44):
+#
+#   Estimate  A Todo task without one was never fully shaped.  The claim is
+#             refused, naming the task and printing the exact command to set it.
+#   WIP       A shared pool of WIP_LIMIT tasks In Progress across all agents.
+#             This was one task per agent, which refused claims while slots sat
+#             free; the way around it was to hand-roll the claim, and that is
+#             precisely how the Agent field kept ending up empty.  A limit that
+#             people route around does not limit anything.
+#
+# Naming an issue narrows which task is claimed.  It does not relax a gate: a
+# named task passes the same five eligibility rules, and is refused with the
+# reason when it does not.
 set -euo pipefail
 
 OWNER="cleverClosure"
 REPO="Alloy"
 PROJECT=1
+WIP_LIMIT=3
 
 # shellcheck disable=SC2016 # $vars in the query are GraphQL variables, not shell
 data=$(gh api graphql \
@@ -46,6 +66,9 @@ query($owner: String!, $name: String!) {
             agent: fieldValueByName(name: "Agent") {
               ... on ProjectV2ItemFieldSingleSelectValue { name }
             }
+            estimate: fieldValueByName(name: "Estimate") {
+              ... on ProjectV2ItemFieldNumberValue { number }
+            }
           }
         }
       }
@@ -66,6 +89,7 @@ issues=$(jq --argjson proj "$PROJECT" '
         open_blockers: [.blockedBy.nodes[] | select(.state == "OPEN") | .number],
         status: (if $item == null then "OFF_BOARD" else ($item.status.name // "Backlog") end),
         agent: ($item.agent.name // ""),
+        estimate: ($item.estimate.number // null),
         item_id: ($item.id // "")
       }
   ]' <<<"$data")
@@ -87,7 +111,8 @@ jq -r '.[] | select(.status == "In Progress" or .status == "On Hold")
   | "  #\(.number) [\(.status)\(if .agent != "" then "/" + .agent else "" end)] \(.areas | join(",")) — \(.title)"' <<<"$issues"
 
 echo "── Eligible now (best first) ─────────────────────────"
-jq -r 'to_entries[] | "  \(.key + 1). #\(.value.number) \(.value.prio | sub("priority:"; "")) \(.value.areas | join(",")) — \(.value.title)"' <<<"$eligible"
+jq -r 'to_entries[] | "  \(.key + 1). #\(.value.number) \(.value.prio | sub("priority:"; "")) \(.value.areas | join(",")) — \(.value.title)"
+  + (if .value.estimate == null then "\n       ⚠ no Estimate — shape it before claiming" else "  [\(.value.estimate)h]" end)' <<<"$eligible"
 
 echo "── Waiting (open Todo, not eligible) ─────────────────"
 jq -r --argjson locked "$locked" '.[]
@@ -105,26 +130,77 @@ jq -r '.[] | select(.status == "OFF_BOARD")
 
 if [[ "${1:-}" == "--claim" ]]; then
   agent="${2:-}"
+  want="${3:-}"
+  want="${want#\#}"
   if [[ "$agent" != "claude" && "$agent" != "codex" ]]; then
-    echo "Usage: scripts/next-task.sh --claim claude|codex"
+    echo "Usage: scripts/next-task.sh --claim claude|codex [issue]" >&2
+    exit 1
+  fi
+  if [[ -n "$want" && ! "$want" =~ ^[0-9]+$ ]]; then
+    echo "Usage: scripts/next-task.sh --claim claude|codex [issue]  (issue must be a number)" >&2
     exit 1
   fi
 
-  busy=$(jq -r --arg a "$agent" '[.[] | select(.status == "In Progress" and .agent == $a)] | .[0] // empty | .number' <<<"$issues")
-  if [[ -n "$busy" ]]; then
-    echo "WIP limit: $agent already has #$busy In Progress — finish it or move it On Hold first."
+  # WIP is a shared pool across agents rather than a per-agent allowance. Only
+  # In Progress occupies a slot: On Hold keeps its area locks but is not work in
+  # flight, so it does not consume one.
+  wip=$(jq '[.[] | select(.status == "In Progress") | .number]' <<<"$issues")
+  wip_n=$(jq -r 'length' <<<"$wip")
+  if ((wip_n >= WIP_LIMIT)); then
+    printf 'WIP limit: %d of %d slots in use (%s) — finish one or move it On Hold first.\n' \
+      "$wip_n" "$WIP_LIMIT" "$(jq -r 'map("#\(.)") | join(", ")' <<<"$wip")" >&2
     exit 1
   fi
 
-  top=$(jq -r '.[0] // empty | .number' <<<"$eligible")
-  if [[ -z "$top" ]]; then
-    echo "Nothing eligible to claim."
-    exit 1
+  if [[ -n "$want" ]]; then
+    candidate=$(jq --argjson n "$want" 'map(select(.number == $n)) | .[0] // empty' <<<"$eligible")
+    if [[ -z "$candidate" ]]; then
+      echo "#$want is not eligible to claim:" >&2
+      jq -r --argjson n "$want" --argjson locked "$locked" '
+        (map(select(.number == $n)) | .[0]) as $t
+        | if $t == null then "  no open issue #\($n) is on the board"
+          elif $t.status != "Todo" then "  board status is \($t.status), not Todo"
+          elif $t.founder then "  founder-only work is never agent-claimable"
+          elif $t.assigned then "  already claimed — the assignee is the lock"
+          elif ($t.open_blockers | length > 0) then
+            "  blocked by " + ($t.open_blockers | map("#\(.)") | join(", "))
+          elif (($t.areas - $locked) != $t.areas) then
+            "  area lock held: " + (($t.areas - ($t.areas - $locked)) | join(","))
+          else "  not eligible" end' <<<"$issues" >&2
+      exit 1
+    fi
+  else
+    candidate=$(jq '.[0] // empty' <<<"$eligible")
+    if [[ -z "$candidate" ]]; then
+      echo "Nothing eligible to claim." >&2
+      exit 1
+    fi
   fi
-  item_id=$(jq -r '.[0].item_id' <<<"$eligible")
+
+  top=$(jq -r '.number' <<<"$candidate")
+  item_id=$(jq -r '.item_id' <<<"$candidate")
+  estimate=$(jq -r 'if .estimate == null then "" else (.estimate | tostring) end' <<<"$candidate")
 
   fields=$(gh project field-list "$PROJECT" --owner "$OWNER" --format json)
   project_id=$(gh project view "$PROJECT" --owner "$OWNER" --format json | jq -r '.id')
+
+  # Estimate is a shaping gate: it belongs on the item before the task leaves
+  # Backlog. Refuse rather than quietly skip to the next candidate — skipping
+  # would hide an unshaped task instead of getting it shaped.
+  if [[ -z "$estimate" ]]; then
+    estimate_field=$(jq -r '.fields[] | select(.name == "Estimate") | .id' <<<"$fields")
+    cat >&2 <<EOF
+Estimate missing: #$top has no Estimate, so it is not ready to be claimed.
+Set it in hours on the board item, then claim again:
+
+  gh project item-edit --id $item_id \\
+    --project-id $project_id \\
+    --field-id $estimate_field --number <hours>
+
+Estimate is set during shaping, before a task moves Backlog -> Todo (TASKS.md).
+EOF
+    exit 1
+  fi
 
   # set_option <field-name> <option-name> — write a single-select value on the item
   set_option() {
@@ -149,6 +225,8 @@ mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
   gh issue comment "$top" --repo "$OWNER/$REPO" --body "Claimed by \`$agent\`." >/dev/null
 
   echo "── Claimed ───────────────────────────────────────────"
-  echo "  #$top assigned to $agent, moved to In Progress"
+  echo "  #$top assigned to $agent, moved to In Progress (Estimate ${estimate}h)"
+  echo "  Slots:  $((wip_n + 1)) of $WIP_LIMIT in use"
   echo "  Branch: git checkout -b task/$top-<slug>"
+  echo "  Finish: scripts/finish-task.sh $top <actual-hours>"
 fi
