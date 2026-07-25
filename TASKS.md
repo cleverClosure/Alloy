@@ -47,14 +47,34 @@ disappears the moment the other task finishes. A `blocked by` edge does not:
 it persists until a human deletes it. Writing a transient scheduling conflict
 into the dependency graph freezes it there.
 
-This is not hypothetical. On 25 July #23, a P1 gate on external distribution,
-was linked as blocked by #57 purely because both carry `area:ci` and #57 held
-the lock. #57 then went On Hold, and #23 would have stayed blocked
-indefinitely for a reason nobody had written down.
+So: **every manually added blocker names the artifact it waits for, in the
+issue's "Depends on" section.** If you cannot name the artifact, it is not a
+dependency — leave it out and let the area lock do its job.
 
-So: **every manually added blocker gets a comment saying what it waits for.**
-If you cannot name the artifact, it is not a dependency — leave it out and let
-the area lock do its job.
+### Before deleting a blocker, read the body
+
+The rule above has a mirror image, and it has already cost more than the
+mistake it guards against.
+
+On 25 July #23 was linked as blocked by #57. A review the next day saw two
+issues sharing `area:ci`, searched the timeline for a comment explaining the
+edge, found none, and deleted it as an area lock mistakenly recorded as a
+dependency. The explanation was in #23's **Depends on** section the whole
+time — "finish the current auto-merge gate work before changing the shared
+packaging and CI surface" — which is exactly where this file says that
+rationale belongs. The edge was also right on the merits: #57's PR modifies
+`.github/workflows/ci.yml` and #23 adds a CI job to the same file.
+
+Deleting a correct edge is worse than adding a wrong one, because the wrong
+edge merely delays a task while the missing edge lets two agents collide in a
+shared file. So before removing any `blocked by`:
+
+1. read the blocked issue's **Depends on** section — the rationale lives
+   there, not necessarily in a comment;
+2. compare what the blocking task actually touches against what the blocked
+   task will touch;
+3. if it still looks wrong, comment and leave it for a human rather than
+   deleting it. An edge is cheap to keep and expensive to be wrong about.
 
 Shaping rules that keep two agents busy:
 
