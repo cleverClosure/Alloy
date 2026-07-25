@@ -36,6 +36,26 @@ Use the **Task** issue template. Every task must have, before it leaves Backlog:
   dependency. The text in "Depends on" is for humans; tooling reads only the
   native relationship.
 
+### A blocker is not an area lock
+
+`blocked by` means **this task needs something that task produces** — an
+artifact, a decision, a merged mechanism. Nothing else.
+
+Never use it to record that an area is busy. The picker already computes area
+contention live from what is In Progress or On Hold, and that contention
+disappears the moment the other task finishes. A `blocked by` edge does not:
+it persists until a human deletes it. Writing a transient scheduling conflict
+into the dependency graph freezes it there.
+
+This is not hypothetical. On 25 July #23, a P1 gate on external distribution,
+was linked as blocked by #57 purely because both carry `area:ci` and #57 held
+the lock. #57 then went On Hold, and #23 would have stayed blocked
+indefinitely for a reason nobody had written down.
+
+So: **every manually added blocker gets a comment saying what it waits for.**
+If you cannot name the artifact, it is not a dependency — leave it out and let
+the area lock do its job.
+
 Shaping rules that keep two agents busy:
 
 - Slice by **area first, feature second** — the natural state is two disjoint
