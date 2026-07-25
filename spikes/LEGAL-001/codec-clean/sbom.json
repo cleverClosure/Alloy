@@ -1,0 +1,18 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "metadata": {
+    "component": {"type": "application", "name": "alloy-runtime"},
+    "properties": [{"name":"note","value":"product name pending rename, issue #26"}]
+  },
+  "components": [
+    {"name":"wine","version":"54048cbd2bf69aee8cc7be2beb14c5ab63a17842","licenses":[{"license":{"id":"LGPL-2.1-or-later"}}],"hashes":[{"alg":"SHA-256","content":"a18c09d581ca9b5f4c8c30c64b7aaee84c9396cda9498c437a89668696ad9646"}],"description":"fork; ntdll.so hashed as the representative artifact"},
+    {"name":"fex-emu","version":"ad942313dca79d32133cceaaf617016821e3b952","licenses":[{"license":{"id":"MIT"}}],"hashes":[{"alg":"SHA-256","content":"0924c8a2db7bc4a95f13ee53a11591c6905111945f884a65420075f018069c12"}],"description":"libarm64ecfex.dll; named in item 5 as in-scope for this SBOM"},
+    {"name":"dxmt-d3d11","version":"prebuilt","licenses":[{"license":{"id":"LGPL-2.1-or-later"}}],"hashes":[{"alg":"SHA-256","content":"c8226f467a7b95cfe9535a87ce74a846b4d7db4e66e9776209116832767ca82a"}],"description":"src/d3d12 excluded at clone time per ADR-0012"},
+    {"name":"dxmt-dxgi","version":"prebuilt","licenses":[{"license":{"id":"LGPL-2.1-or-later"}}],"hashes":[{"alg":"SHA-256","content":"6aeb949b529f0581ca2e4d1ba40bcd2ac3c5628553457857e26b3c7ae11c07ee"}],"description":"prebuilt provider"},
+    {"name":"dxmt-winemetal","version":"prebuilt","licenses":[{"license":{"id":"LGPL-2.1-or-later"}}],"hashes":[{"alg":"SHA-256","content":"1a5cd19dbb64e726b8a8fef9665ba0ced6fb190511883712778531ac0d38153f"}],"description":"unixlib"},
+    {"name":"moltenvk","version":"absent","licenses":[{"license":{"id":"NONE"}}],"hashes":[{"alg":"SHA-256","content":"absent"}],"description":"not shipped; only wine's own libvulkan-1.a stub is present"},
+    {"name":"ffmpeg","version":"REACHABLE via winedmo.so","licenses":[{"license":{"id":"LGPL-2.1-or-later"}}],"hashes":[{"alg":"SHA-256","content":"eb53178af41164d8a328ce21661dd45cdbe8ecd7f86dc32e8c2cfa46e2b3713e"}],"description":"codec implementation; must be absent from external builds - see codec-scan.sh"},
+    {"name":"gstreamer","version":"absent","licenses":[{"license":{"id":"NONE"}}],"hashes":[{"alg":"SHA-256","content":"absent"}],"description":"not linked; GSTREAMER_LIBS empty and no loadable winegstreamer module"}
+  ]
+}
