@@ -1,0 +1,199 @@
+{
+  "author": "Timur Isaev",
+  "generatedAt": "2026-07-25T07:15:59.607240+00:00",
+  "label": "sir-brante-riders-cold-full",
+  "memory": null,
+  "metrics": {
+    "eventCount": 16560,
+    "failedEventCount": 0,
+    "framePacing": {
+      "firstPresentTimestampMs": 14.695,
+      "intervalMs": {
+        "count": 16537,
+        "max": 74182.753,
+        "mean": 19.96,
+        "p50": 16.424,
+        "p95": 18.242,
+        "p99": 20.284
+      },
+      "lastPresentTimestampMs": 330084.994,
+      "longestFrames": [
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 170505.999,
+          "intervalMs": 74182.753,
+          "presentObject": 6927
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "compile:ps_965811ba_f8e9cf38dc7294cc7203c7fb6cd68b27ed713b6a",
+              "durationMs": 3.634,
+              "event": "shader",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 17122.277,
+          "intervalMs": 1983.28,
+          "presentObject": 2353
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 45173.999,
+          "intervalMs": 1181.279,
+          "presentObject": 3909
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 6856.693,
+          "intervalMs": 853.181,
+          "presentObject": 978
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 21993.697,
+          "intervalMs": 560.615,
+          "presentObject": 2604
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "compile:ps_d07e324e_f8e9cf38dc7294cc7203c7fb6cd68b27ed713b6a",
+              "durationMs": 1.342,
+              "event": "shader",
+              "status": "ok"
+            },
+            {
+              "detail": "compile:vs_0f575dc8_798c3d4be0e15c45c3c97bfd91efa8bb463cf73f",
+              "durationMs": 2.337,
+              "event": "shader",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.205,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 7820.185,
+          "intervalMs": 460.855,
+          "presentObject": 1049
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 52536.297,
+          "intervalMs": 362.937,
+          "presentObject": 4308
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "compile:vs_0f575dc8_5b6d590829ad0711c9b92976202168550bc7a70a",
+              "durationMs": 4.128,
+              "event": "shader",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.222,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 52843.61,
+          "intervalMs": 224.703,
+          "presentObject": 4310
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 46445.06,
+          "intervalMs": 218.475,
+          "presentObject": 3964
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "compile:ps_25c04a02_f8e9cf38dc7294cc7203c7fb6cd68b27ed713b6a",
+              "durationMs": 2.337,
+              "event": "shader",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.179,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 22202.588,
+          "intervalMs": 208.891,
+          "presentObject": 2605
+        }
+      ],
+      "meanFps": 50.101,
+      "presentCallMs": {
+        "count": 16538,
+        "max": 7.662,
+        "mean": 0.08,
+        "p50": 0.078,
+        "p95": 0.138,
+        "p99": 0.25
+      },
+      "presentCount": 16538,
+      "thresholdCounts": {
+        "over100ms": 13,
+        "over16_667ms": 6573,
+        "over20_833ms": 134,
+        "over33_333ms": 46,
+        "over50ms": 29
+      },
+      "thresholdPercentages": {
+        "over100ms": 0.079,
+        "over16_667ms": 39.747,
+        "over20_833ms": 0.81,
+        "over33_333ms": 0.278,
+        "over50ms": 0.175
+      }
+    },
+    "pipeline": {
+      "byType": {
+        "graphics": 9
+      },
+      "durationMs": {
+        "count": 9,
+        "max": 0.227,
+        "mean": 0.178,
+        "p50": 0.179,
+        "p95": 0.225,
+        "p99": 0.227
+      },
+      "eventCount": 9,
+      "failureCount": 0
+    },
+    "sha256": "783fe98f5f98f4888136caf40b595cac020208cd6fe91a4009800999cd9f5c19",
+    "shader": {
+      "cacheHitCount": 0,
+      "compileCount": 13,
+      "compileDurationMs": {
+        "count": 13,
+        "max": 5.55,
+        "mean": 2.565,
+        "p50": 2.199,
+        "p95": 4.815,
+        "p99": 5.403
+      },
+      "eventCount": 13,
+      "failureCount": 0
+    },
+    "source": "spikes/STORE-001/work/issue-11-sir-brante/pairs/riders-20260725-c/metrics/cold.tsv",
+    "window": {
+      "durationSeconds": 330.083,
+      "firstEventTimestampMs": 2.255,
+      "lastEventTimestampMs": 330084.994,
+      "requestedEndSeconds": null,
+      "requestedStartSeconds": null
+    }
+  },
+  "schemaVersion": 1
+}

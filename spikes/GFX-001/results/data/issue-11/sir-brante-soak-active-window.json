@@ -1,0 +1,145 @@
+{
+  "author": "Timur Isaev",
+  "generatedAt": "2026-07-25T06:51:22.616369+00:00",
+  "label": "sir-brante-riders-uninterrupted-soak-window",
+  "memory": null,
+  "metrics": {
+    "eventCount": 81964,
+    "failedEventCount": 0,
+    "framePacing": {
+      "firstPresentTimestampMs": 90017.937,
+      "intervalMs": {
+        "count": 81963,
+        "max": 255.657,
+        "mean": 16.609,
+        "p50": 16.531,
+        "p95": 18.642,
+        "p99": 20.139
+      },
+      "lastPresentTimestampMs": 1451343.083,
+      "longestFrames": [
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 277674.02,
+          "intervalMs": 255.657,
+          "presentObject": 18039
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 487936.135,
+          "intervalMs": 95.62,
+          "presentObject": 30660
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 377757.322,
+          "intervalMs": 94.304,
+          "presentObject": 24065
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 1451343.083,
+          "intervalMs": 76.352,
+          "presentObject": 88706
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 750669.672,
+          "intervalMs": 74.837,
+          "presentObject": 46488
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 355814.541,
+          "intervalMs": 73.235,
+          "presentObject": 22746
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 663124.632,
+          "intervalMs": 71.957,
+          "presentObject": 41212
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 882011.404,
+          "intervalMs": 71.569,
+          "presentObject": 54402
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 772562.997,
+          "intervalMs": 71.082,
+          "presentObject": 47807
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 947687.529,
+          "intervalMs": 70.862,
+          "presentObject": 58359
+        }
+      ],
+      "meanFps": 60.208,
+      "presentCallMs": {
+        "count": 81964,
+        "max": 1.536,
+        "mean": 0.048,
+        "p50": 0.041,
+        "p95": 0.104,
+        "p99": 0.146
+      },
+      "presentCount": 81964,
+      "thresholdCounts": {
+        "over100ms": 1,
+        "over16_667ms": 36405,
+        "over20_833ms": 536,
+        "over33_333ms": 79,
+        "over50ms": 66
+      },
+      "thresholdPercentages": {
+        "over100ms": 0.001,
+        "over16_667ms": 44.416,
+        "over20_833ms": 0.654,
+        "over33_333ms": 0.096,
+        "over50ms": 0.081
+      }
+    },
+    "pipeline": {
+      "byType": {},
+      "durationMs": {
+        "count": 0,
+        "max": null,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null
+      },
+      "eventCount": 0,
+      "failureCount": 0
+    },
+    "sha256": "fb129b3765bdcd796df839754ff864a76609cfbebf53b9920218c3edb14b7978",
+    "shader": {
+      "cacheHitCount": 0,
+      "compileCount": 0,
+      "compileDurationMs": {
+        "count": 0,
+        "max": null,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null
+      },
+      "eventCount": 0,
+      "failureCount": 0
+    },
+    "source": "spikes/STORE-001/work/issue-11-sir-brante/metrics/screenmode-3.tsv",
+    "window": {
+      "durationSeconds": 1361.325,
+      "firstEventTimestampMs": 90017.937,
+      "lastEventTimestampMs": 1451343.083,
+      "requestedEndSeconds": 1451.3430825,
+      "requestedStartSeconds": 90.0
+    }
+  },
+  "schemaVersion": 1
+}

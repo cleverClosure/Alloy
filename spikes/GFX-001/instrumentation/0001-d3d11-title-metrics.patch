@@ -1,0 +1,332 @@
+# Author: Timur Isaev
+# Apply from the DXMT source root with: git apply /path/to/this/patch
+
+diff --git a/src/d3d11/d3d11_title_metrics.hpp b/src/d3d11/d3d11_title_metrics.hpp
+new file mode 100644
+--- /dev/null
++++ b/src/d3d11/d3d11_title_metrics.hpp
+@@ -0,0 +1,92 @@
++#pragma once
++
++#include "util_env.hpp"
++#include "util_string.hpp"
++
++#include <atomic>
++#include <chrono>
++#include <cstdint>
++#include <fstream>
++#include <mutex>
++#include <string>
++#include <string_view>
++
++namespace dxmt {
++
++class TitleMetrics {
++public:
++  static TitleMetrics &instance() {
++    static TitleMetrics metrics;
++    return metrics;
++  }
++
++  uint64_t timestampNs() const {
++    return std::chrono::duration_cast<std::chrono::nanoseconds>(
++               std::chrono::steady_clock::now() - started_)
++        .count();
++  }
++
++  void recordPresent(uint64_t frame, uint64_t started_ns) {
++    const auto finished_ns = timestampNs();
++    write(finished_ns, "present", frame, finished_ns - started_ns, "ok", "");
++  }
++
++  void recordShader(const std::string &name, bool cache_hit, bool success,
++                    uint64_t started_ns) {
++    const auto finished_ns = timestampNs();
++    write(finished_ns, "shader", nextEvent(), finished_ns - started_ns,
++          success ? "ok" : "error",
++          std::string(cache_hit ? "cache:" : "compile:") + name);
++  }
++
++  void recordPipeline(const char *kind, bool success, uint64_t started_ns) {
++    const auto finished_ns = timestampNs();
++    write(finished_ns, "pipeline", nextEvent(), finished_ns - started_ns,
++          success ? "ok" : "error", kind);
++  }
++
++private:
++  TitleMetrics() {
++    const auto path = env::getEnvVar("DXMT_METRICS_PATH");
++    if (path.empty())
++      return;
++
++    stream_ = std::ofstream(str::topath(path.c_str()).c_str(),
++                            std::ios::out | std::ios::trunc);
++    if (stream_) {
++      stream_ << "timestamp_ns\tevent\tobject\tduration_ns\tstatus\tdetail\n";
++      stream_.flush();
++    }
++  }
++
++  uint64_t nextEvent() {
++    return next_event_.fetch_add(1, std::memory_order_relaxed);
++  }
++
++  void write(uint64_t timestamp_ns, const char *event, uint64_t object,
++             uint64_t duration_ns, const char *status, std::string detail) {
++    for (auto &character : detail) {
++      if (character == '\t' || character == '\r' || character == '\n')
++        character = ' ';
++    }
++
++    std::lock_guard<std::mutex> lock(mutex_);
++    if (!stream_)
++      return;
++
++    stream_ << timestamp_ns << '\t' << event << '\t' << object << '\t'
++            << duration_ns << '\t' << status << '\t' << detail << '\n';
++    record_count_++;
++    if (std::string_view(event) != "present" || record_count_ % 60 == 0)
++      stream_.flush();
++  }
++
++  const std::chrono::steady_clock::time_point started_ =
++      std::chrono::steady_clock::now();
++  std::atomic_uint64_t next_event_{1};
++  std::ofstream stream_;
++  std::mutex mutex_;
++  uint64_t record_count_ = 0;
++};
++
++} // namespace dxmt
+diff --git a/src/d3d11/d3d11_pipeline.cpp b/src/d3d11/d3d11_pipeline.cpp
+index 8ea32be..b28cbdf 100644
+--- a/src/d3d11/d3d11_pipeline.cpp
++++ b/src/d3d11/d3d11_pipeline.cpp
+@@ -3,6 +3,7 @@
+ #include "d3d11_pipeline.hpp"
+ #include "d3d11_device.hpp"
+ #include "d3d11_shader.hpp"
++#include "d3d11_title_metrics.hpp"
+ #include "log/log.hpp"
+ #include <atomic>
+ 
+@@ -96,13 +97,17 @@ public:
+     info.immutable_vertex_buffers = (1 << 16) | (1 << 29) | (1 << 30);
+     info.immutable_fragment_buffers = (1 << 29) | (1 << 30);
+ 
++    auto &metrics = TitleMetrics::instance();
++    const auto metrics_started = metrics.timestampNs();
+     state_ = device_->GetMTLDevice().newRenderPipelineState(info, err);
+ 
+     if (state_ == nullptr) {
++      metrics.recordPipeline("graphics", false, metrics_started);
+       ERR("Failed to create PSO: ", err.description().getUTF8String());
+       return this;
+     }
+ 
++    metrics.recordPipeline("graphics", true, metrics_started);
+     TRACE("Compiled 1 PSO");
+ 
+     return this;
+@@ -172,13 +177,17 @@ public:
+     info.tgsize_is_multiple_of_sgwidth = tgsize_is_multiple_of_sgwidth;
+     info.immutable_buffers = (1 << 29) | (1 << 30);
+ 
++    auto &metrics = TitleMetrics::instance();
++    const auto metrics_started = metrics.timestampNs();
+     state_ = device_->GetMTLDevice().newComputePipelineState(info, err);
+ 
+     if (!state_) {
++      metrics.recordPipeline("compute", false, metrics_started);
+       ERR("Failed to create compute PSO: ", err.description().getUTF8String());
+       return this;
+     }
+ 
++    metrics.recordPipeline("compute", true, metrics_started);
+     TRACE("Compiled 1 PSO");
+ 
+     return this;
+@@ -204,4 +213,4 @@ CreateComputePipeline(MTLD3D11Device *pDevice, ManagedShader ComputeShader) {
+   return std::make_unique<MTLCompiledComputePipelineImpl>(pDevice, ComputeShader);
+ }
+ 
+-} // namespace dxmt
+\ No newline at end of file
++} // namespace dxmt
+diff --git a/src/d3d11/d3d11_pipeline_gs.cpp b/src/d3d11/d3d11_pipeline_gs.cpp
+index efa605e..ba4d5b3 100644
+--- a/src/d3d11/d3d11_pipeline_gs.cpp
++++ b/src/d3d11/d3d11_pipeline_gs.cpp
+@@ -20,6 +20,7 @@
+ #include "airconv_public.h"
+ #include "d3d11_device.hpp"
+ #include "d3d11_pipeline.hpp"
++#include "d3d11_title_metrics.hpp"
+ #include "log/log.hpp"
+ 
+ namespace dxmt {
+@@ -131,12 +132,16 @@ public:
+ 
+     info.raster_sample_count = SampleCount;
+ 
++    auto &metrics = TitleMetrics::instance();
++    const auto metrics_started = metrics.timestampNs();
+     state_mesh_ = device_->GetMTLDevice().newRenderPipelineState(info, err);
+ 
+     if (state_mesh_ == nullptr) {
++      metrics.recordPipeline("geometry", false, metrics_started);
+       ERR("Failed to create mesh PSO: ", err.description().getUTF8String());
+       return this;
+     }
++    metrics.recordPipeline("geometry", true, metrics_started);
+     return this;
+   }
+ 
+@@ -170,4 +175,4 @@ CreateGeometryPipeline(MTLD3D11Device *pDevice,
+   return std::make_unique<MTLCompiledGeometryPipelineImpl>(pDevice, pDesc);
+ }
+ 
+-} // namespace dxmt
+\ No newline at end of file
++} // namespace dxmt
+diff --git a/src/d3d11/d3d11_pipeline_ts.cpp b/src/d3d11/d3d11_pipeline_ts.cpp
+index 23d1f00..a0185a6 100644
+--- a/src/d3d11/d3d11_pipeline_ts.cpp
++++ b/src/d3d11/d3d11_pipeline_ts.cpp
+@@ -21,6 +21,7 @@
+ #include "d3d11_device.hpp"
+ #include "d3d11_pipeline.hpp"
+ #include "d3d11_shader.hpp"
++#include "d3d11_title_metrics.hpp"
+ #include "log/log.hpp"
+ #include "thread.hpp"
+ 
+@@ -163,14 +164,19 @@ public:
+     // FIXME: might be different on AMD GPU, if it's ever supported
+     info.object_tgsize_is_multiple_of_sgwidth = true;
+ 
++    auto &metrics = TitleMetrics::instance();
++    const auto metrics_started = metrics.timestampNs();
+     {
+       std::lock_guard<dxmt::mutex> lock(ts_global_mutex);
+       state_rasterization_ =
+           device_->GetMTLDevice().newRenderPipelineState(info, err);
+     }
+     if (state_rasterization_ == nullptr) {
++      metrics.recordPipeline("tessellation", false, metrics_started);
+       ERR("Failed to create tessellation raster PSO: ",
+           err.description().getUTF8String());
++    } else {
++      metrics.recordPipeline("tessellation", true, metrics_started);
+     }
+ 
+     return this;
+@@ -208,4 +214,4 @@ CreateTessellationMeshPipeline(MTLD3D11Device *pDevice,
+   return std::make_unique<MTLCompiledTessellationPipelineImpl>(pDevice, pDesc);
+ }
+ 
+-} // namespace dxmt
+\ No newline at end of file
++} // namespace dxmt
+diff --git a/src/d3d11/d3d11_shader.cpp b/src/d3d11/d3d11_shader.cpp
+index 687b94a..83436e3 100644
+--- a/src/d3d11/d3d11_shader.cpp
++++ b/src/d3d11/d3d11_shader.cpp
+@@ -3,6 +3,7 @@
+ #include "airconv_public.h"
+ #include "config/config.hpp"
+ #include "d3d11_input_layout.hpp"
++#include "d3d11_title_metrics.hpp"
+ #include "sha1/sha1_util.hpp"
+ #include <mutex>
+ 
+@@ -47,6 +48,9 @@ public:
+ 
+   ThreadpoolWork *
+   RunThreadpoolWork() {
++    auto &metrics = TitleMetrics::instance();
++    const auto metrics_started = metrics.timestampNs();
++    bool cache_hit = false;
+     auto pool = WMT::MakeAutoreleasePool();
+     WMT::Reference<WMT::Error> err;
+     WMT::Reference<WMT::DispatchData> lib_data = shader_->find_cached_variant(variant_digest_);
+@@ -67,6 +71,7 @@ public:
+         lib_data = nullptr;
+         break;
+       }
++      cache_hit = true;
+       break;
+     }
+ 
+@@ -74,8 +79,10 @@ public:
+       SM50_COMPILED_BITCODE bitcode;
+       sm50_bitcode_t compile_result = proc(func_name.c_str(), &sm50_common);
+ 
+-      if (!compile_result)
++      if (!compile_result) {
++        metrics.recordShader(func_name, false, false, metrics_started);
+         return this;
++      }
+ 
+       SM50GetCompiledBitcode(compile_result, &bitcode);
+       lib_data = WMT::MakeDispatchData(bitcode.Data, bitcode.Size);
+@@ -84,6 +91,7 @@ public:
+       if (err) {
+         ERR("Failed to create MTLLibrary: ", err.description().getUTF8String());
+         shader_->dump();
++        metrics.recordShader(func_name, false, false, metrics_started);
+         return this;
+       }
+ 
+@@ -98,6 +106,8 @@ public:
+       }
+     }
+ 
++    metrics.recordShader(func_name, cache_hit, function_ != nullptr,
++                         metrics_started);
+     return this;
+   }
+ 
+@@ -440,4 +450,4 @@ CreateVariantShader(MTLD3D11Device *pDevice, ManagedShader shader,
+       pDevice, shader, std::move(proc), func_name, variant_digest);
+ }
+ 
+-} // namespace dxmt
+\ No newline at end of file
++} // namespace dxmt
+diff --git a/src/d3d11/d3d11_swapchain.cpp b/src/d3d11/d3d11_swapchain.cpp
+index 5e9404d..ef71bb7 100644
+--- a/src/d3d11/d3d11_swapchain.cpp
++++ b/src/d3d11/d3d11_swapchain.cpp
+@@ -6,6 +6,7 @@
+ #include "dxgi_object.hpp"
+ #include "dxgi_output.hpp"
+ #include "d3d11_context.hpp"
++#include "d3d11_title_metrics.hpp"
+ #include "dxmt_context.hpp"
+ #include "dxmt_hud_state.hpp"
+ #include "dxmt_statistics.hpp"
+@@ -734,6 +735,7 @@ public:
+     if (SyncInterval > 4)
+       return DXGI_ERROR_INVALID_CALL;
+ 
++    const auto metrics_started = TitleMetrics::instance().timestampNs();
+     HRESULT hr = S_OK;
+     bool window_minimized = wsi::isMinimized(hWnd);
+     if ((window_minimized || desc_.Width == 0 || desc_.Height == 0)
+@@ -806,6 +808,8 @@ public:
+     lock.unlock(); // since PresentBoundary() will and should only stall current thread
+ 
+     cmd_queue.PresentBoundary();
++    TitleMetrics::instance().recordPresent(presentation_count_,
++                                           metrics_started);
+ 
+     return hr;
+   };
+@@ -1129,4 +1133,4 @@ CreateSwapChain(
+   return S_OK;
+ };
+ 
+-} // namespace dxmt
+\ No newline at end of file
++} // namespace dxmt
