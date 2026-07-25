@@ -1,6 +1,6 @@
 # CPU-001 result 19 — real-title census: the instruments had to be built and three of them lied first, and the x18 tax is 300,763 per title boot rather than the ~250 result 17 measured
 
-**Author:** Tim Isaev
+**Author:** Timur Isaev
 **Date:** 25 July 2026
 **FEX:** `alloy/task-12-census` @ `53d2311` ·
 **Wine:** `alloy/task-12-fault-census` @ `619c4c0` ·
@@ -20,9 +20,9 @@ quantity they claim, and then reading them.
 - **Fault counters were samplers, not counts.** Every one printed the first N
   then every 100,000th. They now also report exact totals, and the totals obey
   a conservation law (§2).
-- **FEX's anomaly telemetry has never once fired on this path, and cannot be
-  quoted** (§3). It is compiled in, it was never emitted, and when finally
-  emitted it stayed at zero through 2,000 deliberately provoked anomalies.
+- **FEX's anomaly telemetry was not sampled after the provoked anomaly and
+  cannot be quoted from this run** (§3). [Result 22](2026-07-25-22-arm64ec-anomaly-telemetry-calibrated.md)
+  later corrected the timing diagnosis and calibrated the split flags.
 - **The x18 backstop absorbs 300,763 faults in one title boot** (§4). Result 17
   measured ~250 per process on the synthetic corpus and concluded the cost was
   "startup-shaped, not hot-path". At title scale that conclusion does not hold,
@@ -125,6 +125,12 @@ it breaks under double counting, a dropped path, or a race.
 
 ## 3. FEX's anomaly telemetry cannot be quoted
 
+> **Correction (result 22):** every dump in this experiment preceded the
+> 2,000-operation atomic loop. A post-helper checkpoint proves the supported
+> split flags do fire. The flag-not-count semantics and the refusal to infer
+> "no CAS tears" from an uncalibrated zero still stand; the original timing and
+> gate explanation below do not.
+
 `FEXCore::Telemetry` already tracks the anomaly classes #12 wants — split
 locks, split 16-byte atomics, 16/32/64/128-bit CAS tears, EVEX use,
 non-canonical addresses. It is compiled into the ARM64EC build
@@ -215,8 +221,9 @@ each was caught only by insisting the instrument report the quantity it claims
 before reading anything from it: the census that measured nothing because Wine
 loads its own builtin `libarm64ecfex` ahead of the prefix copy (the same stale
 image that cost result 18 a session); the census that dropped every exited
-thread; the telemetry that reads as a count and is a flag, and stays zero
-through 2,000 real anomalies. The general form is that an instrument is
+thread; the telemetry that reads as a count and is a flag, and appeared to stay
+zero because its final sample preceded 2,000 real anomalies. The general form
+is that an instrument is
 evidence only after it has been made to fail on purpose — and the corollary
 this result adds is that a measurement's *scale* is part of its claim: ~250
 absorbs on the corpus and 300,763 on a title are the same instrument, honestly
