@@ -36,6 +36,31 @@ at the item level, **not** `.projectItems[].agent` — the latter silently repor
 Board status and `Agent` are set on **claim**, not at the end. A task in progress
 with no agent is indistinguishable from an abandoned one.
 
+## Opening a pull request
+
+**Put the closing keyword in the PR body, not the title.**
+
+GitHub builds the closing linkage from a pull request's **description**. It does
+not scan the title. A PR titled `... (closes #NN)` with no keyword in the body
+merges cleanly, closes nothing, and leaves the issue In Progress on the board -
+the project's "item closed -> Done" automation never fires, because the issue
+never closed.
+
+Not hypothetical: #12, #16, #20 and #30 all merged with the keyword in the title
+only, all four reported `closingIssuesReferences=[]`, and every one had to be
+closed by hand. It reads like the auto-merge workflow is broken, because the
+visible symptom is a stale board after a successful merge. The workflow is fine;
+the link was never made.
+
+Verify before the merge, not after:
+
+```sh
+gh pr view NN --json closingIssuesReferences -q '[.closingIssuesReferences[].number]'
+```
+
+An empty list means the issue will not close. Fix it with `gh pr edit NN
+--body-file` while the PR is still open.
+
 ## Not clashing with the other agent
 
 Two agents share this repo and one runtime. Before building into a shared tree,
