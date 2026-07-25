@@ -136,9 +136,27 @@ The pieces that are verified:
   inside the emulator.
 - What arrives in `rpcrt4` carries only the register arguments.
 
-What is **not** yet pinned down is which side of that last hop drops the
-variadic block — Wine's exit-thunk contract or FEX's dispatcher. That is the
-next thing to determine, and it decides where the fix belongs.
+A probe on `x4`/`x5` at the ARM64EC entry, added after this result's first
+draft, settles which side drops the block. On the failing call:
+
+```text
+main: 0 0 0x109C8FDA0 0x10 0x109C8FE08
+varargs x4 0x109C8FD80 x5 0 (expected x4 0x109C8FD80)
+varargs block: 0x109C8FDA0 0x10
+```
+
+`x4` is exactly right. `x5` is 0, and the memory `x4` points at holds
+`(0x109C8FDA0, 0x10)` — the pointer-and-size pair the exit thunk staged with
+`stp x4, x5, [sp, #0x20]`, read back as if it were the two real stack
+arguments. `0x10` is the byte count of the two arguments that should have been
+copied, and it is the same `0x10` that becomes the `[out]` context-handle
+pointer.
+
+So the exit thunk does its job; nothing expands the staged block on the way
+back in. The entry thunk sets `x4 = rsp+0x20` and, having no way to know a size
+it was never given, `x5 = 0`. Neither a generic dispatcher nor an entry thunk
+can recover this, so the fix is to stop the first call from making the round
+trip at all.
 
 The partial Wine change carried in
 [`../instrumentation/0002-arm64ec-delayload-aux-iat.patch`](../instrumentation/0002-arm64ec-delayload-aux-iat.patch)
@@ -181,9 +199,18 @@ one measured title.
 
 Two things must happen before #11 can close, and they are independent:
 
-1. The variadic delay-import defect needs its own WINE-001 issue and a fix, or
-   a second D3D11 title that does not touch `OpenSCManagerW` must be installed.
-   Only two entitled titles are installed locally, and no storefront login,
+1. The variadic delay-import defect is tracked as #11's blocker in issue #59,
+   with the reproducer above as its regression gate. Failing that, a second
+   D3D11 title that does not touch `OpenSCManagerW` must be installed — only
+   two entitled titles are installed locally, and no storefront login,
    download, or account action was automated to manufacture a third.
 2. Whichever second title is measured must be reconciled against result 06's
    Wine commit so both titles report against one runtime.
+
+Snapping the auxiliary delay-load IAT before the first call is confirmed to fix
+the defect: with `sechost` snapped, the reproducer prints `PASS` and `x5`
+arrives as `0x10`. Doing that snapping eagerly at load time is not a viable
+mechanism, though — `rpcrt4` alone delay-loads `user32`, `ole32`, `oleaut32`
+and `wininet`, so it converts delay-loading into eager loading across most of
+the Wine dll graph and broke process startup. #59 carries the details and the
+trampoline design that replaces it.
