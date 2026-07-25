@@ -51,4 +51,9 @@ build seh_nullcall "$SEH_FLAGS"
 # instead of being trusted because they read zero.
 build census_probe "-msse4.2"
 build telemetry_probe "-mcx16"
+# nullcall_probe (issue #20) reports what a VEH and an __except filter each
+# receive for a guest branch into the null page, against a data-fault control
+# that already worked. That separation is what located the defect in the SEH
+# scope lookup rather than in dispatch.
+build nullcall_probe "$SEH_FLAGS"
 echo corpus-built
