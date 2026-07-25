@@ -3,8 +3,8 @@
   "version": "1.5",
   "generatedAt": "2026-07-24",
   "fileCount": 47,
-  "markdownWords": 99652,
-  "markdownLines": 14310,
+  "markdownWords": 99883,
+  "markdownLines": 14313,
   "files": [
     {
       "path": "CHANGELOG.md",
@@ -233,10 +233,10 @@
     },
     {
       "path": "docs/14_DECISION_LOG.md",
-      "bytes": 12518,
-      "sha256": "c4b59407e4d506df9100d5de00230b2cc2f33d1da599f471f7dd4993a5703992",
-      "lines": 83,
-      "words": 1640
+      "bytes": 14063,
+      "sha256": "d335bc192f227617fd32e3b79dd97bec550589613b0b2be278a64bb7fb9f270e",
+      "lines": 86,
+      "words": 1871
     },
     {
       "path": "docs/15_GLOSSARY.md",

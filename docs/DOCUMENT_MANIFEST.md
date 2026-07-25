@@ -3,7 +3,7 @@
 **Package version:** 1.5
 **Generated:** 24 July 2026
 **Files:** 47 plus this manifest and the JSON manifest
-**Markdown volume:** 99,652 words across 14,310 lines
+**Markdown volume:** 99,883 words across 14,313 lines
 
 The full SHA-256 values are in [`PACKAGE_MANIFEST.json`](PACKAGE_MANIFEST.json).
 
@@ -42,7 +42,7 @@ The full SHA-256 values are in [`PACKAGE_MANIFEST.json`](PACKAGE_MANIFEST.json).
 | docs/11_ROADMAP_TEAM_AND_DELIVERY.md | 19132 | 640 | 2643 | b85a361100c53052… |
 | docs/12_REQUIREMENTS_TRACEABILITY_MATRIX.md | 17062 | 199 | 3364 | f6b7dc51337047e4… |
 | docs/13_RISK_REGISTER.md | 19450 | 147 | 2782 | 10e2186776c9def3… |
-| docs/14_DECISION_LOG.md | 12518 | 83 | 1640 | c4b59407e4d506df… |
+| docs/14_DECISION_LOG.md | 14063 | 86 | 1871 | d335bc192f227617… |
 | docs/15_GLOSSARY.md | 11235 | 210 | 1428 | ffcef096d2581666… |
 | docs/16_OPEN_QUESTIONS_AND_TECHNICAL_SPIKES.md | 15607 | 422 | 2050 | e2fd42b182aec027… |
 | docs/17_PUBLISHER_AND_ANTI_CHEAT_INTEGRATION.md | 13654 | 471 | 1792 | 8bd86fb7d3bbc562… |
