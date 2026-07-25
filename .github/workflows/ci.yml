@@ -52,6 +52,16 @@ jobs:
       - name: Title format self-test
         run: bash .github/workflows/title-format.sh --selftest
 
+      # The merge gate is the one check that cannot be exercised by opening a
+      # PR: workflow_run only ever runs the copy already on main, so a broken
+      # gate would first be observed by it wrongly merging or wrongly holding
+      # every task PR. Both self-tests are offline and stub every API call.
+      - name: Merge gate self-test
+        run: bash .github/workflows/merge-gate.sh --selftest
+
+      - name: Merge gate end-to-end self-test
+        run: bash .github/workflows/merge-gate-selftest.sh
+
       - name: Test rollback prototype
         run: swift test --package-path spikes/ROLLBACK-001/prototype --parallel
 

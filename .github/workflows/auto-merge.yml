@@ -13,6 +13,24 @@
 #
 # NOTE: workflow_run only fires for workflow files that exist on the default
 # branch, so this file does nothing until it is on main.
+#
+# A PR that closes a board task must also carry recorded Estimate and Actual
+# hours before it lands; merge-gate.sh enforces that and explains any hold on
+# the PR itself. PRs with no closing reference are unaffected.
+#
+# That gate needs the PROJECT_TOKEN secret, because the Actions GITHUB_TOKEN
+# cannot read a user-owned ProjectV2 at all - the API reports NOT_FOUND rather
+# than a permission error. PROJECT_TOKEN is a fine-grained PAT owned by
+# cleverClosure with:
+#
+#   Repository access    Alloy
+#   Repository perms     Issues: Read-only        (resolve the issue's card)
+#   Account perms        Projects: Read-only      (read Estimate and Actual)
+#
+# Repository access is required even though only project fields are read: the
+# card is reached through the issue, and a token that cannot see this private
+# repository sees no card either. The token needs no write access of any kind -
+# every mutation here still runs as GITHUB_TOKEN.
 
 name: Auto-merge
 
@@ -25,6 +43,11 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  # Without this a squash merge lands the commit but leaves the linked issue
+  # open: PR #64 and #67 both merged with a correct closing keyword on 25 July
+  # 2026 and neither issue closed. scripts/finish-task.sh had to reconcile the
+  # closure afterwards and recorded the cause in its header.
+  issues: write
 
 concurrency:
   group: auto-merge-${{ github.event.workflow_run.head_sha }}
@@ -43,9 +66,17 @@ jobs:
     timeout-minutes: 10
 
     steps:
+      # workflow_run always executes the default branch's copy of this workflow,
+      # and checkout without a ref follows that same commit. The board gate
+      # therefore runs trusted code, never the pull request's version of it -
+      # which matters because this job holds write permissions.
+      - name: Check out the board gate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
       - name: Squash-merge the pull request
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
           REPO: ${{ github.repository }}
           SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
@@ -107,6 +138,15 @@ jobs:
               exit 0
               ;;
           esac
+
+          # The board gate runs last, once the PR is known to be mergeable, so a
+          # PR that is conflicted or failing is never also told about its board
+          # fields. A hold is a normal outcome and leaves this run green; the
+          # gate explains itself on the PR, and the next CI run re-evaluates it.
+          if ! NUMBER="$pr" REPOSITORY="$REPO" bash .github/workflows/merge-gate.sh; then
+            echo "Board gate is holding PR #$pr; not merging."
+            exit 0
+          fi
 
           echo "Merging PR #$pr."
           gh pr merge "$pr" --repo "$REPO" --squash
