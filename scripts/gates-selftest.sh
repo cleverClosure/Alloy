@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # gates-selftest.sh — prove the board gates actually refuse
-# Author: Tim Isaev
+# Author: Timur Isaev
 #
 # next-task.sh and finish-task.sh exist to refuse things. A gate that has only
 # ever been seen to pass is indistinguishable from one that cannot fail, and the
@@ -139,18 +139,18 @@ else
 fi
 
 # ── 2. WIP pool full: refused even though the task is otherwise perfect ───────
-make_board "$work/c2" Todo 4 3
+make_board "$work/c2" Todo 4 4
 run_claim "$work/c2" claude
 if ((status == 0)); then
   fold "wip-full: claim succeeded with the pool full" "$out"
-elif ! grep -q 'WIP limit: 3 of 3' <<<"$out"; then
+elif ! grep -q 'WIP limit: 4 of 4' <<<"$out"; then
   fold "wip-full: wrong refusal" "$out"
 else
   pass wip-full
 fi
 
 # ── 3. WIP counts In Progress only — On Hold keeps locks but frees a slot ─────
-make_board "$work/c3" Todo 4 2
+make_board "$work/c3" Todo 4 3
 run_claim "$work/c3" claude
 if ((status != 0)); then
   fold "wip-has-room: refused with a free slot" "$out"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # next-task.sh — deterministic task picker for parallel agents
-# Author: Tim Isaev
+# Author: Timur Isaev
 #
 # Both agents share one GitHub account; the board's "Agent" field (claude |
 # codex) records who actually holds a claimed task.
@@ -41,7 +41,7 @@ set -euo pipefail
 OWNER="cleverClosure"
 REPO="Alloy"
 PROJECT=1
-WIP_LIMIT=3
+WIP_LIMIT=4
 
 # shellcheck disable=SC2016 # $vars in the query are GraphQL variables, not shell
 data=$(gh api graphql \

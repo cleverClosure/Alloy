@@ -64,8 +64,9 @@ A task is eligible iff **all** of:
 5. Its `area:*` labels are disjoint from every task **In Progress or On Hold**.
 
 `--claim` assigns the account, sets the **Agent** field, moves the card to
-In Progress, and comments the agent name. WIP limit: **one In Progress task
-per agent** — the script refuses a claim while that agent already holds one.
+In Progress, and comments the agent name. WIP limit: **four In Progress tasks
+shared across all agents** — the script refuses a claim when all four slots
+are occupied.
 
 Optional planning fields on the board: **Iteration** (weekly cycle, starts
 Mondays) and **Estimate** (hours; column headers can sum it).
