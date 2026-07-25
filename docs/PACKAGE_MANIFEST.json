@@ -3,7 +3,7 @@
   "version": "1.5",
   "generatedAt": "2026-07-24",
   "fileCount": 47,
-  "markdownWords": 99883,
+  "markdownWords": 99993,
   "markdownLines": 14313,
   "files": [
     {
@@ -261,10 +261,10 @@
     },
     {
       "path": "docs/18_LEGAL_OPEN_SOURCE_AND_DISTRIBUTION.md",
-      "bytes": 20524,
-      "sha256": "43ae7d841d13a7cc67f1c398bf7dc2993788ebcc258204b237ca69355d9d9d50",
+      "bytes": 21362,
+      "sha256": "f8b243c84a11833b9cc84a59690714d423a9efdcb7e263a79d4c5ff45b459c41",
       "lines": 371,
-      "words": 2620
+      "words": 2730
     },
     {
       "path": "docs/19_MVP_EPICS_AND_BACKLOG.md",
