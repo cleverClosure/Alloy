@@ -1,4 +1,4 @@
-<!-- Author: Tim Isaev -->
+<!-- Author: Timur Isaev -->
 
 # Task workflow
 
@@ -22,6 +22,9 @@ per-agent swimlanes.
 
 Use the **Task** issue template. Every task must have, before it leaves Backlog:
 
+- A title in `[<domain>-<issue#>]: <summary>` form; the Title format workflow
+  normalizes legacy `DOMAIN: summary` titles and uses the first `area:*` label
+  when no legacy prefix exists.
 - A **PM summary**: plain language, no jargon — what it's about, why it
   matters, what's different when it's done. If the PM can't tell why the task
   exists from this paragraph alone, it isn't shaped yet.

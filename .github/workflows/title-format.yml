@@ -1,0 +1,35 @@
+# Keep shaped issue titles uniform on lists, boards, and branches.
+# Author: Timur Isaev
+
+name: Title format
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: title-format-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  normalize:
+    name: Normalize issue title
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      # `issues` workflows execute from the default branch, so this checks out
+      # trusted code rather than content supplied by the issue author.
+      - name: Check out normalizer
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Normalize title
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+          REPOSITORY: ${{ github.repository }}
+        run: bash .github/workflows/title-format.sh
