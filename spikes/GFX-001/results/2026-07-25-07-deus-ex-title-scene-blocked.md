@@ -8,6 +8,14 @@
 dies during startup in Wine's ARM64EC delay-import path, before creating any
 D3D11 work. Issue #11 and E3 stay open. No graphics claim is made or withdrawn.
 
+**Superseded in part.** The blocker described here was fixed the same day —
+see [WINE-001 result 11](../../WINE-001/results/2026-07-25-11-arm64ec-variadic-delay-imports.md)
+and issue #59. The title now creates a D3D11 swapchain, initializes its
+renderer and compiles shaders through DXMT, then stops on an unrelated
+`E_INVALIDARG` during Scaleform initialization, tracked as #65. Everything
+below still describes what was measured on 25 July before that fix; it is kept
+as written rather than rewritten.
+
 ## Claim boundary
 
 This result reports a **blocker**, not a measurement. Nothing here says anything
