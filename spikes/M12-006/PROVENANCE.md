@@ -34,3 +34,17 @@ AI-assistant context for this spike. Entries are dated and never rewritten.
   - The stage detection, signature-table parsing, graphics-stage lowering, the
     integrated Metal path, and the comparison harness are original
     experimentation for this spike.
+
+- **2026-07-25 — slice complete.** Additional inputs used during the work, none
+  of them excluded sources:
+  - `xcrun metal` / `metallib` from the installed Xcode command line tools, as
+    the MSL compiler and linker.
+  - Python's `zlib` for the first-party PNG reader in `compare_reference.py`;
+    the decoder, the BMP reader and the comparison are original.
+  - `sips` (macOS) to convert the slice's BMP output to the committed PNG. The
+    conversion was verified pixel-exact by comparing the PNG back against the
+    BMP through the same tool: 230,400/230,400 identical.
+  - The GPTK baseline image and digest from M12-005 were read **as an answer
+    key only** — a rendered result to compare against. No excluded D3D12
+    translation implementation was read, searched, or consulted, and none
+    informed any design decision here.
