@@ -257,11 +257,65 @@ static int run_rx_target(void)
     return 0;
 }
 
-/* Covers the per-page arm of the check: the view is still a JIT view, so the
- * ordinary fault path would spin on it, but the page itself is no longer
- * committed.  The obvious way to reach this state is VirtualProtect down to
- * PAGE_EXECUTE_READ, which this fork refuses on a JIT view with
- * ERROR_ACCESS_DENIED; decommitting the page reaches the same check. */
+/* Pins what narrowing a JIT view's protection actually does on Darwin, which
+ * is not what it does on Windows (issue #34).
+ *
+ * VirtualProtect down to PAGE_EXECUTE_READ used to fail with
+ * ERROR_ACCESS_DENIED, so a guest JIT hardening its code pages - allocate RWX,
+ * emit, drop write - failed where it would succeed on Windows. It now
+ * succeeds and VirtualQuery agrees, because Wine keeps the narrowing in its
+ * own page bookkeeping.
+ *
+ * The host cannot carry it. Darwin refuses mprotect outright on a MAP_JIT
+ * mapping created write+exec, and Wine allocates MAP_JIT exactly when a view
+ * is exec+write, so every JIT view is frozen at the protection it was created
+ * with. The page therefore stays writable in hardware and a store to it is not
+ * refused. This asserts that whole shape, so that if Darwin ever allows the
+ * mprotect, or the runtime gains a way to enforce the narrowing, this mode
+ * fails and someone reads the note above rather than discovering it in a
+ * game. */
+static int run_rx_after_rwx(void)
+{
+    SYSTEM_INFO info;
+    unsigned char *target;
+    MEMORY_BASIC_INFORMATION mbi;
+    DWORD old_protect = 0;
+
+    GetSystemInfo(&info);
+    target = make_target(info.dwPageSize, PAGE_EXECUTE_READWRITE);
+    if (!VirtualProtect(target, info.dwPageSize, PAGE_EXECUTE_READ, &old_protect))
+    {
+        fprintf(stderr, "VirtualProtect(PAGE_EXECUTE_READ) failed: %lu\n", GetLastError());
+        return 92;
+    }
+    if (old_protect != PAGE_EXECUTE_READWRITE)
+    {
+        fprintf(stderr, "VirtualProtect reported old protection %#lx, expected %#x\n", old_protect,
+                PAGE_EXECUTE_READWRITE);
+        return 93;
+    }
+    memset(&mbi, 0, sizeof(mbi));
+    if (!VirtualQuery(target, &mbi, sizeof(mbi)) || mbi.Protect != PAGE_EXECUTE_READ)
+    {
+        fprintf(stderr, "VirtualQuery reported %#lx, expected %#x\n", mbi.Protect,
+                PAGE_EXECUTE_READ);
+        return 94;
+    }
+
+    /* Not enforced: documented above, and asserted so the day it changes is
+     * the day this fails. */
+    target[0] = 0x5a;
+    if (target[0] != 0x5a)
+    {
+        fprintf(stderr, "store to the narrowed page did not take effect\n");
+        return 95;
+    }
+    puts("PASS JIT_CROSS_VIEW rx-after-rwx narrowing reported, not enforced (Darwin MAP_JIT)");
+    return 0;
+}
+
+/* Covers the same per-page arm by decommitting instead, which does not depend
+ * on the protection narrowing above being honoured. */
 static int run_decommitted_target(void)
 {
     struct store_call call = {0};
@@ -347,6 +401,8 @@ int main(int argc, char **argv)
         return run_positive();
     if (!strcmp(argv[1], "rx-target"))
         return run_rx_target();
+    if (!strcmp(argv[1], "rx-after-rwx"))
+        return run_rx_after_rwx();
     if (!strcmp(argv[1], "decommitted-target"))
         return run_decommitted_target();
     if (!strcmp(argv[1], "decommitted-crossing"))
