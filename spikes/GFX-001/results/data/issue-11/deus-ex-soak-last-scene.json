@@ -1,0 +1,150 @@
+{
+  "author": "Timur Isaev",
+  "generatedAt": "2026-07-25T23:16:54.956834+00:00",
+  "label": "deus-ex-2026-07-26-title-scene-30m-final-cycle-15",
+  "memory": null,
+  "metrics": {
+    "eventCount": 5160,
+    "failedEventCount": 0,
+    "framePacing": {
+      "firstPresentTimestampMs": 1814443.783,
+      "intervalMs": {
+        "count": 5159,
+        "max": 315.083,
+        "mean": 18.783,
+        "p50": 17.319,
+        "p95": 29.748,
+        "p99": 36.19
+      },
+      "lastPresentTimestampMs": 1911345.437,
+      "longestFrames": [
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 1859347.143,
+          "intervalMs": 315.083,
+          "presentObject": 106028
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 1909166.028,
+          "intervalMs": 63.23,
+          "presentObject": 108688
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 1840773.296,
+          "intervalMs": 53.027,
+          "presentObject": 104823
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 1909102.798,
+          "intervalMs": 52.33,
+          "presentObject": 108687
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 1859399.112,
+          "intervalMs": 51.969,
+          "presentObject": 106029
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 1908833.564,
+          "intervalMs": 49.319,
+          "presentObject": 108678
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 1835202.28,
+          "intervalMs": 46.809,
+          "presentObject": 104585
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 1840819.353,
+          "intervalMs": 46.056,
+          "presentObject": 104824
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 1909464.335,
+          "intervalMs": 45.381,
+          "presentObject": 108698
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 1908283.458,
+          "intervalMs": 45.303,
+          "presentObject": 108660
+        }
+      ],
+      "meanFps": 53.24,
+      "presentCallMs": {
+        "count": 5160,
+        "max": 45.473,
+        "mean": 8.483,
+        "p50": 8.254,
+        "p95": 17.089,
+        "p99": 22.635
+      },
+      "presentCount": 5160,
+      "thresholdCounts": {
+        "over100ms": 1,
+        "over16_667ms": 2806,
+        "over20_833ms": 1693,
+        "over33_333ms": 95,
+        "over50ms": 5
+      },
+      "thresholdPercentages": {
+        "over100ms": 0.019,
+        "over16_667ms": 54.39,
+        "over20_833ms": 32.816,
+        "over33_333ms": 1.841,
+        "over50ms": 0.097
+      }
+    },
+    "inputOrdering": {
+      "adjacentReversalCount": 71,
+      "maximumBackwardNs": 102800,
+      "stablySortedByTimestamp": true
+    },
+    "pipeline": {
+      "byType": {},
+      "durationMs": {
+        "count": 0,
+        "max": null,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null
+      },
+      "eventCount": 0,
+      "failureCount": 0
+    },
+    "sha256": "51ffd719725382075e30ec3570a7d25bccdbc877dcf0bc66fea367d13c2f7c08",
+    "shader": {
+      "cacheHitCount": 0,
+      "compileCount": 0,
+      "compileDurationMs": {
+        "count": 0,
+        "max": null,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null
+      },
+      "eventCount": 0,
+      "failureCount": 0
+    },
+    "source": "spikes/STORE-001/work/issue-11-deus-ex/soaks/2026-07-26-title-scene-30m-final/metrics.tsv",
+    "window": {
+      "durationSeconds": 96.902,
+      "firstEventTimestampMs": 1814443.783,
+      "lastEventTimestampMs": 1911345.437,
+      "requestedEndSeconds": 1911.3454372,
+      "requestedStartSeconds": 1814.4254452
+    }
+  },
+  "schemaVersion": 1
+}

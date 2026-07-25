@@ -62,6 +62,7 @@ class AnalyzeTitleMetricsTests(unittest.TestCase):
 
             result = json.loads(output.read_text(encoding="utf-8"))
             frame_pacing = result["metrics"]["framePacing"]
+            input_ordering = result["metrics"]["inputOrdering"]
             self.assertEqual(frame_pacing["presentCount"], 3)
             self.assertEqual(frame_pacing["firstPresentTimestampMs"], 2.0)
             self.assertEqual(frame_pacing["intervalMs"]["count"], 2)
@@ -69,6 +70,9 @@ class AnalyzeTitleMetricsTests(unittest.TestCase):
             self.assertEqual(result["metrics"]["shader"]["cacheHitCount"], 1)
             self.assertEqual(result["metrics"]["shader"]["compileCount"], 1)
             self.assertEqual(result["metrics"]["pipeline"]["eventCount"], 1)
+            self.assertEqual(input_ordering["adjacentReversalCount"], 0)
+            self.assertEqual(input_ordering["maximumBackwardNs"], 0)
+            self.assertTrue(input_ordering["stablySortedByTimestamp"])
 
             longest = frame_pacing["longestFrames"][0]
             self.assertEqual(longest["intervalMs"], 33.334)
@@ -109,6 +113,52 @@ class AnalyzeTitleMetricsTests(unittest.TestCase):
             self.assertEqual(trimmed_pacing["presentCount"], 2)
             self.assertEqual(trimmed_pacing["firstPresentTimestampMs"], 18.667)
             self.assertEqual(trimmed_pacing["intervalMs"]["count"], 1)
+
+    def test_stably_sorts_worker_thread_writes_and_reports_reversals(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            metrics = root / "worker-order.tsv"
+            output = root / "summary.json"
+
+            metrics.write_text(
+                "timestamp_ns\tevent\tobject\tduration_ns\tstatus\tdetail\n"
+                "1000000\tpresent\t1\t10000\tok\t\n"
+                "3000000\tpresent\t2\t10000\tok\t\n"
+                "2000000\tshader\t3\t500000\tok\tcompile:ps_worker\n"
+                "5000000\tpresent\t4\t10000\tok\t\n",
+                encoding="utf-8",
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "-B",
+                    str(SCRIPT),
+                    str(metrics),
+                    "--output",
+                    str(output),
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+
+            result = json.loads(output.read_text(encoding="utf-8"))
+            analyzed = result["metrics"]
+            self.assertEqual(analyzed["inputOrdering"]["adjacentReversalCount"], 1)
+            self.assertEqual(analyzed["inputOrdering"]["maximumBackwardNs"], 1000000)
+            self.assertEqual(analyzed["framePacing"]["presentCount"], 3)
+            self.assertEqual(analyzed["framePacing"]["intervalMs"]["count"], 2)
+            self.assertEqual(
+                [
+                    event["detail"]
+                    for event in analyzed["framePacing"]["longestFrames"][0][
+                        "correlatedEvents"
+                    ]
+                ],
+                ["compile:ps_worker"],
+            )
 
 
 if __name__ == "__main__":

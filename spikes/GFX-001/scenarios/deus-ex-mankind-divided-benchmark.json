@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "author": "Timur Isaev",
+  "title": "Deus Ex: Mankind Divided",
+  "identity": {
+    "store": "GOG",
+    "gameID": "1296690054",
+    "buildID": "53307442018838439",
+    "version": "v1.19 build 801.0",
+    "executableSHA256": "cf4805608f9cc7129a8f04ade8eeefdf1f0cd849a1f702dfe8f0cd06f2f53ee8"
+  },
+  "scene": {
+    "name": "built-in benchmark",
+    "commandLine": [
+      "-benchmark"
+    ],
+    "commandLinePurpose": "skip the launcher and intro videos; it does not select the benchmark",
+    "deterministicPath": "Main menu > Extras > Benchmark; title-owned fixed camera and workload sequence",
+    "selectionVerification": "Vision OCR finds EXTRAS and BENCHMARK; selected-row luminance must be at least 150 before Return",
+    "startGate": "title log reports Benchmark delay expired; starting statistics capture, paired with the latest completed DXMT Present",
+    "endGate": "title log reports Benchmark stopped, paired with the latest completed DXMT Present",
+    "titleLogIsolation": "Wine Documents is localized beneath the isolated prefix before title launch"
+  },
+  "graphics": {
+    "api": "D3D11",
+    "provider": "DXMT",
+    "width": 1280,
+    "height": 720,
+    "fullscreen": false,
+    "vSync": false,
+    "enableDX12": false,
+    "multiSamplingQuality": 0,
+    "unsupportedEightSampleRequest": "logged and clamped to four samples"
+  },
+  "cachePair": {
+    "cold": "new empty shader-cache directory and freshly prepared isolated prefix",
+    "warm": "same shader-cache directory and persistent isolated wineserver",
+    "watchdogSeconds": 300
+  },
+  "longSession": {
+    "cache": "reuse the completed warm-pair cache",
+    "process": "one exact DXMD.exe -benchmark host PID remains alive across benchmark-result and menu transitions",
+    "workload": "repeat the OCR-verified built-in benchmark until the memory sampler completes",
+    "sampleStart": "first verified benchmark statistics gate",
+    "sampleCadenceSeconds": 1,
+    "durationSeconds": 1800,
+    "pidGuard": "every sample verifies the original PID command contains DXMD.exe -benchmark; start.exe is rejected",
+    "cycleEvidence": "each cycle has independent title-log occurrence baselines, DXMT marker bounds, and a scene summary"
+  },
+  "visualAnchors": [
+    {
+      "id": "benchmark-frame-a",
+      "captureCycle": 2,
+      "file": "../results/evidence/issue-11/2026-07-26-deus-ex-benchmark-frame-a.jpg"
+    },
+    {
+      "id": "benchmark-frame-b",
+      "captureCycle": 7,
+      "file": "../results/evidence/issue-11/2026-07-26-deus-ex-benchmark-frame-b.jpg"
+    }
+  ],
+  "claimBoundary": "The built-in benchmark is a repeatable representative scene, not a claim that every game path or quality setting is certified."
+}

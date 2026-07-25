@@ -30,6 +30,9 @@ Optional environment:
   ALLOY_DXMT_METRICS_PATH   telemetry TSV under ALLOY_STORE_WORK
   ALLOY_DXMT_SHADER_CACHE_PATH
                             shader-cache directory under ALLOY_STORE_WORK
+  ALLOY_GAME_PID_PATH       optional exact DXMD host PID file under ALLOY_STORE_WORK
+  ALLOY_GAME_COMPLETION_PATH
+                            optional planned-stop marker under ALLOY_STORE_WORK
   ALLOY_RUN_LABEL           safe suffix for logs and exit-status files
   DYLD_FALLBACK_LIBRARY_PATH
 
@@ -113,6 +116,8 @@ wine_dyld_path=${DYLD_FALLBACK_LIBRARY_PATH:-/opt/homebrew/lib}
 runtime_tz=${ALLOY_TZ:-UTC}
 metrics_path=${ALLOY_DXMT_METRICS_PATH:-"$work_root/metrics/$mode.tsv"}
 shader_cache_path=${ALLOY_DXMT_SHADER_CACHE_PATH:-"$work_root/cache/dxmt"}
+game_pid_path=${ALLOY_GAME_PID_PATH:-}
+game_completion_path=${ALLOY_GAME_COMPLETION_PATH:-}
 run_label=${ALLOY_RUN_LABEL:-$mode}
 
 case "$work_root" in
@@ -127,15 +132,17 @@ case "$work_root" in
     exit 2
     ;;
 esac
-for scoped_path in "$metrics_path" "$shader_cache_path"; do
+for scoped_path in "$metrics_path" "$shader_cache_path" \
+  ${game_pid_path:+"$game_pid_path"} \
+  ${game_completion_path:+"$game_completion_path"}; do
   if [[ $scoped_path == *"/../"* || $scoped_path == *"/./"* ]]; then
-    echo "DXMT metric and cache paths may not contain dot-path traversal" >&2
+    echo "runtime artifact paths may not contain dot-path traversal" >&2
     exit 2
   fi
   case "$scoped_path" in
     "$work_root"/*) ;;
     *)
-      echo "DXMT metric and cache paths must stay under ALLOY_STORE_WORK" >&2
+      echo "runtime artifact paths must stay under ALLOY_STORE_WORK" >&2
       exit 2
       ;;
   esac
@@ -207,6 +214,9 @@ if [[ $actual_game_id != "$expected_game_id" ||
 fi
 
 prefix="$work_root/prefix"
+profile_name=$(id -un)
+profile_documents="$prefix/drive_c/users/$profile_name/Documents"
+title_log="$profile_documents/Deus Ex -  Mankind Divided/Deus Ex -  Mankind Divided.log"
 provider_dir="$work_root/providers/dxmt"
 restricted_dir="$work_root/providers/restricted"
 unix_dir="$work_root/dxmt-install/aarch64-unix"
@@ -322,6 +332,13 @@ prepare_runtime() {
     new_prefix=1
     cp -cR "$wine_build/prefix/." "$prefix/"
   fi
+  if [[ -L $profile_documents ]]; then
+    unlink "$profile_documents"
+  elif [[ -e $profile_documents && ! -d $profile_documents ]]; then
+    echo "Wine profile Documents path is not a directory: $profile_documents" >&2
+    exit 1
+  fi
+  mkdir -p "$profile_documents"
   mkdir -p "$prefix/drive_c/windows/system32"
   cp -f "$fex_dll" "$prefix/drive_c/windows/system32/libarm64ecfex.dll"
 
@@ -412,6 +429,7 @@ prepare_runtime() {
     --arg timezone "$runtime_tz" \
     --arg dxmt_metrics_path "$metrics_path" \
     --arg dxmt_shader_cache_path "$shader_cache_path" \
+    --arg title_log_path "$title_log" \
     --argjson width "$width" \
     --argjson height "$height" \
     '{
@@ -430,6 +448,7 @@ prepare_runtime() {
       timezone: $timezone,
       dxmtMetricsPath: $dxmt_metrics_path,
       dxmtShaderCachePath: $dxmt_shader_cache_path,
+      titleLogPath: $title_log_path,
       scene: {
         commandLine: ["-benchmark"],
         enableDX12: false,
@@ -472,6 +491,9 @@ runtime_log="$log_dir/dxmd-$run_label-runtime.log"
 watchdog_pid=
 watchdog_marker="$log_dir/dxmd-$run_label.watchdog"
 rm -f "$watchdog_marker"
+if [[ -n $game_completion_path ]]; then
+  rm -f "$game_completion_path"
+fi
 
 # shellcheck disable=SC2329 # invoked by the EXIT trap
 cleanup_watchdog() {
@@ -494,6 +516,7 @@ if [[ -n $duration ]]; then
   else
     (
       sleep "$duration"
+      printf '%s\n' "planned server stop after $duration seconds" >"$watchdog_marker"
       stop_isolated_server
       sleep 2
       stop_isolated_server
@@ -502,11 +525,20 @@ if [[ -n $duration ]]; then
   watchdog_pid=$!
 fi
 
-set +e
+preexisting_game_pids=()
+if [[ -n $game_pid_path ]]; then
+  while read -r candidate_pid candidate_command; do
+    if [[ $candidate_command == *"$game_exe -benchmark"* &&
+      $candidate_command != *"start.exe"* ]]; then
+      preexisting_game_pids+=("$candidate_pid")
+    fi
+  done < <(ps -ax -o pid= -o command=)
+fi
+
 (
   exec 9<"$policy_snapshot"
   cd "$game_root"
-  env \
+  exec env \
     ALLOY_POLICY_SNAPSHOT_FD=9 \
     WINEPREFIX="$prefix" \
     WINEDLLPATH="$work_root/dxmt-install" \
@@ -517,12 +549,57 @@ set +e
     DXMT_SHADER_CACHE_PATH="$shader_cache_path" \
     DYLD_FALLBACK_LIBRARY_PATH="$wine_dyld_path" \
     "$game_wine" "$game_exe" -benchmark
-) >"$runtime_log" 2>&1
+) >"$runtime_log" 2>&1 &
+game_host_pid=$!
+if [[ -n $game_pid_path ]]; then
+  exact_game_pid=
+  for ((attempt = 0; attempt < 120; attempt++)); do
+    matches=0
+    while read -r candidate_pid candidate_command; do
+      candidate_is_preexisting=0
+      for preexisting_pid in "${preexisting_game_pids[@]}"; do
+        if [[ $candidate_pid == "$preexisting_pid" ]]; then
+          candidate_is_preexisting=1
+          break
+        fi
+      done
+      if ((candidate_is_preexisting)); then
+        continue
+      fi
+      if [[ $candidate_command == *"$game_exe -benchmark"* &&
+        $candidate_command != *"start.exe"* ]]; then
+        exact_game_pid=$candidate_pid
+        matches=$((matches + 1))
+      fi
+    done < <(ps -ax -o pid= -o command=)
+    if ((matches == 1)); then
+      break
+    fi
+    exact_game_pid=
+    if ! kill -0 "$game_host_pid" 2>/dev/null; then
+      break
+    fi
+    sleep 1
+  done
+  if [[ -z $exact_game_pid ]]; then
+    echo "could not identify one exact DXMD.exe -benchmark host process" >&2
+    stop_isolated_server
+    wait "$game_host_pid" 2>/dev/null || true
+    exit 1
+  fi
+  mkdir -p "$(dirname "$game_pid_path")"
+  printf '%s\n' "$exact_game_pid" >"$game_pid_path"
+fi
+set +e
+wait "$game_host_pid"
 status=$?
 set -e
 
 printf '%s\n' "$status" >"$log_dir/dxmd-$run_label.raw-exit"
 if [[ -f $watchdog_marker ]]; then
+  status=0
+fi
+if [[ -n $game_completion_path && -f $game_completion_path ]]; then
   status=0
 fi
 printf '%s\n' "$status" >"$log_dir/dxmd-$run_label.exit"

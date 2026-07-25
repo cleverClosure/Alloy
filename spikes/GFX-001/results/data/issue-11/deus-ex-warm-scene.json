@@ -1,0 +1,479 @@
+{
+  "author": "Timur Isaev",
+  "generatedAt": "2026-07-25T22:31:28.970111+00:00",
+  "label": "deus-ex-2026-07-26-title-scene-final-v2-warm-scene",
+  "memory": null,
+  "metrics": {
+    "eventCount": 6714,
+    "failedEventCount": 0,
+    "framePacing": {
+      "firstPresentTimestampMs": 50327.041,
+      "intervalMs": {
+        "count": 5065,
+        "max": 438.508,
+        "mean": 20.245,
+        "p50": 17.999,
+        "p95": 32.09,
+        "p99": 50.33
+      },
+      "lastPresentTimestampMs": 152869.783,
+      "longestFrames": [
+        {
+          "correlatedEvents": [
+            {
+              "detail": "compile:ps_e11b2b08_3ff906cddc3067a495def9fa1badba70d8fd2b0d",
+              "durationMs": 431.065,
+              "event": "shader",
+              "status": "ok"
+            },
+            {
+              "detail": "compile:ps_704ccbbd_09294cb027c6533290aba4a0ddbac736ab3dd05e",
+              "durationMs": 445.545,
+              "event": "shader",
+              "status": "ok"
+            },
+            {
+              "detail": "compile:ps_e6524514_09294cb027c6533290aba4a0ddbac736ab3dd05e",
+              "durationMs": 445.875,
+              "event": "shader",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 31.092,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.161,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.01,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 1.038,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 51612.306,
+          "intervalMs": 438.508,
+          "presentObject": 4158
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 65612.369,
+          "intervalMs": 400.611,
+          "presentObject": 4720
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "graphics",
+              "durationMs": 50.659,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 125645.09,
+          "intervalMs": 375.579,
+          "presentObject": 7688
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "graphics",
+              "durationMs": 11.166,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 41.94,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 122.347,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 122.969,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 123.371,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 123.249,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 124.009,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 124.078,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 124.532,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 149.251,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 149.364,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 149.157,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 57.155,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 180.578,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 180.398,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 212.135,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 212.154,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 211.652,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 120.507,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 201.064,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 189.227,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 230.629,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 231.179,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 230.659,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 139.182,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 55055.636,
+          "intervalMs": 293.661,
+          "presentObject": 4273
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "graphics",
+              "durationMs": 0.21,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.187,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 30.815,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.1,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 117269.072,
+          "intervalMs": 291.9,
+          "presentObject": 7341
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "graphics",
+              "durationMs": 20.262,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 116541.328,
+          "intervalMs": 262.806,
+          "presentObject": 7325
+        },
+        {
+          "correlatedEvents": [],
+          "endTimestampMs": 52794.791,
+          "intervalMs": 216.455,
+          "presentObject": 4198
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "graphics",
+              "durationMs": 0.185,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.162,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.154,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.124,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 31.383,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 210.399,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 119186.868,
+          "intervalMs": 214.794,
+          "presentObject": 7396
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "graphics",
+              "durationMs": 30.71,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 30.606,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 116137.368,
+          "intervalMs": 201.512,
+          "presentObject": 7318
+        },
+        {
+          "correlatedEvents": [
+            {
+              "detail": "graphics",
+              "durationMs": 0.192,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 30.775,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.123,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 11.194,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 11.187,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 0.142,
+              "event": "pipeline",
+              "status": "ok"
+            },
+            {
+              "detail": "graphics",
+              "durationMs": 11.156,
+              "event": "pipeline",
+              "status": "ok"
+            }
+          ],
+          "endTimestampMs": 110988.568,
+          "intervalMs": 193.241,
+          "presentObject": 7115
+        }
+      ],
+      "meanFps": 49.394,
+      "presentCallMs": {
+        "count": 5066,
+        "max": 426.041,
+        "mean": 9.552,
+        "p50": 8.363,
+        "p95": 19.045,
+        "p99": 31.524
+      },
+      "presentCount": 5066,
+      "thresholdCounts": {
+        "over100ms": 18,
+        "over16_667ms": 3029,
+        "over20_833ms": 1713,
+        "over33_333ms": 198,
+        "over50ms": 52
+      },
+      "thresholdPercentages": {
+        "over100ms": 0.355,
+        "over16_667ms": 59.803,
+        "over20_833ms": 33.82,
+        "over33_333ms": 3.909,
+        "over50ms": 1.027
+      }
+    },
+    "inputOrdering": {
+      "adjacentReversalCount": 116,
+      "maximumBackwardNs": 2168400,
+      "stablySortedByTimestamp": true
+    },
+    "pipeline": {
+      "byType": {
+        "compute": 4,
+        "graphics": 954
+      },
+      "durationMs": {
+        "count": 958,
+        "max": 231.179,
+        "mean": 5.898,
+        "p50": 0.204,
+        "p95": 30.934,
+        "p99": 180.475
+      },
+      "eventCount": 958,
+      "failureCount": 0
+    },
+    "sha256": "fd421d238b75668506c6cb87dddb97d106419fd5e0e9f5804708842cb24279b6",
+    "shader": {
+      "cacheHitCount": 681,
+      "compileCount": 9,
+      "compileDurationMs": {
+        "count": 9,
+        "max": 445.875,
+        "mean": 162.283,
+        "p50": 57.025,
+        "p95": 445.743,
+        "p99": 445.849
+      },
+      "eventCount": 690,
+      "failureCount": 0
+    },
+    "source": "spikes/STORE-001/work/issue-11-deus-ex/pairs/2026-07-26-title-scene-final-v2/metrics/warm.tsv",
+    "window": {
+      "durationSeconds": 102.548,
+      "firstEventTimestampMs": 50321.472,
+      "lastEventTimestampMs": 152869.783,
+      "requestedEndSeconds": 152.8697831,
+      "requestedStartSeconds": 50.3141386
+    }
+  },
+  "schemaVersion": 1
+}
