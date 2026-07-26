@@ -53,10 +53,22 @@ struct InvalidationStoreFaultHooks: Sendable {
 public struct InvalidationStore: Sendable {
   public let root: URL
   private let hooks: InvalidationStoreFaultHooks
+  private let faultInjector: FaultInjector
 
   public init(root: URL) {
     self.root = root.standardizedFileURL
     hooks = InvalidationStoreFaultHooks()
+    faultInjector = FaultInjection.none
+  }
+
+  @_spi(FaultTesting)
+  public init(
+    root: URL,
+    faultInjector: @escaping FaultInjector
+  ) {
+    self.root = root.standardizedFileURL
+    hooks = InvalidationStoreFaultHooks()
+    self.faultInjector = faultInjector
   }
 
   init(
@@ -65,6 +77,7 @@ public struct InvalidationStore: Sendable {
   ) {
     self.root = root.standardizedFileURL
     self.hooks = hooks
+    faultInjector = FaultInjection.none
   }
 
   // swiftlint:disable:next function_body_length
@@ -117,23 +130,30 @@ public struct InvalidationStore: Sendable {
       "\(record.digestHex).json",
       isDirectory: false
     )
-    if let existing = try readExisting(
-      at: finalURL,
-      expected: record
-    ) {
-      try syncDirectory(directory)
-      return InvalidationEmission(
-        record: existing,
-        created: false,
-        url: finalURL
+
+    return try withExclusiveLock(in: directory) {
+      try recoverTemporaryFiles(
+        for: record,
+        in: directory
+      )
+      if let existing = try readExisting(
+        at: finalURL,
+        expected: record
+      ) {
+        try syncDirectory(directory)
+        return InvalidationEmission(
+          record: existing,
+          created: false,
+          url: finalURL
+        )
+      }
+
+      return try publish(
+        record: record,
+        finalURL: finalURL,
+        directory: directory
       )
     }
-
-    return try publish(
-      record: record,
-      finalURL: finalURL,
-      directory: directory
-    )
   }
 }
 
@@ -224,6 +244,7 @@ extension InvalidationStore {
       )
     }
     hooks.afterTemporaryFileSync()
+    faultInjector(.afterTemporaryFileSync, record.invalidationID)
     let closeResult = Darwin.close(descriptor)
     descriptorOpen = false
     guard closeResult == 0 else {
@@ -264,8 +285,10 @@ extension InvalidationStore {
     }
 
     hooks.afterFinalLink()
+    faultInjector(.afterFinalLink, record.invalidationID)
     try syncDirectory(directory)
     hooks.afterDirectorySync()
+    faultInjector(.afterDirectorySync, record.invalidationID)
     temporaryURL.path.withCString {
       _ = Darwin.unlink($0)
     }
@@ -283,7 +306,7 @@ extension InvalidationStore {
     expected: InvalidationRecord
   ) throws -> InvalidationRecord? {
     let descriptor = url.path.withCString {
-      Darwin.open($0, O_RDONLY | O_CLOEXEC | O_NOFOLLOW)
+      Darwin.open($0, O_RDONLY | O_NONBLOCK | O_CLOEXEC | O_NOFOLLOW)
     }
     guard descriptor >= 0 else {
       if errno == ENOENT {
@@ -358,7 +381,7 @@ extension InvalidationStore {
     }
   }
 
-  fileprivate func syncDirectory(_ directory: URL) throws {
+  func syncDirectory(_ directory: URL) throws {
     let descriptor = directory.path.withCString {
       Darwin.open($0, O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW)
     }
@@ -381,7 +404,7 @@ extension InvalidationStore {
     }
   }
 
-  fileprivate func fileSystemError(
+  func fileSystemError(
     operation: String,
     path: String,
     fallback: any Error

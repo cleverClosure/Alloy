@@ -12,10 +12,18 @@ let package = Package(
     .library(
       name: "AlloyStoreIdentity",
       targets: ["AlloyStoreIdentity"]
+    ),
+    .executable(
+      name: "AlloyStoreIdentityFaultProbe",
+      targets: ["AlloyStoreIdentityFaultProbe"]
     )
   ],
   targets: [
     .target(name: "AlloyStoreIdentity"),
+    .executableTarget(
+      name: "AlloyStoreIdentityFaultProbe",
+      dependencies: ["AlloyStoreIdentity"]
+    ),
     .testTarget(
       name: "AlloyStoreIdentityTests",
       dependencies: ["AlloyStoreIdentity"]

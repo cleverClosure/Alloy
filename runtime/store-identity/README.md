@@ -111,3 +111,21 @@ An unchanged observation produces no record or output file.
 ```sh
 runtime/store-identity/run-selector-invalidation-proof.sh
 ```
+
+## Self-tested watcher and crash convergence
+
+Gate 5 requires a deterministic scratch perturbation to pass before every real
+observation. The production scanner reads an unchanged four-byte `probe.bin`
+control, then a copy with exactly one changed byte; the detector must report
+that exact game-only delta. A dead or miswired detector refuses the run before
+observation. Scratch state is removed after success and every handled failure.
+
+Invalidation publication syncs canonical temporary bytes before atomically
+publishing the final record. Reruns reconcile exact stale temporary links,
+concurrent emitters converge to one record, and symlink or non-regular targets
+are refusals. The fault matrix kills the probe at each publication boundary and
+requires a clean rerun to converge without duplicate or partial records.
+
+```sh
+runtime/store-identity/run-fault-matrix.sh
+```

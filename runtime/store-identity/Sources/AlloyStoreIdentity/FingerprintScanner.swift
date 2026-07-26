@@ -12,6 +12,21 @@ public enum FingerprintScanner {
     try scan(
       installRoot: installRoot,
       identity: identity,
+      faultInjector: FaultInjection.none,
+      beforeFinalObservation: {}
+    )
+  }
+
+  @_spi(FaultTesting)
+  public static func scan(
+    installRoot: URL,
+    identity: FingerprintIdentity,
+    faultInjector: @escaping FaultInjector
+  ) throws -> FingerprintRecord {
+    try scan(
+      installRoot: installRoot,
+      identity: identity,
+      faultInjector: faultInjector,
       beforeFinalObservation: {}
     )
   }
@@ -19,6 +34,20 @@ public enum FingerprintScanner {
   static func scan(
     installRoot: URL,
     identity: FingerprintIdentity,
+    beforeFinalObservation: () throws -> Void
+  ) throws -> FingerprintRecord {
+    try scan(
+      installRoot: installRoot,
+      identity: identity,
+      faultInjector: FaultInjection.none,
+      beforeFinalObservation: beforeFinalObservation
+    )
+  }
+
+  private static func scan(
+    installRoot: URL,
+    identity: FingerprintIdentity,
+    faultInjector: FaultInjector,
     beforeFinalObservation: () throws -> Void
   ) throws -> FingerprintRecord {
     let root = installRoot.standardizedFileURL
@@ -48,6 +77,7 @@ public enum FingerprintScanner {
         )
       )
       hashedObservation[candidate.path] = hashed.metadata
+      faultInjector(.afterFingerprintCandidate, candidate.path)
     }
 
     try beforeFinalObservation()
@@ -125,15 +155,17 @@ extension FingerprintScanner {
 
   fileprivate static func observeRegularFiles(root: URL) throws -> [Candidate] {
     var enumerationError: Error?
-    guard let enumerator = FileManager.default.enumerator(
-      at: root,
-      includingPropertiesForKeys: nil,
-      options: [],
-      errorHandler: { _, error in
-        enumerationError = error
-        return false
-      }
-    ) else {
+    guard
+      let enumerator = FileManager.default.enumerator(
+        at: root,
+        includingPropertiesForKeys: nil,
+        options: [],
+        errorHandler: { _, error in
+          enumerationError = error
+          return false
+        }
+      )
+    else {
       throw FingerprintError.inputOutput(
         path: root.path,
         operation: "enumerate"
