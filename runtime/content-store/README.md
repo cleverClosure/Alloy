@@ -34,18 +34,32 @@ library under the source layout selected by
 - GC reclaim reports separate generation, CAS, download, and quarantine bytes;
   it states whether deferred journals make the value a conservative lower
   bound.
+- Ordered mirrors fetch caller-authorized objects by digest through Foundation
+  `URLSession`; durable partial records resume exact Range checkpoints and
+  restart cleanly when a server ignores Range.
+- Transport rejects wrong, truncated, oversized, stalled, length-disagreeing,
+  and redirect-loop responses before CAS publication. Verified payloads use
+  the existing non-overwriting publication path.
+- `metadata/catalog.sqlite` indexes objects, generations, references, and
+  leases for constant-time inventory. Disk remains the only truth: missing,
+  invalid, or divergent catalogs are detected and rebuilt automatically.
 - One process-wide file lock coordinates launch leases, writers, recovery, and
-  collection across real processes.
+  collection across real processes. Per-operation transport locks allow
+  network streaming without holding that global lock.
 
-The public entry point is `ContentStore`. Callers provide one or more
-`LayerInput` values whose `LayerDescriptor` records name, version, digest,
-media type, size, composition role, and optional source, license, SBOM, and
-symbols metadata.
+The public entry point is `ContentStore`. Activation callers provide one or
+more `LayerInput` values; transport callers pass a caller-authorized
+`LayerDescriptor` and ordered base URLs to `fetchObject`. The descriptor
+records name, version, digest, media type, size, composition role, and optional
+source, license, SBOM, and symbols metadata.
 
 ## On-disk layout
 
 ```text
-downloads/<operation-id>/...
+downloads/<activation-operation-id>/<order>-<digest>.part
+downloads/<transport-operation-id>/
+  transport.json
+  <order>-<digest>.part
 objects/sha256/<two-hex>/<remaining-hex>
 quarantine/...
 generations/<game-id>/<generation-id>/
@@ -54,6 +68,8 @@ generations/<game-id>/<generation-id>/
 references/<game-id>/{active,rollback,candidate}.json
 metadata/journal/<operation-id>.json
 metadata/leases/<lease-id>.json
+metadata/transport-locks/<operation-id>.lock
+metadata/catalog.sqlite
 metadata/content-store.lock
 volumes/<game-id>/saves/...
 ```
@@ -68,6 +84,10 @@ The distributable layer contract and activation journal are defined by:
 - [`activation-journal.v1.schema.json`](Specs/activation-journal.v1.schema.json)
 - [Generation leases 1.0](Specs/LEASES_V1.md)
 - [`generation-lease.v1.schema.json`](Specs/generation-lease.v1.schema.json)
+- [Transport 1.0](Specs/TRANSPORT_V1.md)
+- [`transport-record.v1.schema.json`](Specs/transport-record.v1.schema.json)
+- [Rebuildable catalog 1.0](Specs/CATALOG_V1.md)
+- [`catalog.v1.sql`](Specs/catalog.v1.sql)
 
 ## Build and verify
 
@@ -78,27 +98,29 @@ runtime/content-store/run-concurrency-matrix.sh
 runtime/content-store/run-stress-matrix.sh
 ```
 
-The Swift suite covers multi-layer composition, canonical manifests, CAS
-deduplication and quarantine, digest and size rejection, save separation,
-schema rejection, failed-health rollback, leases, GC, disk planning, backward
-compatibility, all lifecycle fault points, and every GC fault boundary.
-The process-death matrix terminates a separate updater with `_exit(97)` at the
-activation and collection points, recovers in fresh processes, and includes a
-failed-health rollback control. The coordination matrix forces four named
-two-process interleavings without sleeps. The stress matrix records 192 seeded
-operations with process-kill injection and an independent reachability oracle.
+The 62-test Swift suite covers multi-layer composition, canonical manifests,
+CAS deduplication and quarantine, transport resume and hostile responses,
+digest and size rejection, save separation, schema rejection, failed-health
+rollback, leases, GC, disk planning, rebuildable-catalog convergence, backward
+compatibility, and focused fault-boundary recovery.
+The process-death matrix terminates separate updater, collector, or downloader
+processes with `_exit(97)`, recovers in fresh processes, and passes all 35
+exposed production fault points plus restart and rollback controls, for 37
+cases. The coordination matrix forces six named two-process interleavings
+without sleeps. The stress matrix records 192 seeded operations across
+activation, rollback, leases, collection, and kill/resume transport with
+independent reachability and catalog-consistency oracles.
 
 ## Deliberate boundaries
 
 This extraction owns durable local content identity, materialized generation
-metadata, activation references, and recovery. It does not claim that the
-remaining EPIC-003 stories are complete:
+metadata, activation references, resumable verified transport, rebuildable
+inventory, and recovery. It does not claim that the remaining EPIC-003 stories
+are complete:
 
-- transport and resumable downloads;
 - TUF/DSSE authorization and Developer ID verification;
 - hostile archive extraction and file-table validation;
 - Zstandard decompression and APFS tree cloning;
-- SQLite catalog integration;
 
 The layer format specifies those trust boundaries now so later components can
 implement them without silently changing persisted v1 semantics.
