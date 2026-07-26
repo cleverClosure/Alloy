@@ -351,6 +351,9 @@ GRAFTS_PATH=$(git -C "$ROOT" rev-parse --git-path info/grafts)
   die "evidence capture rejects Git grafts: $GRAFTS_PATH"
 export GIT_GRAFT_FILE=/dev/null
 export GIT_SHALLOW_FILE=/dev/null
+export GIT_CONFIG_COUNT=1
+export GIT_CONFIG_KEY_0=advice.graftFileDeprecated
+export GIT_CONFIG_VALUE_0=false
 LOCAL_CONFIG_KEYS=$(
   git -C "$ROOT" config --local --name-only --list
 ) || die "cannot inspect repository-local Git configuration"
@@ -1438,7 +1441,7 @@ mkdir -m 700 "$SOURCE_VERIFICATION"
   PATH=/usr/bin:/bin:/usr/sbin:/sbin \
   LC_ALL=C \
   LANG=C \
-  /usr/bin/tar -xzf "$SOURCE_ARCHIVE_STAGING" -C "$SOURCE_VERIFICATION"
+  /usr/bin/tar -xzpf "$SOURCE_ARCHIVE_STAGING" -C "$SOURCE_VERIFICATION"
 SOURCE_VERIFIED_ROOT="$SOURCE_VERIFICATION/alloy-metal12-$SHORT_COMMIT"
 [[ -d $SOURCE_VERIFIED_ROOT && ! -L $SOURCE_VERIFIED_ROOT ]] ||
   die "source archive did not reproduce its fixed root directory"

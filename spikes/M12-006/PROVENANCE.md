@@ -169,6 +169,9 @@ AI-assistant context for this spike. Entries are dated and never rewritten.
     status and exact file inventory under the selected signer. The export has
     no provider signature or independently auditable schema, so it remains
     procedural evidence rather than provider attestation.
+  - The source archive is extracted with its Git-materialized file modes
+    preserved, then compared against the frozen materialization for exact root,
+    inventory, byte, and regular-file mode equality before publication.
   - Run manifests remain unsigned execution records. A later snapshot
     signature can authenticate their packaged bytes but is not an independent
     attestation that the recorded commands executed. External timestamping,

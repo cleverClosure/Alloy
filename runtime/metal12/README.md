@@ -146,6 +146,10 @@ and GPTK answer key from the frozen Git commit. It enforces the recorded image
 contract rather than treating comparison metrics as informational. Capture
 rejects stale, modified, incomplete, cached, or cross-run evidence.
 
+The source archive is staged privately and hashed before extraction. Its
+single fixed root, complete inventory, regular-file bytes, and Git-materialized
+file modes must round-trip exactly before the archive is published.
+
 A complete capture refuses dirty state, unsigned task commits, an unsigned tag,
 a missing explicit AI-session export, or a missing caller-selected signer. The
 same selected fingerprint must verify every task commit, the annotated tag, and
