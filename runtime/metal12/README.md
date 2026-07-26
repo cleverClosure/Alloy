@@ -15,9 +15,8 @@ command path call the same private model components under `Sources/Models/`.
 - The canonical library-owned descriptor, barrier, and residency proof
   implementations retain their original fixed seeds and pass/fail thresholds.
   The runtime-local shader tool and corpus preserve their original regression
-  subset and named rejection. Descriptor, barrier, and shader execution is
-  green; the residency oversubscription execution is recorded as a host-safety
-  blocker pending explicit approval.
+  subset and named rejection. Descriptor, barrier, shader, and explicitly
+  authorized residency-pressure execution are green on the measured host.
 - The descriptor heap materializes a GPU-address page, retains it through
   command-buffer completion, and makes that page—not a direct CBV binding—the
   generated fragment shader's resource authority. This path requires macOS 13
@@ -82,10 +81,11 @@ The full native proofs live under `Sources/Proofs/`, compile into
 | Barriers | `AM12BarrierTracker` owns states, access streams, hazard plans, transitive elision, and verification | 10,000 × 200 randomized streams, 6,180,618 hazards, dropped-edge sensitivity, fence/event execution | One queue and one subresource per logical resource; plan edges emit producer-specific Metal fences; 32 accesses per frame |
 | Residency | `AM12ResidencyManager` owns budget snapshots, placement/alias leases, checksummed LRU rematerialization, and pressure policy | Alias, LRU, 20,000-operation churn, and advisory-budget pressure paths | Committed shared buffers and a 64 MiB placement heap; one 976 KiB render target in the reference path |
 
-The architectural convergence is complete: proofs and public operations now
-call those shared components. The outstanding Gate 1 evidence item is the
-linked residency execution, which deliberately reaches roughly 820 MiB even
-on its safe subset and crosses the Metal advisory budget on its full path.
+The architectural convergence and measured Gate 1 execution are complete:
+proofs and public operations call those shared components, and the explicitly
+authorized acceptance run passed the linked full residency path. Routine runs
+still keep that hardware-pressure gate opt-in because it reaches roughly
+820 MiB during churn and crosses the Metal advisory budget on its full path.
 
 ## Build and verify
 

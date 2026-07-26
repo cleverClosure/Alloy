@@ -142,9 +142,10 @@ presented mean does not support the original apparent speedup, and it leaves
 the feature decision dependent on breadth rather than this tiny scene's
 pacing. The promoted runtime now measures explicit-LOD point/bilinear textures,
 three wave patterns, capture/replay, and a real presentation boundary; control
-flow, broader resources and descriptors, real-title traces, and the blocked
-high-memory residency execution remain outside the evidenced subset. The
-current decision statement is recorded in
+flow, broader resources and descriptors, real-title traces, and a multi-host
+residency-capacity matrix remain outside the evidenced subset. The authorized
+full residency proof now passes on the measured 16 GB host. The current
+decision statement is recorded in
 [result 07](2026-07-26-07-phase1-decision-feed.md).
 
 At the time of result 01, the original slice's shader path covered the

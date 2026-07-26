@@ -2,8 +2,8 @@
 
 **Author:** Timur Isaev
 **Date:** 26 July 2026
-**Disposition:** Shared-model and public-lowering convergence green; the linked
-M12-004 high-memory execution remains blocked on explicit host-risk approval
+**Disposition:** Shared-model, public-lowering, and authorized linked M12-004
+pressure execution green
 **Hardware:** MacBook Pro (Mac14,10), M2 Pro 12-core, 16 GB
 **OS:** macOS 26.5.2 (`25F84`)
 
@@ -27,6 +27,18 @@ M12-004 high-memory execution remains blocked on explicit host-risk approval
   Its classification is `STAGING_ONLY`: checksum closure is not signer
   authentication or durable preservation. The snapshot covers tested commit
   `94afcc2`; this later documentation reconciliation is outside it.
+- The authorized pressure generation was executed at tested commit
+  `5c463b76dd18f37c06a4ab22b11d5347514fab21`, runtime tree
+  `c0b354313cc9d97f69c0b19d6a138e9ce7b44f39`, and build-manifest SHA-256
+  `88aefac1d766dfd9c60faa3e37165bfd9cd2872a39dacd0fd4d12952b0faae11`.
+  Its model-run manifest SHA-256 is
+  `c9aebbf498fa22ec5e44b4eeb8f2fc00dbe4d90957e4eb481ffba61b84afe8d0`,
+  with `status: complete-pressure-pass` and `residency_mode: pressure`.
+- That execution is packaged in the checksum-closed local unsigned staging
+  generation whose `SHA256SUMS` digest is
+  `2b8ef5a50a20dc3a52c8833b206d1a01cb2bfaae9b0fa262bbfde9a6752a0d6d`.
+  It remains `STAGING_ONLY`; the snapshot covers tested commit `5c463b7`,
+  while this later result update is outside it.
 - Historical first-party implementations from M12-001 through M12-004,
   promoted without editing the spike copies.
 - The M12-006 reference HLSL and the M12-005 GPTK answer-key image.
@@ -84,8 +96,8 @@ The reference path uses narrower configurations of the shared models:
   the proof's alias, LRU, churn, and pressure paths.
 
 This satisfies Gate 1's shared-implementation and one-public-header
-boundaries. The remaining exception is execution evidence for the
-intentionally high-memory residency paths.
+boundaries. The authorized full residency execution now supplies the remaining
+hardware-pressure evidence on this host.
 
 ## Recorded measurements
 
@@ -177,30 +189,37 @@ timings without changing this batch's implementation identity: the immutable
 runtime-tree identifier and machine manifests bind generation B without
 requiring a tracked result document to predict its own future commit hash.
 
-## M12-004 execution blocker
+### Authorized pressure reproduction C
 
-The linked residency implementation preserves placement aliasing, checksummed
-eviction/rematerialization, 20,000-operation churn, oversubscription, bailout,
-and post-release assertions. Its separated safe path can still peak around
-820 MiB; the full path intentionally allocates through the Metal advisory
-budget and up to one GiB beyond it.
+After explicit user authorization, the linked full proof passed:
 
-Those executions could destabilize the machine and were not authorized by the
-task request. Neither path was launched, and no historical number is presented
-as a current run.
+```text
+budget: recommended max 12124 MB, baseline usage 0.1 MB
+aliasing: A@0 then B@0; A reads 0xBB
+eviction cache: 137 evictions, 109 rematerializations, 0 mismatches
+long session: 20000 ops in 0.2 s, peak 820 MB
+post-churn usage: 0.1 MB -> 0.1 MB (delta 0.0 MB)
+oversubscription: 13184 MB allocated against 12124 MB budget
+allocation failures / evict-retry recoveries: 0 / 0
+post-release Metal allocation: 0.1 MB
+post-release process footprint: 3.8 MB
+status: complete-pressure-pass
+```
 
-The residency evidence becomes green only after the user explicitly authorizes
-the relevant command and the original zero-mismatch, bounded-churn, pressure,
-and post-release thresholds pass. This is the precise blocker record permitted
-by task #84.
+This generation supersedes the earlier blocker disposition without rewriting
+the historical no-pressure runs. It proves placement aliasing, checksummed
+eviction/rematerialization, bounded churn, intentional advisory-budget
+oversubscription, and post-release drain through the shared library on the
+measured 16 GB host.
 
 ## Claim boundary
 
 The completed evidence proves shared implementation—not only archive
 ownership—for descriptor, barrier, and residency operations; public,
 fail-closed entry into the canonical lowerer; new M12-001/M12-002 executions;
-and an integrated image whose descriptor page and fence plan are load-bearing.
+the authorized M12-004 pressure execution; and an integrated image whose
+descriptor page and fence plan are load-bearing.
 It does not turn the native command surface into `d3d12.dll`, broaden the
 single-CBV graphics slice, authenticate the caller-provided disassembly body
-against adversarial rewriting, or replace the missing M12-004 high-memory
-execution with historical numbers.
+against adversarial rewriting, or extrapolate one 16 GB host run into the
+unmeasured 24/32/64 GB residency matrix.

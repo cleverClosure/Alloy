@@ -194,3 +194,24 @@ are appended and never rewritten.
     implementation source, diff, history, code discussion, or external
     implementation material was opened, searched, fetched, quoted, or supplied
     to an agent.
+
+- **2026-07-26 — #84 authorized residency-pressure execution.**
+  - The user explicitly authorized the full hardware-pressure gate on the
+    measured Mac. The first-party command
+    `runtime/metal12/run-model-proofs.sh --include-residency-pressure` executed
+    the shared linked model at tested commit `5c463b7`.
+  - The eviction cache verified 109 rematerializations with zero mismatches.
+    The proof completed 20,000 churn operations, peaked at 820 MB, and
+    allocated 13,184 MB against Metal's 12,124 MB advisory budget with zero
+    allocation failure. Metal allocation returned from its 0.1 MB baseline to
+    0.1 MB after release, and post-release process footprint measured 3.8 MB.
+    The model manifest records `complete-pressure-pass` and
+    `residency_mode: pressure`.
+  - The run is packaged in a checksum-closed private unsigned staging
+    generation with `SHA256SUMS` digest
+    `2b8ef5a50a20dc3a52c8833b206d1a01cb2bfaae9b0fa262bbfde9a6752a0d6d`.
+    It remains `STAGING_ONLY`; capture packaged existing artifacts and did not
+    itself execute the pressure test.
+  - The authorization, execution, and review introduced no external
+    implementation input. No excluded source, diff, history, code discussion,
+    or quoted material was opened, searched, fetched, or supplied to an agent.
