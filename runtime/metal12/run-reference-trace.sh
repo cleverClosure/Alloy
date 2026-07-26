@@ -91,6 +91,7 @@ run_clean_native_tool() {
 
 stop_private_wine_server() {
   local current_wineserver_sha256
+  local kill_status=0
 
   ((PRIVATE_WINE_USED)) || return 0
   if [[ -z ${AM12_WINESERVER_PATH:-} ||
@@ -107,7 +108,11 @@ stop_private_wine_server() {
     printf 'frozen wineserver changed before private-prefix cleanup\n' >&2
     return 1
   fi
-  if ! run_private_wine_command "$AM12_WINESERVER_PATH" -k; then
+  run_private_wine_command "$AM12_WINESERVER_PATH" -k ||
+    kill_status=$?
+  # Wine returns 1 when this private prefix already has no server. The
+  # mandatory wait below is the authoritative no-server completion check.
+  if ((kill_status != 0 && kill_status != 1)); then
     printf 'could not kill the private-prefix wineserver\n' >&2
     return 1
   fi
