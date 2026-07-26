@@ -35,6 +35,29 @@ named `ContentTransportError`, and publishes no object.
 HTTP and connection failures advance to the next mirror. Exhaustion returns
 `allMirrorsFailed` with the ordered refusal descriptions.
 
+## Hostile response limits
+
+The caller-authorized size is a hard streaming budget. The writer accepts at
+most that many bytes even when `Content-Length` is absent; the first additional
+byte returns `responseTooLarge`, quarantines an at-most-budget partial, and
+never reaches CAS. The final size is accepted only after clean HTTP completion.
+A shorter response returns `truncatedBody`.
+
+When present, `Content-Length` must be an ASCII decimal exactly equal to the
+expected full-body length for `200`, or the validated suffix length for `206`.
+`Content-Range` uses a case-insensitive `bytes` unit and otherwise accepts only
+ASCII decimal bounds matching the requested offset and authorized total.
+
+Request-idle and whole-resource deadlines are both finite. A timeout returns
+`deadlineExceeded`. Redirects are limited to the caller's nonnegative budget;
+every target is revalidated as an absolute `http` or `https` URL with a host
+and without user information. Budget exhaustion returns
+`redirectLimitExceeded`.
+
+After streaming, exact size and SHA-256 verification remain mandatory. Wrong
+bytes return `digestMismatch` and quarantine the operation. Each refusal is a
+named `ContentTransportError`; none mutates `objects/`.
+
 ## Persisted states
 
 - `downloading`: the durable operation exists and a request may be in flight.
