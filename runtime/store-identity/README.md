@@ -79,3 +79,19 @@ same test invocation:
 ```sh
 runtime/store-identity/run-metadata-parser-proof.sh
 ```
+
+## Update detection
+
+Gate 3 compares a trusted fingerprint anchor with caller-supplied Steam
+metadata and a newly observed fingerprint. It reports metadata, depot, and file
+changes separately and names the build whose evidence has been superseded.
+Discovery, scheduling, persistence, and storefront writes remain outside this
+pure comparison boundary.
+
+The focused proof stages manifest and fingerprint copies derived from the
+committed Sir Brante anchor in isolated scratch directories. Each simulated
+update or refusal runs only after an unchanged observation returns no detection:
+
+```sh
+runtime/store-identity/run-update-watcher-proof.sh
+```
