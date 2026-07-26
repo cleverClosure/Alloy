@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.example.invalid/alloy/content-store/generation-lease.v1.schema.json",
+  "$comment": "Author: Timur Isaev",
+  "title": "Alloy Generation Lease 1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "leaseId",
+    "gameId",
+    "generationId",
+    "manifestDigest",
+    "objectDigests",
+    "holder",
+    "createdAtUnixSeconds"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "leaseId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]+$"
+    },
+    "gameId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]+$"
+    },
+    "generationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]+$"
+    },
+    "manifestDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "objectDigests": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^sha256:[0-9a-f]{64}$"
+      }
+    },
+    "holder": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "processId",
+        "startTimeSeconds",
+        "startTimeMicroseconds"
+      ],
+      "properties": {
+        "processId": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "startTimeSeconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "startTimeMicroseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999
+        }
+      }
+    },
+    "createdAtUnixSeconds": {
+      "type": "integer"
+    }
+  }
+}

@@ -215,10 +215,13 @@ public enum ContentStoreError: Error, CustomStringConvertible, Equatable {
     case invalidIdentifier(String)
     case invalidJournal(String)
     case invalidLayer(String)
+    case invalidLease(String)
     case missingDownload(String)
     case missingReference(String)
+    case processIdentityUnavailable(Int32)
     case sizeMismatch(expected: Int, actual: Int)
     case systemCall(operation: String, code: Int32)
+    case unsafeStoreEntry(String)
     case unsupportedSchema(kind: String, version: String)
 
     public var description: String {
@@ -239,14 +242,20 @@ public enum ContentStoreError: Error, CustomStringConvertible, Equatable {
             "invalid operation journal: \(operation)"
         case let .invalidLayer(reason):
             "invalid layer: \(reason)"
+        case let .invalidLease(lease):
+            "invalid generation lease: \(lease)"
         case let .missingDownload(operation):
             "missing staged download for operation: \(operation)"
         case let .missingReference(name):
             "missing reference: \(name)"
+        case let .processIdentityUnavailable(processID):
+            "process identity unavailable for pid \(processID)"
         case let .sizeMismatch(expected, actual):
             "size mismatch: expected \(expected), got \(actual)"
         case let .systemCall(operation, code):
             "\(operation) failed with errno \(code)"
+        case let .unsafeStoreEntry(path):
+            "unsafe content-store entry: \(path)"
         case let .unsupportedSchema(kind, version):
             "unsupported \(kind) schema version: \(version)"
         }
