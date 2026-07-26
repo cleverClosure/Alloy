@@ -2,6 +2,10 @@
 
 import Darwin
 import Foundation
+import Testing
+
+@Suite(.serialized)
+struct SerializedTransportTests {}
 
 struct FixtureHTTPRequest: Sendable {
     let method: String
@@ -13,15 +17,38 @@ struct FixtureHTTPResponse: Sendable {
     let statusCode: Int
     let headers: [String: String]
     let body: Data
+    let automaticallySetsContentLength: Bool
+    let stallsAfterHeaders: Bool
 
     init(
         statusCode: Int = 200,
         headers: [String: String] = [:],
-        body: Data
+        body: Data,
+        automaticallySetsContentLength: Bool = true,
+        stallsAfterHeaders: Bool = false
     ) {
         self.statusCode = statusCode
         self.headers = headers
         self.body = body
+        self.automaticallySetsContentLength = automaticallySetsContentLength
+        self.stallsAfterHeaders = stallsAfterHeaders
+    }
+}
+
+final class FixtureRequestLog: @unchecked Sendable {
+    private let lock = NSLock()
+    private var requests: [FixtureHTTPRequest] = []
+
+    func append(_ request: FixtureHTTPRequest) {
+        lock.lock()
+        requests.append(request)
+        lock.unlock()
+    }
+
+    func snapshot() -> [FixtureHTTPRequest] {
+        lock.lock()
+        defer { lock.unlock() }
+        return requests
     }
 }
 
@@ -30,6 +57,7 @@ final class LoopbackHTTPFixture: @unchecked Sendable {
     private let queue = DispatchQueue(label: "alloy.content-store.fixture-http")
     private let handler: @Sendable (FixtureHTTPRequest) -> FixtureHTTPResponse
     private let stateLock = NSLock()
+    private let stalledResponseRelease = DispatchSemaphore(value: 0)
     private var running = true
     let baseURL: URL
 
@@ -109,6 +137,7 @@ final class LoopbackHTTPFixture: @unchecked Sendable {
         running = false
         stateLock.unlock()
         if wasRunning {
+            stalledResponseRelease.signal()
             shutdown(socketDescriptor, SHUT_RDWR)
             close(socketDescriptor)
         }
@@ -151,6 +180,10 @@ final class LoopbackHTTPFixture: @unchecked Sendable {
         switch response.statusCode {
         case 200:
             reason = "OK"
+        case 206:
+            reason = "Partial Content"
+        case 302:
+            reason = "Found"
         case 404:
             reason = "Not Found"
         case 503:
@@ -159,8 +192,10 @@ final class LoopbackHTTPFixture: @unchecked Sendable {
             reason = "Fixture"
         }
         var headers = response.headers
-        headers["Content-Length"] = headers["Content-Length"]
-            ?? String(response.body.count)
+        if response.automaticallySetsContentLength {
+            headers["Content-Length"] = headers["Content-Length"]
+                ?? String(response.body.count)
+        }
         headers["Connection"] = "close"
         var head = "HTTP/1.1 \(response.statusCode) \(reason)\r\n"
         for (name, value) in headers.sorted(by: { $0.key < $1.key }) {
@@ -168,6 +203,10 @@ final class LoopbackHTTPFixture: @unchecked Sendable {
         }
         head += "\r\n"
         writeAll(Data(head.utf8), to: client)
+        if response.stallsAfterHeaders {
+            stalledResponseRelease.wait()
+            return
+        }
         writeAll(response.body, to: client)
     }
 

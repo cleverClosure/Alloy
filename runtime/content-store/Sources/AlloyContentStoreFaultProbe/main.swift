@@ -21,6 +21,8 @@ private enum CommandError: Error, CustomStringConvertible {
               alloy-content-store-fault-probe seed-gc-leftovers ROOT
               alloy-content-store-fault-probe collect ROOT
               alloy-content-store-fault-probe verify-gc ROOT GAME ACTIVE SAVE OBJECTS REMOVED_GENERATION
+              alloy-content-store-fault-probe transport ROOT BASE_URL OPERATION
+              alloy-content-store-fault-probe verify-transport ROOT BASE_URL OPERATION
               alloy-content-store-fault-probe wait-marker PATH
               alloy-content-store-fault-probe write-marker PATH
               alloy-content-store-fault-probe lease-hold ROOT GAME READY RELEASE ATTEMPTED DONE
@@ -451,6 +453,8 @@ private func run() throws {
         "seed-gc-leftovers": seedGarbageCollectionLeftovers,
         "collect": collect,
         "verify-gc": verifyGarbageCollection,
+        "transport": fetchTransportCommand,
+        "verify-transport": verifyTransportCommand,
         "wait-marker": waitMarker,
         "write-marker": writeMarkerCommand,
         "lease-hold": holdLeaseUncontended,

@@ -39,8 +39,9 @@ private func transportDescriptor(_ data: Data) -> LayerDescriptor {
     )
 }
 
-@Test("transport follows ordered mirror fallback and publishes through CAS")
-func transportMirrorFallbackPublishesCAS() throws {
+extension SerializedTransportTests {
+    @Test("transport follows ordered mirror fallback and publishes through CAS")
+    func transportMirrorFallbackPublishesCAS() throws {
     let payload = Data("fixture-transport-payload".utf8)
     let descriptor = transportDescriptor(payload)
     let first = try LoopbackHTTPFixture { _ in
@@ -81,10 +82,10 @@ func transportMirrorFallbackPublishesCAS() throws {
         #expect(reused.reusedExistingObject)
         #expect(reused.bytesTransferred == 0)
     }
-}
+    }
 
-@Test("transport quarantines bad verification and creates no object")
-func transportBadDigestIsQuarantined() throws {
+    @Test("transport quarantines bad verification and creates no object")
+    func transportBadDigestIsQuarantined() throws {
     let expected = Data("expected".utf8)
     let wrong = Data("bad-byte".utf8)
     let descriptor = transportDescriptor(expected)
@@ -110,16 +111,17 @@ func transportBadDigestIsQuarantined() throws {
             at: store.quarantineDirectory,
             includingPropertiesForKeys: nil
         )
-        #expect(quarantine.count == 1)
-        #expect(quarantine[0].pathExtension == "transport")
+        try #require(quarantine.count == 1)
+        let quarantineEntry = quarantine[0]
+        #expect(quarantineEntry.pathExtension == "transport")
         #expect(store.isRegularFile(
-            quarantine[0].appendingPathComponent("transport.json")
+            quarantineEntry.appendingPathComponent("transport.json")
         ))
     }
-}
+    }
 
-@Test("live transport sidecar protects staging from garbage collection")
-func transportSidecarProtectsStagingFromGarbageCollection() throws {
+    @Test("live transport sidecar protects staging from garbage collection")
+    func transportSidecarProtectsStagingFromGarbageCollection() throws {
     let payload = Data("protected-download".utf8)
     let descriptor = transportDescriptor(payload)
     let baseURL = URL(string: "http://127.0.0.1:1")!
@@ -146,10 +148,10 @@ func transportSidecarProtectsStagingFromGarbageCollection() throws {
         #expect(store.isDirectory(store.transportDirectory(record.operationID)))
         #expect(!store.pathEntryExists(abandoned))
     }
-}
+    }
 
-@Test("publication sidecar survives its kill boundary and retry cleans it")
-func transportPublicationKillBoundaryRecovers() throws {
+    @Test("publication sidecar survives its kill boundary and retry cleans it")
+    func transportPublicationKillBoundaryRecovers() throws {
     let payload = Data("publish-once".utf8)
     let descriptor = transportDescriptor(payload)
     let fixture = try LoopbackHTTPFixture { _ in
@@ -182,5 +184,6 @@ func transportPublicationKillBoundaryRecovers() throws {
         )
         #expect(recovered.reusedExistingObject)
         #expect(!store.pathEntryExists(store.transportDirectory("gate1-published")))
+    }
     }
 }
