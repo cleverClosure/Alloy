@@ -1,6 +1,6 @@
 # M12-006 provenance log (append-only)
 
-**Author:** Tim Isaev
+**Author:** Timur Isaev
 **Protocol:** [ADR-0012](../../docs/adr/ADR-0012-metal12-provenance-and-clean-room.md)
 (discipline-model clean room). Excluded sources — vkd3d, vkd3d-proton, DXMT `src/d3d12/`,
 any copyleft D3D12 implementation — were not read, searched, or pasted into any
@@ -48,3 +48,25 @@ AI-assistant context for this spike. Entries are dated and never rewritten.
     key only** — a rendered result to compare against. No excluded D3D12
     translation implementation was read, searched, or consulted, and none
     informed any design decision here.
+
+- **2026-07-26 — Phase-1 runtime promotion (#84) started.**
+  - The implementation inputs are the first-party M12-001 through M12-006
+    prototypes, their recorded results and provenance logs, the M12-005
+    reference workload and rendered answer key, ADR-0012, and the
+    `runtime/content-store` production-promotion layout.
+  - The work used the Codex coding-agent environment with repository, shell,
+    patch, browser-control, and parallel-agent tools. The prompt was issue #84
+    from the Alloy GitHub board plus the repository and authoring rules.
+    Retrieval was limited to the issue and explicit approved first-party paths;
+    browser discovery supplied no implementation material and no internet
+    search or external source retrieval informed the design.
+  - Tool outputs include repository and architecture reconnaissance, promoted
+    proof sources, original runtime/capture/replay/presentation code,
+    shader-corpus extensions, proof execution, and result documentation.
+    Each output is checked against first-party tests before being treated as
+    evidence.
+  - No excluded D3D12 translation source, diff, history, or code discussion was
+    opened, searched, fetched, quoted, or supplied to any tool. The ignored
+    `third_party/src/` tree was excluded by repository search rules during
+    initial task discovery; subsequent inspection was restricted to explicit
+    approved paths.
