@@ -423,8 +423,10 @@ PRIVATE_C_DRIVE_LINK="$PRIVATE_WINE_PREFIX/dosdevices/c:"
 PRIVATE_Z_DRIVE_LINK="$PRIVATE_WINE_PREFIX/dosdevices/z:"
 
 verify_private_prefix_selected_files() {
+  local private_c_drive_candidate
   local private_c_drive_link_target
   local private_c_drive_path
+  local private_z_drive_candidate
   local private_z_drive_link_target
   local private_z_drive_path
 
@@ -482,12 +484,28 @@ verify_private_prefix_selected_files() {
       echo "private Wine-prefix drive targets differ from the frozen identity" >&2
       return 1
     }
+  case "$private_c_drive_link_target" in
+    /*) private_c_drive_candidate=$private_c_drive_link_target ;;
+    *)
+      private_c_drive_candidate="$(
+        dirname "$PRIVATE_C_DRIVE_LINK"
+      )/$private_c_drive_link_target"
+      ;;
+  esac
+  case "$private_z_drive_link_target" in
+    /*) private_z_drive_candidate=$private_z_drive_link_target ;;
+    *)
+      private_z_drive_candidate="$(
+        dirname "$PRIVATE_Z_DRIVE_LINK"
+      )/$private_z_drive_link_target"
+      ;;
+  esac
   private_c_drive_path="$(
-    cd "$(dirname "$PRIVATE_C_DRIVE_LINK")/$private_c_drive_link_target" &&
+    cd "$private_c_drive_candidate" &&
       pwd -P
   )"
   private_z_drive_path="$(
-    cd "$(dirname "$PRIVATE_Z_DRIVE_LINK")/$private_z_drive_link_target" &&
+    cd "$private_z_drive_candidate" &&
       pwd -P
   )"
   [[ $private_c_drive_path == "$PRIVATE_WINE_PREFIX/drive_c" &&
