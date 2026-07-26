@@ -1,0 +1,11 @@
+/*
+ * Metal12 barrier tracker proof test client.
+ * Author: Timur Isaev
+ */
+
+#include "../include/AlloyMetal12.h"
+
+int main(void)
+{
+    return AM12RunBarrierTrackerProof();
+}
