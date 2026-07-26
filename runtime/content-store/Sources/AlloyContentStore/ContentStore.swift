@@ -56,6 +56,7 @@ public final class ContentStore: @unchecked Sendable {
         generationID: String,
         layers: [LayerInput],
         healthOutcome: HealthOutcome = .pass,
+        availableBytes: UInt64? = nil,
         faultInjector: FaultInjector? = nil
     ) throws -> GenerationReference {
         try validateIdentifier(gameID)
@@ -63,6 +64,10 @@ public final class ContentStore: @unchecked Sendable {
         try validateLayerInputs(layers)
 
         return try withExclusiveLock {
+            if let availableBytes {
+                let plan = try preflightDiskSpaceUnlocked(for: layers.map(\.descriptor))
+                try plan.requireFits(availableBytes: availableBytes)
+            }
             let operationID = "\(gameID)-\(generationID)-\(UUID().uuidString.lowercased())"
             var operation = ActivationOperation(
                 operationID: operationID,
@@ -89,18 +94,22 @@ public final class ContentStore: @unchecked Sendable {
 
     public func recoverAll(faultInjector: FaultInjector? = nil) throws {
         try withExclusiveLock {
-            let journalURLs = try fileManager.contentsOfDirectory(
-                at: journalsDirectory,
-                includingPropertiesForKeys: nil
-            ).filter { $0.pathExtension == "json" }.sorted {
-                $0.lastPathComponent < $1.lastPathComponent
-            }
+            try recoverAllUnlocked(faultInjector: faultInjector)
+        }
+    }
 
-            for journalURL in journalURLs {
-                var operation = try readJournal(journalURL)
-                if !operation.state.isTerminal {
-                    try resume(&operation, faultInjector: faultInjector)
-                }
+    func recoverAllUnlocked(faultInjector: FaultInjector? = nil) throws {
+        let journalURLs = try fileManager.contentsOfDirectory(
+            at: journalsDirectory,
+            includingPropertiesForKeys: nil
+        ).filter { $0.pathExtension == "json" }.sorted {
+            $0.lastPathComponent < $1.lastPathComponent
+        }
+
+        for journalURL in journalURLs {
+            var operation = try readJournal(journalURL)
+            if !operation.state.isTerminal {
+                try resume(&operation, faultInjector: faultInjector)
             }
         }
     }

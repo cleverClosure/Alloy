@@ -16,6 +16,10 @@ let package = Package(
         .executable(
             name: "alloy-content-store-fault-probe",
             targets: ["AlloyContentStoreFaultProbe"]
+        ),
+        .executable(
+            name: "alloy-content-store-stress-harness",
+            targets: ["AlloyContentStoreStressHarness"]
         )
     ],
     targets: [
@@ -24,6 +28,10 @@ let package = Package(
         ),
         .executableTarget(
             name: "AlloyContentStoreFaultProbe",
+            dependencies: ["AlloyContentStore"]
+        ),
+        .executableTarget(
+            name: "AlloyContentStoreStressHarness",
             dependencies: ["AlloyContentStore"]
         ),
         .testTarget(

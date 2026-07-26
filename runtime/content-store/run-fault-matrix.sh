@@ -38,12 +38,44 @@ FAULT_POINTS=(
   after-health-window
   after-retain-collect-action
   after-retain-collect
+  after-gc-mark
+  after-gc-generation-sweep-item
+  after-gc-generation-sweep
+  after-gc-object-sweep-item
+  after-gc-object-sweep
+  after-gc-download-sweep-item
+  after-gc-download-sweep
+  after-gc-quarantine-sweep-item
+  after-gc-quarantine-sweep
 )
 
 START_SECONDS=$SECONDS
 for fault_point in "${FAULT_POINTS[@]}"; do
   case_root="$PROBE_TMP/$fault_point"
   "$PROBE" bootstrap "$case_root" game generation-a payload-a save-v1
+
+  if [[ $fault_point == after-gc-* ]]; then
+    "$PROBE" update "$case_root" game generation-b payload-b pass
+    "$PROBE" update "$case_root" game generation-c payload-c pass
+    "$PROBE" seed-gc-leftovers "$case_root"
+
+    set +e
+    ALLOY_FAULT_AFTER="$fault_point" "$PROBE" collect "$case_root"
+    status=$?
+    set -e
+
+    if [[ $status -ne 97 ]]; then
+      printf 'FAIL %-38s expected exit 97, got %d\n' "$fault_point" "$status" >&2
+      exit 1
+    fi
+
+    "$PROBE" recover "$case_root"
+    "$PROBE" collect "$case_root"
+    "$PROBE" verify-gc \
+      "$case_root" game generation-c save-v1 2 generation-a
+    printf 'PASS %s\n' "$fault_point"
+    continue
+  fi
 
   set +e
   ALLOY_FAULT_AFTER="$fault_point" \
