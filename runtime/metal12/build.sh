@@ -1,18 +1,26 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Build the Alloy Metal12 library and linked proof executables.
 # Author: Timur Isaev
 set -euo pipefail
+PATH=/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin
+export PATH
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(cd "$ROOT/../.." && pwd)"
 BUILD="$ROOT/build"
 OBJECTS="$BUILD/objects"
 GENERATED="$BUILD/generated"
+BUILD_MANIFEST="$BUILD/BUILD-MANIFEST.txt"
 LOWERER="$ROOT/ShaderTools/dxil_to_msl.py"
 LOWERER_SHA256="$(shasum -a 256 "$LOWERER" | awk '{print $1}')"
 EMBEDDED_LOWERER="$GENERATED/AM12EmbeddedLowerer.inc"
+HEAD_COMMIT="$(git -C "$REPO" rev-parse HEAD)"
+RUNTIME_TREE="$(git -C "$REPO" rev-parse HEAD:runtime/metal12)"
+RUNTIME_WORKTREE_CLEAN=yes
+if [[ -n $(git -C "$REPO" status --porcelain=v1 --untracked-files=normal -- runtime/metal12) ]]; then
+  RUNTIME_WORKTREE_CLEAN=no
+fi
 
-export PATH="$REPO/tools/toolchains/llvm-mingw-20260616-ucrt-macos-universal/bin:$PATH"
 mkdir -p "$OBJECTS" "$GENERATED"
 
 TEMPORARY_EMBEDDED_LOWERER="$(mktemp "$GENERATED/.AM12EmbeddedLowerer.inc.XXXXXX")"
@@ -85,5 +93,55 @@ link_executable "$ROOT/Tests/ShaderRunner.m" "$BUILD/ShaderRunner"
 link_executable "$ROOT/Tools/metal12_replay.m" "$BUILD/metal12_replay"
 link_executable "$ROOT/Tools/metal12_lower.m" "$BUILD/metal12_lower"
 
+BUILT_ARTIFACTS=(
+  ShaderRunner
+  barrier_tracker_test
+  command_validation_test
+  descriptor_heap_test
+  generated/AM12EmbeddedLowerer.inc
+  libAlloyMetal12.a
+  lowering_api_test
+  metal12_lower
+  metal12_replay
+  residency_safe_test
+  residency_test
+  trace_validation_test
+  vertical_slice
+)
+CURRENT_HEAD_COMMIT="$(git -C "$REPO" rev-parse HEAD)"
+CURRENT_RUNTIME_TREE="$(git -C "$REPO" rev-parse HEAD:runtime/metal12)"
+CURRENT_RUNTIME_STATUS="$(
+  git -C "$REPO" status --porcelain=v1 --untracked-files=normal -- runtime/metal12
+)"
+if [[ $CURRENT_HEAD_COMMIT != "$HEAD_COMMIT" ||
+  $CURRENT_RUNTIME_TREE != "$RUNTIME_TREE" ||
+  -n $CURRENT_RUNTIME_STATUS ]]; then
+  RUNTIME_WORKTREE_CLEAN=no
+fi
+TEMPORARY_BUILD_MANIFEST="$(mktemp "$BUILD/.BUILD-MANIFEST.txt.XXXXXX")"
+CLANG_PATH="$(xcrun --sdk macosx --find clang)"
+LIBTOOL_PATH="$(command -v libtool)"
+XXD_PATH="$(command -v xxd)"
+{
+  printf 'schema: com.alloy.metal12.build-manifest.v1\n'
+  printf 'author: Timur Isaev\n'
+  printf 'head_commit: %s\n' "$HEAD_COMMIT"
+  printf 'runtime_tree: %s\n' "$RUNTIME_TREE"
+  printf 'runtime_worktree_clean: %s\n' "$RUNTIME_WORKTREE_CLEAN"
+  printf 'lowerer_sha256: %s\n' "$LOWERER_SHA256"
+  printf 'clang_path: %s\n' "$CLANG_PATH"
+  printf 'clang_sha256: %s\n' "$(shasum -a 256 "$CLANG_PATH" | awk '{print $1}')"
+  printf 'libtool_path: %s\n' "$LIBTOOL_PATH"
+  printf 'libtool_sha256: %s\n' "$(shasum -a 256 "$LIBTOOL_PATH" | awk '{print $1}')"
+  printf 'xxd_path: %s\n' "$XXD_PATH"
+  printf 'xxd_sha256: %s\n' "$(shasum -a 256 "$XXD_PATH" | awk '{print $1}')"
+  for artifact in "${BUILT_ARTIFACTS[@]}"; do
+    artifact_sha256="$(shasum -a 256 "$BUILD/$artifact" | awk '{print $1}')"
+    printf 'artifact_sha256: %s  %s\n' "$artifact_sha256" "$artifact"
+  done
+} >"$TEMPORARY_BUILD_MANIFEST"
+mv -f "$TEMPORARY_BUILD_MANIFEST" "$BUILD_MANIFEST"
+
 printf 'built: %s\n' "$BUILD/libAlloyMetal12.a"
 printf 'tests: %s\n' "$BUILD"
+printf 'manifest: %s\n' "$BUILD_MANIFEST"

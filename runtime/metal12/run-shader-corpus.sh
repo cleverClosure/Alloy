@@ -1,7 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Metal12 shader corpus: HLSL -> DXIL -> MSL -> GPU -> CPU reference.
 # Author: Timur Isaev
 set -euo pipefail
+PATH=/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin
+export PATH
 
 RUNTIME="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$RUNTIME/../.." && pwd)"
@@ -11,6 +13,7 @@ BUILD="$RUNTIME/build"
 SHADER_BUILD="$BUILD/shaders"
 MODULE_CACHE="$BUILD/module-cache"
 MANIFEST="$CORPUS/cases.json"
+RUN_MANIFEST="$SHADER_BUILD/RUN-MANIFEST.txt"
 
 COMMON_GIT_DIR="$(git -C "$ROOT" rev-parse --path-format=absolute --git-common-dir)"
 SHARED_ROOT="${ALLOY_SHARED_ROOT:-$(dirname "$COMMON_GIT_DIR")}"
@@ -19,6 +22,19 @@ ALLOY_FEX_PREFIX="${ALLOY_FEX_PREFIX:-$SHARED_ROOT/spikes/CPU-001/work/fex-runti
 DXC="${ALLOY_DXC:-$SHARED_ROOT/tools/toolchains/dxc-v1.9.2602.24/bin/x64/dxc.exe}"
 TOOLCHAIN_BIN="$SHARED_ROOT/tools/toolchains/llvm-mingw-20260616-ucrt-macos-universal/bin"
 export PATH="$TOOLCHAIN_BIN:$PATH"
+
+mkdir -p "$SHADER_BUILD" "$MODULE_CACHE"
+HEAD_COMMIT="$(git -C "$ROOT" rev-parse HEAD)"
+RUNTIME_TREE="$(git -C "$ROOT" rev-parse HEAD:runtime/metal12)"
+TEMPORARY_RUN_MANIFEST="$(mktemp "$SHADER_BUILD/.RUN-MANIFEST.txt.XXXXXX")"
+{
+  printf 'schema: com.alloy.metal12.shader-corpus.v1\n'
+  printf 'author: Timur Isaev\n'
+  printf 'status: in-progress\n'
+  printf 'head_commit: %s\n' "$HEAD_COMMIT"
+  printf 'runtime_tree: %s\n' "$RUNTIME_TREE"
+} >"$TEMPORARY_RUN_MANIFEST"
+mv -f "$TEMPORARY_RUN_MANIFEST" "$RUN_MANIFEST"
 
 if [[ ! -x $ALLOY_WINE ]]; then
   echo "missing Wine loader: $ALLOY_WINE" >&2
@@ -38,8 +54,6 @@ for required_tool in clang jq python3 rg shasum xcrun; do
     exit 2
   fi
 done
-mkdir -p "$SHADER_BUILD" "$MODULE_CACHE"
-
 all_processes=
 if ! all_processes="$(ps aux 2>/dev/null)"; then
   echo "could not inspect the shared Wine/FEX loader" >&2
@@ -214,6 +228,53 @@ done
 
 echo "corpus: $pass pass, $reject rejected-with-diagnostic, $fail fail"
 if ((fail == 0 && pass >= 10 && reject >= 1)); then
+  CURRENT_HEAD_COMMIT="$(git -C "$ROOT" rev-parse HEAD)"
+  CURRENT_RUNTIME_TREE="$(git -C "$ROOT" rev-parse HEAD:runtime/metal12)"
+  CURRENT_RUNTIME_STATUS="$(
+    git -C "$ROOT" status --porcelain=v1 --untracked-files=normal -- runtime/metal12
+  )"
+  if [[ $CURRENT_HEAD_COMMIT != "$HEAD_COMMIT" ||
+    $CURRENT_RUNTIME_TREE != "$RUNTIME_TREE" ||
+    -n $CURRENT_RUNTIME_STATUS ]]; then
+    echo "runtime source changed during shader-corpus execution" >&2
+    exit 1
+  fi
+  BUILD_MANIFEST_SHA256="$(
+    shasum -a 256 "$BUILD/BUILD-MANIFEST.txt" | awk '{print $1}'
+  )"
+  WINE_SHA256="$(shasum -a 256 "$ALLOY_WINE" | awk '{print $1}')"
+  SHADER_ARTIFACTS="$(
+    find "$SHADER_BUILD" -maxdepth 1 -type f \
+      ! -name 'RUN-MANIFEST.txt' \
+      ! -name '.RUN-MANIFEST.txt.*' \
+      ! -name '.am12-publish-*.lock' |
+      LC_ALL=C sort
+  )"
+  TEMPORARY_RUN_MANIFEST="$(mktemp "$SHADER_BUILD/.RUN-MANIFEST.txt.XXXXXX")"
+  {
+    printf 'schema: com.alloy.metal12.shader-corpus.v1\n'
+    printf 'author: Timur Isaev\n'
+    printf 'status: complete\n'
+    printf 'supported_passes: %s\n' "$pass"
+    printf 'named_rejections: %s\n' "$reject"
+    printf 'failures: %s\n' "$fail"
+    printf 'head_commit: %s\n' "$HEAD_COMMIT"
+    printf 'runtime_tree: %s\n' "$RUNTIME_TREE"
+    printf 'build_manifest_sha256: %s\n' "$BUILD_MANIFEST_SHA256"
+    printf 'producer_sha256: %s\n' \
+      "$(shasum -a 256 "$RUNTIME/run-shader-corpus.sh" | awk '{print $1}')"
+    printf 'dxc_sha256: %s\n' "$dxc_hash"
+    printf 'wine_sha256: %s\n' "$WINE_SHA256"
+    while IFS= read -r shader_artifact; do
+      [[ -n $shader_artifact ]] || continue
+      shader_artifact_sha256="$(
+        shasum -a 256 "$shader_artifact" | awk '{print $1}'
+      )"
+      printf 'artifact_sha256: %s  shaders/%s\n' \
+        "$shader_artifact_sha256" "$(basename "$shader_artifact")"
+    done <<<"$SHADER_ARTIFACTS"
+  } >"$TEMPORARY_RUN_MANIFEST"
+  mv -f "$TEMPORARY_RUN_MANIFEST" "$RUN_MANIFEST"
   echo "m12-003 shader path ok"
   echo "metal12 shader corpus ok"
 else

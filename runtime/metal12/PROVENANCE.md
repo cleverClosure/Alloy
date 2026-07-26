@@ -63,3 +63,40 @@ are appended and never rewritten.
   - No excluded implementation source was inspected, searched, fetched,
     quoted, or supplied to an agent. In particular, vkd3d, vkd3d-proton, DXMT
     `src/d3d12/`, and copyleft D3D12 implementations were not inputs.
+
+- **2026-07-26 — #84 AI-session inventory and ADR-0012 clause 10
+  limitation.**
+  - The prompt/context was the request to pick up and complete M12-84 from the
+    Alloy board, together with the repository authoring and provenance rules.
+    Parallel-agent prompts were bounded implementation, integration-review,
+    evidence-design, and final-review tasks derived from #84. No file, image,
+    pasted-code, or other user attachment was supplied.
+  - The observable AI/tool surface was the Codex coding-agent root session and
+    Codex parallel agents, with repository shell/search/build/test execution,
+    patch editing, Git/GitHub CLI, and browser control used only for board or
+    tab discovery. No web search or third-party code-retrieval output informed
+    the implementation.
+  - Observable retrieval roots were GitHub issue #84 and its project metadata;
+    `origin/main`; and first-party Alloy paths comprising repository
+    authoring/build rules, ADR-0012, `runtime/metal12/`,
+    `runtime/content-store/`, `spikes/M12-001/` through `spikes/M12-006/`, and
+    the M12-005 workload and rendered answer key. Observable outputs are the
+    seven local implementation commits through `d400ca4`, their code and
+    documentation, this append-only attestation and evidence-capture workflow,
+    and the first-party build/proof/replay/presentation evidence recorded in
+    M12-006 results 02 through 07.
+  - The new evidence workflow reads only explicit approved source roots and the
+    fixed Metal12 build-output tree. Its complete mode requires signed task
+    commits, a signed tag, an explicit private AI-session export, and a
+    caller-selected signer whose fingerprint must match the commits, tag, and
+    snapshot manifest. It labels unsigned capture as incomplete and does not
+    claim that local capture supplies an external timestamp or durable
+    preservation.
+  - Scope clarification: preceding statements that no excluded source entered
+    an agent refer only to observable prompts, attachments, retrievals, tool
+    calls, and returned outputs. The Codex provider did not expose an
+    independently auditable inventory of its model corpus, server-side
+    retrieval indexes, or coding-assistant corpus. ADR-0012 clause 10's
+    environment-wide corpus/index verification therefore remains unresolved;
+    no claim is made that unexposed provider or model corpora exclude
+    prohibited repositories.

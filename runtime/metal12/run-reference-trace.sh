@@ -1,7 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Build the reference shaders once, then prove live/capture/replay/presentation.
 # Author: Timur Isaev
 set -euo pipefail
+PATH=/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin
+export PATH
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(cd "$ROOT/../.." && pwd)"
@@ -9,6 +11,7 @@ WORK="$ROOT/build/reference"
 HLSL="$ROOT/Tests/Fixtures/reference_scene.hlsl"
 LOWERER="$ROOT/ShaderTools/dxil_to_msl.py"
 COMPILE_KEY_PATH="$WORK/reference-shaders.compile-key"
+RUN_MANIFEST="$WORK/RUN-MANIFEST.txt"
 PRESENT=0
 COMMON_GIT_DIR="$(git -C "$REPO" rev-parse --path-format=absolute --git-common-dir)"
 SHARED_ROOT="${ALLOY_SHARED_ROOT:-$(dirname "$COMMON_GIT_DIR")}"
@@ -25,6 +28,19 @@ ALLOY_FEX_PREFIX=${ALLOY_FEX_PREFIX:-"$SHARED_ROOT/spikes/CPU-001/work/fex-runti
 ALLOY_DXC=${ALLOY_DXC:-"$SHARED_ROOT/tools/toolchains/dxc-v1.9.2602.24/bin/x64/dxc.exe"}
 export PATH="$SHARED_ROOT/tools/toolchains/llvm-mingw-20260616-ucrt-macos-universal/bin:$PATH"
 
+mkdir -p "$WORK"
+HEAD_COMMIT="$(git -C "$REPO" rev-parse HEAD)"
+RUNTIME_TREE="$(git -C "$REPO" rev-parse HEAD:runtime/metal12)"
+TEMPORARY_RUN_MANIFEST="$(mktemp "$WORK/.RUN-MANIFEST.txt.XXXXXX")"
+{
+  printf 'schema: com.alloy.metal12.reference-trace.v1\n'
+  printf 'author: Timur Isaev\n'
+  printf 'status: in-progress\n'
+  printf 'head_commit: %s\n' "$HEAD_COMMIT"
+  printf 'runtime_tree: %s\n' "$RUNTIME_TREE"
+} >"$TEMPORARY_RUN_MANIFEST"
+mv -f "$TEMPORARY_RUN_MANIFEST" "$RUN_MANIFEST"
+
 if [[ ! -x $ALLOY_WINE || ! -d $ALLOY_FEX_PREFIX/prefix-gui || ! -f $ALLOY_DXC ]]; then
   cat >&2 <<EOF
 missing shared compiler runtime. Set:
@@ -39,7 +55,6 @@ if [[ ! -f $LOWERER ]]; then
   exit 2
 fi
 
-mkdir -p "$WORK"
 "$ROOT/build.sh"
 "$ROOT/build/lowering_api_test"
 
@@ -167,5 +182,97 @@ if ((PRESENT)); then
     --output "$WORK/presented.bmp" --present | tee "$WORK/presented.log"
   cmp "$WORK/live.bmp" "$WORK/presented.bmp"
 fi
+
+CURRENT_HEAD_COMMIT="$(git -C "$REPO" rev-parse HEAD)"
+CURRENT_RUNTIME_TREE="$(git -C "$REPO" rev-parse HEAD:runtime/metal12)"
+CURRENT_RUNTIME_STATUS="$(
+  git -C "$REPO" status --porcelain=v1 --untracked-files=normal -- runtime/metal12
+)"
+if [[ $CURRENT_HEAD_COMMIT != "$HEAD_COMMIT" ||
+  $CURRENT_RUNTIME_TREE != "$RUNTIME_TREE" ||
+  -n $CURRENT_RUNTIME_STATUS ]]; then
+  printf 'runtime source changed during reference-trace execution\n' >&2
+  exit 1
+fi
+
+REFERENCE_ARTIFACTS=(
+  capture-a.bmp
+  capture-a.log
+  capture-b.bmp
+  capture-b.log
+  command-validation.log
+  dxc-stderr.log
+  gptk-compare.log
+  live.bmp
+  live.log
+  ps.air
+  ps.dxil
+  ps.ll
+  ps.metal
+  ps.provenance.json
+  reference-a.am12
+  reference-b.am12
+  reference-shaders.compile-key
+  replay.bmp
+  replay.log
+  scene.metallib
+  trace-validation.log
+  vs.air
+  vs.dxil
+  vs.ll
+  vs.metal
+  vs.provenance.json
+)
+RUN_STATUS=complete-offscreen
+if ((PRESENT)); then
+  REFERENCE_ARTIFACTS+=(presented.bmp presented.log)
+  RUN_STATUS=complete-presented
+fi
+GRAPHICS_ARTIFACTS=(
+  ps.air
+  ps.metal
+  ps.provenance.json
+  vs.air
+  vs.metal
+  vs.provenance.json
+)
+BUILD_MANIFEST_SHA256="$(
+  shasum -a 256 "$ROOT/build/BUILD-MANIFEST.txt" | awk '{print $1}'
+)"
+WINE_SHA256="$(shasum -a 256 "$ALLOY_WINE" | awk '{print $1}')"
+TEMPORARY_RUN_MANIFEST="$(mktemp "$WORK/.RUN-MANIFEST.txt.XXXXXX")"
+{
+  printf 'schema: com.alloy.metal12.reference-trace.v1\n'
+  printf 'author: Timur Isaev\n'
+  printf 'status: %s\n' "$RUN_STATUS"
+  printf 'head_commit: %s\n' "$HEAD_COMMIT"
+  printf 'runtime_tree: %s\n' "$RUNTIME_TREE"
+  printf 'build_manifest_sha256: %s\n' "$BUILD_MANIFEST_SHA256"
+  printf 'producer_sha256: %s\n' \
+    "$(shasum -a 256 "$ROOT/run-reference-trace.sh" | awk '{print $1}')"
+  printf 'dxc_sha256: %s\n' "$DXC_SHA256"
+  printf 'wine_sha256: %s\n' "$WINE_SHA256"
+  for reference_artifact in "${REFERENCE_ARTIFACTS[@]}"; do
+    [[ -s $WORK/$reference_artifact && ! -L $WORK/$reference_artifact ]] ||
+      exit 1
+    reference_artifact_sha256="$(
+      shasum -a 256 "$WORK/$reference_artifact" | awk '{print $1}'
+    )"
+    printf 'artifact_sha256: %s  reference/%s\n' \
+      "$reference_artifact_sha256" "$reference_artifact"
+  done
+  for graphics_artifact in "${GRAPHICS_ARTIFACTS[@]}"; do
+    [[ -s $ROOT/build/graphics-regression/$graphics_artifact &&
+      ! -L $ROOT/build/graphics-regression/$graphics_artifact ]] ||
+      exit 1
+    graphics_artifact_sha256="$(
+      shasum -a 256 "$ROOT/build/graphics-regression/$graphics_artifact" |
+        awk '{print $1}'
+    )"
+    printf 'artifact_sha256: %s  graphics-regression/%s\n' \
+      "$graphics_artifact_sha256" "$graphics_artifact"
+  done
+} >"$TEMPORARY_RUN_MANIFEST"
+mv -f "$TEMPORARY_RUN_MANIFEST" "$RUN_MANIFEST"
 
 printf 'reference trace gates: PASS\n'

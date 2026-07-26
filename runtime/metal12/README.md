@@ -111,6 +111,38 @@ worktree must point `ALLOY_WINE`, `ALLOY_FEX_PREFIX`, and `ALLOY_DXC` at a
 checkout containing those ignored artifacts. The scripts compile each shader
 once into `runtime/metal12/build/` and reuse the cached DXIL.
 
+## Private evidence capture
+
+[`capture-evidence.sh`](capture-evidence.sh) stages the signed source and build
+record required by ADR-0012. It reads only explicit first-party source roots and
+the fixed `runtime/metal12/build/` output tree; ignored dependency checkouts and
+module caches are not discovered or packaged. `build.sh` emits a manifest that
+binds the native library and clients to the exact Git commit and
+`runtime/metal12` tree. The model-proof, shader-corpus, and reference-trace
+runners invalidate their prior run manifest before execution, then bind every
+accepted log and artifact to that build and source tree. Capture rejects stale,
+modified, incomplete, or cross-run evidence.
+
+A complete capture refuses dirty state, unsigned task commits, an unsigned tag,
+a missing explicit AI-session export, or a missing caller-selected signer. The
+same selected fingerprint must verify every task commit, the annotated tag, and
+the snapshot manifest:
+
+```sh
+runtime/metal12/capture-evidence.sh \
+  --output /absolute/private/path/m12-84-evidence \
+  --session-export /absolute/private/path/codex-session.jsonl \
+  --signed-tag m12-84-evidence \
+  --openpgp-key FULL_FINGERPRINT
+```
+
+`--ssh-key` supports an explicitly selected SSH signer instead. For workflow
+testing, `--allow-unsigned-staging` creates a clearly marked incomplete
+snapshot and returns status 3. No mode treats local capture as durable
+preservation: the signed `SHA256SUMS` file must still receive an external
+timestamp and the private snapshot must be uploaded to the approved durable
+store.
+
 ## Deliberate boundaries
 
 This increment is a trace-driven native Metal runtime, not `d3d12.dll`.
