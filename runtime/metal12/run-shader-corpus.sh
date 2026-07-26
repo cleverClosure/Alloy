@@ -38,7 +38,6 @@ for required_tool in clang jq python3 rg shasum xcrun; do
     exit 2
   fi
 done
-
 mkdir -p "$SHADER_BUILD" "$MODULE_CACHE"
 
 all_processes=
@@ -69,6 +68,7 @@ run_dxc() {
 
 echo "== build shader runner"
 "$RUNTIME/build.sh"
+"$BUILD/lowering_api_test"
 
 texture_width="$(jq -r '.texture.width' "$MANIFEST")"
 texture_height="$(jq -r '.texture.height' "$MANIFEST")"
@@ -118,8 +118,8 @@ while IFS= read -r shader_name; do
     fi
   fi
 
-  if python3 "$SHADER_TOOLS/dxil_to_msl.py" \
-    "$dxil" "$disassembly" "$SHADER_BUILD" >"$lower_log" 2>&1; then
+  if "$BUILD/metal12_lower" "$dxil" "$disassembly" "$SHADER_BUILD" \
+    >"$lower_log" 2>&1; then
     if [[ $expect == reject ]]; then
       echo "$shader_name: unexpectedly lowered; rejection was required" >&2
       fail=$((fail + 1))

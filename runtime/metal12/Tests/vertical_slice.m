@@ -105,9 +105,9 @@ static void PrintMetrics(const AM12Metrics *metrics, BOOL presented)
     printf("model: vheap materializations=%u stale_rejects=%u\n",
            metrics->descriptor_materializations, metrics->descriptor_stale_rejects);
     printf("model: barriers transitions=%u edges_required=%u "
-           "satisfied_by_encoder_order=%u explicit_needed=%u\n",
+           "fence_edges_emitted=%u unmet_edges=%u\n",
            metrics->barrier_transitions, metrics->barrier_edges_required,
-           metrics->barrier_edges_by_encoder, metrics->barrier_edges_unmet);
+           metrics->barrier_edges_emitted, metrics->barrier_edges_unmet);
     printf("presentation: frames=%u drawable_readbacks=%u pixel_authority=%s\n",
            metrics->presented_frames, metrics->drawable_readbacks,
            presented ? "final drawable" : "offscreen render target");
@@ -168,6 +168,9 @@ int main(int argc, const char **argv)
                 PumpWindowEvents();
             if (!AM12BeginFrame(device, frame) ||
                 !AM12WriteResource(device, constants, 0, parameters, sizeof(parameters)) ||
+                (frame == 0 &&
+                 !AM12TransitionResource(device, constants, AM12_RESOURCE_STATE_UNDEFINED,
+                                         AM12_RESOURCE_STATE_CONSTANT_BUFFER)) ||
                 !AM12SetGraphicsRootDescriptorTable(device, 0, generation) ||
                 !AM12TransitionResource(device, target, targetState,
                                         AM12_RESOURCE_STATE_RENDER_TARGET) ||
@@ -211,12 +214,15 @@ int main(int argc, const char **argv)
         PrintMetrics(&metrics, arguments.present);
         printf("artifact: %s\n", arguments.output);
 
+        uint32_t expectedBarrierEdges = arguments.present ? FRAME_COUNT + 1u : 1u;
         int result = 0;
         if (metrics.image_digest != EXPECTED_DIGEST ||
             metrics.changed_pixels != EXPECTED_CHANGED_PIXELS ||
             metrics.descriptor_materializations != FRAME_COUNT ||
-            metrics.descriptor_stale_rejects != 0 || metrics.barrier_transitions != 122 ||
-            metrics.barrier_edges_required != 1 || metrics.barrier_edges_unmet != 0 ||
+            metrics.descriptor_stale_rejects != 0 || metrics.barrier_transitions != 123 ||
+            metrics.barrier_edges_required != expectedBarrierEdges ||
+            metrics.barrier_edges_emitted != expectedBarrierEdges ||
+            metrics.barrier_edges_unmet != 0 ||
             (arguments.present &&
              (metrics.presented_frames != FRAME_COUNT || metrics.drawable_readbacks != 1)) ||
             (!arguments.present &&

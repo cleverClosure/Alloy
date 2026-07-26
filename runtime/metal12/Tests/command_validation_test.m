@@ -91,12 +91,13 @@ int main(int argc, const char **argv)
 
         AM12Resource target = AM12CreateRenderTarget(device);
         AM12Resource buffer = AM12CreateSharedBuffer(device, 16);
+        uint32_t generation = AM12CreateConstantBufferView(device, 0, buffer);
         uint32_t value = 1;
         int passed = 0;
         passed +=
             ExpectRejected(AM12WriteResource(device, buffer, 0, &value, 0), "zero-byte write");
 
-        if (!target || !buffer || !AM12BeginFrame(device, 0))
+        if (!target || !buffer || !generation || !AM12BeginFrame(device, 0))
         {
             AM12DestroyDevice(device);
             return 1;
@@ -105,6 +106,8 @@ int main(int argc, const char **argv)
             ExpectRejected(AM12TransitionResource(device, target, AM12_RESOURCE_STATE_UNDEFINED,
                                                   AM12_RESOURCE_STATE_CONSTANT_BUFFER),
                            "texture-to-buffer state");
+        passed += ExpectRejected(AM12SetGraphicsRootDescriptorTable(device, 0, generation + 1u),
+                                 "stale descriptor");
         if (!AM12TransitionResource(device, target, AM12_RESOURCE_STATE_UNDEFINED,
                                     AM12_RESOURCE_STATE_RENDER_TARGET))
         {
@@ -119,11 +122,11 @@ int main(int argc, const char **argv)
         passed += ExpectRejected(AM12EndFrame(device), "incomplete frame");
 
         AM12DestroyDevice(device);
-        printf("public command validation: %d/5 rejected\n", passed);
+        printf("public command validation: %d/6 rejected\n", passed);
         int cleanupPassed = 0;
         cleanupPassed += ExpectIncompleteCaptureRemoved(argv[1], NO, "missing-output capture");
         cleanupPassed += ExpectIncompleteCaptureRemoved(argv[1], YES, "active-frame capture");
         printf("capture cleanup validation: %d/2 cleaned\n", cleanupPassed);
-        return passed == 5 && cleanupPassed == 2 ? 0 : 1;
+        return passed == 6 && cleanupPassed == 2 ? 0 : 1;
     }
 }

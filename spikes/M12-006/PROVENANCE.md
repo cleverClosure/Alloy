@@ -70,3 +70,32 @@ AI-assistant context for this spike. Entries are dated and never rewritten.
     `third_party/src/` tree was excluded by repository search rules during
     initial task discovery; subsequent inspection was restricted to explicit
     approved paths.
+
+- **2026-07-26 — Gate-1 shared-model convergence and verification.**
+  - Inputs remained first-party: Alloy's M12-001 through M12-006 prototypes,
+    results, provenance, M12-005 workload and rendered answer key, ADR-0012,
+    issue #84, the existing runtime, and its tests and authoring rules.
+  - Codex parallel agents performed bounded model extraction, architecture and
+    code review, runtime integration, verification, and documentation work in
+    one shared worktree. Agent output became evidence only after reconciliation
+    and first-party regression checks.
+  - The promoted proofs and public runtime now call shared descriptor, barrier,
+    and residency implementations under `runtime/metal12/Sources/Models/`.
+    The public lowering contract stages the canonical DXIL-to-MSL payload
+    embedded in the archive, validates its build-time SHA-256, and bounds
+    container, resource, and operation counts, inherited descriptors, and child
+    lifetime; descriptor tables are GPU-consumed through descriptor pages; and
+    optimized barrier edges drive verified `MTLFence` producer and consumer
+    synchronization.
+  - The current reference suite rejected 6/6 public-command divergences,
+    cleaned 2/2 incomplete captures, rejected 17/17 trace mutations, produced
+    byte-identical captures, and replayed 10/10 fresh runtimes with digest
+    `44709706809f28e9`. Fence accounting was exact at 1/1 offscreen and 121/121
+    with presentation, with zero unmet edges.
+  - Neither linked residency mode was executed. The non-pressure mode can
+    still peak around 820 MiB and cannot satisfy the pressure threshold; the
+    full mode crosses Metal's advisory budget and may allocate up to one GiB
+    beyond it. The full execution remains required to make Gate 1 green.
+  - No excluded source was inspected, searched, fetched, quoted, or supplied to
+    an agent. This includes vkd3d, vkd3d-proton, DXMT `src/d3d12/`, and
+    copyleft D3D12 implementations.

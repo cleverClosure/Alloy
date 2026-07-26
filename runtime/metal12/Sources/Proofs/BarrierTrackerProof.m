@@ -23,9 +23,10 @@
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 
+#import "../Models/AM12BarrierTracker.h"
+
 #include <mach/mach_time.h>
 #include <stdlib.h>
-#include <string.h>
 
 #define QUEUE_COUNT 2
 #define RESOURCE_COUNT 12
@@ -36,38 +37,7 @@
 #define STREAM_COUNT 10000
 #define SENSITIVITY_TRIALS 100
 
-enum access_kind
-{
-    ACCESS_READ,
-    ACCESS_WRITE,
-    ACCESS_TRANSITION /* whole-resource, write-class */
-};
-
-struct op
-{
-    int queue;
-    int memory; /* memory object id (aliased pair shares one) */
-    int slot;   /* subresource, or -1 for whole resource */
-    enum access_kind kind;
-    int queue_pos; /* position within its queue */
-};
-
-struct edge
-{
-    int from, to;
-};
-
 #define MAX_EDGES (STREAM_OPS * STREAM_OPS)
-#define REACH_WORDS ((STREAM_OPS + 63) / 64)
-
-struct plan
-{
-    struct edge edges[MAX_EDGES];
-    int edge_count;
-};
-
-static struct op stream[STREAM_OPS];
-static uint64_t reach[STREAM_OPS][REACH_WORDS];
 
 static double timebase_ns(void)
 {
@@ -82,188 +52,36 @@ static int memory_of(int resource)
     return resource == ALIAS_B ? ALIAS_A : resource;
 }
 
-static void generate_stream(void)
+static int generate_stream(AM12BarrierTracker *tracker)
 {
-    int queue_pos[QUEUE_COUNT] = {0};
+    AM12BarrierTrackerResetAccesses(tracker);
 
     for (int i = 0; i < STREAM_OPS; i++)
     {
         int resource = random() % RESOURCE_COUNT;
         int roll = random() % 100;
-        struct op *o = &stream[i];
+        uint32_t queue = (uint32_t)(random() % QUEUE_COUNT);
+        AM12BarrierAccessKind kind;
+        int32_t subresource;
 
-        o->queue = random() % QUEUE_COUNT;
-        o->memory = memory_of(resource);
         if (roll < 5)
         {
-            o->kind = ACCESS_TRANSITION;
-            o->slot = -1;
+            kind = AM12_BARRIER_ACCESS_TRANSITION;
+            subresource = AM12_BARRIER_ALL_SUBRESOURCES;
         }
         else
         {
-            o->kind = roll < 35 ? ACCESS_WRITE : ACCESS_READ;
-            o->slot = random() % SUBRESOURCE_COUNT;
+            kind = roll < 35 ? AM12_BARRIER_ACCESS_WRITE : AM12_BARRIER_ACCESS_READ;
+            subresource = (int32_t)(random() % SUBRESOURCE_COUNT);
         }
         /* aliased memory is tracked whole-object */
-        if (o->memory == ALIAS_A)
-            o->slot = -1;
-        o->queue_pos = queue_pos[o->queue]++;
+        uint32_t memory = (uint32_t)memory_of(resource);
+        if (memory == ALIAS_A)
+            subresource = AM12_BARRIER_ALL_SUBRESOURCES;
+        if (!AM12BarrierTrackerRecordAccess(tracker, queue, memory, subresource, kind, NULL))
+            return 0;
     }
-}
-
-static int slots_overlap(const struct op *a, const struct op *b)
-{
-    if (a->memory != b->memory)
-        return 0;
-    return a->slot < 0 || b->slot < 0 || a->slot == b->slot;
-}
-
-static int is_hazard(const struct op *a, const struct op *b)
-{
-    if (!slots_overlap(a, b))
-        return 0;
-    return a->kind != ACCESS_READ || b->kind != ACCESS_READ;
-}
-
-/* reachability over plan edges + nothing else (queue order is NOT implicit:
- * unfenced work on one queue may overlap) */
-static void compute_reach(const struct plan *p)
-{
-    static int pred_head[STREAM_OPS];
-    static int pred_next[MAX_EDGES];
-    static int pred_from[MAX_EDGES];
-
-    memset(reach, 0, sizeof(reach));
-    memset(pred_head, -1, sizeof(pred_head));
-    for (int e = 0; e < p->edge_count; e++)
-    {
-        pred_from[e] = p->edges[e].from;
-        pred_next[e] = pred_head[p->edges[e].to];
-        pred_head[p->edges[e].to] = e;
-    }
-    for (int j = 0; j < STREAM_OPS; j++)
-        for (int e = pred_head[j]; e >= 0; e = pred_next[e])
-        {
-            int i = pred_from[e];
-            for (int w = 0; w < REACH_WORDS; w++)
-                reach[j][w] |= reach[i][w];
-            reach[j][i / 64] |= 1ull << (i % 64);
-        }
-}
-
-static long verify_plan(const struct plan *p, long *hazards_out)
-{
-    long hazards = 0, uncovered = 0;
-
-    compute_reach(p);
-    for (int j = 0; j < STREAM_OPS; j++)
-        for (int i = 0; i < j; i++)
-            if (is_hazard(&stream[i], &stream[j]))
-            {
-                hazards++;
-                if (!(reach[j][i / 64] >> (i % 64) & 1))
-                    uncovered++;
-            }
-    if (hazards_out)
-        *hazards_out = hazards;
-    return uncovered;
-}
-
-static void compile_conservative(struct plan *p)
-{
-    p->edge_count = 0;
-    for (int j = 0; j < STREAM_OPS; j++)
-        for (int i = 0; i < j; i++)
-            if (stream[i].memory == stream[j].memory)
-                p->edges[p->edge_count++] = (struct edge){i, j};
-}
-
-/* optimized: last-access tracking + vector-clock elision of implied edges */
-struct last_access
-{
-    int last_write; /* op index or -1 */
-    int readers[STREAM_OPS];
-    int reader_count;
-};
-
-static void compile_optimized(struct plan *p)
-{
-    static struct last_access track[RESOURCE_COUNT][SUBRESOURCE_COUNT + 1];
-    /* true happens-before, built as edges are added; per-queue summaries are
-     * unsound here because unfenced same-queue work is unordered by design */
-    static uint64_t creach[STREAM_OPS][REACH_WORDS];
-    int candidates[STREAM_OPS + 8];
-
-    p->edge_count = 0;
-    memset(creach, 0, sizeof(creach));
-    for (int m = 0; m < RESOURCE_COUNT; m++)
-        for (int s = 0; s <= SUBRESOURCE_COUNT; s++)
-        {
-            track[m][s].last_write = -1;
-            track[m][s].reader_count = 0;
-        }
-
-    for (int j = 0; j < STREAM_OPS; j++)
-    {
-        const struct op *o = &stream[j];
-        int slot_lo = o->slot < 0 ? 0 : o->slot;
-        int slot_hi = o->slot < 0 ? SUBRESOURCE_COUNT : o->slot;
-        int candidate_count = 0;
-
-        for (int s = slot_lo; s <= slot_hi; s++)
-        {
-            struct last_access *t = &track[o->memory][s];
-
-            if (o->kind == ACCESS_READ)
-            {
-                if (t->last_write >= 0)
-                    candidates[candidate_count++] = t->last_write;
-            }
-            else
-            {
-                if (t->last_write >= 0)
-                    candidates[candidate_count++] = t->last_write;
-                for (int r = 0; r < t->reader_count; r++)
-                    candidates[candidate_count++] = t->readers[r];
-            }
-        }
-
-        /* add edges newest-source-first so reachability elides the rest */
-        for (int a = 0; a < candidate_count; a++)
-            for (int b = a + 1; b < candidate_count; b++)
-                if (candidates[b] > candidates[a])
-                {
-                    int tmp = candidates[a];
-                    candidates[a] = candidates[b];
-                    candidates[b] = tmp;
-                }
-        for (int c = 0; c < candidate_count; c++)
-        {
-            int i = candidates[c];
-            if (c && i == candidates[c - 1])
-                continue; /* duplicate */
-            if (creach[j][i / 64] >> (i % 64) & 1)
-                continue; /* already implied transitively */
-            p->edges[p->edge_count++] = (struct edge){i, j};
-            for (int w = 0; w < REACH_WORDS; w++)
-                creach[j][w] |= creach[i][w];
-            creach[j][i / 64] |= 1ull << (i % 64);
-        }
-
-        /* record this access */
-        for (int s = slot_lo; s <= slot_hi; s++)
-        {
-            struct last_access *t = &track[o->memory][s];
-
-            if (o->kind == ACCESS_READ)
-                t->readers[t->reader_count++] = j;
-            else
-            {
-                t->last_write = j;
-                t->reader_count = 0;
-            }
-        }
-    }
+    return 1;
 }
 
 static const char *kernel_source =
@@ -299,7 +117,29 @@ int AM12RunBarrierTrackerProof(void)
         long total_hazards = 0, total_uncovered = 0;
         long conservative_edges = 0, optimized_edges = 0;
         int sensitivity_caught = 0;
-        static struct plan conservative, optimized;
+        static AM12BarrierEdge conservative_storage[MAX_EDGES];
+        static AM12BarrierEdge optimized_storage[MAX_EDGES];
+        static AM12BarrierEdge crippled_storage[MAX_EDGES];
+        AM12BarrierPlan conservative;
+        AM12BarrierPlan optimized;
+        AM12BarrierPlan crippled;
+        AM12BarrierTrackerDescriptor descriptor = {
+            .max_access_count = STREAM_OPS,
+            .memory_object_count = RESOURCE_COUNT,
+            .subresource_count = SUBRESOURCE_COUNT,
+            .queue_count = QUEUE_COUNT,
+        };
+        AM12BarrierTracker *tracker = AM12BarrierTrackerCreate(&descriptor);
+
+        if (!tracker ||
+            !AM12BarrierPlanInitialize(&conservative, conservative_storage, MAX_EDGES) ||
+            !AM12BarrierPlanInitialize(&optimized, optimized_storage, MAX_EDGES) ||
+            !AM12BarrierPlanInitialize(&crippled, crippled_storage, MAX_EDGES))
+        {
+            AM12BarrierTrackerDestroy(tracker);
+            puts("barrier tracker model initialization failed");
+            return 2;
+        }
 
         srandom(20260724);
 
@@ -307,29 +147,48 @@ int AM12RunBarrierTrackerProof(void)
         uint64_t t0 = mach_absolute_time();
         for (int s = 0; s < STREAM_COUNT; s++)
         {
-            long hazards = 0;
+            AM12BarrierVerification verification;
 
-            generate_stream();
-            compile_conservative(&conservative);
-            if (verify_plan(&conservative, &hazards))
+            if (!generate_stream(tracker) ||
+                !AM12BarrierTrackerCompileConservative(tracker, &conservative) ||
+                !AM12BarrierTrackerVerifyPlan(tracker, &conservative, &verification))
             {
+                AM12BarrierTrackerDestroy(tracker);
+                puts("barrier tracker model operation failed");
+                return 2;
+            }
+            if (verification.uncovered_hazard_count)
+            {
+                AM12BarrierTrackerDestroy(tracker);
                 puts("conservative plan uncovered a hazard - model broken");
                 return 2;
             }
-            compile_optimized(&optimized);
-            total_uncovered += verify_plan(&optimized, &hazards);
-            total_hazards += hazards;
+            if (!AM12BarrierTrackerCompileOptimized(tracker, &optimized) ||
+                !AM12BarrierTrackerVerifyPlan(tracker, &optimized, &verification))
+            {
+                AM12BarrierTrackerDestroy(tracker);
+                puts("barrier tracker model operation failed");
+                return 2;
+            }
+            total_uncovered += (long)verification.uncovered_hazard_count;
+            total_hazards += (long)verification.hazard_count;
             conservative_edges += conservative.edge_count;
             optimized_edges += optimized.edge_count;
 
             /* sensitivity: drop one random edge, the checker must notice */
             if (s < SENSITIVITY_TRIALS && optimized.edge_count)
             {
-                struct plan crippled = optimized;
-                int victim = random() % crippled.edge_count;
+                uint32_t victim = (uint32_t)(random() % optimized.edge_count);
 
-                crippled.edges[victim] = crippled.edges[--crippled.edge_count];
-                if (verify_plan(&crippled, NULL))
+                if (!AM12BarrierPlanCopy(&crippled, &optimized) ||
+                    !AM12BarrierPlanRemoveEdgeSwapLast(&crippled, victim) ||
+                    !AM12BarrierTrackerVerifyPlan(tracker, &crippled, &verification))
+                {
+                    AM12BarrierTrackerDestroy(tracker);
+                    puts("barrier tracker sensitivity operation failed");
+                    return 2;
+                }
+                if (verification.uncovered_hazard_count)
                     sensitivity_caught++;
             }
         }
@@ -345,9 +204,11 @@ int AM12RunBarrierTrackerProof(void)
         printf("model time: %.2f s\n", (t1 - t0) * timebase_ns() / 1e9);
         if (total_uncovered || sensitivity_caught != SENSITIVITY_TRIALS)
         {
+            AM12BarrierTrackerDestroy(tracker);
             puts("m12-002 FAILED (model)");
             return 3;
         }
+        AM12BarrierTrackerDestroy(tracker);
 
         /* execution leg */
         id<MTLDevice> device = MTLCreateSystemDefaultDevice();

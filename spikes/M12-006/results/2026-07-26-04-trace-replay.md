@@ -8,8 +8,12 @@
 
 ## Exact inputs
 
-- The 27,716-byte Trace 1.0 artifact from result 03, SHA-256
+- The original result-03 run used the 27,716-byte Trace 1.0 artifact, SHA-256
   `4106394cea5fbb044e8c8582865067d168f7f0ab711f27f8175afc6c5f7e7f11`.
+- The Gate-1 convergence rerun used the current 27,800-byte Trace 1.0
+  artifact, SHA-256
+  `e8f09c18700890b90ad75cb2a74389382af6f7e9e086bc61a2b503e97c2cfb65`.
+  Two independent captures produced that same byte sequence.
 - `libAlloyMetal12.a`.
 - `Tools/metal12_replay.m`, linked only against the library and system
   frameworks. It contains no HLSL, scene constants, fixture image, or
@@ -23,10 +27,12 @@ The library first completes a side-effect-free structural and semantic
 preflight. Only then does each run extract the embedded metallib to private
 temporary storage, create a fresh Metal runtime, recreate logical resources
 and descriptors, and invoke the same public commands used by a live client.
+The original result and the current convergence rerun reported the same digest
+and changed-pixel count; the current log is:
 
 ```text
 replay: runs=10 stable=10 digest=44709706809f28e9
-changed pixels=230397/230400
+metric: changed_pixels=230397
 status: PASS
 ```
 
@@ -34,17 +40,20 @@ The mean across all ten fresh runtimes, with full preflight, trace parsing,
 temporary metallib materialization, and object reconstruction included in each
 setup sample, was:
 
-| Measurement | Live | Replay 10-run mean |
-| --- | ---: | ---: |
-| Setup | 30.378 ms | 5.175 ms |
-| First frame | 5.460 ms | 4.580 ms |
-| Warm mean | 1.062 ms | 0.586 ms |
-| Warm p50 | 0.644 ms | 0.307 ms |
-| Warm p95 | 4.024 ms | 2.009 ms |
+| Measurement | Original live | Original replay mean | Current live | Current replay mean |
+| --- | ---: | ---: | ---: | ---: |
+| Setup | 30.378 ms | 5.175 ms | 24.424 ms | 4.397 ms |
+| First frame | 5.460 ms | 4.580 ms | 4.814 ms | 2.892 ms |
+| Warm mean | 1.062 ms | 0.586 ms | 0.468 ms | 0.341 ms |
+| Warm p50 | 0.644 ms | 0.307 ms | 0.331 ms | 0.274 ms |
+| Warm p95 | 4.024 ms | 2.009 ms | 1.019 ms | 0.648 ms |
 
-The tenth run measured 1.223 ms setup, 4.993 ms first frame, and
-0.794 / 0.315 / 3.010 ms warm mean / p50 / p95. Reporting both the aggregate
-and last sample avoids selecting one favorable fresh-runtime run.
+The original tenth run measured 1.223 ms setup, 4.993 ms first frame, and
+0.794 / 0.315 / 3.010 ms warm mean / p50 / p95. The current tenth run measured
+1.622 ms setup, 2.492 ms first frame, and 0.266 / 0.240 / 0.339 ms for the same
+warm measurements. Reporting both the aggregate and last sample avoids
+selecting one favorable fresh-runtime run while retaining the original
+measurement as historical evidence.
 
 The replay BMP is byte-identical to the live BMP:
 
@@ -55,18 +64,27 @@ SHA-256 80cbde4aa12a7f8faf6087654d32abd08d7daacbeb636b97257a25cc303b1cca
 ## Validation behavior
 
 `AM12ValidateTrace` applies the same complete preflight without creating Metal
-objects. The reference gate accepted the unmodified capture and rejected all
-16 targeted mutations:
+objects. The original result rejected 16 targeted mutations. The current
+Gate-1 convergence build accepted the unmodified capture and rejected all 17,
+adding a `barrier_access_overflow` mutation that exceeds the runtime tracker's
+per-frame access capacity.
 
-Before capture/replay, a separate public-command matrix also rejected all five
+Before capture/replay, the public-command matrix now rejects all six
 successful-call divergences it targets: zero-byte writes, a texture-only
-resource entering a buffer state, non-finite clear values, presenting undefined
-contents, and ending an incomplete frame. `AM12FinishCapture` runs the complete
-preflight again before the atomic rename, so an invalid stream is not
-published even if a future command-validation mismatch is introduced. Two
-destruction regressions also verify cleanup of missing-output and active-frame
-captures. Buffer creation deterministically zero-initializes every byte, and
-each v1 Draw record is bounded to one three-vertex instance.
+resource entering a buffer state, a stale descriptor generation, non-finite
+clear values, presenting undefined contents, and ending an incomplete frame.
+The stale-descriptor case is the sixth rejection added since the original
+five-case result. `AM12FinishCapture` runs the complete preflight again before
+the atomic rename, so an invalid stream is not published even if a future
+command-validation mismatch is introduced. The two destruction regressions
+still verify cleanup of missing-output and active-frame captures. Buffer
+creation deterministically zero-initializes every byte, and each v1 Draw
+record is bounded to one three-vertex instance.
+
+```text
+public command validation: 6/6 rejected
+capture cleanup validation: 2/2 cleaned
+```
 
 ```text
 bad magic                         rejected
@@ -85,7 +103,8 @@ transition before-state mismatch  rejected
 descriptor generation mismatch    rejected
 frame index mismatch              rejected
 oversized draw                     rejected
-trace validation mutations: 16/16 rejected
+barrier access overflow            rejected
+trace validation mutations: 17/17 rejected
 ```
 
 The preflight also enforces the Trace 1.0 aggregate limits and canonical

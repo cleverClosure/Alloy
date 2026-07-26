@@ -24,22 +24,58 @@ class Unsupported(Exception):
     pass
 
 
+MAX_CONTAINER_PARTS = 64
+MAX_RESOURCES = 64
+MAX_OPS = 16384
+
+
 def parse_container(data):
-    if data[:4] != b"DXBC":
+    if len(data) < 32 or data[:4] != b"DXBC":
         raise Unsupported("M12003-container: bad magic")
     total, part_count = struct.unpack_from("<II", data, 24)
     if total != len(data):
         raise Unsupported("M12003-container: size mismatch")
+    if not 0 < part_count <= MAX_CONTAINER_PARTS:
+        raise Unsupported("M12003-container: invalid part count")
+    table_end = 32 + part_count * 4
+    if table_end > len(data):
+        raise Unsupported("M12003-container: offset table overruns file")
     offsets = struct.unpack_from(f"<{part_count}I", data, 32)
     parts = {}
+    ranges = []
     for off in offsets:
+        if off % 4 or off < table_end or off > len(data) - 8:
+            raise Unsupported("M12003-container: invalid part offset")
         fourcc, size = struct.unpack_from("<4sI", data, off)
-        if off + 8 + size > len(data):
+        part_end = off + 8 + size
+        if part_end > len(data):
             raise Unsupported("M12003-container: part overruns file")
-        parts[fourcc.decode()] = data[off + 8 : off + 8 + size]
+        if any(off < prior_end and part_end > prior_start
+               for prior_start, prior_end in ranges):
+            raise Unsupported("M12003-container: overlapping parts")
+        ranges.append((off, part_end))
+        try:
+            name = fourcc.decode("ascii")
+        except UnicodeDecodeError as error:
+            raise Unsupported("M12003-container: non-ASCII part name") from error
+        if name in parts:
+            raise Unsupported(f"M12003-container: duplicate {name} part")
+        parts[name] = data[off + 8 : part_end]
     if "DXIL" not in parts:
         raise Unsupported("M12003-container: no DXIL part")
-    version, = struct.unpack_from("<I", parts["DXIL"], 0)
+
+    program = parts["DXIL"]
+    if len(program) < 28:
+        raise Unsupported("M12003-container: truncated DXIL program")
+    version, program_size, magic, _, bitcode_offset, bitcode_size = struct.unpack_from(
+        "<II4sIII", program, 0)
+    bitcode_start = 8 + bitcode_offset
+    if (program_size * 4 != len(program) or magic != b"DXIL" or
+            bitcode_offset < 16 or bitcode_offset % 4 or bitcode_size < 4 or
+            bitcode_start > len(program) or
+            bitcode_size != len(program) - bitcode_start or
+            program[bitcode_start:bitcode_start + 4] != b"BC\xc0\xde"):
+        raise Unsupported("M12003-container: malformed DXIL program")
     major, minor = (version >> 4) & 0xF, version & 0xF
     return parts, (major, minor), hashlib.sha256(data).hexdigest()
 
@@ -64,6 +100,13 @@ DXIL_UNARY = {
     6: "fabs", 7: "saturate", 12: "cos", 13: "sin", 17: "atan",
     22: "fract", 24: "sqrt", 26: "rint", 27: "floor", 28: "ceil", 29: "trunc",
 }
+
+
+class BoundedOps(list):
+    def append(self, operation):
+        if len(self) >= MAX_OPS:
+            raise Unsupported(f"M12003-limits: more than {MAX_OPS} operations")
+        super().append(operation)
 
 
 def parse_stage(text):
@@ -142,7 +185,7 @@ def parse_value(tok):
 
 
 def parse_ll(text):
-    ops = []
+    ops = BoundedOps()
     body = re.search(r"define void @\w+\(\) \{(.*?)\n\}", text, re.S)
     if not body:
         raise Unsupported("M12003-parse: entry function not found")
@@ -153,7 +196,17 @@ def parse_ll(text):
         m = re.match(r"(%[\w.]+) = call %dx\.types\.Handle @dx\.op\.createHandle\("
                      r"i32 57, i8 (\d+), i32 (\d+), i32 \d+, i1 false\)", line)
         if m:
-            ops.append(("handle", m.group(1), int(m.group(2)), int(m.group(3))))
+            resource_class = int(m.group(2))
+            range_id = int(m.group(3))
+            if resource_class not in (
+                    RESOURCE_SRV, RESOURCE_UAV, RESOURCE_CBUFFER, RESOURCE_SAMPLER):
+                raise Unsupported(
+                    f"M12003-limits: invalid resource class {resource_class}")
+            if not 0 <= range_id < MAX_RESOURCES:
+                raise Unsupported(
+                    f"M12003-limits: resource index {range_id} exceeds "
+                    f"{MAX_RESOURCES - 1}")
+            ops.append(("handle", m.group(1), resource_class, range_id))
             continue
         m = re.match(r"(%[\w.]+) = call i32 @dx\.op\.threadId\.i32\(i32 93, i32 0\)", line)
         if m:
@@ -515,10 +568,23 @@ def lower_msl(ops, name, stage="compute", sigs=None, globals_=None):
                 + "\n".join(lines) + "\n}\n")
 
     # --- graphics stages ---
-    cbv_ranges = sorted(
+    cbv_ranges = sorted({
         rest[2] for kind, *rest in ops
-        if kind == "handle" and rest[1] == RESOURCE_CBUFFER)
-    cb_params = [f"    constant float4 *cb{r} [[buffer({r})]]" for r in cbv_ranges]
+        if kind == "handle" and rest[1] == RESOURCE_CBUFFER
+    })
+    if cbv_ranges not in ([], [0]):
+        raise Unsupported(
+            "M12003-unsupported: graphics descriptor page supports only one CBV range "
+            "at index 0")
+    cb_params = (
+        ["    device const ulong *am12_descriptor_page [[buffer(0)]]"]
+        if cbv_ranges else []
+    )
+    cb_bindings = "".join(
+        f"    device const float4 *cb{r} = "
+        f"(device const float4 *)(am12_descriptor_page[{r}]);\n"
+        for r in cbv_ranges
+    )
 
     if stage == "vertex":
         outs = sigs["output"]
@@ -541,7 +607,7 @@ def lower_msl(ops, name, stage="compute", sigs=None, globals_=None):
         params = ["    uint vid [[vertex_id]]"] + cb_params
         return ("\n".join(header) + stage_struct("Interstage", outs) + "\n\n"
                 + f"vertex Interstage {name}(\n" + ",\n".join(params) + ")\n{\n"
-                + "    Interstage out;\n" + "\n".join(lines)
+                + cb_bindings + "    Interstage out;\n" + "\n".join(lines)
                 + "\n    return out;\n}\n")
 
     if stage == "fragment":
@@ -564,7 +630,7 @@ def lower_msl(ops, name, stage="compute", sigs=None, globals_=None):
         width = sig_width(outs[0])
         return ("\n".join(header) + stage_struct("Interstage", ins) + "\n\n"
                 + f"fragment float{width} {name}(\n" + ",\n".join(params) + ")\n{\n"
-                + f"    float{width} out;\n" + "\n".join(lines)
+                + cb_bindings + f"    float{width} out;\n" + "\n".join(lines)
                 + "\n    return out;\n}\n")
 
     raise Unsupported(f"M12003-unsupported: stage '{stage}'")
@@ -618,10 +684,13 @@ STAGE_PREFIX = {"compute": "cs", "vertex": "vs", "fragment": "ps"}
 
 
 def main():
-    if len(sys.argv) != 4:
-        print("usage: dxil_to_msl.py <name.dxil> <name.ll> <out-dir>")
+    if len(sys.argv) != 5:
+        print("usage: dxil_to_msl.py <name.dxil> <name.ll> <out-dir> "
+              "<lowerer-sha256>")
         return 2
-    dxil_path, ll_path, out_dir = sys.argv[1:4]
+    dxil_path, ll_path, out_dir, lowerer_hash = sys.argv[1:5]
+    if not re.fullmatch(r"[0-9a-f]{64}", lowerer_hash):
+        raise Unsupported("M12003-provenance: invalid lowerer hash")
     name = dxil_path.rsplit("/", 1)[-1].removesuffix(".dxil")
 
     data = open(dxil_path, "rb").read()
@@ -653,6 +722,7 @@ def main():
         "container_sha256": dxil_hash,
         "ll_sha256": hashlib.sha256(ll_text.encode()).hexdigest(),
         "msl_sha256": hashlib.sha256(msl_a.encode()).hexdigest(),
+        "lowerer_sha256": lowerer_hash,
         "ops": len(ops),
         "features": feature_kinds,
         "resources": [

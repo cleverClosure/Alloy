@@ -7,8 +7,8 @@ one Objective-C static library, one public D3D12-shaped command header, linked
 proof clients, a self-contained trace format, and a generic replayer. The
 archive owns the canonical promoted M12-001, M12-002, and M12-004 proof
 implementations, but the first command path exercises narrower descriptor,
-barrier, and residency subsets. Archive ownership and linkage are not a claim
-that those full proof models are already the command layer's implementation.
+barrier, and residency configurations. Both the linked proofs and the public
+command path call the same private model components under `Sources/Models/`.
 
 ## Guarantees in this increment
 
@@ -18,6 +18,23 @@ that those full proof models are already the command layer's implementation.
   subset and named rejection. Descriptor, barrier, and shader execution is
   green; the residency oversubscription execution is recorded as a host-safety
   blocker pending explicit approval.
+- The descriptor heap materializes a GPU-address page, retains it through
+  command-buffer completion, and makes that page—not a direct CBV binding—the
+  generated fragment shader's resource authority. This path requires macOS 13
+  or newer and Metal argument-buffer Tier 2.
+- The barrier tracker owns resource state, records actual encoder accesses in
+  atomic batches, compiles the dependency plan before encoding, and maps each
+  required edge to a producer-specific `MTLFence`. End-of-frame verification
+  checks the exact producer/consumer edge mapping.
+- Build-time DXIL-to-MSL lowering is exposed as
+  `AM12LowerDXILToMSL`. The request cannot select an interpreter or script:
+  the library pins `/usr/bin/python3` and embeds the canonical lowerer payload
+  plus its build-time SHA-256; it rejects inconsistent embedded DXIL and
+  DXC-disassembly hash values and validates the emitted MSL, provenance, and
+  fixtures before publication. Container parts, resources, operations, child
+  descriptors, and wall-clock execution are bounded. Same-shader publication
+  is serialized; ordinary failures trigger rollback, and interrupted
+  transactions are recovered before the next publication.
 - The vertical slice uses only
   [`AlloyMetal12.h`](include/AlloyMetal12.h) for resource, descriptor,
   transition, rendering, copy, submission, presentation, and digest work.
@@ -37,40 +54,37 @@ that those full proof models are already the command layer's implementation.
 
 ```text
 include/AlloyMetal12.h        one public native API
-Sources/                      runtime and promoted proof implementations
+Sources/Models/               shared descriptor, barrier, and residency models
+Sources/                      runtime, lowering boundary, and linked proofs
 ShaderTools/                  canonical DXIL-to-MSL build-time tool
 Specs/TRACE_FORMAT_V1.md      persisted capture contract
 Tests/                        linked proof and reference clients
-Tools/metal12_replay.m        scene-free replay executable
+Tools/                        linked lowering and scene-free replay clients
 build.sh                      static library and executable build
 run-model-proofs.sh           original model thresholds
 run-shader-corpus.sh          DXIL/MSL GPU-exact corpus
 run-reference-trace.sh        live, capture, replay, and presentation proof
 ```
 
-The Python lowerer is currently a production-local build tool rather than a
-runtime Python dependency. The static library consumes its compiled metallib
-artifact. This design does not satisfy issue #84 Gate 1's literal requirement
-that DXIL-to-MSL sit behind the public header, so the result records that
-criterion as open.
+Python remains a production-local build-time implementation detail rather than
+a frame-time dependency. Callers enter it only through the linked public
+contract; the static runtime consumes the resulting metallib.
 
 ## Model ownership and convergence boundary
 
 The full native proofs live under `Sources/Proofs/`, compile into
-`libAlloyMetal12.a`, and are invoked by tiny separately linked clients. They
-are canonical library-owned test implementations. The trace-driven command
-path currently has smaller, scene-bounded implementations:
+`libAlloyMetal12.a`, and are invoked by tiny separately linked clients:
 
-| Model | Canonical linked proof | First command-path subset | Required shared implementation |
+| Model | Shared implementation | Linked proof | Public command-path configuration |
 | --- | --- | --- | --- |
-| Descriptors | 65,536-slot virtual heap, descriptor copies, generation-sum table cache, 64-page argument-buffer ring, poisoning, and two-queue completion retirement | One constant-buffer view, generation validation, and 120 materializations; the shader receives the buffer directly | Extract `Sources/Models/AM12DescriptorHeap.{h,m}` with slot writes/copies, generation validation, page materialization/cache, and completion retirement; route both the proof and `AM12CreateConstantBufferView`/root-table binding through it |
-| Barriers | Randomized per-subresource/alias access planner, transitive-edge elision, 6,180,618-hazard verifier, and Metal fence/event execution | Declared resource states plus the reference scene's single render-to-copy ordering edge, checked against encoder order | Extract `Sources/Models/AM12BarrierTracker.{h,m}` with access recording, alias/subresource hazard planning, and an emitter contract; route both the proof stream and `AM12TransitionResource`/submission through it |
-| Residency | Placement alias observation, checksummed LRU rematerialization, 20,000-operation churn, advisory-budget pressure, bailout, and evict/retry | Budget reporting and one 976 KB private-heap render-target placement | Extract `Sources/Models/AM12ResidencyManager.{h,m}` with budget accounting, placement/alias retirement, eviction/rematerialization, and pressure policy; route both the proof and runtime resource creation through it |
+| Descriptors | `AM12DescriptorHeap` owns records, generations, forward copies, page materialization/cache, poisoning, and completion retirement | 65,536 slots, 64 pages, two queues, 1,342,296 verified probes | 256 slots and 64 pages; one graphics CBV range at page index 0; 120 page binds govern the rendered pixels |
+| Barriers | `AM12BarrierTracker` owns states, access streams, hazard plans, transitive elision, and verification | 10,000 × 200 randomized streams, 6,180,618 hazards, dropped-edge sensitivity, fence/event execution | One queue and one subresource per logical resource; plan edges emit producer-specific Metal fences; 32 accesses per frame |
+| Residency | `AM12ResidencyManager` owns budget snapshots, placement/alias leases, checksummed LRU rematerialization, and pressure policy | Alias, LRU, 20,000-operation churn, and advisory-budget pressure paths | Committed shared buffers and a 64 MiB placement heap; one 976 KiB render target in the reference path |
 
-That convergence is complete only when each proof and the public command path
-call the same private model implementation and the original thresholds pass
-again. Merely moving proof code into another object file would preserve
-linkage while leaving the architectural gap unchanged.
+The architectural convergence is complete: proofs and public operations now
+call those shared components. The outstanding Gate 1 evidence item is the
+linked residency execution, which deliberately reaches roughly 820 MiB even
+on its safe subset and crosses the Metal advisory budget on its full path.
 
 ## Build and verify
 
@@ -87,9 +101,10 @@ runtime/metal12/run-reference-trace.sh --present
 Without an argument, the model runner executes the descriptor and barrier
 proofs, reports the residency proof as not run, and returns status 3 so a
 partial run cannot be mistaken for a green Gate 1. After explicit host-risk
-approval, pass `--include-residency-pressure`; that proof deliberately
-allocates through Metal's advisory budget and up to one GiB beyond it. It is a
-hardware gate, not a routine CI test.
+approval, `--include-residency-safe` runs placement, LRU, and churn while still
+leaving pressure open; `--include-residency-pressure` runs the complete proof,
+which allocates through Metal's advisory budget and up to one GiB beyond it.
+These are deliberate hardware gates, not routine CI tests.
 
 Shader compilation needs the shared Alloy Wine/FEX runtime. An isolated
 worktree must point `ALLOY_WINE`, `ALLOY_FEX_PREFIX`, and `ALLOY_DXC` at a
@@ -107,9 +122,13 @@ It does not yet claim:
   chains beyond the tested two levels, or broad texture forms;
 - full typed/structured UAV, atomic, wave, depth, or multi-queue semantics;
 - texture/sampler descriptor-page virtualization in the shader corpus;
-- shared full-proof descriptor, barrier, and residency model implementations
-  on the public command path;
-- a DXIL-to-MSL operation behind the public native header;
+- more than one graphics CBV range, or a range mapped anywhere other than
+  descriptor-page index zero;
+- a general DXIL parser independent of the hash-matched DXC disassembly
+  companion accepted by the current public lowering request; the disassembly
+  remains a trusted build input, and its copied hash value is a consistency
+  check against accidental mismatches rather than adversarial authentication
+  of its body;
 - trace portability across arbitrary GPU, OS, or Metal compiler epochs;
 - certification outside the measured M2 Pro 16 GB host.
 

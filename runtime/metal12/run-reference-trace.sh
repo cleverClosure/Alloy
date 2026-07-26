@@ -8,6 +8,7 @@ REPO="$(cd "$ROOT/../.." && pwd)"
 WORK="$ROOT/build/reference"
 HLSL="$ROOT/Tests/Fixtures/reference_scene.hlsl"
 LOWERER="$ROOT/ShaderTools/dxil_to_msl.py"
+COMPILE_KEY_PATH="$WORK/reference-shaders.compile-key"
 PRESENT=0
 COMMON_GIT_DIR="$(git -C "$REPO" rev-parse --path-format=absolute --git-common-dir)"
 SHARED_ROOT="${ALLOY_SHARED_ROOT:-$(dirname "$COMMON_GIT_DIR")}"
@@ -39,6 +40,8 @@ if [[ ! -f $LOWERER ]]; then
 fi
 
 mkdir -p "$WORK"
+"$ROOT/build.sh"
+"$ROOT/build/lowering_api_test"
 
 run_dxc() {
   (
@@ -50,30 +53,77 @@ run_dxc() {
   ) 2>>"$WORK/dxc-stderr.log"
 }
 
+VS_DXIL_ARGS=(-T vs_6_0 -E vs_main -Fo "$WORK/vs.dxil" "$HLSL")
+VS_LL_ARGS=(-T vs_6_0 -E vs_main -Fc "$WORK/vs.ll" "$HLSL")
+PS_DXIL_ARGS=(-T ps_6_0 -E ps_main -Fo "$WORK/ps.dxil" "$HLSL")
+PS_LL_ARGS=(-T ps_6_0 -E ps_main -Fc "$WORK/ps.ll" "$HLSL")
+
+DXC_DIRECTORY="$(cd "$(dirname "$ALLOY_DXC")" && pwd -P)"
+DXC_RESOLVED_PATH="$DXC_DIRECTORY/$(basename "$ALLOY_DXC")"
+HLSL_SHA256="$(shasum -a 256 "$HLSL" | awk '{print $1}')"
+DXC_SHA256="$(shasum -a 256 "$ALLOY_DXC" | awk '{print $1}')"
+REFERENCE_COMPILE_KEY="$(
+  {
+    printf '%s\0' \
+      'alloy-metal12-reference-shader-cache-v1' \
+      'hlsl-path' "$HLSL" \
+      'hlsl-sha256' "$HLSL_SHA256" \
+      'dxc-configured-path' "$ALLOY_DXC" \
+      'dxc-resolved-path' "$DXC_RESOLVED_PATH" \
+      'dxc-sha256' "$DXC_SHA256" \
+      'wine-path' "$ALLOY_WINE" \
+      'fex-prefix' "$ALLOY_FEX_PREFIX"
+    printf '%s\0' 'vs-dxil-args' "${VS_DXIL_ARGS[@]}"
+    printf '%s\0' 'vs-ll-args' "${VS_LL_ARGS[@]}"
+    printf '%s\0' 'ps-dxil-args' "${PS_DXIL_ARGS[@]}"
+    printf '%s\0' 'ps-ll-args' "${PS_LL_ARGS[@]}"
+  } | shasum -a 256 | awk '{print $1}'
+)"
+
+CACHED_COMPILE_KEY=
+if [[ -f $COMPILE_KEY_PATH ]]; then
+  CACHED_COMPILE_KEY="$(<"$COMPILE_KEY_PATH")"
+fi
+
 if [[ ! -s $WORK/vs.dxil || ! -s $WORK/vs.ll ||
-  ! -s $WORK/ps.dxil || ! -s $WORK/ps.ll ]]; then
+  ! -s $WORK/ps.dxil || ! -s $WORK/ps.ll ||
+  $CACHED_COMPILE_KEY != "$REFERENCE_COMPILE_KEY" ]]; then
   if ps aux | rg '[A]lloy/spikes/WINE-001/work/build-2' | rg -qv '/server/wineserver$'; then
     printf 'shared Wine/FEX runtime is busy; wait before compiling shaders\n' >&2
     exit 3
   fi
+  rm -f "$COMPILE_KEY_PATH" \
+    "$WORK/vs.dxil" "$WORK/vs.ll" "$WORK/ps.dxil" "$WORK/ps.ll"
   : >"$WORK/dxc-stderr.log"
   printf '== HLSL -> DXIL (one cached batch)\n'
-  run_dxc -T vs_6_0 -E vs_main -Fo "$WORK/vs.dxil" "$HLSL"
-  run_dxc -T vs_6_0 -E vs_main -Fc "$WORK/vs.ll" "$HLSL"
-  run_dxc -T ps_6_0 -E ps_main -Fo "$WORK/ps.dxil" "$HLSL"
-  run_dxc -T ps_6_0 -E ps_main -Fc "$WORK/ps.ll" "$HLSL"
+  run_dxc "${VS_DXIL_ARGS[@]}"
+  run_dxc "${VS_LL_ARGS[@]}"
+  run_dxc "${PS_DXIL_ARGS[@]}"
+  run_dxc "${PS_LL_ARGS[@]}"
+  if [[ ! -s $WORK/vs.dxil || ! -s $WORK/vs.ll ||
+    ! -s $WORK/ps.dxil || ! -s $WORK/ps.ll ]]; then
+    printf 'dxc reported success without producing all reference shader artifacts\n' >&2
+    exit 1
+  fi
+  TEMPORARY_COMPILE_KEY="$(mktemp "$WORK/.reference-shaders.compile-key.XXXXXX")"
+  printf '%s\n' "$REFERENCE_COMPILE_KEY" >"$TEMPORARY_COMPILE_KEY"
+  mv -f "$TEMPORARY_COMPILE_KEY" "$COMPILE_KEY_PATH"
 else
   printf '== HLSL -> DXIL (using cached batch)\n'
 fi
 
 printf '== DXIL -> MSL -> metallib\n'
 for stage in vs ps; do
-  python3 "$LOWERER" "$WORK/$stage.dxil" "$WORK/$stage.ll" "$WORK"
+  "$ROOT/build/metal12_lower" "$WORK/$stage.dxil" "$WORK/$stage.ll" "$WORK"
   xcrun -sdk macosx metal -O2 -c "$WORK/$stage.metal" -o "$WORK/$stage.air"
 done
+if ! rg -Fq 'device const ulong *am12_descriptor_page [[buffer(0)]]' "$WORK/ps.metal" ||
+  ! rg -Fq 'am12_descriptor_page[0]' "$WORK/ps.metal" ||
+  rg -Fq 'constant float4 *cb0 [[buffer(0)]]' "$WORK/ps.metal"; then
+  printf 'fragment MSL did not preserve the descriptor-page ABI\n' >&2
+  exit 1
+fi
 xcrun -sdk macosx metallib "$WORK/vs.air" "$WORK/ps.air" -o "$WORK/scene.metallib"
-
-"$ROOT/build.sh"
 
 printf '== public command rejection matrix\n'
 "$ROOT/build/command_validation_test" "$WORK/scene.metallib" |

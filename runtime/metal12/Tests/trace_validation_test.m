@@ -25,6 +25,7 @@ typedef enum AM12TestTraceOpcode
     AM12_TEST_TRACE_BEGIN_FRAME = 9,
     AM12_TEST_TRACE_TRANSITION = 10,
     AM12_TEST_TRACE_DRAW = 12,
+    AM12_TEST_TRACE_COPY = 13,
     AM12_TEST_TRACE_OUTPUT = 16,
 } AM12TestTraceOpcode;
 
@@ -403,6 +404,24 @@ static BOOL AM12TestMutateOversizedDraw(NSMutableData *data, const AM12TestTrace
     return AM12TestWriteBytes(data, location->payload_offset, &record, sizeof(record));
 }
 
+static BOOL AM12TestMutateBarrierAccessOverflow(NSMutableData *data,
+                                                const AM12TestTraceIndex *index)
+{
+    const AM12TestRecordLocation *location = AM12TestFindRecord(index, AM12_TEST_TRACE_COPY, 0);
+    if (!location || location->record_offset > data.length ||
+        location->total_size > data.length - location->record_offset)
+        return NO;
+
+    NSData *record =
+        [data subdataWithRange:NSMakeRange(location->record_offset, location->total_size)];
+    size_t insertionOffset = location->record_offset + location->total_size;
+    for (uint32_t copy = 0; copy < 15; copy++)
+        [data replaceBytesInRange:NSMakeRange(insertionOffset, 0)
+                        withBytes:record.bytes
+                           length:record.length];
+    return YES;
+}
+
 static BOOL AM12TestExpectRejection(NSData *data, const char *name)
 {
     NSString *filename =
@@ -486,6 +505,7 @@ int main(int argc, const char *argv[])
             {"descriptor_generation_mismatch", AM12TestMutateDescriptorGeneration},
             {"frame_index_mismatch", AM12TestMutateFrameIndex},
             {"oversized_draw", AM12TestMutateOversizedDraw},
+            {"barrier_access_overflow", AM12TestMutateBarrierAccessOverflow},
         };
 
         size_t passed = 0;

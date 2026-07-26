@@ -21,9 +21,10 @@
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 
+#import "../Models/AM12DescriptorHeap.h"
+
 #include <mach/mach.h>
 #include <mach/mach_time.h>
-#include <stdatomic.h>
 
 #define HEAP_SLOTS 65536
 #define RESOURCE_COUNT 1024
@@ -53,28 +54,6 @@ static const char *probe_source =
     "    scratch[tid] = v;\n"
     "    out[tid] = res[0];\n"
     "}\n";
-
-struct heap_slot
-{
-    uint32_t resource; /* index into resources, or UINT32_MAX */
-    uint64_t generation;
-};
-
-struct page
-{
-    id<MTLBuffer> buffer;
-    _Atomic int in_flight;
-    int cached; /* currently owned by the table cache */
-    uint32_t next_free;
-};
-
-struct table_cache
-{
-    int valid;
-    uint32_t page_index;
-    uint32_t offset, count;
-    uint64_t generation_sum;
-};
 
 struct pending
 {
@@ -138,126 +117,87 @@ int AM12RunDescriptorHeapProof(void)
         id<MTLCommandQueue> queues[2] = {[device newCommandQueue], [device newCommandQueue]};
 
         /* self-identifying resources + the poison sentinel */
-        NSMutableArray<id<MTLBuffer>> *resources = [NSMutableArray array];
-        for (uint32_t i = 0; i < RESOURCE_COUNT; i++)
-        {
-            id<MTLBuffer> buf = [device newBufferWithLength:16
-                                                    options:MTLResourceStorageModeShared];
-            *(uint32_t *)buf.contents = i;
-            [resources addObject:buf];
-        }
         id<MTLBuffer> poison = [device newBufferWithLength:16 options:MTLResourceStorageModeShared];
+        if (!poison)
+        {
+            puts("poison resource creation failed");
+            return 2;
+        }
         *(uint32_t *)poison.contents = POISON_ID;
 
-        /* virtual heap */
-        static struct heap_slot heap[HEAP_SLOTS];
-        uint64_t next_generation = 1;
-        for (uint32_t i = 0; i < HEAP_SLOTS; i++)
-            heap[i] = (struct heap_slot){UINT32_MAX, 0};
-
-        /* page ring */
-        static struct page pages[PAGE_COUNT];
-        __block uint32_t free_head = 0;
-        NSLock *pool_lock = [[NSLock alloc] init];
-        dispatch_semaphore_t free_pages = dispatch_semaphore_create(0);
-        for (uint32_t i = 0; i < PAGE_COUNT; i++)
+        AM12DescriptorHeapConfiguration heapConfiguration = {
+            .slot_count = HEAP_SLOTS,
+            .resource_capacity = RESOURCE_COUNT,
+            .page_entry_count = PAGE_ENTRIES,
+            .page_count = PAGE_COUNT,
+            .invalid_resource_identifier = UINT32_MAX,
+        };
+        AM12DescriptorHeap *descriptorHeap =
+            [[AM12DescriptorHeap alloc] initWithDevice:device
+                                         configuration:heapConfiguration
+                                          poisonBuffer:poison];
+        if (!descriptorHeap)
         {
-            pages[i].buffer = [device newBufferWithLength:PAGE_ENTRIES * sizeof(uint64_t)
-                                                  options:MTLResourceStorageModeShared];
-            atomic_store(&pages[i].in_flight, 0);
-            pages[i].cached = 0;
-            pages[i].next_free = i + 1 < PAGE_COUNT ? i + 1 : UINT32_MAX;
-            dispatch_semaphore_signal(free_pages);
+            puts("descriptor heap creation failed");
+            return 2;
         }
-
-        uint64_t stall_count = 0, cache_hits = 0, cache_misses = 0;
-        static _Atomic int pages_out;
-        static _Atomic int max_pages_out;
-        __block struct table_cache cache = {0};
+        for (uint32_t resource = 0; resource < RESOURCE_COUNT; resource++)
+        {
+            id<MTLBuffer> buffer = [device newBufferWithLength:16
+                                                       options:MTLResourceStorageModeShared];
+            if (!buffer)
+            {
+                puts("descriptor resource creation failed");
+                return 2;
+            }
+            *(uint32_t *)buffer.contents = resource;
+            if (![descriptorHeap registerBuffer:buffer forResourceIdentifier:resource])
+            {
+                puts("descriptor resource registration failed");
+                return 2;
+            }
+        }
 
         /* metric A: raw descriptor-update cost (heap record writes) */
         uint64_t t0 = mach_absolute_time();
         for (uint32_t i = 0; i < 1000000; i++)
         {
             uint32_t slot = i % HEAP_SLOTS;
-            heap[slot].resource = i % RESOURCE_COUNT;
-            heap[slot].generation = next_generation++;
+            if (![descriptorHeap writeResourceIdentifier:i % RESOURCE_COUNT
+                                                  atSlot:slot
+                                              generation:nil])
+            {
+                puts("descriptor update failed");
+                return 2;
+            }
         }
         uint64_t t1 = mach_absolute_time();
         printf("descriptor update: %.1f ns/descriptor (1M heap writes)\n",
                (double)(t1 - t0) * timebase_ns() / 1e6);
-
-        /* helper blocks */
-        uint32_t (^alloc_page)(void) = ^uint32_t {
-          if (dispatch_semaphore_wait(free_pages, DISPATCH_TIME_NOW))
-          {
-              /* pool empty: bounded-memory stall until a page retires */
-              dispatch_semaphore_wait(free_pages, DISPATCH_TIME_FOREVER);
-          }
-          [pool_lock lock];
-          uint32_t index = free_head;
-          free_head = pages[index].next_free;
-          [pool_lock unlock];
-          return index;
-        };
-        void (^release_page)(uint32_t) = ^(uint32_t index) {
-          [pool_lock lock];
-          /* poison before returning: any stale consumer reads the sentinel */
-          uint64_t poison_addr = poison.gpuAddress;
-          uint64_t *entries = (uint64_t *)pages[index].buffer.contents;
-          for (uint32_t e = 0; e < PAGE_ENTRIES; e++)
-              entries[e] = poison_addr;
-          pages[index].next_free = free_head;
-          free_head = index;
-          [pool_lock unlock];
-          dispatch_semaphore_signal(free_pages);
-        };
-
-        __block uint64_t encode_ns_total = 0, encode_descriptors = 0;
-
-        /* encode a table (offset,count) into a page, honoring the cache */
-        uint32_t (^bind_table)(uint32_t, uint32_t, uint64_t *) =
-            ^uint32_t(uint32_t offset, uint32_t count, uint64_t *stall_local) {
-              uint64_t generation_sum = 0;
-              for (uint32_t i = 0; i < count; i++)
-                  generation_sum += heap[offset + i].generation;
-              if (cache.valid && cache.offset == offset && cache.count == count &&
-                  cache.generation_sum == generation_sum)
-                  return cache.page_index;
-
-              uint64_t e0 = mach_absolute_time();
-              uint32_t index = alloc_page();
-              uint64_t *entries = (uint64_t *)pages[index].buffer.contents;
-              for (uint32_t i = 0; i < count; i++)
-              {
-                  uint32_t r = heap[offset + i].resource;
-                  entries[i] = r == UINT32_MAX ? poison.gpuAddress : resources[r].gpuAddress;
-              }
-              encode_ns_total += (uint64_t)((mach_absolute_time() - e0) * timebase_ns());
-              encode_descriptors += count;
-
-              if (cache.valid && !atomic_load(&pages[cache.page_index].in_flight))
-              {
-                  pages[cache.page_index].cached = 0;
-                  release_page(cache.page_index);
-              }
-              else if (cache.valid)
-                  pages[cache.page_index].cached = 0; /* retire via completion */
-              cache = (struct table_cache){1, index, offset, count, generation_sum};
-              pages[index].cached = 1;
-              (void)stall_local;
-              return index;
-            };
 
         /* metric B: detector sensitivity - deliberate early recycle must fail */
         {
             uint32_t offset = 0, count = 64;
             for (uint32_t i = 0; i < count; i++)
             {
-                heap[i].resource = i;
-                heap[i].generation = next_generation++;
+                if (![descriptorHeap writeResourceIdentifier:i atSlot:i generation:nil])
+                {
+                    puts("sensitivity descriptor update failed");
+                    return 3;
+                }
             }
-            uint32_t page_index = bind_table(offset, count, &stall_count);
+            AM12DescriptorTable table;
+            if (![descriptorHeap materializeTableAtOffset:offset count:count table:&table])
+            {
+                puts("sensitivity table materialization failed");
+                return 3;
+            }
+            id<MTLBuffer> tableBuffer = [descriptorHeap bufferForTable:table];
+            if (!tableBuffer)
+            {
+                puts("sensitivity table lookup failed");
+                return 3;
+            }
             id<MTLBuffer> indices = [device newBufferWithLength:count * sizeof(uint32_t)
                                                         options:MTLResourceStorageModeShared];
             id<MTLBuffer> out = [device newBufferWithLength:count * sizeof(uint32_t)
@@ -271,24 +211,33 @@ int AM12RunDescriptorHeapProof(void)
             id<MTLCommandBuffer> cb = [queues[0] commandBuffer];
             id<MTLComputeCommandEncoder> enc = [cb computeCommandEncoder];
             [enc setComputePipelineState:pipeline];
-            [enc setBuffer:pages[page_index].buffer offset:0 atIndex:0];
+            [enc setBuffer:tableBuffer offset:0 atIndex:0];
             [enc setBuffer:indices offset:0 atIndex:1];
             [enc setBuffer:out offset:0 atIndex:2];
             [enc setBytes:&count length:sizeof(count) atIndex:3];
             [enc setBuffer:scratch offset:0 atIndex:4];
             for (uint32_t i = 0; i < count; i++)
-                [enc useResource:resources[heap[i].resource] usage:MTLResourceUsageRead];
+            {
+                AM12HeapDescriptorRecord record;
+                if (![descriptorHeap descriptorAtSlot:i record:&record])
+                    return 3;
+                id<MTLBuffer> resource =
+                    [descriptorHeap bufferForResourceIdentifier:record.resource_identifier];
+                if (!resource)
+                    return 3;
+                [enc useResource:resource usage:MTLResourceUsageRead];
+            }
             [enc useResource:poison usage:MTLResourceUsageRead];
             [enc dispatchThreads:MTLSizeMake(count, 1, 1)
                 threadsPerThreadgroup:MTLSizeMake(64, 1, 1)];
             [enc endEncoding];
 
             /* VIOLATION on purpose: poison the page before the GPU runs */
-            cache.valid = 0;
-            pages[page_index].cached = 0;
-            release_page(page_index);
-            page_index = alloc_page(); /* reclaim so pool stays consistent */
-            release_page(page_index);
+            if (![descriptorHeap forceRecycleTableImmediatelyForTesting:table])
+            {
+                puts("sensitivity forced recycle failed");
+                return 3;
+            }
 
             [cb commit];
             [cb waitUntilCompleted];
@@ -302,6 +251,7 @@ int AM12RunDescriptorHeapProof(void)
             if (poisoned != count)
                 return 3;
         }
+        AM12DescriptorHeapStatistics cacheBaseline = descriptorHeap.statistics;
 
         /* metric C: randomized model test, two queues, in-flight window */
         srandom(1234);
@@ -332,19 +282,19 @@ int AM12RunDescriptorHeapProof(void)
                 /* random mutations: descriptor writes + copies */
                 for (int m = 0; m < 32; m++)
                 {
-                    uint32_t slot = random() % HEAP_SLOTS;
-                    heap[slot].resource = random() % RESOURCE_COUNT;
-                    heap[slot].generation = next_generation++;
+                    uint32_t slot = (uint32_t)random() % HEAP_SLOTS;
+                    uint32_t resource = (uint32_t)random() % RESOURCE_COUNT;
+                    if (![descriptorHeap writeResourceIdentifier:resource
+                                                          atSlot:slot
+                                                      generation:nil])
+                        return 4;
                 }
                 for (int c = 0; c < 4; c++)
                 {
-                    uint32_t dst = random() % (HEAP_SLOTS - 64);
-                    uint32_t src = random() % (HEAP_SLOTS - 64);
-                    for (int i = 0; i < 64; i++)
-                    {
-                        heap[dst + i] = heap[src + i];
-                        heap[dst + i].generation = next_generation++;
-                    }
+                    uint32_t dst = (uint32_t)random() % (HEAP_SLOTS - 64);
+                    uint32_t src = (uint32_t)random() % (HEAP_SLOTS - 64);
+                    if (![descriptorHeap copyDescriptorsFromSlot:src toSlot:dst count:64])
+                        return 4;
                 }
 
                 /* random table, sometimes repeated to exercise the cache */
@@ -357,22 +307,18 @@ int AM12RunDescriptorHeapProof(void)
                 }
                 else
                 {
-                    count = 32 + random() % (PAGE_ENTRIES - 32);
-                    offset = random() % (HEAP_SLOTS - count);
+                    count = 32u + (uint32_t)random() % (PAGE_ENTRIES - 32);
+                    offset = (uint32_t)random() % (HEAP_SLOTS - count);
                     last_offset = offset;
                     last_count = count;
                 }
 
-                uint64_t generation_sum = 0;
-                for (uint32_t i = 0; i < count; i++)
-                    generation_sum += heap[offset + i].generation;
-                int was_hit = cache.valid && cache.offset == offset && cache.count == count &&
-                              cache.generation_sum == generation_sum;
-                uint32_t page_index = bind_table(offset, count, &stall_count);
-                if (was_hit)
-                    cache_hits++;
-                else
-                    cache_misses++;
+                AM12DescriptorTable table;
+                if (![descriptorHeap materializeTableAtOffset:offset count:count table:&table])
+                    return 4;
+                id<MTLBuffer> tableBuffer = [descriptorHeap bufferForTable:table];
+                if (!tableBuffer)
+                    return 4;
 
                 /* probe: random dynamic indices into the table */
                 uint32_t probes = PROBE_THREADS < count ? PROBE_THREADS : count * 4;
@@ -384,9 +330,13 @@ int AM12RunDescriptorHeapProof(void)
                 uint32_t *expected = malloc(probes * sizeof(uint32_t));
                 for (uint32_t i = 0; i < probes; i++)
                 {
-                    idx[i] = random() % count;
-                    uint32_t r = heap[offset + idx[i]].resource;
-                    expected[i] = r == UINT32_MAX ? POISON_ID : r;
+                    idx[i] = (uint32_t)random() % count;
+                    AM12HeapDescriptorRecord record;
+                    if (![descriptorHeap descriptorAtSlot:offset + idx[i] record:&record])
+                        return 4;
+                    expected[i] = record.resource_identifier == UINT32_MAX
+                                      ? POISON_ID
+                                      : record.resource_identifier;
                 }
 
                 id<MTLBuffer> scratch = [device newBufferWithLength:probes * sizeof(uint32_t)
@@ -394,40 +344,29 @@ int AM12RunDescriptorHeapProof(void)
                 id<MTLCommandBuffer> cb = [queues[d & 1] commandBuffer];
                 id<MTLComputeCommandEncoder> enc = [cb computeCommandEncoder];
                 [enc setComputePipelineState:pipeline];
-                [enc setBuffer:pages[page_index].buffer offset:0 atIndex:0];
+                [enc setBuffer:tableBuffer offset:0 atIndex:0];
                 [enc setBuffer:indices offset:0 atIndex:1];
                 [enc setBuffer:out offset:0 atIndex:2];
                 [enc setBytes:&probes length:sizeof(probes) atIndex:3];
                 [enc setBuffer:scratch offset:0 atIndex:4];
                 for (uint32_t i = 0; i < count; i++)
                 {
-                    uint32_t r = heap[offset + i].resource;
-                    [enc useResource:(r == UINT32_MAX ? poison : resources[r])
-                               usage:MTLResourceUsageRead];
+                    AM12HeapDescriptorRecord record;
+                    if (![descriptorHeap descriptorAtSlot:offset + i record:&record])
+                        return 4;
+                    id<MTLBuffer> resource =
+                        [descriptorHeap bufferForResourceIdentifier:record.resource_identifier];
+                    if (!resource)
+                        return 4;
+                    [enc useResource:resource usage:MTLResourceUsageRead];
                 }
                 [enc useResource:poison usage:MTLResourceUsageRead];
                 [enc dispatchThreads:MTLSizeMake(probes, 1, 1)
                     threadsPerThreadgroup:MTLSizeMake(64, 1, 1)];
                 [enc endEncoding];
 
-                if (atomic_fetch_add(&pages[page_index].in_flight, 1) == 0)
-                {
-                    int now = atomic_fetch_add(&pages_out, 1) + 1;
-                    int seen_max = atomic_load(&max_pages_out);
-                    while (now > seen_max &&
-                           !atomic_compare_exchange_weak(&max_pages_out, &seen_max, now))
-                        ;
-                }
-                uint32_t retire_index = page_index;
-                [cb addCompletedHandler:^(id<MTLCommandBuffer> done) {
-                  (void)done;
-                  if (atomic_fetch_sub(&pages[retire_index].in_flight, 1) == 1)
-                  {
-                      atomic_fetch_sub(&pages_out, 1);
-                      if (!pages[retire_index].cached)
-                          release_page(retire_index);
-                  }
-                }];
+                if (![descriptorHeap retainTable:table untilCommandBufferCompletes:cb])
+                    return 4;
                 [cb commit];
 
                 if (window_size == IN_FLIGHT_WINDOW)
@@ -448,16 +387,21 @@ int AM12RunDescriptorHeapProof(void)
             window_size--;
         }
 
+        AM12DescriptorHeapStatistics stats = descriptorHeap.statistics;
+        uint64_t cacheHits = stats.cache_hits - cacheBaseline.cache_hits;
+        uint64_t cacheMisses = stats.cache_misses - cacheBaseline.cache_misses;
         printf("randomized model: %llu probes verified, %llu mismatches\n",
                (unsigned long long)verified, (unsigned long long)mismatches);
         printf("page encode: %.1f ns/descriptor (%llu descriptors)\n",
-               encode_descriptors ? (double)encode_ns_total / encode_descriptors : 0.0,
-               (unsigned long long)encode_descriptors);
+               stats.encoded_descriptors
+                   ? (double)stats.encode_nanoseconds / (double)stats.encoded_descriptors
+                   : 0.0,
+               (unsigned long long)stats.encoded_descriptors);
         printf("table cache: %llu hits / %llu misses (%.1f%% hit on repeat-bind mix)\n",
-               (unsigned long long)cache_hits, (unsigned long long)cache_misses,
-               100.0 * cache_hits / (cache_hits + cache_misses));
-        printf("page pool: %d pages, high-water in-flight %d, stalls %llu\n", PAGE_COUNT,
-               atomic_load(&max_pages_out), (unsigned long long)stall_count);
+               (unsigned long long)cacheHits, (unsigned long long)cacheMisses,
+               100.0 * (double)cacheHits / (double)(cacheHits + cacheMisses));
+        printf("page pool: %d pages, high-water in-flight %u, stalls %llu\n", PAGE_COUNT,
+               stats.max_pages_in_flight, (unsigned long long)stats.page_stalls);
         printf("resident memory: %.1f MB\n", resident_mb());
 
         if (mismatches)

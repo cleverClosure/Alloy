@@ -4,12 +4,14 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-RUN_PRESSURE=0
+RESIDENCY_MODE=none
 
 if [[ ${1:-} == --include-residency-pressure ]]; then
-  RUN_PRESSURE=1
+  RESIDENCY_MODE=pressure
+elif [[ ${1:-} == --include-residency-safe ]]; then
+  RESIDENCY_MODE=safe
 elif (($#)); then
-  printf 'usage: %s [--include-residency-pressure]\n' "$0" >&2
+  printf 'usage: %s [--include-residency-safe|--include-residency-pressure]\n' "$0" >&2
   exit 2
 fi
 
@@ -21,10 +23,20 @@ printf '== descriptor heap proof\n'
 printf '== barrier tracker proof\n'
 "$ROOT/build/barrier_tracker_test"
 
-if ((RUN_PRESSURE == 0)); then
+if [[ $RESIDENCY_MODE == none ]]; then
   printf '%s\n' \
-    '== residency proof: NOT RUN' \
-    'This proof deliberately allocates through Metal'\''s advisory budget and up to 1 GiB beyond it.' \
+    '== residency proofs: NOT RUN' \
+    'The safe path can still peak around 820 MiB; use --include-residency-safe deliberately.' \
+    'The full proof allocates through Metal'\''s advisory budget and up to 1 GiB beyond it.' \
+    'Use --include-residency-pressure only after explicit host-risk approval.' >&2
+  exit 3
+fi
+
+if [[ $RESIDENCY_MODE == safe ]]; then
+  printf '== residency proof (non-oversubscribing checks)\n'
+  "$ROOT/build/residency_safe_test"
+  printf '%s\n' \
+    '== residency pressure proof: NOT RUN' \
     'Re-run with --include-residency-pressure only after explicit host-risk approval.' >&2
   exit 3
 fi

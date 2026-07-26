@@ -15,15 +15,25 @@
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 
-#include <mach/mach_time.h>
+#import "../Models/AM12ResidencyManager.h"
+
 #include <mach/mach.h>
+#include <mach/mach_time.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #define CHUNK_MB 64
 #define CHUNK_BYTES ((size_t)CHUNK_MB << 20)
 #define PAGE_STRIDE 16384
 #define CHURN_ITERATIONS 20000
-#define BAILOUT_FLOOR ((size_t)2 << 30) /* stop pushing if less remains */
+#define CACHE_CAPACITY 12
+#define CACHE_TOUCHES 200
+#define CACHE_WORKING_SET 40
+#define PLACEMENT_HEAP_BYTES ((size_t)64 << 20)
+#define PRESSURE_MARGIN_BYTES ((uint64_t)1 << 30)
+#define PRESSURE_EVICTION_BATCH 4
+#define BAILOUT_FLOOR_BYTES ((uint64_t)2 << 30) /* stop pushing if less remains */
 
 static size_t available_memory(void)
 {
@@ -93,7 +103,7 @@ static uint64_t sum_chunk(id<MTLBuffer> buffer)
     return checksum;
 }
 
-int AM12RunResidencyProof(void)
+static int run_residency_proof(BOOL include_pressure)
 {
     @autoreleasepool
     {
@@ -104,112 +114,145 @@ int AM12RunResidencyProof(void)
             return 1;
         }
 
+        AM12ResidencyPressurePolicy pressure_policy = {
+            .oversubscription_margin_bytes = PRESSURE_MARGIN_BYTES,
+            .bailout_floor_bytes = BAILOUT_FLOOR_BYTES,
+            .eviction_batch_count = PRESSURE_EVICTION_BATCH,
+        };
+        AM12ResidencyManager *residency =
+            [[AM12ResidencyManager alloc] initWithDevice:device
+                                           cacheCapacity:CACHE_CAPACITY
+                                          pressurePolicy:pressure_policy];
+
         /* --- budget reporting ------------------------------------------- */
-        uint64_t budget = device.recommendedMaxWorkingSetSize;
-        uint64_t baseline = device.currentAllocatedSize;
+        AM12ResidencyBudget budget = residency.budgetSnapshot;
         printf("budget: recommended max %.0f MB, baseline usage %.1f MB, "
                "available-for-reservation %.0f MB\n",
-               mb(budget), mb(baseline), mb(budget - baseline));
+               mb(budget.recommended_max_working_set_bytes), mb(budget.current_allocated_bytes),
+               mb(budget.available_for_reservation_bytes));
 
         /* --- committed vs placed + aliasing lifetime -------------------- */
+        NSError *error = nil;
+        if (![residency openPlacementHeapWithSize:PLACEMENT_HEAP_BYTES
+                                      storageMode:MTLStorageModeShared
+                                            error:&error])
+        {
+            printf("placement heap creation failed: %s\n", error.localizedDescription.UTF8String);
+            return 2;
+        }
         @autoreleasepool
         {
-            MTLHeapDescriptor *heap_desc = [MTLHeapDescriptor new];
-            heap_desc.type = MTLHeapTypePlacement;
-            heap_desc.storageMode = MTLStorageModeShared;
-            heap_desc.size = 64 << 20;
-            id<MTLHeap> heap = [device newHeapWithDescriptor:heap_desc];
-            if (!heap)
+            AM12ResidencyLease *committed_lease =
+                [residency newCommittedBufferWithLength:1 << 20
+                                                options:MTLResourceStorageModeShared];
+            AM12ResidencyLease *placed_a_lease =
+                [residency newPlacedBufferWithLength:8 << 20
+                                             options:MTLResourceStorageModeShared
+                                              offset:0
+                                               error:&error];
+            if (!committed_lease || !placed_a_lease)
             {
-                puts("placement heap creation failed");
+                printf("initial residency allocation failed: %s\n",
+                       error.localizedDescription.UTF8String ?: "committed buffer");
                 return 2;
             }
-            id<MTLBuffer> committed = [device newBufferWithLength:1 << 20
-                                                          options:MTLResourceStorageModeShared];
-            id<MTLBuffer> placed_a = [heap newBufferWithLength:8 << 20
-                                                       options:MTLResourceStorageModeShared
-                                                        offset:0];
+            id<MTLBuffer> committed = (id<MTLBuffer>)committed_lease.resource;
+            id<MTLBuffer> placed_a = (id<MTLBuffer>)placed_a_lease.resource;
             memset(committed.contents, 0x11, 1 << 20);
             memset(placed_a.contents, 0xAA, 8 << 20);
 
             /* activate B over the same range; A's bytes must be observably gone
              * after B writes - the model MUST retire A on alias activation */
-            id<MTLBuffer> placed_b = [heap newBufferWithLength:8 << 20
-                                                       options:MTLResourceStorageModeShared
-                                                        offset:0];
+            AM12ResidencyLease *placed_b_lease =
+                [residency newPlacedBufferWithLength:8 << 20
+                                             options:MTLResourceStorageModeShared
+                                              offset:0
+                                               error:&error];
+            if (!placed_b_lease)
+            {
+                printf("alias placement failed: %s\n", error.localizedDescription.UTF8String);
+                return 3;
+            }
+            id<MTLBuffer> placed_b = (id<MTLBuffer>)placed_b_lease.resource;
             memset(placed_b.contents, 0xBB, 8 << 20);
             uint8_t stale = ((uint8_t *)placed_a.contents)[4096];
+            AM12ResidencyPlacementStats placement_stats = residency.placementStats;
+            BOOL alias_retired = placed_a_lease.isRetired && !placed_b_lease.isRetired &&
+                                 placement_stats.alias_retirement_count == 1;
             printf("aliasing: A@0 then B@0 written; A now reads 0x%02X %s\n", stale,
-                   stale == 0xBB ? "(overlap real, retire rule load-bearing)"
-                                 : "(UNEXPECTED - no overlap?)");
-            if (stale != 0xBB)
+                   stale == 0xBB && alias_retired ? "(overlap real, retire rule load-bearing)"
+                                                  : "(UNEXPECTED - overlap or retire rule failed)");
+            if (stale != 0xBB || !alias_retired)
                 return 3;
+
+            [residency retireLease:placed_b_lease];
+            [residency retireLease:committed_lease];
             placed_a = nil;
             placed_b = nil;
             committed = nil;
-            heap = nil;
+            placed_a_lease = nil;
+            placed_b_lease = nil;
+            committed_lease = nil;
+        }
+        if (![residency closePlacementHeap:&error])
+        {
+            printf("placement heap retirement failed: %s\n", error.localizedDescription.UTF8String);
+            return 3;
         }
 
         /* --- pressure-aware LRU chunk cache ----------------------------- */
-        uint32_t cache_capacity = 12; /* 768 MB target working set */
-        NSMutableArray<id<MTLBuffer>> *cache = [NSMutableArray array];
-        NSMutableArray<NSNumber *> *cache_ids = [NSMutableArray array];
-        static uint64_t checksums[4096];
-        uint32_t evictions = 0, rematerializations = 0, mismatches = 0;
+        AM12ResidencyBufferMaterializer materializer =
+            ^uint64_t(id<MTLBuffer> buffer, uint32_t key) {
+              return fill_chunk(buffer, key);
+            };
+        AM12ResidencyBufferChecksum checksum = ^uint64_t(id<MTLBuffer> buffer) {
+          return sum_chunk(buffer);
+        };
 
-        for (uint32_t touch = 0; touch < 200; touch++)
+        for (uint32_t touch = 0; touch < CACHE_TOUCHES; touch++)
         {
             @autoreleasepool
             {
-                uint32_t chunk = random() % 40;
-                NSUInteger found = [cache_ids indexOfObject:@(chunk)];
-
-                if (found != NSNotFound)
+                uint32_t chunk = (uint32_t)random() % CACHE_WORKING_SET;
+                id<MTLBuffer> buffer =
+                    [residency touchCachedBufferForKey:chunk
+                                                length:CHUNK_BYTES
+                                               options:MTLResourceStorageModeShared
+                                          materializer:materializer
+                                              checksum:checksum
+                                                 error:&error];
+                if (!buffer)
                 {
-                    /* LRU refresh */
-                    id<MTLBuffer> buf = cache[found];
-                    [cache removeObjectAtIndex:found];
-                    [cache_ids removeObjectAtIndex:found];
-                    [cache addObject:buf];
-                    [cache_ids addObject:@(chunk)];
-                    continue;
-                }
-                while (cache.count >= cache_capacity)
-                {
-                    [cache removeObjectAtIndex:0];
-                    [cache_ids removeObjectAtIndex:0];
-                    evictions++;
-                }
-                id<MTLBuffer> buf = [device newBufferWithLength:CHUNK_BYTES
-                                                        options:MTLResourceStorageModeShared];
-                if (!buf)
-                {
-                    puts("cache allocation failed under normal pressure");
+                    if (error.code == AM12ResidencyErrorChecksumMismatch)
+                    {
+                        AM12ResidencyCacheStats failed_stats = residency.cacheStats;
+                        printf("eviction cache: %llu evictions, "
+                               "%llu rematerializations verified, %llu mismatches\n",
+                               (unsigned long long)failed_stats.eviction_count,
+                               (unsigned long long)failed_stats.rematerialization_count,
+                               (unsigned long long)failed_stats.mismatch_count);
+                        return 5;
+                    }
+                    printf("cache allocation failed under normal pressure: %s\n",
+                           error.localizedDescription.UTF8String);
                     return 4;
                 }
-                uint64_t sum = fill_chunk(buf, chunk);
-                if (checksums[chunk] && checksums[chunk] != sum)
-                    mismatches++;
-                else if (checksums[chunk])
-                    rematerializations++;
-                checksums[chunk] = sum;
-                if (sum_chunk(buf) != sum)
-                    mismatches++;
-                [cache addObject:buf];
-                [cache_ids addObject:@(chunk)];
             }
         }
-        printf("eviction cache: %u evictions, %u rematerializations verified, %u mismatches\n",
-               evictions, rematerializations, mismatches);
-        if (mismatches)
+        AM12ResidencyCacheStats cache_stats = residency.cacheStats;
+        printf("eviction cache: %llu evictions, %llu rematerializations verified, "
+               "%llu mismatches\n",
+               (unsigned long long)cache_stats.eviction_count,
+               (unsigned long long)cache_stats.rematerialization_count,
+               (unsigned long long)cache_stats.mismatch_count);
+        if (cache_stats.mismatch_count)
             return 5;
-        [cache removeAllObjects];
-        [cache_ids removeAllObjects];
+        [residency clearResidentCache];
 
         /* --- long-session churn ------------------------------------------ */
         uint64_t churn_start = drain(device);
         uint64_t peak = churn_start;
-        NSMutableArray<id<MTLBuffer>> *pool = [NSMutableArray array];
+        NSMutableArray<AM12ResidencyLease *> *pool = [NSMutableArray array];
         uint64_t t0 = mach_absolute_time();
 
         for (uint32_t i = 0; i < CHURN_ITERATIONS; i++)
@@ -217,16 +260,22 @@ int AM12RunResidencyProof(void)
             @autoreleasepool
             {
                 if (pool.count > 96 || (pool.count && (random() & 1)))
-                    [pool removeObjectAtIndex:random() % pool.count];
+                {
+                    NSUInteger victim = (NSUInteger)random() % pool.count;
+                    [residency retireLease:pool[victim]];
+                    [pool removeObjectAtIndex:victim];
+                }
                 else
                 {
                     size_t size = (size_t)(1 + random() % 16) << 20;
-                    id<MTLBuffer> buf = [device newBufferWithLength:size
-                                                            options:MTLResourceStorageModeShared];
-                    if (buf)
+                    AM12ResidencyLease *lease =
+                        [residency newCommittedBufferWithLength:size
+                                                        options:MTLResourceStorageModeShared];
+                    if (lease)
                     {
+                        id<MTLBuffer> buf = (id<MTLBuffer>)lease.resource;
                         *(uint32_t *)buf.contents = i; /* touch first page */
-                        [pool addObject:buf];
+                        [pool addObject:lease];
                     }
                 }
             }
@@ -238,6 +287,8 @@ int AM12RunResidencyProof(void)
             }
         }
         uint64_t t1 = mach_absolute_time();
+        for (AM12ResidencyLease *lease in pool)
+            [residency retireLease:lease];
         [pool removeAllObjects];
         mach_timebase_info_data_t tb;
         mach_timebase_info(&tb);
@@ -252,57 +303,55 @@ int AM12RunResidencyProof(void)
             return 6;
         }
 
+        if (!include_pressure)
+        {
+            puts("m12-004 residency safe checks ok");
+            return 0;
+        }
+
         /* --- guarded oversubscription push ------------------------------- */
-        NSMutableArray<id<MTLBuffer>> *pressure = [NSMutableArray array];
-        uint64_t pushed = 0;
-        uint32_t alloc_failures = 0, recovered = 0;
         int bailed = 0;
         uint64_t push_base = drain(device);
-        uint64_t target = budget + ((uint64_t)1 << 30);
 
         printf("oversubscription base after drain: %.1f MB\n", mb(push_base));
 
-        while (device.currentAllocatedSize < target)
+        for (;;)
         {
             @autoreleasepool
             {
-                if (available_memory() < BAILOUT_FLOOR)
+                AM12ResidencyPressureDecision decision =
+                    [residency pressureDecisionForCurrentAllocatedBytes:device.currentAllocatedSize
+                                                   availableSystemBytes:available_memory()];
+                if (decision == AM12ResidencyPressureDecisionReachedTarget)
+                    break;
+                if (decision == AM12ResidencyPressureDecisionBailOut)
                 {
                     bailed = 1;
                     break;
                 }
-                id<MTLBuffer> buf = [device newBufferWithLength:CHUNK_BYTES
+
+                id<MTLBuffer> buf =
+                    [residency allocatePressureBufferWithLength:CHUNK_BYTES
                                                         options:MTLResourceStorageModeShared];
                 if (!buf)
-                {
-                    alloc_failures++;
-                    if (pressure.count >= 4)
-                    {
-                        /* graceful path: evict and retry once */
-                        [pressure removeObjectsInRange:NSMakeRange(0, 4)];
-                        buf = [device newBufferWithLength:CHUNK_BYTES
-                                                  options:MTLResourceStorageModeShared];
-                        if (buf)
-                            recovered++;
-                    }
-                    if (!buf)
-                        break;
-                }
+                    break;
                 /* touch a quarter of the pages: enough commit to be real without
                  * swamping the machine */
                 uint8_t *base = buf.contents;
                 for (size_t off = 0; off < CHUNK_BYTES; off += PAGE_STRIDE * 4)
                     base[off] = (uint8_t)off;
-                pushed += CHUNK_BYTES;
-                [pressure addObject:buf];
             }
         }
         uint64_t at_peak = device.currentAllocatedSize;
-        [pressure removeAllObjects];
+        AM12ResidencyPressureStats pressure_stats = residency.pressureStats;
+        [residency clearPressureAllocations];
         uint64_t settled = drain(device);
         printf("oversubscription: pushed %.0f MB to %.0f MB allocated "
-               "(budget %.0f), %u alloc failures, %u evict-retry recoveries, %s\n",
-               mb(pushed), mb(at_peak), mb(budget), alloc_failures, recovered,
+               "(budget %.0f), %llu alloc failures, %llu evict-retry recoveries, %s\n",
+               mb(pressure_stats.successful_allocation_bytes), mb(at_peak),
+               mb(budget.recommended_max_working_set_bytes),
+               (unsigned long long)pressure_stats.allocation_failure_count,
+               (unsigned long long)pressure_stats.evict_retry_recovery_count,
                bailed ? "bailed at system floor (graceful)" : "reached target");
         uint64_t foot_after = footprint();
         printf("post-release: metal allocated (drained) %.1f MB, process footprint %.1f MB\n",
@@ -317,4 +366,14 @@ int AM12RunResidencyProof(void)
         puts("m12-004 residency ok");
         return 0;
     }
+}
+
+int AM12RunResidencySafeProof(void)
+{
+    return run_residency_proof(NO);
+}
+
+int AM12RunResidencyProof(void)
+{
+    return run_residency_proof(YES);
 }

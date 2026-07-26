@@ -34,6 +34,9 @@ extern "C"
 #define AM12_MAX_FRAMES 10000u
 #define AM12_MAX_TRACE_RECORDS 1000000u
 #define AM12_MAX_ENTRY_NAME_BYTES 1024u
+#define AM12_MAX_PATH_BYTES 4096u
+/* Draw, copy, and portable present preflight each reserve two accesses. */
+#define AM12_MAX_BARRIER_ACCESSES_PER_FRAME 32u
 
     typedef struct AM12Device AM12Device;
     typedef uint32_t AM12Resource;
@@ -73,7 +76,7 @@ extern "C"
         uint32_t descriptor_stale_rejects;
         uint32_t barrier_transitions;
         uint32_t barrier_edges_required;
-        uint32_t barrier_edges_by_encoder;
+        uint32_t barrier_edges_emitted;
         uint32_t barrier_edges_unmet;
         uint32_t presented_frames;
         uint32_t drawable_readbacks;
@@ -103,6 +106,23 @@ extern "C"
         uint32_t texture_height;
         uint32_t texture_mip_levels;
     } AM12ShaderProofConfiguration;
+
+    /*
+     * Build-time DXIL-to-MSL request. The implementation stages only the
+     * canonical lowerer bytes embedded and pinned into the library, then runs
+     * them with the fixed system interpreter. The DXIL container and DXC
+     * disassembly must carry matching embedded hash values. The complete
+     * artifact set is validated before publication; same-shader writers are
+     * serialized, ordinary failures trigger rollback, and interrupted
+     * transactions are recovered before the next publication. Callers cannot
+     * select or override the lowering executable.
+     */
+    typedef struct AM12ShaderLoweringRequest
+    {
+        const char *dxil_path;
+        const char *disassembly_path;
+        const char *output_directory;
+    } AM12ShaderLoweringRequest;
 
     /*
      * Minimal D3D12-shaped command surface for the first runtime increment.
@@ -160,9 +180,18 @@ extern "C"
      */
     int AM12ValidateShaderProofConfiguration(const AM12ShaderProofConfiguration *configuration);
 
+    /*
+     * Runs the canonical DXIL-to-MSL implementation behind this public
+     * library contract. Success requires a matching DXIL/disassembly pair,
+     * a successful child process, and validated MSL plus provenance outputs.
+     * Lowerer diagnostics are inherited by the caller.
+     */
+    int AM12LowerDXILToMSL(const AM12ShaderLoweringRequest *request);
+
     /* Original proof thresholds, promoted into and linked from this library. */
     int AM12RunDescriptorHeapProof(void);
     int AM12RunBarrierTrackerProof(void);
+    int AM12RunResidencySafeProof(void);
     int AM12RunResidencyProof(void);
 
 #ifdef __cplusplus

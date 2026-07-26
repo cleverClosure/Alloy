@@ -98,6 +98,7 @@ Version 1 has these fail-closed limits:
 | Draw work per record | 3 vertices, 1 instance |
 | Logical resources | 63 |
 | Descriptor slots | 256 |
+| Barrier-model accesses per frame | 32; draw, copy, and portable present each reserve 2 |
 | One pipeline entry name | 1,024 bytes |
 | One shared buffer and all shared buffers combined | 256 MiB |
 | Placed textures combined | 64 MiB |

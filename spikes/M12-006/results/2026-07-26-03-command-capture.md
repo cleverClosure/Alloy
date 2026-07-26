@@ -38,11 +38,11 @@ without replacing a pre-existing destination.
 
 | Measurement | Capture A | Capture B |
 | --- | ---: | ---: |
-| Setup | 27.209 ms | 30.512 ms |
-| First frame | 7.670 ms | 3.253 ms |
-| Warm mean | 0.429 ms | 0.434 ms |
-| Warm p50 | 0.283 ms | 0.290 ms |
-| Warm p95 | 1.125 ms | 1.297 ms |
+| Setup | 21.742 ms | 24.234 ms |
+| First frame | 3.243 ms | 3.333 ms |
+| Warm mean | 0.396 ms | 0.472 ms |
+| Warm p50 | 0.289 ms | 0.314 ms |
+| Warm p95 | 1.049 ms | 1.349 ms |
 | Image digest | `44709706809f28e9` | `44709706809f28e9` |
 | Nonuniform pixels | 230,397 / 230,400 | 230,397 / 230,400 |
 
@@ -53,10 +53,10 @@ BMP files:
 SHA-256 80cbde4aa12a7f8faf6087654d32abd08d7daacbeb636b97257a25cc303b1cca
 ```
 
-The two 27,716-byte traces are themselves byte-identical:
+The two 27,800-byte traces are themselves byte-identical:
 
 ```text
-SHA-256 4106394cea5fbb044e8c8582865067d168f7f0ab711f27f8175afc6c5f7e7f11
+SHA-256 e8f09c18700890b90ad75cb2a74389382af6f7e9e086bc61a2b503e97c2cfb65
 ```
 
 Capture therefore changes CPU timing but not pixels or command semantics.

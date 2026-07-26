@@ -8,6 +8,9 @@
  */
 
 #import "../include/AlloyMetal12.h"
+#import "Models/AM12BarrierTracker.h"
+#import "Models/AM12DescriptorHeap.h"
+#import "Models/AM12ResidencyManager.h"
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
@@ -25,6 +28,9 @@
 #include <unistd.h>
 
 #define AM12_HEAP_BYTES (64u * 1024u * 1024u)
+#define AM12_RUNTIME_BARRIER_ACCESSES AM12_MAX_BARRIER_ACCESSES_PER_FRAME
+#define AM12_RUNTIME_BARRIER_EDGES (AM12_RUNTIME_BARRIER_ACCESSES * AM12_RUNTIME_BARRIER_ACCESSES)
+#define AM12_RUNTIME_DRAWABLE_RESOURCE AM12_MAX_RESOURCES
 #define AM12_FNV_OFFSET UINT64_C(1469598103934665603)
 #define AM12_FNV_PRIME UINT64_C(1099511628211)
 
@@ -161,21 +167,12 @@ static BOOL AM12ResourceStateAllowed(AM12ResourceKind kind, uint32_t state)
            state == AM12_RESOURCE_STATE_CONSTANT_BUFFER;
 }
 
-typedef struct AM12DescriptorRecord
-{
-    AM12Resource resource;
-    uint32_t generation;
-    bool live;
-} AM12DescriptorRecord;
-
 @interface AM12ResourceEntry : NSObject
 @property(nonatomic) AM12Resource identifier;
 @property(nonatomic) AM12ResourceKind kind;
 @property(nonatomic, strong) id<MTLTexture> texture;
 @property(nonatomic, strong) id<MTLBuffer> buffer;
-@property(nonatomic) AM12ResourceState state;
-@property(nonatomic) NSInteger lastWriterStage;
-@property(nonatomic) NSInteger lastReaderStage;
+@property(nonatomic, strong) AM12ResidencyLease *residencyLease;
 @property(nonatomic) BOOL contentsDefined;
 @end
 
@@ -185,11 +182,18 @@ typedef struct AM12DescriptorRecord
 @interface AM12DeviceBox : NSObject
 {
   @public
-    AM12DescriptorRecord descriptors[AM12_MAX_DESCRIPTOR_SLOTS];
+    AM12BarrierPlan barrierPlan;
+    AM12BarrierEdge barrierEdges[AM12_RUNTIME_BARRIER_EDGES];
+    uint32_t barrierAccessEncoders[AM12_RUNTIME_BARRIER_ACCESSES];
+    uint32_t barrierEncoderWaitMasks[AM12_RUNTIME_BARRIER_ACCESSES];
+    bool barrierEncoderSignaled[AM12_RUNTIME_BARRIER_ACCESSES];
 }
 @property(nonatomic, strong) id<MTLDevice> metal;
 @property(nonatomic, strong) id<MTLCommandQueue> queue;
-@property(nonatomic, strong) id<MTLHeap> heap;
+@property(nonatomic, strong) NSMutableArray<id<MTLFence>> *barrierFences;
+@property(nonatomic, strong) AM12DescriptorHeap *descriptorHeap;
+@property(nonatomic) AM12BarrierTracker *barrierTracker;
+@property(nonatomic, strong) AM12ResidencyManager *residencyManager;
 @property(nonatomic, strong) id<MTLLibrary> library;
 @property(nonatomic, strong) id<MTLRenderPipelineState> pipeline;
 @property(nonatomic, strong) NSMutableDictionary<NSNumber *, AM12ResourceEntry *> *resources;
@@ -202,14 +206,14 @@ typedef struct AM12DescriptorRecord
 @property(nonatomic) uint32_t height;
 @property(nonatomic) uint32_t frameCount;
 @property(nonatomic) uint32_t nextResource;
-@property(nonatomic) uint32_t descriptorGeneration;
 @property(nonatomic) AM12Resource boundConstantBuffer;
+@property(nonatomic, strong) id<MTLBuffer> boundDescriptorPage;
 @property(nonatomic) AM12Resource clearTarget;
 @property(nonatomic) MTLClearColor clearColor;
 @property(nonatomic) BOOL clearReady;
 @property(nonatomic) BOOL drewThisFrame;
 @property(nonatomic) BOOL presentedThisFrame;
-@property(nonatomic) NSInteger encoderOrdinal;
+@property(nonatomic) uint32_t encoderOrdinal;
 @property(nonatomic) double setupStart;
 @property(nonatomic) double setupEnd;
 @property(nonatomic) double frameStart;
@@ -217,15 +221,12 @@ typedef struct AM12DescriptorRecord
 @property(nonatomic) uint32_t measuredFrames;
 @property(nonatomic) uint64_t imageDigest;
 @property(nonatomic) size_t changedPixels;
-@property(nonatomic) uint64_t residencyBudget;
-@property(nonatomic) uint64_t residencyPlaced;
+@property(nonatomic) uint64_t residencyNextOffset;
 @property(nonatomic) uint64_t sharedBufferBytes;
-@property(nonatomic) uint32_t residencyPlacements;
-@property(nonatomic) uint32_t descriptorMaterializations;
 @property(nonatomic) uint32_t descriptorStaleRejects;
 @property(nonatomic) uint32_t barrierTransitions;
 @property(nonatomic) uint32_t barrierEdgesRequired;
-@property(nonatomic) uint32_t barrierEdgesByEncoder;
+@property(nonatomic) uint32_t barrierEdgesEmitted;
 @property(nonatomic) uint32_t barrierEdgesUnmet;
 @property(nonatomic) AM12Resource pendingPresentationReadback;
 @property(nonatomic) uint32_t presentedFrames;
@@ -245,6 +246,7 @@ typedef struct AM12DescriptorRecord
 
 - (void)dealloc
 {
+    AM12BarrierTrackerDestroy(_barrierTracker);
     free(_frameTimes);
 }
 
@@ -280,6 +282,112 @@ static AM12ResourceEntry *AM12FindResource(AM12DeviceBox *box, AM12Resource reso
     if (!entry || entry.kind != kind)
         return nil;
     return entry;
+}
+
+static BOOL AM12CheckedAlignSize(size_t value, size_t alignment, size_t *result)
+{
+    if (!alignment || !result)
+        return NO;
+    size_t remainder = value % alignment;
+    size_t addition = remainder ? alignment - remainder : 0;
+    if (addition > SIZE_MAX - value)
+        return NO;
+    *result = value + addition;
+    return YES;
+}
+
+static BOOL AM12ResourceHasState(AM12DeviceBox *box, AM12Resource resource,
+                                 AM12ResourceState expected)
+{
+    uint32_t state = 0;
+    return box && box.barrierTracker &&
+           AM12BarrierTrackerGetState(box.barrierTracker, resource, AM12_BARRIER_ALL_SUBRESOURCES,
+                                      &state) &&
+           state == expected;
+}
+
+static BOOL AM12PrepareBarrierEncoder(AM12DeviceBox *box, const AM12BarrierAccess *accesses,
+                                      uint32_t accessCount, uint32_t *encoderOrdinal,
+                                      uint32_t *waitMask)
+{
+    if (!box || !box.barrierTracker || box.barrierFences.count != AM12_RUNTIME_BARRIER_ACCESSES ||
+        !accesses || !accessCount || !encoderOrdinal || !waitMask ||
+        box.encoderOrdinal >= AM12_RUNTIME_BARRIER_ACCESSES)
+        return NO;
+
+    uint32_t firstAccess = 0;
+    if (!AM12BarrierTrackerRecordAccessBatch(box.barrierTracker, accesses, accessCount,
+                                             &firstAccess))
+        return NO;
+
+    uint32_t currentEncoder = box.encoderOrdinal;
+    for (uint32_t index = 0; index < accessCount; index++)
+        box->barrierAccessEncoders[firstAccess + index] = currentEncoder;
+
+    AM12BarrierVerification verification = {0};
+    if (!AM12BarrierTrackerCompileOptimized(box.barrierTracker, &box->barrierPlan) ||
+        !AM12BarrierTrackerVerifyPlan(box.barrierTracker, &box->barrierPlan, &verification) ||
+        verification.uncovered_hazard_count)
+        return NO;
+
+    uint32_t waits = 0;
+    uint32_t recordedAccessCount = AM12BarrierTrackerAccessCount(box.barrierTracker);
+    for (uint32_t edgeIndex = 0; edgeIndex < box->barrierPlan.edge_count; edgeIndex++)
+    {
+        AM12BarrierEdge edge = box->barrierPlan.edges[edgeIndex];
+        if (edge.from_access >= recordedAccessCount || edge.to_access >= recordedAccessCount)
+            return NO;
+        uint32_t fromEncoder = box->barrierAccessEncoders[edge.from_access];
+        uint32_t toEncoder = box->barrierAccessEncoders[edge.to_access];
+        if (toEncoder == currentEncoder)
+        {
+            if (fromEncoder >= currentEncoder)
+                return NO;
+            waits |= UINT32_C(1) << fromEncoder;
+        }
+    }
+
+    *encoderOrdinal = currentEncoder;
+    *waitMask = waits;
+    return YES;
+}
+
+static void AM12CompleteBarrierEncoder(AM12DeviceBox *box, uint32_t encoderOrdinal,
+                                       uint32_t waitMask)
+{
+    box->barrierEncoderWaitMasks[encoderOrdinal] = waitMask;
+    box->barrierEncoderSignaled[encoderOrdinal] = true;
+    box.encoderOrdinal = encoderOrdinal + 1u;
+}
+
+static BOOL AM12VerifyBarrierSubmission(AM12DeviceBox *box, AM12BarrierVerification *verification,
+                                        uint32_t *mappedEdges, uint32_t *unmetEdges)
+{
+    if (!box || !verification || !mappedEdges || !unmetEdges ||
+        !AM12BarrierTrackerCompileOptimized(box.barrierTracker, &box->barrierPlan) ||
+        !AM12BarrierTrackerVerifyPlan(box.barrierTracker, &box->barrierPlan, verification))
+        return NO;
+
+    uint32_t accessCount = AM12BarrierTrackerAccessCount(box.barrierTracker);
+    uint32_t mapped = 0;
+    uint32_t unmet = (uint32_t)verification->uncovered_hazard_count;
+    for (uint32_t edgeIndex = 0; edgeIndex < box->barrierPlan.edge_count; edgeIndex++)
+    {
+        AM12BarrierEdge edge = box->barrierPlan.edges[edgeIndex];
+        if (edge.from_access >= accessCount || edge.to_access >= accessCount)
+            return NO;
+        uint32_t fromEncoder = box->barrierAccessEncoders[edge.from_access];
+        uint32_t toEncoder = box->barrierAccessEncoders[edge.to_access];
+        if (fromEncoder < toEncoder && box->barrierEncoderSignaled[fromEncoder] &&
+            (box->barrierEncoderWaitMasks[toEncoder] & (UINT32_C(1) << fromEncoder)))
+            mapped++;
+        else
+            unmet++;
+    }
+
+    *mappedEdges = mapped;
+    *unmetEdges = unmet;
+    return YES;
 }
 
 static BOOL AM12WriteAll(FILE *file, const void *bytes, size_t size)
@@ -546,8 +654,74 @@ AM12Device *AM12CreateDevice(const AM12DeviceDescriptor *descriptor)
             AM12Failure("create device", @"no Metal device or frame timing storage");
             return NULL;
         }
+        if (@available(macOS 13.0, *))
+        {
+            if (box.metal.argumentBuffersSupport != MTLArgumentBuffersTier2)
+            {
+                AM12Failure("create device", @"descriptor pages require argument-buffer tier 2");
+                return NULL;
+            }
+        }
+        else
+        {
+            AM12Failure("create device", @"descriptor pages require macOS 13 or newer");
+            return NULL;
+        }
         box.queue = [box.metal newCommandQueue];
-        box.residencyBudget = box.metal.recommendedMaxWorkingSetSize;
+        AM12ResidencyPressurePolicy pressurePolicy = {
+            .oversubscription_margin_bytes = UINT64_C(1) << 30,
+            .bailout_floor_bytes = UINT64_C(2) << 30,
+            .eviction_batch_count = 4,
+        };
+        box.residencyManager = [[AM12ResidencyManager alloc] initWithDevice:box.metal
+                                                              cacheCapacity:12
+                                                             pressurePolicy:pressurePolicy];
+
+        id<MTLBuffer> descriptorPoison =
+            [box.metal newBufferWithLength:16 options:MTLResourceStorageModeShared];
+        if (descriptorPoison)
+            *(uint32_t *)descriptorPoison.contents = UINT32_MAX;
+        AM12DescriptorHeapConfiguration descriptorConfiguration = {
+            .slot_count = AM12_MAX_DESCRIPTOR_SLOTS,
+            .resource_capacity = AM12_MAX_RESOURCES,
+            .page_entry_count = AM12_MAX_DESCRIPTOR_SLOTS,
+            .page_count = 64,
+            .invalid_resource_identifier = UINT32_MAX,
+        };
+        box.descriptorHeap = [[AM12DescriptorHeap alloc] initWithDevice:box.metal
+                                                          configuration:descriptorConfiguration
+                                                           poisonBuffer:descriptorPoison];
+
+        AM12BarrierTrackerDescriptor barrierDescriptor = {
+            .max_access_count = AM12_RUNTIME_BARRIER_ACCESSES,
+            .memory_object_count = AM12_MAX_RESOURCES + 1u,
+            .subresource_count = 1,
+            .queue_count = 1,
+        };
+        box.barrierTracker = AM12BarrierTrackerCreate(&barrierDescriptor);
+        box.barrierFences = [NSMutableArray arrayWithCapacity:AM12_RUNTIME_BARRIER_ACCESSES];
+        for (uint32_t index = 0; index < AM12_RUNTIME_BARRIER_ACCESSES; index++)
+        {
+            id<MTLFence> fence = [box.metal newFence];
+            if (!fence)
+                break;
+            [box.barrierFences addObject:fence];
+        }
+        BOOL barrierPlanReady = AM12BarrierPlanInitialize(&box->barrierPlan, box->barrierEdges,
+                                                          AM12_RUNTIME_BARRIER_EDGES);
+
+        NSError *modelError = nil;
+        BOOL residencyReady = [box.residencyManager openPlacementHeapWithSize:AM12_HEAP_BYTES
+                                                                  storageMode:MTLStorageModePrivate
+                                                                        error:&modelError];
+        if (!box.queue || !box.residencyManager || !residencyReady || !box.descriptorHeap ||
+            !box.barrierTracker || box.barrierFences.count != AM12_RUNTIME_BARRIER_ACCESSES ||
+            !barrierPlanReady)
+        {
+            AM12Failure("create device",
+                        modelError.localizedDescription ?: @"runtime model initialization");
+            return NULL;
+        }
         if (box.layer)
         {
             box.layer.device = box.metal;
@@ -556,17 +730,6 @@ AM12Device *AM12CreateDevice(const AM12DeviceDescriptor *descriptor)
             box.layer.drawableSize = CGSizeMake(box.width, box.height);
             box.layer.maximumDrawableCount = 2;
             box.layer.displaySyncEnabled = NO;
-        }
-
-        MTLHeapDescriptor *heapDescriptor = [MTLHeapDescriptor new];
-        heapDescriptor.size = AM12_HEAP_BYTES;
-        heapDescriptor.storageMode = MTLStorageModePrivate;
-        heapDescriptor.hazardTrackingMode = MTLHazardTrackingModeTracked;
-        box.heap = [box.metal newHeapWithDescriptor:heapDescriptor];
-        if (!box.queue || !box.heap)
-        {
-            AM12Failure("create device", @"command queue or residency heap");
-            return NULL;
         }
 
         NSError *error = nil;
@@ -703,7 +866,12 @@ void AM12DestroyDevice(AM12Device *device)
     box.drawable = nil;
     box.pipeline = nil;
     box.library = nil;
-    box.heap = nil;
+    [box.resources removeAllObjects];
+    box.descriptorHeap = nil;
+    box.residencyManager = nil;
+    box.barrierFences = nil;
+    AM12BarrierTrackerDestroy(box.barrierTracker);
+    box.barrierTracker = NULL;
     box.queue = nil;
     box.metal = nil;
     CFBridgingRelease(device->box);
@@ -724,16 +892,24 @@ AM12Resource AM12CreateRenderTarget(AM12Device *device)
     descriptor.storageMode = MTLStorageModePrivate;
     descriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
     MTLSizeAndAlign sizeAndAlign = [box.metal heapTextureSizeAndAlignWithDescriptor:descriptor];
-    if (sizeAndAlign.size > AM12_HEAP_BYTES ||
-        box.residencyPlaced > AM12_HEAP_BYTES - sizeAndAlign.size)
+    size_t placementOffset = 0;
+    if (!AM12CheckedAlignSize((size_t)box.residencyNextOffset, sizeAndAlign.align,
+                              &placementOffset) ||
+        sizeAndAlign.size > AM12_HEAP_BYTES ||
+        placementOffset > AM12_HEAP_BYTES - sizeAndAlign.size)
     {
         AM12Failure("create render target", @"residency heap bound");
         return 0;
     }
-    id<MTLTexture> texture = [box.heap newTextureWithDescriptor:descriptor];
-    if (!texture)
+    NSError *residencyError = nil;
+    AM12ResidencyLease *lease =
+        [box.residencyManager newPlacedTextureWithDescriptor:descriptor
+                                                      offset:placementOffset
+                                                       error:&residencyError];
+    id<MTLTexture> texture = (id<MTLTexture>)lease.resource;
+    if (!lease || !texture)
     {
-        AM12Failure("create render target", nil);
+        AM12Failure("create render target", residencyError.localizedDescription);
         return 0;
     }
 
@@ -742,12 +918,12 @@ AM12Resource AM12CreateRenderTarget(AM12Device *device)
     entry.identifier = resource;
     entry.kind = AM12_RESOURCE_TEXTURE;
     entry.texture = texture;
-    entry.state = AM12_RESOURCE_STATE_UNDEFINED;
-    entry.lastWriterStage = -1;
-    entry.lastReaderStage = -1;
+    entry.residencyLease = lease;
+    if (!AM12BarrierTrackerSetState(box.barrierTracker, resource, AM12_BARRIER_ALL_SUBRESOURCES,
+                                    AM12_RESOURCE_STATE_UNDEFINED))
+        return 0;
     box.resources[@(resource)] = entry;
-    box.residencyPlaced += sizeAndAlign.size;
-    box.residencyPlacements++;
+    box.residencyNextOffset = placementOffset + sizeAndAlign.size;
 
     AM12TraceCreateResource record = {
         .resource = resource,
@@ -766,9 +942,11 @@ AM12Resource AM12CreateSharedBuffer(AM12Device *device, size_t size)
         box.nextResource >= AM12_MAX_RESOURCES)
         return 0;
 
-    id<MTLBuffer> buffer = [box.metal newBufferWithLength:size
-                                                  options:MTLResourceStorageModeShared];
-    if (!buffer)
+    AM12ResidencyLease *lease =
+        [box.residencyManager newCommittedBufferWithLength:size
+                                                   options:MTLResourceStorageModeShared];
+    id<MTLBuffer> buffer = (id<MTLBuffer>)lease.resource;
+    if (!lease || !buffer)
     {
         AM12Failure("create shared buffer", nil);
         return 0;
@@ -778,11 +956,13 @@ AM12Resource AM12CreateSharedBuffer(AM12Device *device, size_t size)
     entry.identifier = resource;
     entry.kind = AM12_RESOURCE_BUFFER;
     entry.buffer = buffer;
+    entry.residencyLease = lease;
     memset(buffer.contents, 0, size);
-    entry.state = AM12_RESOURCE_STATE_UNDEFINED;
-    entry.lastWriterStage = -1;
-    entry.lastReaderStage = -1;
     entry.contentsDefined = YES;
+    if (![box.descriptorHeap registerBuffer:buffer forResourceIdentifier:resource] ||
+        !AM12BarrierTrackerSetState(box.barrierTracker, resource, AM12_BARRIER_ALL_SUBRESOURCES,
+                                    AM12_RESOURCE_STATE_UNDEFINED))
+        return 0;
     box.resources[@(resource)] = entry;
     box.sharedBufferBytes += size;
 
@@ -865,12 +1045,13 @@ uint32_t AM12CreateConstantBufferView(AM12Device *device, uint32_t slot, AM12Res
         !AM12FindResource(box, buffer, AM12_RESOURCE_BUFFER))
         return 0;
 
-    uint32_t generation = ++box.descriptorGeneration;
-    box->descriptors[slot] = (AM12DescriptorRecord){
-        .resource = buffer,
-        .generation = generation,
-        .live = true,
-    };
+    uint64_t modelGeneration = 0;
+    if (![box.descriptorHeap writeResourceIdentifier:buffer
+                                              atSlot:slot
+                                          generation:&modelGeneration] ||
+        modelGeneration > UINT32_MAX)
+        return 0;
+    uint32_t generation = (uint32_t)modelGeneration;
     AM12TraceCreateCBV record = {
         .slot = slot,
         .resource = buffer,
@@ -884,15 +1065,32 @@ uint32_t AM12CreateConstantBufferView(AM12Device *device, uint32_t slot, AM12Res
 int AM12SetGraphicsRootDescriptorTable(AM12Device *device, uint32_t slot, uint32_t generation)
 {
     AM12DeviceBox *box = AM12Box(device);
-    if (!box || slot >= AM12_MAX_DESCRIPTOR_SLOTS || !box->descriptors[slot].live ||
-        box->descriptors[slot].generation != generation)
+    AM12HeapDescriptorRecord descriptor = {0};
+    AM12DescriptorTable table = {0};
+    BOOL valid = box && box.commandBuffer && slot < AM12_MAX_DESCRIPTOR_SLOTS &&
+                 [box.descriptorHeap descriptorAtSlot:slot record:&descriptor] &&
+                 descriptor.generation == generation &&
+                 [box.descriptorHeap materializeTableAtOffset:slot count:1 table:&table];
+    if (!valid)
     {
         if (box)
             box.descriptorStaleRejects++;
         return AM12Failure("set root descriptor table", @"stale descriptor");
     }
-    box.boundConstantBuffer = box->descriptors[slot].resource;
-    box.descriptorMaterializations++;
+    AM12ResourceEntry *entry =
+        AM12FindResource(box, descriptor.resource_identifier, AM12_RESOURCE_BUFFER);
+    id<MTLBuffer> modelBuffer =
+        [box.descriptorHeap bufferForResourceIdentifier:descriptor.resource_identifier];
+    id<MTLBuffer> tableBuffer = [box.descriptorHeap bufferForTable:table];
+    uint64_t encodedAddress =
+        tableBuffer.length >= sizeof(uint64_t) ? *(const uint64_t *)tableBuffer.contents : 0;
+    if (!entry || !modelBuffer || modelBuffer != entry.buffer || !tableBuffer ||
+        encodedAddress != modelBuffer.gpuAddress)
+        return AM12Failure("set root descriptor table", @"descriptor resource mismatch");
+    if (![box.descriptorHeap retainTable:table untilCommandBufferCompletes:box.commandBuffer])
+        return AM12Failure("set root descriptor table", @"descriptor page retention");
+    box.boundConstantBuffer = descriptor.resource_identifier;
+    box.boundDescriptorPage = tableBuffer;
     AM12TraceRootTable record = {
         .slot = slot,
         .generation = generation,
@@ -913,6 +1111,12 @@ int AM12BeginFrame(AM12Device *device, uint32_t frameIndex)
     box.clearReady = NO;
     box.drewThisFrame = NO;
     box.presentedThisFrame = NO;
+    box.boundConstantBuffer = 0;
+    box.boundDescriptorPage = nil;
+    AM12BarrierTrackerResetAccesses(box.barrierTracker);
+    memset(box->barrierAccessEncoders, 0, sizeof(box->barrierAccessEncoders));
+    memset(box->barrierEncoderWaitMasks, 0, sizeof(box->barrierEncoderWaitMasks));
+    memset(box->barrierEncoderSignaled, 0, sizeof(box->barrierEncoderSignaled));
     box.commandBuffer = [box.queue commandBuffer];
     if (!box.commandBuffer)
         return AM12Failure("begin frame", @"command buffer");
@@ -934,21 +1138,17 @@ int AM12TransitionResource(AM12Device *device, AM12Resource resource, AM12Resour
 {
     AM12DeviceBox *box = AM12Box(device);
     AM12ResourceEntry *entry = box.resources[@(resource)];
-    if (!box || !box.commandBuffer || !entry || entry.state != before ||
-        !AM12ResourceStateAllowed(entry.kind, before) ||
-        !AM12ResourceStateAllowed(entry.kind, after))
+    uint32_t modelState = 0;
+    if (!box || !box.commandBuffer || !entry || !AM12ResourceStateAllowed(entry.kind, before) ||
+        !AM12ResourceStateAllowed(entry.kind, after) ||
+        !AM12BarrierTrackerGetState(box.barrierTracker, resource, AM12_BARRIER_ALL_SUBRESOURCES,
+                                    &modelState) ||
+        modelState != before ||
+        !AM12BarrierTrackerApplyTransition(box.barrierTracker, resource,
+                                           AM12_BARRIER_ALL_SUBRESOURCES, before, after))
         return AM12Failure("transition resource", @"state mismatch");
 
     box.barrierTransitions++;
-    if (before != AM12_RESOURCE_STATE_UNDEFINED && before != after)
-    {
-        box.barrierEdgesRequired++;
-        if (entry.lastWriterStage < 0 || entry.lastWriterStage < box.encoderOrdinal)
-            box.barrierEdgesByEncoder++;
-        else
-            box.barrierEdgesUnmet++;
-    }
-    entry.state = after;
     AM12TraceTransition record = {
         .resource = resource,
         .before = before,
@@ -961,9 +1161,9 @@ int AM12ClearRenderTarget(AM12Device *device, AM12Resource target, const float c
 {
     AM12DeviceBox *box = AM12Box(device);
     AM12ResourceEntry *entry = AM12FindResource(box, target, AM12_RESOURCE_TEXTURE);
-    if (!box || !box.commandBuffer || !entry || entry.state != AM12_RESOURCE_STATE_RENDER_TARGET ||
-        !color || !isfinite(color[0]) || !isfinite(color[1]) || !isfinite(color[2]) ||
-        !isfinite(color[3]))
+    if (!box || !box.commandBuffer || !entry ||
+        !AM12ResourceHasState(box, target, AM12_RESOURCE_STATE_RENDER_TARGET) || !color ||
+        !isfinite(color[0]) || !isfinite(color[1]) || !isfinite(color[2]) || !isfinite(color[3]))
         return AM12Failure("clear render target", @"invalid state");
 
     box.clearTarget = target;
@@ -984,9 +1184,30 @@ int AM12DrawInstanced(AM12Device *device, AM12Resource target, uint32_t vertexCo
     AM12ResourceEntry *constantEntry =
         AM12FindResource(box, box.boundConstantBuffer, AM12_RESOURCE_BUFFER);
     if (!box || !box.commandBuffer || !box.pipeline || !targetEntry || !constantEntry ||
-        !constantEntry.contentsDefined || targetEntry.state != AM12_RESOURCE_STATE_RENDER_TARGET ||
-        !box.clearReady || box.clearTarget != target || vertexCount != 3 || instanceCount != 1)
+        !box.boundDescriptorPage || !constantEntry.contentsDefined ||
+        !AM12ResourceHasState(box, box.boundConstantBuffer, AM12_RESOURCE_STATE_CONSTANT_BUFFER) ||
+        !AM12ResourceHasState(box, target, AM12_RESOURCE_STATE_RENDER_TARGET) || !box.clearReady ||
+        box.clearTarget != target || vertexCount != 3 || instanceCount != 1)
         return AM12Failure("draw instanced", @"incomplete command state");
+
+    const AM12BarrierAccess accesses[] = {
+        {
+            .queue = 0,
+            .memory_object = box.boundConstantBuffer,
+            .subresource = AM12_BARRIER_ALL_SUBRESOURCES,
+            .kind = AM12_BARRIER_ACCESS_READ,
+        },
+        {
+            .queue = 0,
+            .memory_object = target,
+            .subresource = AM12_BARRIER_ALL_SUBRESOURCES,
+            .kind = AM12_BARRIER_ACCESS_WRITE,
+        },
+    };
+    uint32_t barrierEncoder = 0;
+    uint32_t barrierWaitMask = 0;
+    if (!AM12PrepareBarrierEncoder(box, accesses, 2, &barrierEncoder, &barrierWaitMask))
+        return AM12Failure("draw instanced", @"barrier plan or access capacity");
 
     MTLRenderPassDescriptor *pass = [MTLRenderPassDescriptor renderPassDescriptor];
     pass.colorAttachments[0].texture = targetEntry.texture;
@@ -995,15 +1216,26 @@ int AM12DrawInstanced(AM12Device *device, AM12Resource target, uint32_t vertexCo
     pass.colorAttachments[0].clearColor = box.clearColor;
     id<MTLRenderCommandEncoder> encoder =
         [box.commandBuffer renderCommandEncoderWithDescriptor:pass];
+    if (!encoder)
+        return AM12Failure("draw instanced", @"render encoder");
+    for (uint32_t producer = 0; producer < barrierEncoder; producer++)
+        if (barrierWaitMask & (UINT32_C(1) << producer))
+            [encoder waitForFence:box.barrierFences[producer]
+                     beforeStages:MTLRenderStageVertex | MTLRenderStageFragment];
     [encoder setRenderPipelineState:box.pipeline];
     [encoder setViewport:(MTLViewport){0.0, 0.0, box.width, box.height, 0.0, 1.0}];
-    [encoder setFragmentBuffer:constantEntry.buffer offset:0 atIndex:0];
+    [encoder setVertexBuffer:box.boundDescriptorPage offset:0 atIndex:0];
+    [encoder setFragmentBuffer:box.boundDescriptorPage offset:0 atIndex:0];
+    [encoder useResource:constantEntry.buffer
+                   usage:MTLResourceUsageRead
+                  stages:MTLRenderStageVertex | MTLRenderStageFragment];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangle
                 vertexStart:0
                 vertexCount:vertexCount
               instanceCount:instanceCount];
+    [encoder updateFence:box.barrierFences[barrierEncoder] afterStages:MTLRenderStageFragment];
     [encoder endEncoding];
-    targetEntry.lastWriterStage = box.encoderOrdinal++;
+    AM12CompleteBarrierEncoder(box, barrierEncoder, barrierWaitMask);
     targetEntry.contentsDefined = YES;
     box.clearReady = NO;
     box.drewThisFrame = YES;
@@ -1024,8 +1256,8 @@ int AM12CopyTextureToBuffer(AM12Device *device, AM12Resource source, AM12Resourc
     AM12ResourceEntry *destinationEntry = AM12FindResource(box, destination, AM12_RESOURCE_BUFFER);
     if (!box || !box.commandBuffer || !sourceEntry || !destinationEntry ||
         !AM12ComputeImageLayout(box.width, box.height, &imageLayout) ||
-        sourceEntry.state != AM12_RESOURCE_STATE_COPY_SOURCE ||
-        destinationEntry.state != AM12_RESOURCE_STATE_COPY_DESTINATION ||
+        !AM12ResourceHasState(box, source, AM12_RESOURCE_STATE_COPY_SOURCE) ||
+        !AM12ResourceHasState(box, destination, AM12_RESOURCE_STATE_COPY_DESTINATION) ||
         !sourceEntry.contentsDefined || destinationEntry.buffer.length < imageLayout.rgbaBytes)
         return AM12Failure("copy texture to buffer", @"invalid state or size");
     NSUInteger rowPitch = imageLayout.rgbaRowBytes;
@@ -1036,7 +1268,30 @@ int AM12CopyTextureToBuffer(AM12Device *device, AM12Resource source, AM12Resourc
         box.pendingPresentationReadback = destination;
     else
     {
+        const AM12BarrierAccess accesses[] = {
+            {
+                .queue = 0,
+                .memory_object = source,
+                .subresource = AM12_BARRIER_ALL_SUBRESOURCES,
+                .kind = AM12_BARRIER_ACCESS_READ,
+            },
+            {
+                .queue = 0,
+                .memory_object = destination,
+                .subresource = AM12_BARRIER_ALL_SUBRESOURCES,
+                .kind = AM12_BARRIER_ACCESS_WRITE,
+            },
+        };
+        uint32_t barrierEncoder = 0;
+        uint32_t barrierWaitMask = 0;
+        if (!AM12PrepareBarrierEncoder(box, accesses, 2, &barrierEncoder, &barrierWaitMask))
+            return AM12Failure("copy texture to buffer", @"barrier plan or access capacity");
         id<MTLBlitCommandEncoder> encoder = [box.commandBuffer blitCommandEncoder];
+        if (!encoder)
+            return AM12Failure("copy texture to buffer", @"blit encoder");
+        for (uint32_t producer = 0; producer < barrierEncoder; producer++)
+            if (barrierWaitMask & (UINT32_C(1) << producer))
+                [encoder waitForFence:box.barrierFences[producer]];
         [encoder copyFromTexture:sourceEntry.texture
                          sourceSlice:0
                          sourceLevel:0
@@ -1046,10 +1301,10 @@ int AM12CopyTextureToBuffer(AM12Device *device, AM12Resource source, AM12Resourc
                    destinationOffset:0
               destinationBytesPerRow:rowPitch
             destinationBytesPerImage:imageLayout.rgbaBytes];
+        [encoder updateFence:box.barrierFences[barrierEncoder]];
         [encoder endEncoding];
+        AM12CompleteBarrierEncoder(box, barrierEncoder, barrierWaitMask);
     }
-    sourceEntry.lastReaderStage = box.encoderOrdinal;
-    destinationEntry.lastWriterStage = box.encoderOrdinal++;
     destinationEntry.contentsDefined = YES;
 
     AM12TraceCopy record = {
@@ -1064,8 +1319,8 @@ int AM12Present(AM12Device *device, AM12Resource source)
     AM12DeviceBox *box = AM12Box(device);
     AM12ResourceEntry *entry = AM12FindResource(box, source, AM12_RESOURCE_TEXTURE);
     if (!box || !box.commandBuffer || !entry || box.presentedThisFrame ||
-        (entry.state != AM12_RESOURCE_STATE_RENDER_TARGET &&
-         entry.state != AM12_RESOURCE_STATE_COPY_SOURCE) ||
+        (!AM12ResourceHasState(box, source, AM12_RESOURCE_STATE_RENDER_TARGET) &&
+         !AM12ResourceHasState(box, source, AM12_RESOURCE_STATE_COPY_SOURCE)) ||
         !entry.contentsDefined)
         return AM12Failure("present", @"invalid source");
 
@@ -1075,7 +1330,31 @@ int AM12Present(AM12Device *device, AM12Resource source)
         if (destination.width != box.width || destination.height != box.height ||
             destination.pixelFormat != entry.texture.pixelFormat)
             return AM12Failure("present", @"drawable format or size mismatch");
+        const AM12BarrierAccess presentAccesses[] = {
+            {
+                .queue = 0,
+                .memory_object = source,
+                .subresource = AM12_BARRIER_ALL_SUBRESOURCES,
+                .kind = AM12_BARRIER_ACCESS_READ,
+            },
+            {
+                .queue = 0,
+                .memory_object = AM12_RUNTIME_DRAWABLE_RESOURCE,
+                .subresource = AM12_BARRIER_ALL_SUBRESOURCES,
+                .kind = AM12_BARRIER_ACCESS_WRITE,
+            },
+        };
+        uint32_t presentBarrierEncoder = 0;
+        uint32_t presentBarrierWaitMask = 0;
+        if (!AM12PrepareBarrierEncoder(box, presentAccesses, 2, &presentBarrierEncoder,
+                                       &presentBarrierWaitMask))
+            return AM12Failure("present", @"barrier plan or access capacity");
         id<MTLBlitCommandEncoder> encoder = [box.commandBuffer blitCommandEncoder];
+        if (!encoder)
+            return AM12Failure("present", @"blit encoder");
+        for (uint32_t producer = 0; producer < presentBarrierEncoder; producer++)
+            if (presentBarrierWaitMask & (UINT32_C(1) << producer))
+                [encoder waitForFence:box.barrierFences[producer]];
         [encoder copyFromTexture:entry.texture
                      sourceSlice:0
                      sourceLevel:0
@@ -1085,8 +1364,9 @@ int AM12Present(AM12Device *device, AM12Resource source)
                 destinationSlice:0
                 destinationLevel:0
                destinationOrigin:(MTLOrigin){0, 0, 0}];
+        [encoder updateFence:box.barrierFences[presentBarrierEncoder]];
         [encoder endEncoding];
-        box.encoderOrdinal++;
+        AM12CompleteBarrierEncoder(box, presentBarrierEncoder, presentBarrierWaitMask);
 
         if (box.pendingPresentationReadback)
         {
@@ -1094,9 +1374,35 @@ int AM12Present(AM12Device *device, AM12Resource source)
             AM12ResourceEntry *readback =
                 AM12FindResource(box, box.pendingPresentationReadback, AM12_RESOURCE_BUFFER);
             if (!readback || !AM12ComputeImageLayout(box.width, box.height, &imageLayout) ||
+                !AM12ResourceHasState(box, box.pendingPresentationReadback,
+                                      AM12_RESOURCE_STATE_COPY_DESTINATION) ||
                 readback.buffer.length < imageLayout.rgbaBytes)
                 return AM12Failure("present", @"invalid drawable readback");
+            const AM12BarrierAccess readbackAccesses[] = {
+                {
+                    .queue = 0,
+                    .memory_object = AM12_RUNTIME_DRAWABLE_RESOURCE,
+                    .subresource = AM12_BARRIER_ALL_SUBRESOURCES,
+                    .kind = AM12_BARRIER_ACCESS_READ,
+                },
+                {
+                    .queue = 0,
+                    .memory_object = box.pendingPresentationReadback,
+                    .subresource = AM12_BARRIER_ALL_SUBRESOURCES,
+                    .kind = AM12_BARRIER_ACCESS_WRITE,
+                },
+            };
+            uint32_t readbackBarrierEncoder = 0;
+            uint32_t readbackBarrierWaitMask = 0;
+            if (!AM12PrepareBarrierEncoder(box, readbackAccesses, 2, &readbackBarrierEncoder,
+                                           &readbackBarrierWaitMask))
+                return AM12Failure("present", @"readback barrier plan or access capacity");
             id<MTLBlitCommandEncoder> readbackEncoder = [box.commandBuffer blitCommandEncoder];
+            if (!readbackEncoder)
+                return AM12Failure("present", @"readback blit encoder");
+            for (uint32_t producer = 0; producer < readbackBarrierEncoder; producer++)
+                if (readbackBarrierWaitMask & (UINT32_C(1) << producer))
+                    [readbackEncoder waitForFence:box.barrierFences[producer]];
             [readbackEncoder copyFromTexture:destination
                                  sourceSlice:0
                                  sourceLevel:0
@@ -1106,10 +1412,11 @@ int AM12Present(AM12Device *device, AM12Resource source)
                            destinationOffset:0
                       destinationBytesPerRow:imageLayout.rgbaRowBytes
                     destinationBytesPerImage:imageLayout.rgbaBytes];
+            [readbackEncoder updateFence:box.barrierFences[readbackBarrierEncoder]];
             [readbackEncoder endEncoding];
+            AM12CompleteBarrierEncoder(box, readbackBarrierEncoder, readbackBarrierWaitMask);
             box.drawableReadbacks++;
             box.pendingPresentationReadback = 0;
-            box.encoderOrdinal++;
         }
         if (box.measuredFrames + 1u == box.frameCount)
         {
@@ -1136,6 +1443,19 @@ int AM12EndFrame(AM12Device *device)
         return AM12Failure("end frame", @"invalid frame state");
     if (box.pendingPresentationReadback)
         return AM12Failure("end frame", @"presentation readback was not encoded");
+
+    AM12BarrierVerification barrierVerification = {0};
+    uint32_t mappedBarrierEdges = 0;
+    uint32_t unmetBarrierEdges = 0;
+    if (!AM12VerifyBarrierSubmission(box, &barrierVerification, &mappedBarrierEdges,
+                                     &unmetBarrierEdges))
+        return AM12Failure("end frame", @"barrier plan verification");
+    box.barrierEdgesRequired += box->barrierPlan.edge_count;
+    box.barrierEdgesEmitted += mappedBarrierEdges;
+    box.barrierEdgesUnmet += unmetBarrierEdges;
+    if (barrierVerification.uncovered_hazard_count || unmetBarrierEdges)
+        return AM12Failure("end frame", @"barrier plan was not emitted by encoders");
+
     if (!AM12TraceRecord(box, AM12_TRACE_END_FRAME, NULL, 0))
         return 0;
 
@@ -1179,19 +1499,23 @@ int AM12FinishMetrics(AM12Device *device, AM12Metrics *metrics)
     if (!box || !metrics || !box.measuredFrames)
         return AM12Failure("finish metrics", @"no measured frames");
 
+    AM12ResidencyBudget residencyBudget = [box.residencyManager budgetSnapshot];
+    AM12ResidencyPlacementStats residencyStats = box.residencyManager.placementStats;
+    AM12DescriptorHeapStatistics descriptorStats = box.descriptorHeap.statistics;
     AM12Metrics result = {
         .setup_ms = box.setupEnd - box.setupStart,
         .first_frame_ms = box.frameTimes[0],
         .image_digest = box.imageDigest,
         .changed_pixels = box.changedPixels,
-        .residency_budget_bytes = box.residencyBudget,
-        .residency_placed_bytes = box.residencyPlaced,
-        .residency_placements = box.residencyPlacements,
-        .descriptor_materializations = box.descriptorMaterializations,
+        .residency_budget_bytes = residencyBudget.recommended_max_working_set_bytes,
+        .residency_placed_bytes = residencyStats.cumulative_placed_bytes,
+        .residency_placements = (uint32_t)residencyStats.placement_count,
+        .descriptor_materializations =
+            (uint32_t)(descriptorStats.cache_hits + descriptorStats.cache_misses),
         .descriptor_stale_rejects = box.descriptorStaleRejects,
         .barrier_transitions = box.barrierTransitions,
         .barrier_edges_required = box.barrierEdgesRequired,
-        .barrier_edges_by_encoder = box.barrierEdgesByEncoder,
+        .barrier_edges_emitted = box.barrierEdgesEmitted,
         .barrier_edges_unmet = box.barrierEdgesUnmet,
         .presented_frames = box.presentedFrames,
         .drawable_readbacks = box.drawableReadbacks,
@@ -1371,6 +1695,14 @@ static BOOL AM12RejectTrace(NSString **detail, NSString *message)
     return NO;
 }
 
+static BOOL AM12TraceReserveBarrierAccesses(uint32_t *accessCount, uint32_t addition)
+{
+    if (!accessCount || addition > AM12_RUNTIME_BARRIER_ACCESSES - *accessCount)
+        return NO;
+    *accessCount += addition;
+    return YES;
+}
+
 static BOOL AM12TraceResourceIsLive(const AM12TraceResourceValidation *resources,
                                     AM12Resource resource)
 {
@@ -1406,6 +1738,7 @@ static BOOL AM12PreflightTrace(NSData *traceData, AM12TracePlan *plan, NSString 
     uint32_t nextResource = 1;
     uint32_t descriptorGeneration = 0;
     uint32_t completedFrames = 0;
+    uint32_t frameBarrierAccessCount = 0;
     uint64_t placedTextureBytes = 0;
     uint64_t sharedBufferBytes = 0;
     BOOL sawDevice = NO;
@@ -1553,7 +1886,7 @@ static BOOL AM12PreflightTrace(NSData *traceData, AM12TracePlan *plan, NSString 
         case AM12_TRACE_SET_ROOT_TABLE:
         {
             AM12TraceRootTable record;
-            if (!sawMetallib || !AM12PayloadFixed(&recordHeader, sizeof(record)))
+            if (!sawMetallib || !frameActive || !AM12PayloadFixed(&recordHeader, sizeof(record)))
                 return AM12RejectTrace(detail, @"root-table record is malformed");
             memcpy(&record, payload, sizeof(record));
             if (record.slot >= AM12_MAX_DESCRIPTOR_SLOTS || !descriptors[record.slot].live ||
@@ -1575,6 +1908,9 @@ static BOOL AM12PreflightTrace(NSData *traceData, AM12TracePlan *plan, NSString 
                 return AM12RejectTrace(detail, @"frame indices must be contiguous and bounded");
             sawAnyFrame = YES;
             frameActive = YES;
+            frameBarrierAccessCount = 0;
+            rootBound = NO;
+            boundConstantBuffer = 0;
             clearReady = NO;
             drew = NO;
             presented = NO;
@@ -1618,12 +1954,16 @@ static BOOL AM12PreflightTrace(NSData *traceData, AM12TracePlan *plan, NSString 
             if (!frameActive || !AM12PayloadFixed(&recordHeader, sizeof(record)))
                 return AM12RejectTrace(detail, @"draw is malformed or outside a frame");
             memcpy(&record, payload, sizeof(record));
-            if (!sawPipeline || !rootBound || !resources[boundConstantBuffer].contentsDefined ||
-                !clearReady || record.resource != clearTarget ||
+            if (!sawPipeline || !rootBound ||
+                !AM12TraceResourceIsLive(resources, boundConstantBuffer) ||
+                resources[boundConstantBuffer].state != AM12_RESOURCE_STATE_CONSTANT_BUFFER ||
+                !resources[boundConstantBuffer].contentsDefined || !clearReady ||
+                record.resource != clearTarget ||
                 !AM12TraceResourceIsLive(resources, record.resource) ||
                 resources[record.resource].kind != AM12_RESOURCE_TEXTURE ||
                 resources[record.resource].state != AM12_RESOURCE_STATE_RENDER_TARGET ||
-                record.vertex_count != 3 || record.instance_count != 1)
+                record.vertex_count != 3 || record.instance_count != 1 ||
+                !AM12TraceReserveBarrierAccesses(&frameBarrierAccessCount, 2))
                 return AM12RejectTrace(detail, @"draw command state is incomplete");
             resources[record.resource].contentsDefined = YES;
             clearReady = NO;
@@ -1643,7 +1983,8 @@ static BOOL AM12PreflightTrace(NSData *traceData, AM12TracePlan *plan, NSString 
                 resources[record.source].state != AM12_RESOURCE_STATE_COPY_SOURCE ||
                 resources[record.destination].state != AM12_RESOURCE_STATE_COPY_DESTINATION ||
                 !resources[record.source].contentsDefined ||
-                resources[record.destination].size < imageLayout.rgbaBytes)
+                resources[record.destination].size < imageLayout.rgbaBytes ||
+                !AM12TraceReserveBarrierAccesses(&frameBarrierAccessCount, 2))
                 return AM12RejectTrace(detail, @"copy resources, states, or size are invalid");
             resources[record.destination].contentsDefined = YES;
             break;
@@ -1658,7 +1999,8 @@ static BOOL AM12PreflightTrace(NSData *traceData, AM12TracePlan *plan, NSString 
                 resources[record.resource].kind != AM12_RESOURCE_TEXTURE ||
                 (resources[record.resource].state != AM12_RESOURCE_STATE_RENDER_TARGET &&
                  resources[record.resource].state != AM12_RESOURCE_STATE_COPY_SOURCE) ||
-                !resources[record.resource].contentsDefined)
+                !resources[record.resource].contentsDefined ||
+                !AM12TraceReserveBarrierAccesses(&frameBarrierAccessCount, 2))
                 return AM12RejectTrace(detail, @"present source or state is invalid");
             presented = YES;
             break;
