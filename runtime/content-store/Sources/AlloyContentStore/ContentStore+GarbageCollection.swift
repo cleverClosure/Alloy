@@ -28,6 +28,7 @@ extension ContentStore {
             // the exact reference-and-lease root set.
             try recoverAllUnlocked()
             let mark = try markReachableStateUnlocked()
+            let protectedDownloads = try protectedTransportOperationIDsUnlocked()
             try faultInjector?("after-gc-mark")
 
             let removedGenerations = try sweepGenerationsUnlocked(
@@ -42,6 +43,7 @@ extension ContentStore {
                 downloadsDirectory,
                 itemFaultPoint: "after-gc-download-sweep-item",
                 completionFaultPoint: "after-gc-download-sweep",
+                preserving: protectedDownloads,
                 faultInjector: faultInjector
             )
             let removedQuarantine = try sweepDirectoryEntriesUnlocked(
@@ -219,11 +221,13 @@ extension ContentStore {
         _ directory: URL,
         itemFaultPoint: String,
         completionFaultPoint: String,
+        preserving entryNames: Set<String> = [],
         faultInjector: FaultInjector?
     ) throws -> (count: Int, bytes: UInt64) {
         var removed = 0
         var bytes: UInt64 = 0
-        for entry in try directoryEntries(directory) {
+        for entry in try directoryEntries(directory)
+        where !entryNames.contains(entry.lastPathComponent) {
             bytes += try recursiveRegularFileBytes(entry)
             try fileManager.removeItem(at: entry)
             try syncDirectory(directory)
