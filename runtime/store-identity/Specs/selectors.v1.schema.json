@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alloy.runtime/specs/store-identity/selectors.v1.schema.json",
+  "$comment": "Author: Timur Isaev",
+  "title": "Alloy evidence selector registry v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record",
+    "version",
+    "author",
+    "selectors"
+  ],
+  "properties": {
+    "record": {
+      "const": "alloy-store-identity-selector-registry"
+    },
+    "version": {
+      "const": 1
+    },
+    "author": {
+      "const": "Timur Isaev"
+    },
+    "selectors": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/selector"
+      }
+    }
+  },
+  "$defs": {
+    "decimalString": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "lowercaseSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "selectorID": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "safeRelativePath": {
+      "type": "string",
+      "minLength": 1,
+      "allOf": [
+        {
+          "not": {
+            "pattern": "^/"
+          }
+        },
+        {
+          "not": {
+            "pattern": "/$"
+          }
+        },
+        {
+          "not": {
+            "pattern": "//"
+          }
+        },
+        {
+          "not": {
+            "pattern": "(^|/)\\.\\.?(\\/|$)"
+          }
+        },
+        {
+          "not": {
+            "pattern": "\\u0000"
+          }
+        }
+      ]
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "fingerprint",
+            "scene-measurement",
+            "launch-policy"
+          ]
+        },
+        "path": {
+          "$ref": "#/$defs/safeRelativePath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/lowercaseSha256"
+        }
+      }
+    },
+    "manifestIDs": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "#/$defs/decimalString"
+      },
+      "patternProperties": {
+        "^[0-9]+$": {
+          "$ref": "#/$defs/decimalString"
+        }
+      },
+      "additionalProperties": false
+    },
+    "imageHashes": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "required": [
+        "The Life and Suffering of Sir Brante.exe"
+      ],
+      "properties": {
+        "The Life and Suffering of Sir Brante.exe": {
+          "$ref": "#/$defs/lowercaseSha256"
+        },
+        "executableSHA256": {
+          "$ref": "#/$defs/lowercaseSha256"
+        },
+        "processPolicies[].imageSHA256": {
+          "$ref": "#/$defs/lowercaseSha256"
+        }
+      }
+    },
+    "selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selector_id",
+        "artifact",
+        "storefront",
+        "game_id",
+        "store_build_id",
+        "manifest_ids",
+        "aggregate_sha256",
+        "image_hashes"
+      ],
+      "properties": {
+        "selector_id": {
+          "$ref": "#/$defs/selectorID"
+        },
+        "artifact": {
+          "$ref": "#/$defs/artifact"
+        },
+        "storefront": {
+          "const": "steam"
+        },
+        "game_id": {
+          "$ref": "#/$defs/decimalString"
+        },
+        "store_build_id": {
+          "$ref": "#/$defs/decimalString"
+        },
+        "manifest_ids": {
+          "$ref": "#/$defs/manifestIDs"
+        },
+        "aggregate_sha256": {
+          "$ref": "#/$defs/lowercaseSha256"
+        },
+        "image_hashes": {
+          "$ref": "#/$defs/imageHashes"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "artifact": {
+                "properties": {
+                  "kind": {
+                    "const": "launch-policy"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "image_hashes": {
+                "required": [
+                  "executableSHA256",
+                  "processPolicies[].imageSHA256"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

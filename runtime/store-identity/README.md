@@ -95,3 +95,19 @@ update or refusal runs only after an unchanged observation returns no detection:
 ```sh
 runtime/store-identity/run-update-watcher-proof.sh
 ```
+
+## Selector registry and invalidation records
+
+Gate 4 binds promoted evidence to one exact storefront app, build, depot
+manifest set, aggregate, and executable-image digest. The committed selector
+registry names the existing fingerprint, title-scene result, and launch-policy
+artifacts by path and SHA-256 without changing those historical artifacts.
+
+A detected update emits one canonical invalidation record naming every selector
+bound to the superseded build. Repeating the same observation is idempotent:
+the record identifier and bytes stay fixed and no duplicate file is created.
+An unchanged observation produces no record or output file.
+
+```sh
+runtime/store-identity/run-selector-invalidation-proof.sh
+```
