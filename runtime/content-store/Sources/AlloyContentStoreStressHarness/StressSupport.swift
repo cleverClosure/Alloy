@@ -14,9 +14,10 @@ enum HarnessError: Error, CustomStringConvertible {
         case .usage:
             """
             usage:
-              alloy-content-store-stress-harness run ROOT SEED STEPS
+              alloy-content-store-stress-harness run ROOT SEED STEPS BASE_URL
               alloy-content-store-stress-harness child-activate ROOT GAME GEN PAYLOAD pass|fail FAULT|none
               alloy-content-store-stress-harness child-collect ROOT FAULT|none
+              alloy-content-store-stress-harness child-download ROOT BASE_URL OPERATION FAULT|none
             """
         }
     }
@@ -45,17 +46,34 @@ enum StressOperation: String, CaseIterable {
     case lease
     case release
     case sweep
+    case download
 }
 
 let stressCollectionFaultPoints = ContentStore.garbageCollectionFaultPoints.filter {
     !$0.hasSuffix("-item")
 }
 
+let stressTransportCheckpointByteCount = 64 * 1024
+let stressTransportPayload = Data(
+    (0..<(stressTransportCheckpointByteCount * 3 + 257)).map {
+        UInt8($0 % 251)
+    }
+)
+let stressTransportDescriptor = LayerDescriptor(
+    name: "stress-transport",
+    version: "1",
+    digest: ContentStore.digest(stressTransportPayload),
+    mediaType: "application/vnd.alloy.test-layer",
+    size: stressTransportPayload.count,
+    role: .hostRuntime
+)
+
 struct StressModel {
     var active: String
     var rollback: String
     var materialized: [String: String]
     var leases: [GenerationLease]
+    var transportObjectPresent: Bool
 
     var reachableGenerations: Set<String> {
         var result: Set<String> = [active, rollback]
@@ -80,6 +98,7 @@ struct StressRunContext {
     let root: URL
     let store: ContentStore
     let seed: UInt64
+    let baseURL: URL
 }
 
 struct StressOperationRequest {
@@ -110,6 +129,20 @@ func layer(generationID: String, payload: String) -> LayerInput {
     )
 }
 
+func requireStressFixtureURL(_ value: String) throws -> URL {
+    guard let url = URL(string: value),
+          url.scheme?.lowercased() == "http",
+          url.host == "127.0.0.1",
+          url.port != nil,
+          url.user == nil,
+          url.password == nil,
+          url.query == nil,
+          url.fragment == nil else {
+        throw HarnessError.usage
+    }
+    return url
+}
+
 func verifyModel(
     store: ContentStore,
     root: URL,
@@ -117,8 +150,30 @@ func verifyModel(
     requireExactReachability: Bool
 ) throws {
     try verifyReferencesAndSave(store: store, model: model)
+    try verifyTransportObject(root: root, model: model)
+    let catalog = try store.catalogConsistencyReport()
+    guard catalog.isConsistent else {
+        throw HarnessError.invariant(
+            "catalog diverged: \(catalog.catalogAhead.count) catalog-ahead, "
+                + "\(catalog.diskAhead.count) disk-ahead record(s)"
+        )
+    }
     if requireExactReachability {
         try verifyExactReachability(root: root, model: model)
+    }
+}
+
+private func verifyTransportObject(
+    root: URL,
+    model: StressModel
+) throws {
+    let present = try objectDigests(root: root).contains(
+        stressTransportDescriptor.digest
+    )
+    guard present == model.transportObjectPresent else {
+        throw HarnessError.invariant(
+            "transport object disk=\(present) model=\(model.transportObjectPresent)"
+        )
     }
 }
 

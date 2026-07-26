@@ -106,6 +106,8 @@ extension ContentStore {
         reachableDigests.formUnion(additionalReachableDigests)
         let incompleteOperations = try incompleteOperationsUnlocked()
         reachableDigests.formUnion(incompleteOperations.flatMap { $0.layers.map(\.digest) })
+        let protectedTransport = try protectedTransportStateUnlocked()
+        reachableDigests.formUnion(protectedTransport.publishedDigests)
         var reachableGenerations = mark.generations
         reachableGenerations.formUnion(incompleteOperations.map {
             RootedGeneration(gameID: $0.gameID, generationID: $0.generationID)
@@ -123,9 +125,8 @@ extension ContentStore {
             try casUsage.addRegularFile(url, store: self)
         }
 
-        let protectedTransportOperations = try protectedTransportOperationIDsUnlocked()
         let protectedDownloads = Set(incompleteOperations.map(\.operationID))
-            .union(protectedTransportOperations)
+            .union(protectedTransport.operationIDs)
         let downloadUsage = try fileUsageUnlocked(
             in: downloadsDirectory,
             excluding: protectedDownloads
@@ -142,7 +143,7 @@ extension ContentStore {
             quarantineBytes: quarantineUsage.bytes,
             totalBytes: totalBytes,
             deferredOperationCount: incompleteOperations.count
-                + protectedTransportOperations.count,
+                + protectedTransport.operationIDs.count,
             generationCount: generationUsage.count,
             casObjectCount: casUsage.fileCount,
             abandonedDownloadFileCount: downloadUsage.fileCount,

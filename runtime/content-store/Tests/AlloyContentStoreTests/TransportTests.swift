@@ -150,7 +150,7 @@ extension SerializedTransportTests {
     }
     }
 
-    @Test("publication sidecar survives its kill boundary and retry cleans it")
+    @Test("published sidecar protects CAS from GC until retry cleans it")
     func transportPublicationKillBoundaryRecovers() throws {
     let payload = Data("publish-once".utf8)
     let descriptor = transportDescriptor(payload)
@@ -176,6 +176,11 @@ extension SerializedTransportTests {
         }
         #expect(store.isRegularFile(try store.objectURL(descriptor.digest)))
         #expect(try store.readTransportRecord("gate1-published").state == .published)
+        let protectedEstimate = try store.estimateGarbageCollectionReclaim()
+        #expect(protectedEstimate.casObjectCount == 0)
+        #expect(protectedEstimate.deferredOperationCount == 1)
+        #expect(try store.collectGarbage().objectsRemoved == 0)
+        #expect(store.isRegularFile(try store.objectURL(descriptor.digest)))
 
         let recovered = try store.fetchObject(
             descriptor,
@@ -184,6 +189,8 @@ extension SerializedTransportTests {
         )
         #expect(recovered.reusedExistingObject)
         #expect(!store.pathEntryExists(store.transportDirectory("gate1-published")))
+        #expect(try store.collectGarbage().objectsRemoved == 1)
+        #expect(!store.pathEntryExists(try store.objectURL(descriptor.digest)))
     }
     }
 }

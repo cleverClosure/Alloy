@@ -3,6 +3,11 @@
 import Darwin
 import Foundation
 
+struct ProtectedTransportState {
+    let operationIDs: Set<String>
+    let publishedDigests: Set<String>
+}
+
 extension ContentStore {
     func verifyTransportPayload(
         _ descriptor: LayerDescriptor,
@@ -281,8 +286,9 @@ extension ContentStore {
         )
     }
 
-    func protectedTransportOperationIDsUnlocked() throws -> Set<String> {
-        var result = Set<String>()
+    func protectedTransportStateUnlocked() throws -> ProtectedTransportState {
+        var operationIDs = Set<String>()
+        var publishedDigests = Set<String>()
         for directory in try fileManager.contentsOfDirectory(
             at: downloadsDirectory,
             includingPropertiesForKeys: nil
@@ -291,9 +297,15 @@ extension ContentStore {
             guard pathEntryExists(transportRecordURL(operationID)) else {
                 continue
             }
-            _ = try readTransportRecord(operationID)
-            result.insert(operationID)
+            let record = try readTransportRecord(operationID)
+            operationIDs.insert(operationID)
+            if record.state == .published {
+                publishedDigests.insert(record.digest)
+            }
         }
-        return result
+        return ProtectedTransportState(
+            operationIDs: operationIDs,
+            publishedDigests: publishedDigests
+        )
     }
 }

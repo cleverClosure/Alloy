@@ -4,7 +4,7 @@ import AlloyContentStore
 import Darwin
 import Foundation
 
-private func faultInjector(_ selected: String) -> FaultInjector {
+func faultInjector(_ selected: String) -> FaultInjector {
     { point in
         if point == selected {
             _exit(97)
@@ -12,7 +12,7 @@ private func faultInjector(_ selected: String) -> FaultInjector {
     }
 }
 
-private func runChild(_ arguments: [String]) throws -> Int32 {
+func runChild(_ arguments: [String]) throws -> Int32 {
     let process = Process()
     process.executableURL = URL(fileURLWithPath: CommandLine.arguments[0])
     process.arguments = arguments
@@ -21,7 +21,7 @@ private func runChild(_ arguments: [String]) throws -> Int32 {
     return process.terminationStatus
 }
 
-private func requireChildStatus(_ status: Int32, fault: String) throws {
+func requireChildStatus(_ status: Int32, fault: String) throws {
     let expected: Int32 = fault == "none" ? 0 : 97
     guard status == expected else {
         throw HarnessError.invariant(
@@ -41,7 +41,7 @@ private func shuffledOperations(_ random: inout SplitMix64) -> [StressOperation]
     return operations
 }
 
-private func selectedFault(
+func selectedFault(
     from points: [String],
     random: inout SplitMix64,
     force: Bool
@@ -92,7 +92,8 @@ private func makeInitialModel(store: ContentStore) throws -> StressModel {
             "base-a": "payload-base-a",
             "base-b": "payload-base-b"
         ],
-        leases: [initialLease]
+        leases: [initialLease],
+        transportObjectPresent: false
     )
 }
 
@@ -259,6 +260,7 @@ private func performSweep(
     model.materialized = model.materialized.filter {
         reachable.contains($0.key)
     }
+    model.transportObjectPresent = false
     return StressStepResult(
         detail: "roots=\(reachable.sorted().joined(separator: ","))",
         fault: fault,
@@ -305,12 +307,29 @@ private func perform(
             random: &random,
             model: &model
         )
+    case .download:
+        try performDownload(
+            context: context,
+            request: request,
+            random: &random,
+            model: &model
+        )
     }
 }
 
-private func runStress(root: URL, seed: UInt64, steps: Int) throws {
+private func runStress(
+    root: URL,
+    seed: UInt64,
+    steps: Int,
+    baseURL: URL
+) throws {
     let store = try ContentStore(root: root)
-    let context = StressRunContext(root: root, store: store, seed: seed)
+    let context = StressRunContext(
+        root: root,
+        store: store,
+        seed: seed,
+        baseURL: baseURL
+    )
     var model = try makeInitialModel(store: store)
     var random = SplitMix64(state: seed)
     let coveragePrefix = shuffledOperations(&random)
@@ -372,7 +391,7 @@ private func run() throws {
     let arguments = CommandLine.arguments
     switch arguments.dropFirst().first {
     case "run":
-        guard arguments.count == 5,
+        guard arguments.count == 6,
               let seed = UInt64(arguments[3]),
               let steps = Int(arguments[4]),
               steps >= StressOperation.allCases.count else {
@@ -381,12 +400,15 @@ private func run() throws {
         try runStress(
             root: URL(fileURLWithPath: arguments[2], isDirectory: true),
             seed: seed,
-            steps: steps
+            steps: steps,
+            baseURL: try requireStressFixtureURL(arguments[5])
         )
     case "child-activate":
         try childActivate(arguments)
     case "child-collect":
         try childCollect(arguments)
+    case "child-download":
+        try childDownload(arguments)
     default:
         throw HarnessError.usage
     }

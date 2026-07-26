@@ -28,7 +28,10 @@ extension ContentStore {
             // the exact reference-and-lease root set.
             try recoverAllUnlocked()
             let mark = try markReachableStateUnlocked()
-            let protectedDownloads = try protectedTransportOperationIDsUnlocked()
+            let protectedTransport = try protectedTransportStateUnlocked()
+            let protectedObjects = mark.objectDigests.union(
+                protectedTransport.publishedDigests
+            )
             try faultInjector?("after-gc-mark")
 
             let removedGenerations = try sweepGenerationsUnlocked(
@@ -36,14 +39,14 @@ extension ContentStore {
                 faultInjector: faultInjector
             )
             let removedObjects = try sweepObjectsUnlocked(
-                preserving: mark.objectDigests,
+                preserving: protectedObjects,
                 faultInjector: faultInjector
             )
             let removedDownloads = try sweepDirectoryEntriesUnlocked(
                 downloadsDirectory,
                 itemFaultPoint: "after-gc-download-sweep-item",
                 completionFaultPoint: "after-gc-download-sweep",
-                preserving: protectedDownloads,
+                preserving: protectedTransport.operationIDs,
                 faultInjector: faultInjector
             )
             let removedQuarantine = try sweepDirectoryEntriesUnlocked(

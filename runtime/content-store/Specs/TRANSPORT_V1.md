@@ -89,7 +89,12 @@ produce the same authorized byte sequence as an uninterrupted fetch.
 The operation lock is never the content-store lock. Publication takes the
 content-store lock only after the full payload is durable and verified.
 Garbage collection recognizes a valid transport sidecar and preserves that
-download directory while it sweeps unrelated staging.
+download directory while it sweeps unrelated staging. A sidecar in
+`published` state also roots its digest in CAS until recovery validates the
+object and removes the sidecar. This closes the process-death interval between
+durable publication and operation cleanup. Once cleanup removes the sidecar,
+the object is ordinary unreferenced CAS and remains collectible until a
+generation, reference, or lease roots it.
 
 ## Recovery boundaries
 

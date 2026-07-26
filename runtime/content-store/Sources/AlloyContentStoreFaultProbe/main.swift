@@ -22,7 +22,10 @@ private enum CommandError: Error, CustomStringConvertible {
               alloy-content-store-fault-probe collect ROOT
               alloy-content-store-fault-probe verify-gc ROOT GAME ACTIVE SAVE OBJECTS REMOVED_GENERATION
               alloy-content-store-fault-probe transport ROOT BASE_URL OPERATION
-              alloy-content-store-fault-probe verify-transport ROOT BASE_URL OPERATION
+              alloy-content-store-fault-probe transport-handshake ROOT BASE_URL OPERATION POINT REACHED CONTINUE
+              alloy-content-store-fault-probe transport-announced ROOT BASE_URL OPERATION ENTERED DONE
+              alloy-content-store-fault-probe verify-transport ROOT BASE_URL OPERATION [EXPECTED_OBJECTS]
+              alloy-content-store-fault-probe verify-transport-staging ROOT OPERATION downloading|published|absent
               alloy-content-store-fault-probe wait-marker PATH
               alloy-content-store-fault-probe write-marker PATH
               alloy-content-store-fault-probe lease-hold ROOT GAME READY RELEASE ATTEMPTED DONE
@@ -48,11 +51,11 @@ private func faultInjector() -> FaultInjector {
     }
 }
 
-private func markerURL(_ path: String) -> URL {
+func markerURL(_ path: String) -> URL {
     URL(fileURLWithPath: path, isDirectory: false)
 }
 
-private func writeMarker(_ url: URL) throws {
+func writeMarker(_ url: URL) throws {
     try FileManager.default.createDirectory(
         at: url.deletingLastPathComponent(),
         withIntermediateDirectories: true
@@ -105,7 +108,7 @@ private func waitForMarker(_ url: URL) throws {
     }
 }
 
-private func handshakeInjector(
+func handshakeInjector(
     point: String,
     reached: URL,
     continuation: URL
@@ -119,7 +122,7 @@ private func handshakeInjector(
     }
 }
 
-private func requireExclusiveLockIsContended(_ root: URL) throws {
+func requireExclusiveLockIsContended(_ root: URL) throws {
     let lock = root.appendingPathComponent("metadata/content-store.lock")
     let descriptor = open(lock.path, O_RDWR)
     guard descriptor >= 0 else {
@@ -467,7 +470,10 @@ private func run() throws {
         "collect": collect,
         "verify-gc": verifyGarbageCollection,
         "transport": fetchTransportCommand,
+        "transport-handshake": fetchTransportWithHandshakeCommand,
+        "transport-announced": fetchTransportAnnouncedCommand,
         "verify-transport": verifyTransportCommand,
+        "verify-transport-staging": verifyTransportStagingCommand,
         "wait-marker": waitMarker,
         "write-marker": writeMarkerCommand,
         "lease-hold": holdLeaseUncontended,
