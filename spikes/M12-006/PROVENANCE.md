@@ -208,3 +208,21 @@ AI-assistant context for this spike. Entries are dated and never rewritten.
   - This correction used only issue #84 and the current first-party task diff.
     No excluded source or external implementation material was inspected,
     searched, fetched, quoted, or supplied to an agent.
+
+- **2026-07-26 — #84 evidence-generation reconciliation.**
+  - Final acceptance review found that result documents mixed exact values
+    from historical gate runs with a later manifest-bound reproduction. Results
+    01 through 07 now name those generations separately and bind the
+    reproduction by tested commit, runtime tree, run-manifest digest, and
+    unsigned staging checksum without claiming that the earlier snapshot
+    covers the later documentation-only descendant.
+  - The former static seven-commit inventory was stale after evidence
+    hardening. Task-history inventory is now capture-bound: each snapshot's
+    frozen `metadata/commit-list.txt`, pinned base, HEAD, and source archive
+    enumerate the exact generation. This prose intentionally does not embed a
+    commit count or terminal HEAD that its own update would invalidate.
+  - The reconciliation and review used only issue #84, current first-party
+    task files, and the checksum-closed private staging evidence. No excluded
+    implementation source, diff, history, code discussion, or external
+    implementation material was opened, searched, fetched, quoted, or supplied
+    to an agent.
