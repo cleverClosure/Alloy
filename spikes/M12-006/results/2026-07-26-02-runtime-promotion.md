@@ -9,7 +9,24 @@ M12-004 high-memory execution remains blocked on explicit host-risk approval
 
 ## Exact inputs
 
-- Branch `task/84-metal12-phase1` at base `21136e4`.
+- Branch `task/84-metal12-phase1`, forked from accepted base `21136e4`.
+- The reconciled measurement batch was captured at commit
+  `94afcc2fee0742b0887f46cd356e1c54a4bb191d` from runtime tree
+  `77d5f21cfbdacf8472156f9586942eb6c020a251`.
+- Its build, model, and reference manifests have SHA-256
+  `ac45aba8c7e170f29d1063edcc3eb8e24642899232fe261201d007c113d890c2`,
+  `cbdbd40f9cac8e1d01de3bfe3386cd5f39ee70adc1d3e3f69fb70d92fd77b744`,
+  and
+  `6f866b3cda69ae220fc72673e3c4329d51b0670ae5f726dd2b5c80102fc3db0c`.
+  The model manifest is intentionally
+  `incomplete-pressure-not-run`; the reference manifest is
+  `complete-presented`.
+- That execution batch is packaged in the checksum-closed unsigned staging
+  generation whose `SHA256SUMS` digest is
+  `5cdc5848e8c133ab3582c5f41e70555e64c0c9f038e6b65e89d22540add72079`.
+  Its classification is `STAGING_ONLY`: checksum closure is not signer
+  authentication or durable preservation. The snapshot covers tested commit
+  `94afcc2`; this later documentation reconciliation is outside it.
 - Historical first-party implementations from M12-001 through M12-004,
   promoted without editing the spike copies.
 - The M12-006 reference HLSL and the M12-005 GPTK answer-key image.
@@ -70,7 +87,12 @@ This satisfies Gate 1's shared-implementation and one-public-header
 boundaries. The remaining exception is execution evidence for the
 intentionally high-memory residency paths.
 
-## Measurements
+## Recorded measurements
+
+The following subsections retain the Gate-1 convergence series (generation A)
+that originally established the result. The final-acceptance reproduction
+(generation B) is reported separately so values from the two invocations are
+not mixed.
 
 ### M12-001 shared descriptor proof
 
@@ -125,6 +147,35 @@ The output remains the established M12-006 image: 228,971 of 230,400 pixels
 are byte-identical to GPTK and every other pixel differs by one channel value
 of one. The BMP SHA-256 is
 `80cbde4aa12a7f8faf6087654d32abd08d7daacbeb636b97257a25cc303b1cca`.
+
+### Final-acceptance reproduction B
+
+The manifest-bound reproduction re-executed the same functional thresholds:
+
+```text
+descriptor update: 69.6 ns/descriptor (1M heap writes)
+randomized model: 1342296 probes verified, 0 mismatches
+page encode: 81.8 ns/descriptor (271164 descriptors)
+page pool: 64 pages, high-water 17, stalls 0
+resident memory: 29.7 MB
+
+6180618 hazard pairs, 0 uncovered
+90.0% eliminated; dropped-edge sensitivity 100/100
+GPU fence chain 0 errors; cross-queue chain 0 errors
+two queues 17.3 ms vs fence-serialized 32.0 ms (1.85x)
+
+live setup / first frame 25.748 / 13.375 ms
+live warm mean / p50 / p95 0.534 / 0.350 / 1.001 ms
+digest 44709706809f28e9
+changed pixels 230397/230400
+```
+
+Generation B reproduces the disposition; it does not erase generation A.
+Its model status remains `incomplete-pressure-not-run`, with
+`residency_mode: none`. A later HEAD-bound capture can produce different
+timings without changing this batch's implementation identity: the immutable
+runtime-tree identifier and machine manifests bind generation B without
+requiring a tracked result document to predict its own future commit hash.
 
 ## M12-004 execution blocker
 

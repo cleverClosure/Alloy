@@ -91,7 +91,7 @@ The original three offscreen runs all produced the same image:
 | Warm p95 | 0.627 ms | 0.369 ms | 1.006 ms | 15.894 ms |
 
 Those rows remain useful only to attribute the runtime's offscreen cost. Phase
-1 now supplies the missing presented boundary: three 120-frame invocations
+1 now supplies the missing presented boundary: a recorded three-run series
 through a visible 640 × 360 `CAMetalLayer`, with the final drawable as pixel
 authority. Invocation 3 is compared with GPTK's third-run cache-warm anchor:
 
@@ -109,7 +109,8 @@ boundary Metal12's warm mean is **1.34× the GPTK frame time**, not twenty times
 faster. Metal12 still renders offscreen and blits into its drawable while GPTK
 renders directly into its backbuffer, so these single-host figures remain
 engineering evidence rather than a general product-performance claim. Exact
-method, all three runs, and the claim boundary are recorded in
+method, all three historical runs, the separate final-acceptance reproduction
+that measured a 1.33× warm-mean ratio, and the claim boundary are recorded in
 [result 06](2026-07-26-06-cametallayer-presentation.md).
 
 ## Deviations, stated rather than buried

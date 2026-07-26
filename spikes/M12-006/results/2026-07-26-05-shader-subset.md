@@ -8,6 +8,16 @@
 
 ## Exact inputs
 
+- Tested execution commit
+  `94afcc2fee0742b0887f46cd356e1c54a4bb191d`, runtime tree
+  `77d5f21cfbdacf8472156f9586942eb6c020a251`, and shader-run manifest
+  SHA-256
+  `c78ce073ca3431d8c99bd71099409c6b82342ca2d65086bdbba2bd303935645c`.
+- The enclosing unsigned staging generation has `SHA256SUMS` digest
+  `5cdc5848e8c133ab3582c5f41e70555e64c0c9f038e6b65e89d22540add72079`.
+  It is `STAGING_ONLY`; checksums do not establish signer authenticity or
+  durable preservation. The snapshot covers tested commit `94afcc2`; this
+  later documentation reconciliation is outside it.
 - Pinned `dxc.exe` v1.9.2602.24, executed once per shader through Alloy's
   shared Wine/FEX runtime.
 - Canonical lowerer `runtime/metal12/ShaderTools/dxil_to_msl.py`.
@@ -33,6 +43,10 @@ compile emits DXIL and disassembly together into private run work, and those
 bytes are reused for lowering and GPU validation throughout that evidence
 batch. A later complete invocation is a new independent evidence batch rather
 than another test iteration inside the first.
+
+The verdict and invocation counts in this document refer to the single
+manifest-bound batch identified above. Older corpus runs remain historical
+context and are not mixed into these totals.
 
 ## New texture coverage
 

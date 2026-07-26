@@ -13,7 +13,13 @@ green and one explicit high-memory residency execution blocker remains
 - Result 03: deterministic, pixel-neutral command capture.
 - Result 04: ten-run scene-free replay plus fail-closed validation.
 - Result 05: wider texture and wave shader subset.
-- Result 06: three 120-frame `CAMetalLayer` invocations.
+- Result 06: the recorded three-run `CAMetalLayer` series plus one
+  manifest-bound 120-frame final-acceptance reproduction.
+- Final-acceptance reproduction at tested execution commit
+  `94afcc2fee0742b0887f46cd356e1c54a4bb191d` and runtime tree
+  `77d5f21cfbdacf8472156f9586942eb6c020a251`. Its unsigned staging payload
+  is checksum-closed but explicitly unauthenticated, and it does not cover
+  this later documentation-only descendant.
 - M12-001 through M12-006 provenance logs and
   `runtime/metal12/PROVENANCE.md`.
 
@@ -26,7 +32,7 @@ green and one explicit high-memory residency execution blocker remains
 | Shaders | Public `AM12LowerDXILToMSL` with an embedded pinned lowerer, bounded container/resources/operations/child execution, DXIL/DXC embedded-hash consistency checking, validated artifacts, ten GPU-exact compute cases, 15-op vertex and 99-op fragment lowering, and one named rejection | Authentication or derivation of caller-provided disassembly from DXIL bitcode; general control flow/DXIL ingestion, implicit LOD, derivatives, gather/compare, broader resources, atomics, waves, and stages |
 | Residency | One shared `AM12ResidencyManager` owns committed buffers, placement leases, alias/LRU/churn/pressure policy; vertical runtime reports the budget and places one 976 KiB target | Linked safe/full high-memory rerun awaits explicit host-risk approval; 24/32/64 GB matrix remains unmeasured |
 | Capture/replay | Versioned self-contained TLV, byte-identical duplicate captures, 6/6 command rejections, 17/17 trace mutations, and ten fresh runtimes with digest `44709706809f28e9` | Real engine/title captures and portability across GPU/OS/compiler epochs |
-| Presentation | Three visible 640 × 360 `CAMetalLayer` runs, 120 frames each, byte-identical output, and exact 121/121 fence edges per run | Resize, occlusion, HDR/high-DPI, multi-window, and long-session pacing |
+| Presentation | Three recorded visible 640 × 360 `CAMetalLayer` runs plus one final-acceptance reproduction, 120 frames each, byte-identical output, and exact 121/121 fence edges | Resize, occlusion, HDR/high-DPI, multi-window, and long-session pacing |
 
 ## Pending decision 3
 
@@ -81,3 +87,5 @@ entered the work.
 This document feeds pending decision 3 with the new numbers. It does not make
 the decision on the founder's behalf, treat a narrow reference trace as a
 title-capable runtime, or erase the explicit residency execution blocker.
+Later acceptance runs are separate manifest-bound evidence generations; they
+do not silently replace the named historical timing series in results 02–06.
