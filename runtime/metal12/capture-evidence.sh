@@ -2768,8 +2768,8 @@ case "$SIGNATURE_KIND" in
         "$FROZEN_ALLOWED_SIGNERS"
     )
     FROZEN_PUBLIC_KEY_TEXT=$(
-      <"$FROZEN_SIGNER_PUBLIC_KEY"
-    )
+      /bin/cat "$FROZEN_SIGNER_PUBLIC_KEY"
+    ) || verify_die "could not read the checksummed SSH public key"
     [[ $ALLOWED_PUBLIC_KEY == "$FROZEN_PUBLIC_KEY_TEXT" ]] ||
       verify_die "SSH allowed-signers key does not match the frozen public key"
     "$SSH_KEYGEN_PATH" -Y verify \
