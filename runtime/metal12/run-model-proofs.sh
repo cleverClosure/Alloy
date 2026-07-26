@@ -366,6 +366,7 @@ $(manifest_field "$BUILD_MANIFEST" runtime_worktree_clean) != yes ||
 $(manifest_field "$BUILD_MANIFEST" source_materialization) != git-cat-file-frozen-head-v1 ||
 $(manifest_field "$BUILD_MANIFEST" native_execution_environment) != env-i-fixed-path-locale-tmp-v1 ||
 $(manifest_field "$BUILD_MANIFEST" module_cache_policy) != unique-ephemeral-not-published ||
+$(manifest_field "$BUILD_MANIFEST" static_archive_policy) != libtool-D-normalized-metadata-v1 ||
 $(manifest_field "$BUILD_MANIFEST" native_toolchain_identity_scope) != selected-executables-and-sdk-metadata-not-full-sdk-closure-v1 ]]; then
   printf '%s\n' \
     'model proofs: build manifest does not describe the frozen clean source' >&2

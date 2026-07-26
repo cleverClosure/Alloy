@@ -329,6 +329,7 @@ $(build_manifest_field runtime_worktree_clean) != yes ||
 $(build_manifest_field source_materialization) != git-cat-file-frozen-head-v1 ||
 $(build_manifest_field native_execution_environment) != env-i-fixed-path-locale-tmp-v1 ||
 $(build_manifest_field module_cache_policy) != unique-ephemeral-not-published ||
+$(build_manifest_field static_archive_policy) != libtool-D-normalized-metadata-v1 ||
 $(build_manifest_field native_toolchain_identity_scope) != selected-executables-and-sdk-metadata-not-full-sdk-closure-v1 ]]; then
   printf 'build manifest is not a clean build of the frozen runtime source\n' >&2
   exit 1

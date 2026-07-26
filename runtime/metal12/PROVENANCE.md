@@ -117,6 +117,9 @@ are appended and never rewritten.
     from the frozen Git commit. It does not attach to a server for the shared
     prefix. The comparator now rejects any result outside the recorded size,
     fingerprints, exact-pixel floor, or channel-delta ceiling.
+  - Static-library archives use normalized libtool metadata, so independent
+    runner builds from the same frozen source, canonical checkout, and selected
+    native tools converge on one build-artifact and manifest identity.
   - Inspection of the ignored compiler runtime was limited to configured
     paths, file types, symlink resolution, runtime binary dependencies,
     registry bytes and selector semantics, and cryptographic hashes needed to

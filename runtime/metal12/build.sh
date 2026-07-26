@@ -373,7 +373,7 @@ compile_object "$SOURCE_ROOT/Sources/Proofs/BarrierTrackerProof.m" "$STAGED_OBJE
 compile_object "$SOURCE_ROOT/Sources/Proofs/ResidencyProof.m" "$STAGED_OBJECTS/ResidencyProof.o"
 
 STAGED_LIBRARY="$NATIVE_STAGING/libAlloyMetal12.a"
-run_clean_native_tool "$LIBTOOL_PATH" -static -o "$STAGED_LIBRARY" \
+run_clean_native_tool "$LIBTOOL_PATH" -static -D -o "$STAGED_LIBRARY" \
   "$STAGED_OBJECTS/AlloyMetal12.o" \
   "$STAGED_OBJECTS/AM12DescriptorHeap.o" \
   "$STAGED_OBJECTS/AM12BarrierTracker.o" \
@@ -491,6 +491,7 @@ TEMPORARY_BUILD_MANIFEST="$NATIVE_STAGING/BUILD-MANIFEST.complete"
   printf 'source_materialization: git-cat-file-frozen-head-v1\n'
   printf 'native_execution_environment: env-i-fixed-path-locale-tmp-v1\n'
   printf 'module_cache_policy: unique-ephemeral-not-published\n'
+  printf 'static_archive_policy: libtool-D-normalized-metadata-v1\n'
   printf 'native_toolchain_identity_scope: %s\n' \
     "$NATIVE_TOOLCHAIN_IDENTITY_SCOPE"
   printf 'lowerer_sha256: %s\n' "$LOWERER_SHA256"

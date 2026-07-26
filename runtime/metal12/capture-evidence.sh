@@ -733,6 +733,8 @@ verify_manifest_value "$BUILD_MANIFEST" native_execution_environment \
   env-i-fixed-path-locale-tmp-v1
 verify_manifest_value "$BUILD_MANIFEST" module_cache_policy \
   unique-ephemeral-not-published
+verify_manifest_value "$BUILD_MANIFEST" static_archive_policy \
+  libtool-D-normalized-metadata-v1
 BUILD_MANIFEST_SHA256=$(sha256_file "$BUILD_MANIFEST")
 
 mkdir -m 700 "$OUTPUT"
@@ -961,6 +963,8 @@ verify_build_manifest_identity() {
   verify_tool_identity "$BUILD_MANIFEST" libtool_path libtool_sha256
   verify_tool_identity "$BUILD_MANIFEST" xxd_path xxd_sha256
   verify_tool_identity "$BUILD_MANIFEST" sed_path sed_sha256
+  verify_manifest_value "$BUILD_MANIFEST" \
+    static_archive_policy libtool-D-normalized-metadata-v1
   verify_manifest_value "$BUILD_MANIFEST" \
     native_toolchain_identity_scope \
     selected-executables-and-sdk-metadata-not-full-sdk-closure-v1

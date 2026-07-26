@@ -137,12 +137,14 @@ Build, proof, and capture publication share a fail-closed lock. The runners
 invalidate their prior manifest first, freeze the build products and external
 compiler runtime before execution, generate fresh artifacts in unique staging
 directories under fixed native-tool and isolated Python environments, recheck
-every declared frozen input, and publish the complete run manifest last. The
-build and shader runners materialize tracked source from Git objects; the
-reference runner likewise materializes its HLSL, comparator, and GPTK answer
-key from the frozen Git commit. It enforces the recorded image contract rather
-than treating comparison metrics as informational. Capture rejects stale,
-modified, incomplete, cached, or cross-run evidence.
+every declared frozen input, and publish the complete run manifest last.
+Static-library metadata is normalized so independent runner builds in the same
+canonical checkout and selected tool environment converge on one artifact and
+manifest identity. The build and shader runners materialize tracked source from
+Git objects; the reference runner likewise materializes its HLSL, comparator,
+and GPTK answer key from the frozen Git commit. It enforces the recorded image
+contract rather than treating comparison metrics as informational. Capture
+rejects stale, modified, incomplete, cached, or cross-run evidence.
 
 A complete capture refuses dirty state, unsigned task commits, an unsigned tag,
 a missing explicit AI-session export, or a missing caller-selected signer. The
