@@ -26,8 +26,13 @@ m12-003 shader path ok
 metal12 shader corpus ok
 ```
 
-A second complete invocation reported `cached DXIL` for all 11 shaders and
-repeated the same result. Test iteration therefore does not re-run DXC.
+The retained canonical invocation performed exactly one fresh DXC compile per
+case, accepted no prior-run cache reads, and recorded `fresh_compiles: 11`,
+`cache_hits: 0`, and `compilation_policy: fresh-only-no-cache-read`. Each
+compile emits DXIL and disassembly together into private run work, and those
+bytes are reused for lowering and GPU validation throughout that evidence
+batch. A later complete invocation is a new independent evidence batch rather
+than another test iteration inside the first.
 
 ## New texture coverage
 

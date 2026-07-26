@@ -59,6 +59,7 @@ Sources/                      runtime, lowering boundary, and linked proofs
 ShaderTools/                  canonical DXIL-to-MSL build-time tool
 Specs/TRACE_FORMAT_V1.md      persisted capture contract
 Tests/                        linked proof and reference clients
+Tests/compare_reference.py    canonical fail-closed image comparator
 Tools/                        linked lowering and scene-free replay clients
 build.sh                      static library and executable build
 run-model-proofs.sh           original model thresholds
@@ -118,6 +119,13 @@ to the recorded files around execution; it is not a claim that the complete
 mutable Wine prefix or every dynamically loadable runtime file has been
 inventoried. A prior compile key or DXIL file is never accepted as proof of a
 new compiler execution.
+
+One script invocation is one compiler-evidence batch. Each corpus case and
+each reference stage is compiled exactly once, with DXIL and disassembly
+emitted together into private run work and reused for every lowering,
+GPU-reference, live, capture, replay, and presentation iteration in that
+batch. A later invocation intentionally creates independent fresh evidence;
+it is not another iteration inside the prior batch.
 
 ## Private evidence capture
 

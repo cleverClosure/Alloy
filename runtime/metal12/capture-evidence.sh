@@ -1651,7 +1651,7 @@ verify_run_manifest "$REFERENCE_MANIFEST" \
 [[ $(manifest_field "$REFERENCE_MANIFEST" status) == complete-presented ]] ||
   die "reference-trace evidence does not include presentation"
 verify_manifest_value "$REFERENCE_MANIFEST" dxc_compile_mode fresh
-verify_manifest_value "$REFERENCE_MANIFEST" dxc_compile_invocations 4
+verify_manifest_value "$REFERENCE_MANIFEST" dxc_compile_invocations 2
 verify_manifest_value "$REFERENCE_MANIFEST" dxc_cache_hits 0
 verify_manifest_value "$REFERENCE_MANIFEST" dxc_execution_materialization \
   private-validated-copy-of-frozen-bundle-v1
@@ -1686,7 +1686,7 @@ for reference_binary in "${REFERENCE_INVOKED_BINARIES[@]}"; do
 done
 
 REFERENCE_HLSL_PATH=runtime/metal12/Tests/Fixtures/reference_scene.hlsl
-REFERENCE_COMPARATOR_PATH=spikes/M12-006/prototype/compare_reference.py
+REFERENCE_COMPARATOR_PATH=runtime/metal12/Tests/compare_reference.py
 REFERENCE_ANSWER_KEY_PATH=spikes/M12-005/results/2026-07-25-gptk4-reference.png
 verify_manifest_value "$REFERENCE_MANIFEST" \
   hlsl_git_path "$REFERENCE_HLSL_PATH"
@@ -1718,21 +1718,17 @@ verify_manifest_value "$REFERENCE_MANIFEST" \
 EXPECTED_REFERENCE_COMPILE_KEY="$(
   {
     printf '%s\0' \
-      'alloy-metal12-reference-fresh-compile.v2' \
+      'alloy-metal12-reference-fresh-compile.v3' \
       'hlsl-sha256' "$REFERENCE_HLSL_SHA256" \
       'compiler-runtime-identity-sha256' \
       "$AM12_COMPILER_RUNTIME_IDENTITY_SHA256"
     printf '%s\0' \
-      'vs-dxil-args' -T vs_6_0 -E vs_main -Fo reference/vs.dxil \
+      'vs-dxc-args' -T vs_6_0 -E vs_main -Fo reference/vs.dxil \
+      -Fc reference/vs.ll \
       inputs/reference_scene.hlsl
     printf '%s\0' \
-      'vs-ll-args' -T vs_6_0 -E vs_main -Fc reference/vs.ll \
-      inputs/reference_scene.hlsl
-    printf '%s\0' \
-      'ps-dxil-args' -T ps_6_0 -E ps_main -Fo reference/ps.dxil \
-      inputs/reference_scene.hlsl
-    printf '%s\0' \
-      'ps-ll-args' -T ps_6_0 -E ps_main -Fc reference/ps.ll \
+      'ps-dxc-args' -T ps_6_0 -E ps_main -Fo reference/ps.dxil \
+      -Fc reference/ps.ll \
       inputs/reference_scene.hlsl
   } | sha256_stream
 )"
@@ -2115,7 +2111,7 @@ fi
   printf 'residency_pressure_executed_by_capture: no\n'
   printf 'model_proof_evidence_status: %s\n' "$MODEL_STATUS"
   printf 'reference_trace_evidence_status: complete-presented\n'
-  printf 'reference_dxc_compilation: fresh; 4 invocations; 0 cache hits\n'
+  printf 'reference_dxc_compilation: fresh; 2 invocations; 0 cache hits\n'
   printf 'shader_corpus_evidence_status: complete\n'
   printf 'shader_dxc_compilation: fresh; 11 invocations; 0 cache hits\n'
   printf 'compiler_runtime_identity_sha256: %s\n' \

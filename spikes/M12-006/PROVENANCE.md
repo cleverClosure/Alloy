@@ -190,3 +190,21 @@ AI-assistant context for this spike. Entries are dated and never rewritten.
     not a trust bootstrap. A recipient must authenticate `SHA256SUMS` and its
     signer fingerprint out of band before executing any verifier obtained from
     the snapshot.
+
+- **2026-07-26 — historical spike comparator preservation.**
+  - Final acceptance review found that evidence hardening had changed the
+    prototype comparator despite the task's requirement to preserve historical
+    spike implementations. Its bytes were restored to the accepted task base.
+  - The fail-closed copy is now canonical under
+    `runtime/metal12/Tests/compare_reference.py`, and both the Phase-1 runner
+    and evidence capture bind that tracked runtime path and its SHA-256.
+  - A stale pre-hardening cache statement in result 05 was also corrected:
+    canonical shader evidence performs one combined DXIL/disassembly invocation
+    per case and accepts no prior-run cache reads. The reference path likewise
+    compiles each of its two stages once; all later iterations in the evidence
+    batch reuse those outputs.
+  - Result 01 now carries the measured `CAMetalLayer` comparison required by
+    #76, with its original offscreen timings retained only for attribution.
+  - This correction used only issue #84 and the current first-party task diff.
+    No excluded source or external implementation material was inspected,
+    searched, fetched, quoted, or supplied to an agent.

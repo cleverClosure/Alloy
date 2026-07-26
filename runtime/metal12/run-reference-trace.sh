@@ -21,7 +21,7 @@ BUILD="$ROOT/build"
 PUBLISHED_WORK="$BUILD/reference"
 PUBLISHED_RUN_MANIFEST="$PUBLISHED_WORK/RUN-MANIFEST.txt"
 HLSL_REPO_PATH=runtime/metal12/Tests/Fixtures/reference_scene.hlsl
-COMPARATOR_REPO_PATH=spikes/M12-006/prototype/compare_reference.py
+COMPARATOR_REPO_PATH=runtime/metal12/Tests/compare_reference.py
 ANSWER_KEY_REPO_PATH=spikes/M12-005/results/2026-07-25-gptk4-reference.png
 PRESENT=0
 RUN_WORK=
@@ -662,39 +662,41 @@ run_dxc() {
 
 run_clean_native_tool "$BUILD/lowering_api_test"
 
-VS_DXIL_ARGS=(-T vs_6_0 -E vs_main -Fo "$RUN_WORK/vs.dxil" "$HLSL")
-VS_LL_ARGS=(-T vs_6_0 -E vs_main -Fc "$RUN_WORK/vs.ll" "$HLSL")
-PS_DXIL_ARGS=(-T ps_6_0 -E ps_main -Fo "$RUN_WORK/ps.dxil" "$HLSL")
-PS_LL_ARGS=(-T ps_6_0 -E ps_main -Fc "$RUN_WORK/ps.ll" "$HLSL")
+VS_DXC_ARGS=(
+  -T vs_6_0 -E vs_main
+  -Fo "$RUN_WORK/vs.dxil"
+  -Fc "$RUN_WORK/vs.ll"
+  "$HLSL"
+)
+PS_DXC_ARGS=(
+  -T ps_6_0 -E ps_main
+  -Fo "$RUN_WORK/ps.dxil"
+  -Fc "$RUN_WORK/ps.ll"
+  "$HLSL"
+)
 # shellcheck disable=SC2119 # The stream has no positional arguments.
 REFERENCE_COMPILE_KEY="$(
   {
     printf '%s\0' \
-      'alloy-metal12-reference-fresh-compile.v2' \
+      'alloy-metal12-reference-fresh-compile.v3' \
       'hlsl-sha256' "$HLSL_SHA256" \
       'compiler-runtime-identity-sha256' \
       "$AM12_COMPILER_RUNTIME_IDENTITY_SHA256"
     printf '%s\0' \
-      'vs-dxil-args' -T vs_6_0 -E vs_main -Fo reference/vs.dxil \
+      'vs-dxc-args' -T vs_6_0 -E vs_main -Fo reference/vs.dxil \
+      -Fc reference/vs.ll \
       inputs/reference_scene.hlsl
     printf '%s\0' \
-      'vs-ll-args' -T vs_6_0 -E vs_main -Fc reference/vs.ll \
-      inputs/reference_scene.hlsl
-    printf '%s\0' \
-      'ps-dxil-args' -T ps_6_0 -E ps_main -Fo reference/ps.dxil \
-      inputs/reference_scene.hlsl
-    printf '%s\0' \
-      'ps-ll-args' -T ps_6_0 -E ps_main -Fc reference/ps.ll \
+      'ps-dxc-args' -T ps_6_0 -E ps_main -Fo reference/ps.dxil \
+      -Fc reference/ps.ll \
       inputs/reference_scene.hlsl
   } | am12_evidence_sha256_stream
 )"
 
 printf 'compile_mode: fresh\n' >"$RUN_WORK/dxc-stderr.log"
-printf '== HLSL -> DXIL (four fresh compiler invocations)\n'
-run_dxc "${VS_DXIL_ARGS[@]}"
-run_dxc "${VS_LL_ARGS[@]}"
-run_dxc "${PS_DXIL_ARGS[@]}"
-run_dxc "${PS_LL_ARGS[@]}"
+printf '== HLSL -> DXIL (one fresh invocation per reference shader)\n'
+run_dxc "${VS_DXC_ARGS[@]}"
+run_dxc "${PS_DXC_ARGS[@]}"
 for compiler_artifact in vs.dxil vs.ll ps.dxil ps.ll; do
   [[ -s $RUN_WORK/$compiler_artifact && ! -L $RUN_WORK/$compiler_artifact ]] ||
     {
@@ -884,7 +886,7 @@ TEMPORARY_RUN_MANIFEST="$RUN_WORK/RUN-MANIFEST.txt"
     "$FROZEN_BUILD_MANIFEST_SHA256"
   printf 'producer_sha256: %s\n' "$PRODUCER_SHA256"
   printf 'dxc_compile_mode: fresh\n'
-  printf 'dxc_compile_invocations: 4\n'
+  printf 'dxc_compile_invocations: 2\n'
   printf 'dxc_cache_hits: 0\n'
   printf '%s\n' \
     'dxc_execution_materialization: private-validated-copy-of-frozen-bundle-v1'

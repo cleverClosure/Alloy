@@ -154,3 +154,25 @@ are appended and never rewritten.
     not a trust bootstrap. A recipient must authenticate `SHA256SUMS` and its
     signer fingerprint out of band before executing any verifier obtained from
     the snapshot.
+
+- **2026-07-26 — historical spike comparator preservation.**
+  - Final acceptance review found that evidence hardening had changed the
+    M12-006 prototype comparator even though the spike tree is historical
+    evidence. The prototype bytes were restored to the accepted task base.
+  - The fail-closed comparison implementation now lives canonically at
+    `runtime/metal12/Tests/compare_reference.py`. Reference execution and
+    evidence capture bind that tracked runtime file by Git path and SHA-256;
+    the size, baseline and slice fingerprints, exact-pixel floor, and channel
+    delta ceiling remain enforced.
+  - The same review corrected a stale result statement from before compiler
+    cache removal. Canonical shader evidence performs 11 fresh DXC invocations
+    per evidence batch and accepts no prior-run cache reads. Each corpus shader
+    now emits DXIL and disassembly together once per batch; the reference path
+    likewise uses one combined invocation for each of its two stages. All
+    later test iterations within a batch reuse those outputs.
+  - Result 01's offscreen-speedup warning was replaced with the measured
+    `CAMetalLayer` comparison required by #76 while retaining the original
+    offscreen rows for cost attribution.
+  - The review and correction used only issue #84 and the current first-party
+    task diff. No excluded source or external implementation material was
+    inspected, searched, fetched, quoted, or supplied to an agent.
