@@ -16,12 +16,20 @@ let package = Package(
     .executable(
       name: "AlloyStoreIdentityFaultProbe",
       targets: ["AlloyStoreIdentityFaultProbe"]
+    ),
+    .executable(
+      name: "AlloyStoreIdentityCLI",
+      targets: ["AlloyStoreIdentityCLI"]
     )
   ],
   targets: [
     .target(name: "AlloyStoreIdentity"),
     .executableTarget(
       name: "AlloyStoreIdentityFaultProbe",
+      dependencies: ["AlloyStoreIdentity"]
+    ),
+    .executableTarget(
+      name: "AlloyStoreIdentityCLI",
       dependencies: ["AlloyStoreIdentity"]
     ),
     .testTarget(

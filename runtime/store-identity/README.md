@@ -129,3 +129,67 @@ requires a clean rerun to converge without duplicate or partial records.
 ```sh
 runtime/store-identity/run-fault-matrix.sh
 ```
+
+## Live read-only observation
+
+`AlloyStoreIdentityCLI` is the one-shot production entry point for comparing a
+current installed title with a trusted fingerprint anchor. It strictly decodes
+the anchor and selector registry, runs the detector self-test before observing
+the installation, and refuses an unstable or internally inconsistent view.
+
+The command has one subcommand and five required options:
+
+```sh
+AlloyStoreIdentityCLI observe \
+  --library-root PATH \
+  --app-id APP_ID \
+  --anchor PATH \
+  --registry PATH \
+  --state-root PATH
+```
+
+Its exact one-line usage is:
+
+```text
+usage: AlloyStoreIdentityCLI observe --library-root PATH --app-id APP_ID --anchor PATH --registry PATH --state-root PATH
+```
+
+The state root must be caller-selected and outside the observed Steam library.
+The command never rewrites the anchor, registry, manifest, or installed game.
+An unchanged observation creates no invalidation JSON and prints exactly:
+
+```text
+STATUS appid=<APP_ID> update=unchanged self_test=PASS invalidation=none
+```
+
+A changed observation publishes or reuses one deterministic invalidation
+record beneath only the selected state root and prints exactly:
+
+```text
+STATUS appid=<APP_ID> update=changed self_test=PASS created=<true|false> id=<sha256:...> superseded=<buildid> observed=<buildid>
+```
+
+Repeated observation of the same changed build reuses the same identifier and
+canonical bytes. Duplicate or unknown options, missing options or values,
+unexpected subcommands, and trailing positional arguments are refused. A
+refusal writes one `ERROR <message>` line to standard error and exits with
+status 1.
+
+The fixture proof invokes both CLI success directions against isolated
+synthetic libraries. It requires the exact unchanged line with no invalidation,
+then requires one canonical changed invalidation and a byte-identical
+`created=false` reuse. It also proves four argument refusals, noncanonical
+registry refusal, unsafe `installdir` refusal, manifest and install-root symlink
+refusals, disjoint state-root enforcement in both directions, detector
+self-test execution, and byte-identical inputs:
+
+```sh
+runtime/store-identity/run-cli-fixture-proof.sh
+```
+
+The full package tests and earlier focused proofs independently cover changed
+detection, selector invalidation, idempotent canonical publication, model and
+parser refusals, and crash convergence.
+
+`tools/steam-fingerprint.py` remains the historical fingerprint and parity
+reference. Live production observation uses `AlloyStoreIdentityCLI`.
