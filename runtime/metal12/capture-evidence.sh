@@ -681,11 +681,27 @@ else
     [[ $commit_fingerprint == "$EXPECTED_SIGNER_FINGERPRINT" ]] ||
       die "commit was signed by an unexpected key: $commit"
   done
-  tag_fingerprint=$(
-    git_signature_command -C "$ROOT" \
-      verify-tag --format="$FINGERPRINT_FORMAT" \
-      "$TAG_OBJECT" 2>/dev/null
-  ) || die "cannot inspect signed-tag fingerprint"
+  if [[ $SIGNATURE_KIND == ssh ]]; then
+    # SSH verification above uses an allowlist containing only the selected
+    # public key, so a successful verification is already key-specific.
+    # verify-tag --format does not expand commit-only %GF for tag objects.
+    tag_fingerprint=$EXPECTED_SIGNER_FINGERPRINT
+  else
+    tag_fingerprint=$(
+      git_signature_command -C "$ROOT" \
+        verify-tag --raw "$TAG_OBJECT" 2>&1 |
+        awk '
+          $1 == "[GNUPG:]" && $2 == "VALIDSIG" {
+            count += 1
+            fingerprint = toupper($3)
+          }
+          END {
+            if (count == 1) print fingerprint
+            else exit 1
+          }
+        '
+    ) || die "cannot inspect signed-tag fingerprint"
+  fi
   [[ $tag_fingerprint == "$EXPECTED_SIGNER_FINGERPRINT" ]] ||
     die "tag was signed by an unexpected key: $SIGNED_TAG"
   if [[ -n $GIT_SSH_ALLOWED_SIGNERS ]]; then
