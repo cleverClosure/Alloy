@@ -21,6 +21,11 @@ private enum CommandError: Error, CustomStringConvertible {
               alloy-content-store-fault-probe seed-gc-leftovers ROOT
               alloy-content-store-fault-probe collect ROOT
               alloy-content-store-fault-probe verify-gc ROOT GAME ACTIVE SAVE OBJECTS REMOVED_GENERATION
+              alloy-content-store-fault-probe transport ROOT BASE_URL OPERATION
+              alloy-content-store-fault-probe transport-handshake ROOT BASE_URL OPERATION POINT REACHED CONTINUE
+              alloy-content-store-fault-probe transport-announced ROOT BASE_URL OPERATION ENTERED DONE
+              alloy-content-store-fault-probe verify-transport ROOT BASE_URL OPERATION [EXPECTED_OBJECTS]
+              alloy-content-store-fault-probe verify-transport-staging ROOT OPERATION downloading|published|absent
               alloy-content-store-fault-probe wait-marker PATH
               alloy-content-store-fault-probe write-marker PATH
               alloy-content-store-fault-probe lease-hold ROOT GAME READY RELEASE ATTEMPTED DONE
@@ -46,11 +51,11 @@ private func faultInjector() -> FaultInjector {
     }
 }
 
-private func markerURL(_ path: String) -> URL {
+func markerURL(_ path: String) -> URL {
     URL(fileURLWithPath: path, isDirectory: false)
 }
 
-private func writeMarker(_ url: URL) throws {
+func writeMarker(_ url: URL) throws {
     try FileManager.default.createDirectory(
         at: url.deletingLastPathComponent(),
         withIntermediateDirectories: true
@@ -103,7 +108,7 @@ private func waitForMarker(_ url: URL) throws {
     }
 }
 
-private func handshakeInjector(
+func handshakeInjector(
     point: String,
     reached: URL,
     continuation: URL
@@ -117,7 +122,7 @@ private func handshakeInjector(
     }
 }
 
-private func requireExclusiveLockIsContended(_ root: URL) throws {
+func requireExclusiveLockIsContended(_ root: URL) throws {
     let lock = root.appendingPathComponent("metadata/content-store.lock")
     let descriptor = open(lock.path, O_RDWR)
     guard descriptor >= 0 else {
@@ -168,6 +173,16 @@ private func decodeUTF8(_ data: Data) throws -> String {
         throw CommandError.verification("invalid UTF-8")
     }
     return result
+}
+
+func verifyCatalogConsistency(_ store: ContentStore) throws {
+    let report = try store.catalogConsistencyReport()
+    guard report.isConsistent else {
+        throw CommandError.verification(
+            "catalog diverged: \(report.catalogAhead.count) catalog-ahead, "
+                + "\(report.diskAhead.count) disk-ahead record(s)"
+        )
+    }
 }
 
 private func bootstrap(_ arguments: [String]) throws {
@@ -234,6 +249,7 @@ private func verify(_ arguments: [String]) throws {
     if let rollback = inspection.rollback {
         try store.validateReference(rollback, gameID: arguments[2])
     }
+    try verifyCatalogConsistency(store)
 }
 
 private func inspect(_ arguments: [String]) throws {
@@ -309,6 +325,7 @@ private func verifyGarbageCollection(_ arguments: [String]) throws {
     guard secondPass == .zero else {
         throw CommandError.verification("second collection was not exact zero")
     }
+    try verifyCatalogConsistency(store)
 }
 
 private func waitMarker(_ arguments: [String]) throws {
@@ -370,9 +387,9 @@ private func collectAnnounced(_ arguments: [String]) throws {
         throw CommandError.usage
     }
     let root = URL(fileURLWithPath: arguments[1], isDirectory: true)
-    let store = try ContentStore(root: root)
     try requireExclusiveLockIsContended(root)
     try writeMarker(markerURL(arguments[2]))
+    let store = try ContentStore(root: root)
     _ = try store.collectGarbage()
     try writeMarker(markerURL(arguments[3]))
 }
@@ -400,9 +417,9 @@ private func updateAnnounced(_ arguments: [String]) throws {
         throw CommandError.usage
     }
     let root = URL(fileURLWithPath: arguments[1], isDirectory: true)
-    let store = try ContentStore(root: root)
     try requireExclusiveLockIsContended(root)
     try writeMarker(markerURL(arguments[6]))
+    let store = try ContentStore(root: root)
     _ = try store.activate(
         gameID: arguments[2],
         generationID: arguments[3],
@@ -428,6 +445,8 @@ private func verifyGeneration(_ arguments: [String]) throws {
             "generation \(arguments[3]) was \(exists ? "present" : "absent")"
         )
     }
+    let store = try ContentStore(root: root)
+    try verifyCatalogConsistency(store)
     guard exists else {
         return
     }
@@ -436,7 +455,6 @@ private func verifyGeneration(_ arguments: [String]) throws {
         generationID: arguments[3],
         manifestDigest: ContentStore.digest(manifest)
     )
-    let store = try ContentStore(root: root)
     try store.validateReference(reference, gameID: arguments[2])
 }
 
@@ -451,6 +469,11 @@ private func run() throws {
         "seed-gc-leftovers": seedGarbageCollectionLeftovers,
         "collect": collect,
         "verify-gc": verifyGarbageCollection,
+        "transport": fetchTransportCommand,
+        "transport-handshake": fetchTransportWithHandshakeCommand,
+        "transport-announced": fetchTransportAnnouncedCommand,
+        "verify-transport": verifyTransportCommand,
+        "verify-transport-staging": verifyTransportStagingCommand,
         "wait-marker": waitMarker,
         "write-marker": writeMarkerCommand,
         "lease-hold": holdLeaseUncontended,

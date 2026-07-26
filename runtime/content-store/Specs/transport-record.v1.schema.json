@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alloy.local/schemas/transport-record.v1.schema.json",
+  "title": "Alloy content transport record v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "operationId",
+    "digest",
+    "expectedSize",
+    "baseUrls",
+    "mirrorIndex",
+    "byteCount",
+    "state"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "kind": {
+      "const": "fetch-object"
+    },
+    "operationId": {
+      "type": "string",
+      "pattern": "^(?!\\.{1,2}$)[A-Za-z0-9._-]+$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "expectedSize": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "baseUrls": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "format": "uri"
+      }
+    },
+    "mirrorIndex": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sourceUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "byteCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "state": {
+      "enum": [
+        "downloading",
+        "downloaded",
+        "verified",
+        "published"
+      ]
+    }
+  }
+}

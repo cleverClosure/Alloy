@@ -40,6 +40,9 @@ public final class ContentStore: @unchecked Sendable {
         try createDirectory(journalsDirectory)
         try createDirectory(volumesDirectory)
         try ensureLockFile()
+        try withExclusiveLock {
+            _ = try ensureCatalogUnlocked(faultInjector: nil)
+        }
     }
 
     public static func sha256Hex(_ data: Data) -> String {
@@ -84,6 +87,7 @@ public final class ContentStore: @unchecked Sendable {
             try writeJournal(operation)
             try faultInjector?("after-download")
             try resume(&operation, faultInjector: faultInjector)
+            _ = try synchronizeCatalogUnlocked(faultInjector: faultInjector)
 
             guard let active = try readReference(.active, gameID: gameID) else {
                 throw ContentStoreError.missingReference("active")
@@ -95,6 +99,7 @@ public final class ContentStore: @unchecked Sendable {
     public func recoverAll(faultInjector: FaultInjector? = nil) throws {
         try withExclusiveLock {
             try recoverAllUnlocked(faultInjector: faultInjector)
+            _ = try synchronizeCatalogUnlocked(faultInjector: faultInjector)
         }
     }
 

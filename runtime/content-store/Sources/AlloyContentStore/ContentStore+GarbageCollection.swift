@@ -28,6 +28,10 @@ extension ContentStore {
             // the exact reference-and-lease root set.
             try recoverAllUnlocked()
             let mark = try markReachableStateUnlocked()
+            let protectedTransport = try protectedTransportStateUnlocked()
+            let protectedObjects = mark.objectDigests.union(
+                protectedTransport.publishedDigests
+            )
             try faultInjector?("after-gc-mark")
 
             let removedGenerations = try sweepGenerationsUnlocked(
@@ -35,13 +39,14 @@ extension ContentStore {
                 faultInjector: faultInjector
             )
             let removedObjects = try sweepObjectsUnlocked(
-                preserving: mark.objectDigests,
+                preserving: protectedObjects,
                 faultInjector: faultInjector
             )
             let removedDownloads = try sweepDirectoryEntriesUnlocked(
                 downloadsDirectory,
                 itemFaultPoint: "after-gc-download-sweep-item",
                 completionFaultPoint: "after-gc-download-sweep",
+                preserving: protectedTransport.operationIDs,
                 faultInjector: faultInjector
             )
             let removedQuarantine = try sweepDirectoryEntriesUnlocked(
@@ -50,6 +55,7 @@ extension ContentStore {
                 completionFaultPoint: "after-gc-quarantine-sweep",
                 faultInjector: faultInjector
             )
+            _ = try synchronizeCatalogUnlocked(faultInjector: faultInjector)
 
             return GarbageCollectionResult(
                 generationsRemoved: removedGenerations.count,
@@ -219,11 +225,13 @@ extension ContentStore {
         _ directory: URL,
         itemFaultPoint: String,
         completionFaultPoint: String,
+        preserving entryNames: Set<String> = [],
         faultInjector: FaultInjector?
     ) throws -> (count: Int, bytes: UInt64) {
         var removed = 0
         var bytes: UInt64 = 0
-        for entry in try directoryEntries(directory) {
+        for entry in try directoryEntries(directory)
+        where !entryNames.contains(entry.lastPathComponent) {
             bytes += try recursiveRegularFileBytes(entry)
             try fileManager.removeItem(at: entry)
             try syncDirectory(directory)

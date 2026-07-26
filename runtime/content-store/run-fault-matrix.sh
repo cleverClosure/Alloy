@@ -6,8 +6,13 @@ set -euo pipefail
 PACKAGE_ROOT="$(cd "$(dirname "$0")" && pwd)"
 PROBE_TMP="$(mktemp -d "${TMPDIR:-/tmp}/alloy-content-store-matrix.XXXXXX")"
 SWIFT_CACHE="$PACKAGE_ROOT/.build/module-cache"
+TRANSPORT_SERVER_PID=
 
 cleanup() {
+  if [[ -n $TRANSPORT_SERVER_PID ]]; then
+    kill "$TRANSPORT_SERVER_PID" 2>/dev/null || true
+    wait "$TRANSPORT_SERVER_PID" 2>/dev/null || true
+  fi
   chmod -R u+w "$PROBE_TMP" 2>/dev/null || true
   rm -rf "$PROBE_TMP"
 }
@@ -47,11 +52,59 @@ FAULT_POINTS=(
   after-gc-download-sweep
   after-gc-quarantine-sweep-item
   after-gc-quarantine-sweep
+  after-transport-stream-chunk
+  before-transport-verification
+  after-transport-verification
+  before-transport-publication
+  after-transport-publication
+  before-catalog-maintenance
+  after-catalog-reconcile
+  after-catalog-commit
 )
+
+transport_server_url_file="$PROBE_TMP/transport-server.url"
+python3 "$PACKAGE_ROOT/Tests/Fixtures/transport_range_server.py" \
+  >"$transport_server_url_file" &
+TRANSPORT_SERVER_PID=$!
+for _ in {1..500}; do
+  if [[ -s $transport_server_url_file ]]; then
+    break
+  fi
+  if ! kill -0 "$TRANSPORT_SERVER_PID" 2>/dev/null; then
+    printf 'FAIL transport fixture exited during startup\n' >&2
+    exit 1
+  fi
+  sleep 0.01
+done
+if [[ ! -s $transport_server_url_file ]]; then
+  printf 'FAIL transport fixture did not publish its address\n' >&2
+  exit 1
+fi
+read -r transport_server_url <"$transport_server_url_file"
 
 START_SECONDS=$SECONDS
 for fault_point in "${FAULT_POINTS[@]}"; do
   case_root="$PROBE_TMP/$fault_point"
+
+  if [[ $fault_point == *transport* ]]; then
+    set +e
+    ALLOY_FAULT_AFTER="$fault_point" \
+      "$PROBE" transport "$case_root" "$transport_server_url" matrix-fetch
+    status=$?
+    set -e
+
+    if [[ $status -ne 97 ]]; then
+      printf 'FAIL %-38s expected exit 97, got %d\n' "$fault_point" "$status" >&2
+      exit 1
+    fi
+
+    "$PROBE" transport "$case_root" "$transport_server_url" matrix-fetch
+    "$PROBE" verify-transport \
+      "$case_root" "$transport_server_url" matrix-fetch
+    printf 'PASS %s\n' "$fault_point"
+    continue
+  fi
+
   "$PROBE" bootstrap "$case_root" game generation-a payload-a save-v1
 
   if [[ $fault_point == after-gc-* ]]; then
@@ -94,6 +147,25 @@ for fault_point in "${FAULT_POINTS[@]}"; do
   printf 'PASS %s\n' "$fault_point"
 done
 
+restart_root="$PROBE_TMP/ignored-range-restart"
+ignored_range_url="$transport_server_url/ignore-range"
+for _ in 1 2; do
+  set +e
+  ALLOY_FAULT_AFTER=after-transport-stream-chunk \
+    "$PROBE" transport "$restart_root" "$ignored_range_url" matrix-restart
+  status=$?
+  set -e
+  if [[ $status -ne 97 ]]; then
+    printf 'FAIL %-38s expected exit 97, got %d\n' \
+      ignored-range-restart-death "$status" >&2
+    exit 1
+  fi
+done
+"$PROBE" transport "$restart_root" "$ignored_range_url" matrix-restart
+"$PROBE" verify-transport \
+  "$restart_root" "$ignored_range_url" matrix-restart
+printf 'PASS ignored-range-restart-death\n'
+
 failed_health_root="$PROBE_TMP/failed-health"
 "$PROBE" bootstrap "$failed_health_root" game generation-a payload-a save-v1
 "$PROBE" update "$failed_health_root" game generation-b payload-b fail
@@ -101,4 +173,4 @@ failed_health_root="$PROBE_TMP/failed-health"
 printf 'PASS failed-health-rollback\n'
 
 printf 'SUMMARY cases=%d elapsed_seconds=%d\n' \
-  "$((${#FAULT_POINTS[@]} + 1))" "$((SECONDS - START_SECONDS))"
+  "$((${#FAULT_POINTS[@]} + 2))" "$((SECONDS - START_SECONDS))"

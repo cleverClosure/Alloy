@@ -87,10 +87,30 @@ private func withCompatibilityFixture(
     try body(root, ContentStore(root: root))
 }
 
-@Test("current-main fixture opens and satisfies v2 invariants without migration")
+private func compatibilityCatalogInventory(
+    leaseCount: Int
+) -> CatalogInventory {
+    CatalogInventory(
+        objectCount: 3,
+        objectBytes: 65,
+        objectReferenceCount: 4,
+        generationCount: 2,
+        referenceCount: 2,
+        leaseCount: leaseCount
+    )
+}
+
+@Test("current-main fixture opens with a v3 catalog without source migration")
 func currentMainFixtureIsBackwardCompatible() throws {
     try withCompatibilityFixture { root, store in
+        #expect(store.isRegularFile(store.catalogURL))
+        #expect(try store.catalogConsistencyReport() == .consistent)
+        #expect(try store.catalogInventory() == compatibilityCatalogInventory(leaseCount: 0))
+        let openTimeDump = try store.canonicalCatalogDump()
+
         try store.recoverAll()
+        #expect(try store.catalogConsistencyReport() == .consistent)
+        #expect(try store.canonicalCatalogDump() == openTimeDump)
         let inspection = try store.inspect(gameID: "fixture-game")
         let active = try #require(inspection.active)
         let rollback = try #require(inspection.rollback)
@@ -123,8 +143,12 @@ func currentMainFixtureIsBackwardCompatible() throws {
             generation: active
         )
         #expect(lease.objectDigests.count == 2)
+        #expect(try store.catalogConsistencyReport() == .consistent)
+        #expect(try store.catalogInventory() == compatibilityCatalogInventory(leaseCount: 1))
         #expect(try store.collectGarbage() == .zero)
         try store.releaseLease(lease)
+        #expect(try store.catalogConsistencyReport() == .consistent)
+        #expect(try store.catalogInventory() == compatibilityCatalogInventory(leaseCount: 0))
         #expect(try store.collectGarbage() == .zero)
     }
 }

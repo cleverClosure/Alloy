@@ -35,9 +35,11 @@ extension ContentStore {
     /// as roots. Stale lease records are pruned by the lease subsystem.
     public func estimateGarbageCollectionReclaim() throws -> ReclaimEstimate {
         try withExclusiveLock {
-            try estimateGarbageCollectionReclaimUnlocked(
+            let estimate = try estimateGarbageCollectionReclaimUnlocked(
                 additionalReachableDigests: []
             )
+            _ = try synchronizeCatalogUnlocked(faultInjector: nil)
+            return estimate
         }
     }
 
@@ -49,9 +51,11 @@ extension ContentStore {
         additionalReachableDigests: Set<String>
     ) throws -> ReclaimEstimate {
         try withExclusiveLock {
-            try estimateGarbageCollectionReclaimUnlocked(
+            let estimate = try estimateGarbageCollectionReclaimUnlocked(
                 additionalReachableDigests: additionalReachableDigests
             )
+            _ = try synchronizeCatalogUnlocked(faultInjector: nil)
+            return estimate
         }
     }
 
@@ -101,15 +105,17 @@ extension ContentStore {
         var reachableDigests = mark.objectDigests
         reachableDigests.formUnion(additionalReachableDigests)
         let incompleteOperations = try incompleteOperationsUnlocked()
-        reachableDigests.formUnion(
-            incompleteOperations.flatMap { $0.layers.map(\.digest) }
-        )
+        reachableDigests.formUnion(incompleteOperations.flatMap { $0.layers.map(\.digest) })
+        let protectedTransport = try protectedTransportStateUnlocked()
+        reachableDigests.formUnion(protectedTransport.publishedDigests)
         var reachableGenerations = mark.generations
         reachableGenerations.formUnion(incompleteOperations.map {
             RootedGeneration(gameID: $0.gameID, generationID: $0.generationID)
         })
 
-        let generationUsage = try reclaimableGenerationUsageUnlocked(preserving: reachableGenerations)
+        let generationUsage = try reclaimableGenerationUsageUnlocked(
+            preserving: reachableGenerations
+        )
 
         var casUsage = FileUsage()
         for url in try validatedObjectURLsUnlocked() {
@@ -120,21 +126,12 @@ extension ContentStore {
         }
 
         let protectedDownloads = Set(incompleteOperations.map(\.operationID))
-        var downloadUsage = FileUsage()
-        for url in try fileManager.contentsOfDirectory(
-            at: downloadsDirectory,
-            includingPropertiesForKeys: nil
-        ) where !protectedDownloads.contains(url.lastPathComponent) {
-            try downloadUsage.addContents(of: url, store: self)
-        }
-
-        var quarantineUsage = FileUsage()
-        for url in try fileManager.contentsOfDirectory(
-            at: quarantineDirectory,
-            includingPropertiesForKeys: nil
-        ) {
-            try quarantineUsage.addContents(of: url, store: self)
-        }
+            .union(protectedTransport.operationIDs)
+        let downloadUsage = try fileUsageUnlocked(
+            in: downloadsDirectory,
+            excluding: protectedDownloads
+        )
+        let quarantineUsage = try fileUsageUnlocked(in: quarantineDirectory)
 
         let totalBytes = try addingByteCounts([
             generationUsage.bytes, casUsage.bytes, downloadUsage.bytes, quarantineUsage.bytes
@@ -145,12 +142,27 @@ extension ContentStore {
             abandonedDownloadBytes: downloadUsage.bytes,
             quarantineBytes: quarantineUsage.bytes,
             totalBytes: totalBytes,
-            deferredOperationCount: incompleteOperations.count,
+            deferredOperationCount: incompleteOperations.count
+                + protectedTransport.operationIDs.count,
             generationCount: generationUsage.count,
             casObjectCount: casUsage.fileCount,
             abandonedDownloadFileCount: downloadUsage.fileCount,
             quarantineFileCount: quarantineUsage.fileCount
         )
+    }
+
+    private func fileUsageUnlocked(
+        in directory: URL,
+        excluding entryNames: Set<String> = []
+    ) throws -> FileUsage {
+        var usage = FileUsage()
+        for url in try fileManager.contentsOfDirectory(
+            at: directory,
+            includingPropertiesForKeys: nil
+        ) where !entryNames.contains(url.lastPathComponent) {
+            try usage.addContents(of: url, store: self)
+        }
+        return usage
     }
 
     func incompleteOperationsUnlocked() throws -> [ActivationOperation] {
