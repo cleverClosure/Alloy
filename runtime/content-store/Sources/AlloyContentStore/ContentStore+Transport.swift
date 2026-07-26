@@ -309,6 +309,7 @@ extension ContentStore {
                     try syncDirectory(downloadsDirectory)
                 }
             }
+            _ = try synchronizeCatalogUnlocked(faultInjector: nil)
             return TransportResult(
                 digest: descriptor.digest,
                 objectURL: try objectURL(descriptor.digest),

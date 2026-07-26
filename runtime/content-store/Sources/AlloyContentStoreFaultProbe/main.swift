@@ -172,6 +172,16 @@ private func decodeUTF8(_ data: Data) throws -> String {
     return result
 }
 
+func verifyCatalogConsistency(_ store: ContentStore) throws {
+    let report = try store.catalogConsistencyReport()
+    guard report.isConsistent else {
+        throw CommandError.verification(
+            "catalog diverged: \(report.catalogAhead.count) catalog-ahead, "
+                + "\(report.diskAhead.count) disk-ahead record(s)"
+        )
+    }
+}
+
 private func bootstrap(_ arguments: [String]) throws {
     guard arguments.count == 6 else {
         throw CommandError.usage
@@ -236,6 +246,7 @@ private func verify(_ arguments: [String]) throws {
     if let rollback = inspection.rollback {
         try store.validateReference(rollback, gameID: arguments[2])
     }
+    try verifyCatalogConsistency(store)
 }
 
 private func inspect(_ arguments: [String]) throws {
@@ -311,6 +322,7 @@ private func verifyGarbageCollection(_ arguments: [String]) throws {
     guard secondPass == .zero else {
         throw CommandError.verification("second collection was not exact zero")
     }
+    try verifyCatalogConsistency(store)
 }
 
 private func waitMarker(_ arguments: [String]) throws {
@@ -372,9 +384,9 @@ private func collectAnnounced(_ arguments: [String]) throws {
         throw CommandError.usage
     }
     let root = URL(fileURLWithPath: arguments[1], isDirectory: true)
-    let store = try ContentStore(root: root)
     try requireExclusiveLockIsContended(root)
     try writeMarker(markerURL(arguments[2]))
+    let store = try ContentStore(root: root)
     _ = try store.collectGarbage()
     try writeMarker(markerURL(arguments[3]))
 }
@@ -402,9 +414,9 @@ private func updateAnnounced(_ arguments: [String]) throws {
         throw CommandError.usage
     }
     let root = URL(fileURLWithPath: arguments[1], isDirectory: true)
-    let store = try ContentStore(root: root)
     try requireExclusiveLockIsContended(root)
     try writeMarker(markerURL(arguments[6]))
+    let store = try ContentStore(root: root)
     _ = try store.activate(
         gameID: arguments[2],
         generationID: arguments[3],
@@ -430,6 +442,8 @@ private func verifyGeneration(_ arguments: [String]) throws {
             "generation \(arguments[3]) was \(exists ? "present" : "absent")"
         )
     }
+    let store = try ContentStore(root: root)
+    try verifyCatalogConsistency(store)
     guard exists else {
         return
     }
@@ -438,7 +452,6 @@ private func verifyGeneration(_ arguments: [String]) throws {
         generationID: arguments[3],
         manifestDigest: ContentStore.digest(manifest)
     )
-    let store = try ContentStore(root: root)
     try store.validateReference(reference, gameID: arguments[2])
 }
 

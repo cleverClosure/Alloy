@@ -35,9 +35,11 @@ extension ContentStore {
     /// as roots. Stale lease records are pruned by the lease subsystem.
     public func estimateGarbageCollectionReclaim() throws -> ReclaimEstimate {
         try withExclusiveLock {
-            try estimateGarbageCollectionReclaimUnlocked(
+            let estimate = try estimateGarbageCollectionReclaimUnlocked(
                 additionalReachableDigests: []
             )
+            _ = try synchronizeCatalogUnlocked(faultInjector: nil)
+            return estimate
         }
     }
 
@@ -49,9 +51,11 @@ extension ContentStore {
         additionalReachableDigests: Set<String>
     ) throws -> ReclaimEstimate {
         try withExclusiveLock {
-            try estimateGarbageCollectionReclaimUnlocked(
+            let estimate = try estimateGarbageCollectionReclaimUnlocked(
                 additionalReachableDigests: additionalReachableDigests
             )
+            _ = try synchronizeCatalogUnlocked(faultInjector: nil)
+            return estimate
         }
     }
 

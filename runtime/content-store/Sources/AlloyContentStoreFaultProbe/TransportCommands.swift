@@ -91,4 +91,5 @@ func verifyTransportCommand(_ arguments: [String]) throws {
     guard try store.inspect(gameID: "transport").objectCount == 1 else {
         throw TransportProbeError.verification("object was not published exactly once")
     }
+    try verifyCatalogConsistency(store)
 }

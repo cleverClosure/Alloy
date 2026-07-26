@@ -57,6 +57,9 @@ FAULT_POINTS=(
   after-transport-verification
   before-transport-publication
   after-transport-publication
+  before-catalog-maintenance
+  after-catalog-reconcile
+  after-catalog-commit
 )
 
 transport_server_url_file="$PROBE_TMP/transport-server.url"

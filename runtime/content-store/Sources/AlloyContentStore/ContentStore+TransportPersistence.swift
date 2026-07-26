@@ -109,6 +109,7 @@ extension ContentStore {
             try publishObject(descriptor, index: 0, operation: operation)
             record.state = .published
             try writeTransportRecord(record)
+            _ = try synchronizeCatalogUnlocked(faultInjector: faultInjector)
             try faultInjector?("after-transport-publication")
         }
     }

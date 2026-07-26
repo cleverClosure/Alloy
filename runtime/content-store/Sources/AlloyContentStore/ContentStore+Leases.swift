@@ -21,12 +21,14 @@ extension ContentStore {
                 throw ContentStoreError.missingReference("active")
             }
             let processID = holderProcessID ?? Int32(getpid())
-            return try acquireLeaseUnlocked(
+            let lease = try acquireLeaseUnlocked(
                 gameID: gameID,
                 generation: selected,
                 holder: requireProcessIdentity(pid_t(processID)),
                 createdAtUnixSeconds: Int64(Date().timeIntervalSince1970)
             )
+            _ = try synchronizeCatalogUnlocked(faultInjector: nil)
+            return lease
         }
     }
 
@@ -36,15 +38,15 @@ extension ContentStore {
         try validateIdentifier(lease.leaseID)
         try withExclusiveLock {
             let url = leaseURL(lease.leaseID)
-            guard pathEntryExists(url) else {
-                return
+            if pathEntryExists(url) {
+                let persisted = try readLease(url)
+                guard persisted == lease else {
+                    throw ContentStoreError.invalidLease(lease.leaseID)
+                }
+                try fileManager.removeItem(at: url)
+                try syncDirectory(leasesDirectory)
             }
-            let persisted = try readLease(url)
-            guard persisted == lease else {
-                throw ContentStoreError.invalidLease(lease.leaseID)
-            }
-            try fileManager.removeItem(at: url)
-            try syncDirectory(leasesDirectory)
+            _ = try synchronizeCatalogUnlocked(faultInjector: nil)
         }
     }
 
@@ -52,7 +54,9 @@ extension ContentStore {
     /// identity no longer exists. Timestamps never decide liveness.
     public func liveLeases() throws -> [GenerationLease] {
         try withExclusiveLock {
-            try liveLeaseRecordsPruningStaleUnlocked()
+            let leases = try liveLeaseRecordsPruningStaleUnlocked()
+            _ = try synchronizeCatalogUnlocked(faultInjector: nil)
+            return leases
         }
     }
 

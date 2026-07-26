@@ -52,6 +52,7 @@ extension ContentStore {
                 completionFaultPoint: "after-gc-quarantine-sweep",
                 faultInjector: faultInjector
             )
+            _ = try synchronizeCatalogUnlocked(faultInjector: faultInjector)
 
             return GarbageCollectionResult(
                 generationsRemoved: removedGenerations.count,

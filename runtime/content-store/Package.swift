@@ -24,7 +24,10 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "AlloyContentStore"
+            name: "AlloyContentStore",
+            linkerSettings: [
+                .linkedLibrary("sqlite3")
+            ]
         ),
         .executableTarget(
             name: "AlloyContentStoreFaultProbe",
