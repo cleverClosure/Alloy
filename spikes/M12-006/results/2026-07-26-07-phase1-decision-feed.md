@@ -98,3 +98,35 @@ title-capable runtime, or extrapolate one host's pressure pass into the
 unmeasured memory-capacity matrix.
 Later acceptance runs are separate manifest-bound evidence generations; they
 do not silently replace the named historical timing series in results 02–06.
+
+## Signed closeout generation
+
+The commit and `STAGING_ONLY` checksum identifiers above remain the exact
+historical pre-signing generations; they are not relabeled as authenticated
+evidence. The user approved closeout with SSH signer fingerprint
+`SHA256:4CXLxC8+HEpIDl4SzsNWiPRfCpatqiqm3YyOJwyGNfA`. The task chain was
+rewritten one-for-one from the same pinned base to add that signature to every
+commit and correct two Gate-6 subjects. Commit order, file trees, and author
+identity stayed unchanged.
+
+The equal-tree mappings for the generations named above are:
+
+- final-acceptance execution
+  `94afcc2fee0742b0887f46cd356e1c54a4bb191d` →
+  `f7464a205445331f335f77ef5dd4417abd2a3701`;
+- authorized pressure execution
+  `5c463b76dd18f37c06a4ab22b11d5347514fab21` →
+  `9f4f6ff6acc4c5e65dea30b94a07522b56cf5329`;
+- pre-signing task tip
+  `5955a2f9f180242dce7d09b22764c65c31538f8e` →
+  `28f6710a649811f4f978dca164118c3a1187bc8b`.
+
+Because a tracked result cannot embed the commit and checksum that include
+itself, the closing generation's exact HEAD, task inventory, manifests, source
+archive, and checksum identity are capture-bound by the signed annotated tag
+`m12-84-evidence` and the private snapshot's `EVIDENCE-RECORD.txt`,
+`metadata/commit-list.txt`, run manifests, and authenticated `SHA256SUMS`.
+External timestamp and durable-storage receipts remain out-of-band
+preservation records. ADR-0012 clause 10's unexposed provider/model-corpus
+inventory remains an explicitly documented limitation, not a claim of
+verification.

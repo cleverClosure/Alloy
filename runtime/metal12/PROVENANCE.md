@@ -215,3 +215,28 @@ are appended and never rewritten.
   - The authorization, execution, and review introduced no external
     implementation input. No excluded source, diff, history, code discussion,
     or quoted material was opened, searched, fetched, or supplied to an agent.
+
+- **2026-07-26 — #84 signed-history closeout reconciliation.**
+  - The user approved closeout with SSH signer fingerprint
+    `SHA256:4CXLxC8+HEpIDl4SzsNWiPRfCpatqiqm3YyOJwyGNfA`. The 17-commit task
+    chain was rewritten one-for-one from the same pinned base so every commit
+    carries that signature. Two non-gate evidence subjects were corrected to
+    Gate-6 subjects; commit order, file trees, and author identity were
+    preserved.
+  - Historical unsigned identifiers remain historical rather than being
+    upgraded in place. Equal-tree mappings include final-acceptance commit
+    `94afcc2fee0742b0887f46cd356e1c54a4bb191d` to
+    `f7464a205445331f335f77ef5dd4417abd2a3701`, authorized-pressure commit
+    `5c463b76dd18f37c06a4ab22b11d5347514fab21` to
+    `9f4f6ff6acc4c5e65dea30b94a07522b56cf5329`, and pre-signing tip
+    `5955a2f9f180242dce7d09b22764c65c31538f8e` to
+    `28f6710a649811f4f978dca164118c3a1187bc8b`.
+  - The exact closing commit, manifests, archive, and checksum set are bound by
+    the signed `m12-84-evidence` tag and private capture rather than embedded in
+    this self-containing tracked entry. Timestamp and durable-storage receipts
+    remain out-of-band. ADR-0012 clause 10's unexposed provider/model-corpus
+    inventory remains explicitly unresolved.
+  - This reconciliation used only the current first-party task and evidence
+    records. No excluded implementation source, diff, history, code
+    discussion, or quoted material was opened, searched, fetched, or supplied
+    to an agent.
