@@ -89,18 +89,22 @@ public final class ContentStore: @unchecked Sendable {
 
     public func recoverAll(faultInjector: FaultInjector? = nil) throws {
         try withExclusiveLock {
-            let journalURLs = try fileManager.contentsOfDirectory(
-                at: journalsDirectory,
-                includingPropertiesForKeys: nil
-            ).filter { $0.pathExtension == "json" }.sorted {
-                $0.lastPathComponent < $1.lastPathComponent
-            }
+            try recoverAllUnlocked(faultInjector: faultInjector)
+        }
+    }
 
-            for journalURL in journalURLs {
-                var operation = try readJournal(journalURL)
-                if !operation.state.isTerminal {
-                    try resume(&operation, faultInjector: faultInjector)
-                }
+    func recoverAllUnlocked(faultInjector: FaultInjector? = nil) throws {
+        let journalURLs = try fileManager.contentsOfDirectory(
+            at: journalsDirectory,
+            includingPropertiesForKeys: nil
+        ).filter { $0.pathExtension == "json" }.sorted {
+            $0.lastPathComponent < $1.lastPathComponent
+        }
+
+        for journalURL in journalURLs {
+            var operation = try readJournal(journalURL)
+            if !operation.state.isTerminal {
+                try resume(&operation, faultInjector: faultInjector)
             }
         }
     }
