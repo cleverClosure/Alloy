@@ -6,15 +6,26 @@ import Foundation
 extension ContentStore {
     func writeDownloads(_ layers: [LayerInput], operation: ActivationOperation) throws {
         let directory = downloadDirectory(operation)
-        try createDirectory(directory)
+        var wroteDownload = false
+        var stagedDigests = Set<String>()
         for (index, layer) in layers.enumerated() {
+            guard stagedDigests.insert(layer.descriptor.digest).inserted,
+                  (try? validateObject(layer.descriptor)) == nil else {
+                continue
+            }
+            if !wroteDownload {
+                try createDirectory(directory)
+                wroteDownload = true
+            }
             try writeDurable(
                 layer.contents,
                 to: downloadURL(layer.descriptor, index: index, operation: operation),
                 exclusive: true
             )
         }
-        try syncDirectory(directory)
+        if wroteDownload {
+            try syncDirectory(directory)
+        }
     }
 
     func verifyDownloads(_ operation: ActivationOperation) throws {

@@ -56,6 +56,7 @@ public final class ContentStore: @unchecked Sendable {
         generationID: String,
         layers: [LayerInput],
         healthOutcome: HealthOutcome = .pass,
+        availableBytes: UInt64? = nil,
         faultInjector: FaultInjector? = nil
     ) throws -> GenerationReference {
         try validateIdentifier(gameID)
@@ -63,6 +64,10 @@ public final class ContentStore: @unchecked Sendable {
         try validateLayerInputs(layers)
 
         return try withExclusiveLock {
+            if let availableBytes {
+                let plan = try preflightDiskSpaceUnlocked(for: layers.map(\.descriptor))
+                try plan.requireFits(availableBytes: availableBytes)
+            }
             let operationID = "\(gameID)-\(generationID)-\(UUID().uuidString.lowercased())"
             var operation = ActivationOperation(
                 operationID: operationID,
