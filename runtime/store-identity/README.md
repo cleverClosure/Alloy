@@ -65,3 +65,17 @@ spikes/STORE-001/steam-readonly/steam-automation-gate.sh
 The parity proof compares the Swift scanner with both known fixture values and
 the historical `tools/steam-fingerprint.py` calculation. Agreement is required
 for every file digest and for the aggregate.
+
+## Defensive Steam metadata parsing
+
+The dependency-free parser consumes caller-supplied appmanifest bytes in
+memory. It accepts valid UTF-8 only, rejects duplicate keys, parses unsigned
+sizes without truncation, and enforces explicit input, nesting, and quoted-token
+limits. It performs no storefront discovery or writes.
+
+Every hostile metadata case is paired with the unchanged clean fixture in the
+same test invocation:
+
+```sh
+runtime/store-identity/run-metadata-parser-proof.sh
+```

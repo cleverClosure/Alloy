@@ -1,0 +1,11 @@
+"AppState"
+{
+    "appid"       "900000"
+    "name"        "Synthetic Game"
+    "installdir"  "Synthetic Game"
+    "SizeOnDisk"  "three-hundred-forty-six"
+    "buildid"     "90000042"
+    "InstalledDepots"
+    {
+    }
+}

@@ -1,0 +1,16 @@
+"AppState"
+{
+    "appid"       "900000"
+    "name"        "Synthetic Game"
+    "installdir"  "Synthetic Game"
+    "SizeOnDisk"  "346"
+    "buildid"     "90000042"
+    "InstalledDepots"
+    {
+        "900001"
+        {
+            "manifest" "1111111111111111111"
+            "size"     "18446744073709551616"
+        }
+    }
+}
