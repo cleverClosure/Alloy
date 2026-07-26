@@ -88,10 +88,10 @@ on its safe subset and crosses the Metal advisory budget on its full path.
 
 ## Build and verify
 
-Put the pinned toolchain on `PATH`, then:
+Run the evidence producers directly so their protected Bash startup policy is
+active:
 
 ```sh
-export PATH="$PWD/tools/toolchains/"llvm-mingw-*/bin:$PATH
 runtime/metal12/build.sh
 runtime/metal12/run-model-proofs.sh
 runtime/metal12/run-shader-corpus.sh
@@ -108,25 +108,47 @@ These are deliberate hardware gates, not routine CI tests.
 
 Shader compilation needs the shared Alloy Wine/FEX runtime. An isolated
 worktree must point `ALLOY_WINE`, `ALLOY_FEX_PREFIX`, and `ALLOY_DXC` at a
-checkout containing those ignored artifacts. The scripts compile each shader
-once into `runtime/metal12/build/` and reuse the cached DXIL.
+checkout containing those ignored artifacts. Evidence runs compile every DXC
+input freshly into a unique staging directory, a private validated copy of the
+three-file DXC bundle, and a unique run-local copy of the recorded Wine prefix;
+they do not attach to a server for the shared prefix. DXC receives a fixed,
+empty-inherited execution environment. The declared selected Wine/FEX files
+are hashed immediately before and after each invocation. This detects changes
+to the recorded files around execution; it is not a claim that the complete
+mutable Wine prefix or every dynamically loadable runtime file has been
+inventoried. A prior compile key or DXIL file is never accepted as proof of a
+new compiler execution.
 
 ## Private evidence capture
 
 [`capture-evidence.sh`](capture-evidence.sh) stages the signed source and build
 record required by ADR-0012. It reads only explicit first-party source roots and
-the fixed `runtime/metal12/build/` output tree; ignored dependency checkouts and
-module caches are not discovered or packaged. `build.sh` emits a manifest that
-binds the native library and clients to the exact Git commit and
-`runtime/metal12` tree. The model-proof, shader-corpus, and reference-trace
-runners invalidate their prior run manifest before execution, then bind every
-accepted log and artifact to that build and source tree. Capture rejects stale,
-modified, incomplete, or cross-run evidence.
+the fixed `runtime/metal12/build/` output tree for packaged bytes. It also
+rehashes the caller-configured DXC bundle and the explicitly declared
+Wine/FEX selected-file identity recorded by the run manifests, including the
+initial prefix registries, selected Wine PE libraries, bridge, server, and
+execution policy. It neither claims a complete load closure nor discovers
+dependency source checkouts, and it does not package those proprietary
+runtime files or module caches. `build.sh` emits a manifest that binds the
+native library and clients to source bytes materialized directly from the
+exact Git commit and `runtime/metal12` tree.
+
+Build, proof, and capture publication share a fail-closed lock. The runners
+invalidate their prior manifest first, freeze the build products and external
+compiler runtime before execution, generate fresh artifacts in unique staging
+directories under fixed native-tool and isolated Python environments, recheck
+every declared frozen input, and publish the complete run manifest last. The
+build and shader runners materialize tracked source from Git objects; the
+reference runner likewise materializes its HLSL, comparator, and GPTK answer
+key from the frozen Git commit. It enforces the recorded image contract rather
+than treating comparison metrics as informational. Capture rejects stale,
+modified, incomplete, cached, or cross-run evidence.
 
 A complete capture refuses dirty state, unsigned task commits, an unsigned tag,
 a missing explicit AI-session export, or a missing caller-selected signer. The
 same selected fingerprint must verify every task commit, the annotated tag, and
-the snapshot manifest:
+the snapshot manifest. The task boundary is pinned to issue #84's accepted base
+commit rather than a movable branch name:
 
 ```sh
 runtime/metal12/capture-evidence.sh \
@@ -141,7 +163,22 @@ testing, `--allow-unsigned-staging` creates a clearly marked incomplete
 snapshot and returns status 3. No mode treats local capture as durable
 preservation: the signed `SHA256SUMS` file must still receive an external
 timestamp and the private snapshot must be uploaded to the approved durable
-store.
+store. The run manifests are deterministic unsigned execution records; the
+snapshot signature authenticates their packaged bytes, not an independent
+attestation that the commands executed. Likewise, the required session export
+is caller-supplied procedural evidence: capture freezes its bytes and checks
+task markers, but no provider signature or independently auditable export
+schema is available. A checksummed authenticated-state record and bundled
+verifier bind the intended status, reject symlinks and unexpected files, and
+verify the selected snapshot signer.
+
+The bundled verifier is not a trust bootstrap: do not execute a verifier taken
+from an unauthenticated snapshot. First authenticate `SHA256SUMS` and its
+signature with trusted external tooling and an approved fingerprint, or use a
+separately trusted copy of the verifier. After that external step, run
+`VERIFY-SNAPSHOT.sh OUT_OF_BAND_EXPECTED_SIGNER_FINGERPRINT`. An unsigned
+staging snapshot accepts no fingerprint and can check only structure and
+checksums, not authenticity.
 
 ## Deliberate boundaries
 

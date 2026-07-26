@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # M12-006 image comparison: the Metal12 slice's bitmap against the M12-005
 # baseline image, per channel.
-# Author: Tim Isaev
+# Author: Timur Isaev
 #
 # A digest match is a single bit of information and a digest mismatch is none
 # at all, so this reports the distribution: how many pixels agree exactly, how
@@ -23,6 +23,11 @@ import zlib
 # anything M12-005 recorded.
 FNV_OFFSET = 1469598103934665603
 FNV_PRIME = 1099511628211
+EXPECTED_SIZE = (640, 360)
+EXPECTED_BASELINE_FNV = 0x825861EE12085256
+EXPECTED_SLICE_FNV = 0x44709706809F28E9
+MIN_EXACT_PIXELS = 228971
+MAX_CHANNEL_DELTA = 1
 
 
 def read_png(path):
@@ -141,15 +146,36 @@ def main():
             worst, worst_at = d, (i % bw, i // bw)
 
     total = bw * bh
+    baseline_fnv = fnv1a_rgb(bytes(base_rgb))
+    slice_fnv = fnv1a_rgb(spix)
+    observed_max_delta = max(deltas)
     print(f"size: {bw}x{bh} ({total} pixels)")
-    print(f"baseline fnv1a64: {fnv1a_rgb(bytes(base_rgb)):016x}")
-    print(f"slice    fnv1a64: {fnv1a_rgb(spix):016x}")
+    print(f"baseline fnv1a64: {baseline_fnv:016x}")
+    print(f"slice    fnv1a64: {slice_fnv:016x}")
     print(f"identical pixels: {exact}/{total} ({100.0 * exact / total:.3f}%)")
+    print(f"maximum channel delta: {observed_max_delta}")
     print("max-channel-delta histogram:")
     for k in sorted(deltas):
         print(f"  delta {k:3d}: {deltas[k]:7d} pixels ({100.0 * deltas[k] / total:.3f}%)")
     if worst_at:
         print(f"worst pixel at {worst_at}: per-channel delta {worst}")
+    failures = []
+    if (bw, bh) != EXPECTED_SIZE:
+        failures.append(f"unexpected dimensions {(bw, bh)}")
+    if baseline_fnv != EXPECTED_BASELINE_FNV:
+        failures.append(f"unexpected baseline fingerprint {baseline_fnv:016x}")
+    if slice_fnv != EXPECTED_SLICE_FNV:
+        failures.append(f"unexpected slice fingerprint {slice_fnv:016x}")
+    if exact < MIN_EXACT_PIXELS:
+        failures.append(f"only {exact} pixels match exactly")
+    if observed_max_delta > MAX_CHANNEL_DELTA:
+        failures.append(f"maximum channel delta is {observed_max_delta}")
+    if failures:
+        for failure in failures:
+            print(f"gate failure: {failure}", file=sys.stderr)
+        print("comparison gate: FAIL")
+        return 1
+    print("comparison gate: PASS")
     return 0
 
 

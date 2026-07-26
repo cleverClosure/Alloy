@@ -100,3 +100,51 @@ are appended and never rewritten.
     environment-wide corpus/index verification therefore remains unresolved;
     no claim is made that unexposed provider or model corpora exclude
     prohibited repositories.
+
+- **2026-07-26 — #84 evidence-integrity hardening.**
+  - Independent parallel reviews of the first evidence workflow found
+    concurrent build attribution, stale fixed-directory artifacts,
+    compiler-cache attribution, and an observational answer-key comparison
+    that did not enforce its recorded thresholds. Those reviews used only the
+    current first-party Metal12 scripts, manifests, results, and configured
+    runtime-tool metadata.
+  - The corrected workflow serializes build, proof, and capture publication;
+    freezes and rechecks native build products plus a private validated DXC
+    bundle and declared Wine/FEX selected-file identity; compiles every shader
+    input freshly in unique staging and a run-local Wine-prefix copy under a
+    fixed empty-inherited environment; publishes accepted artifacts before the final
+    manifest; and materializes reference HLSL, comparator, and answer-key bytes
+    from the frozen Git commit. It does not attach to a server for the shared
+    prefix. The comparator now rejects any result outside the recorded size,
+    fingerprints, exact-pixel floor, or channel-delta ceiling.
+  - Inspection of the ignored compiler runtime was limited to configured
+    paths, file types, symlink resolution, runtime binary dependencies,
+    registry bytes and selector semantics, and cryptographic hashes needed to
+    identify the tools actually executed. A pre-existing server for the shared
+    prefix was observed as process metadata and left running; it was neither
+    inspected nor terminated. No excluded implementation source, diff, history,
+    or code discussion was opened, searched, fetched, quoted, or supplied to an
+    agent.
+  - Capture pins issue #84 to its fixed accepted base commit, freezes the
+    caller-supplied session export, and authenticates the intended snapshot
+    status and exact file inventory under the selected signer. The export has
+    no provider signature or independently auditable schema, so it remains
+    procedural evidence rather than provider attestation.
+  - Run manifests remain unsigned execution records. A later snapshot
+    signature can authenticate their packaged bytes but is not an independent
+    attestation that the recorded commands executed. External timestamping,
+    durable private preservation, commit/tag signing, the full residency
+    pressure run, and ADR-0012 clause 10's provider-corpus limitation remain
+    open.
+  - Terminology clarification: the configured runtime identity is not a claim
+    of a complete dynamic load closure. Each run executes a private verified
+    copy of the three-file DXC bundle, while the original Wine/FEX identity and
+    the declared selected files in the private prefix are rechecked immediately
+    around each compiler invocation. Unlisted mutable prefix files and
+    undeclared dynamic runtime inputs remain outside the claim. The native
+    build similarly records selected executables plus SDK identity metadata and
+    explicitly does not claim a full Xcode/SDK input closure.
+  - The bundled snapshot verifier is a post-authentication consistency tool,
+    not a trust bootstrap. A recipient must authenticate `SHA256SUMS` and its
+    signer fingerprint out of band before executing any verifier obtained from
+    the snapshot.
