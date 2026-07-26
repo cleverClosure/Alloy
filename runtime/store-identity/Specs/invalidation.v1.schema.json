@@ -1,0 +1,249 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alloy.runtime/specs/store-identity/invalidation.v1.schema.json",
+  "$comment": "Author: Timur Isaev",
+  "title": "Alloy evidence invalidation record v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record",
+    "version",
+    "invalidation_id",
+    "game_id",
+    "storefront",
+    "superseded",
+    "observed",
+    "metadata_changed",
+    "game_content_changed",
+    "changed_depot_ids",
+    "added_file_paths",
+    "removed_file_paths",
+    "changed_file_paths",
+    "selector_ids"
+  ],
+  "properties": {
+    "record": {
+      "const": "alloy-store-identity-invalidation"
+    },
+    "version": {
+      "const": 1
+    },
+    "invalidation_id": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "game_id": {
+      "$ref": "#/$defs/decimalString"
+    },
+    "storefront": {
+      "const": "steam"
+    },
+    "superseded": {
+      "$ref": "#/$defs/buildIdentity"
+    },
+    "observed": {
+      "$ref": "#/$defs/buildIdentity"
+    },
+    "metadata_changed": {
+      "type": "boolean"
+    },
+    "game_content_changed": {
+      "type": "boolean"
+    },
+    "changed_depot_ids": {
+      "$ref": "#/$defs/depotIDArray"
+    },
+    "added_file_paths": {
+      "$ref": "#/$defs/pathArray"
+    },
+    "removed_file_paths": {
+      "$ref": "#/$defs/pathArray"
+    },
+    "changed_file_paths": {
+      "$ref": "#/$defs/pathArray"
+    },
+    "selector_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/selectorID"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "anyOf": [
+        {
+          "properties": {
+            "metadata_changed": {
+              "const": true
+            }
+          }
+        },
+        {
+          "properties": {
+            "game_content_changed": {
+              "const": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "if": {
+        "properties": {
+          "metadata_changed": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "changed_depot_ids": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "game_content_changed": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "added_file_paths": {
+            "maxItems": 0
+          },
+          "removed_file_paths": {
+            "maxItems": 0
+          },
+          "changed_file_paths": {
+            "maxItems": 0
+          }
+        }
+      },
+      "else": {
+        "anyOf": [
+          {
+            "properties": {
+              "added_file_paths": {
+                "minItems": 1
+              }
+            }
+          },
+          {
+            "properties": {
+              "removed_file_paths": {
+                "minItems": 1
+              }
+            }
+          },
+          {
+            "properties": {
+              "changed_file_paths": {
+                "minItems": 1
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "decimalString": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "lowercaseSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "selectorID": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "safeRelativePath": {
+      "type": "string",
+      "minLength": 1,
+      "allOf": [
+        {
+          "not": {
+            "pattern": "^/"
+          }
+        },
+        {
+          "not": {
+            "pattern": "/$"
+          }
+        },
+        {
+          "not": {
+            "pattern": "//"
+          }
+        },
+        {
+          "not": {
+            "pattern": "(^|/)\\.\\.?(\\/|$)"
+          }
+        },
+        {
+          "not": {
+            "pattern": "\\u0000"
+          }
+        }
+      ]
+    },
+    "manifestIDs": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "#/$defs/decimalString"
+      },
+      "patternProperties": {
+        "^[0-9]+$": {
+          "$ref": "#/$defs/decimalString"
+        }
+      },
+      "additionalProperties": false
+    },
+    "buildIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "build_id",
+        "manifest_ids",
+        "aggregate_sha256"
+      ],
+      "properties": {
+        "build_id": {
+          "$ref": "#/$defs/decimalString"
+        },
+        "manifest_ids": {
+          "$ref": "#/$defs/manifestIDs"
+        },
+        "aggregate_sha256": {
+          "$ref": "#/$defs/lowercaseSha256"
+        }
+      }
+    },
+    "depotIDArray": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/decimalString"
+      }
+    },
+    "pathArray": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/safeRelativePath"
+      }
+    }
+  }
+}

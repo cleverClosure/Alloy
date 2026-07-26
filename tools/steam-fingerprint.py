@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # STORE-001 Steam install fingerprint tool.
-# Author: Tim Isaev
+# Author: Timur Isaev
+# Gate 6: superseded by runtime/store-identity/ for production observation;
+# retained as the working historical fingerprint and parity reference.
 #
 # Produces the exact-build identity record the Phase-0 storefront proof needs:
 # discovers installs via libraryfolders.vdf / appmanifest ACFs (the D-019
