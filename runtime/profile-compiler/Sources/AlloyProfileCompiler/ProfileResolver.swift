@@ -106,7 +106,9 @@ public enum ProfileResolver {
               Set(metadata.requiredFeatures).isSubset(of: Set(input.host.features)) else { return ("host", false) }
         guard metadata.releaseRing != .quarantined,
               input.client.allowedRings.contains(metadata.releaseRing),
-              metadata.eligibleClientIds.map({ $0.contains(input.client.id) }) ?? true else { return ("eligibility", false) }
+              metadata.eligibleClientIds.map({ $0.contains(input.client.id) }) ?? true else {
+            return ("eligibility", false)
+        }
         return (try eligibility(candidate, input: input), alias)
     }
 
