@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0",
+  "generationId": "rtg_boundary_min_0000000000",
+  "createdAt": "2026-01-01T00:00:00Z",
+  "components": [
+    {
+      "name": "wine-core",
+      "version": "9.0",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "mediaType": "application/vnd.alloy.layer+zstd",
+      "size": 0
+    }
+  ],
+  "hostRequirements": {
+    "architecture": "arm64",
+    "minimumMacOS": "14.0"
+  },
+  "provenance": {
+    "builderId": "builder-boundary-min",
+    "sourceDigest": "src-digest-boundary-min",
+    "buildRecipeDigest": "recipe-digest-boundary-min",
+    "attestationDigest": "attestation-digest-boundary-min"
+  },
+  "activation": {
+    "healthWindowSessions": 1
+  }
+}

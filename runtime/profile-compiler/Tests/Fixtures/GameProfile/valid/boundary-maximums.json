@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "profileId": "boundary.max.game",
+  "revision": 1,
+  "game": {
+    "canonicalId": "game_boundary_max",
+    "displayName": "Boundary Max Game",
+    "storefronts": [
+      { "kind": "standalone", "appId": "0" }
+    ]
+  },
+  "selectors": {
+    "gameBuild": { "version": "1.0.0" },
+    "host": { "architecture": "arm64", "macos": {} }
+  },
+  "runtime": {
+    "generation": "rtg_boundary_max",
+    "layers": [
+      { "role": "host", "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000" }
+    ],
+    "cpuProvider": "native-arm64ec",
+    "defaultGraphicsProvider": "moltenvk"
+  },
+  "processPolicies": [
+    {
+      "id": "default",
+      "priority": 100000,
+      "match": { "pathGlob": "**/*.exe" },
+      "execution": {}
+    }
+  ],
+  "telemetry": {
+    "sampling": 1
+  },
+  "certification": {
+    "level": "experimental",
+    "testedAt": "2026-01-01T00:00:00Z",
+    "testPlanId": "tp_boundary_max",
+    "matrixDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  }
+}

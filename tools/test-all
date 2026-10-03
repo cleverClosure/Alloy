@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """tools/test-all — one command that runs every test suite this repo has.
 
-Author: Tim Isaev
+Author: Timur Isaev
 
 Alloy grew a test for almost everything (the content store, store identity,
 the GFX harness, the board gates, the release-bundle proof, the Steam
@@ -182,6 +182,15 @@ def sh(suite_id: str, tier: str, script: str, *args: str, timeout: float, probe:
 # ---------------------------------------------------------------------------
 
 REGISTRY: list[Suite] = [
+    # --- runtime/profile-compiler ----------------------------------------
+    Suite(
+        id="profile-compiler-swift-test",
+        tier="fast",
+        cmd=("swift", "test", "--package-path", "runtime/profile-compiler"),
+        cwd=".",
+        timeout=180,
+        probe=every(need_commands("swift"), need_paths("runtime/profile-compiler/Package.swift")),
+    ),
     # --- runtime/content-store (invoked, never modified) -------------------
     # swift test, cold .build: ~16s measured.
     Suite(
@@ -426,7 +435,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 23
+REGISTRY_SUITE_COUNT = 24
 
 
 # ---------------------------------------------------------------------------
