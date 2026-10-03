@@ -179,10 +179,24 @@ number comparisons, signature/expiry/unsigned controls, and real-host
 positive and impossible-host negative selectors. Fixtures use only the
 committed, publicly disclosed TEST-ONLY keypair.
 
+## Milestone 3: profile and process resolution
+
+`ProfileCandidate`, `ProfileResolver`, and `ProcessResolver` implement build,
+launcher, host, client eligibility, all five profile tie-breakers, process
+precedence, composed restrictions, explicit inheritance, and conservative
+unknown-process defaults. Ambiguous candidates and policies fail closed.
+[RESOLUTION_V1.md](Specs/RESOLUTION_V1.md) defines local signed alias/eligibility
+metadata and the explicit specificity and bounded regex rules.
+
+The 46-test suite includes five profile and seven process golden pairs, ten
+order-reversed evaluations per pair, and one deliberate implementation-defect
+control per precedence rule. Each control fails its named test before restored
+code passes. Matching also covers exact files, every process match dimension,
+all host/client gates, alias tampering, stale history, and expired candidates.
+
 ## Remaining milestones
 
-Build/launcher and profile/process precedence remain milestone 3; WINE-001
-snapshot lowering is milestone 4; LaunchSpecification, certification,
+WINE-001 snapshot lowering is milestone 4; LaunchSpecification, certification,
 workarounds, and synthetic feature ceilings are milestone 5; full-pipeline
 fuzzing and final review documentation are milestone 6. This is currently a
 library without an executable target.
