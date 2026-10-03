@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # CPU-001 ISA-corpus native oracle check (issue #104, Milestone 1).
-# Author: Tim Isaev
+# Author: Timur Isaev
 #
 # isa_corpus_sse2.c compiles two ways: as the x64 Windows PE guest (built by
 # build-corpus.sh; real SSE2 instructions checked against the portable C
@@ -29,19 +29,9 @@ shift || true
 SRC=$(cd "$(dirname "$0")" && pwd)
 mkdir -p "$OUT"
 
-# Deliberately NOT a bare "clang" lookup, and deliberately not "xcrun -f
-# clang" either. The cross toolchain's own bin/clang is a plain upstream build
-# with no macOS SDK auto-detection, so once it is ahead of Apple's on PATH
-# (exactly what building the x64 guest, or tools/lint.sh, asks for) a bare
-# "clang" silently compiles for this host anyway but cannot find <stdio.h> -
-# fails loud, but easy to misread as a missing SDK rather than the wrong
-# compiler. "xcrun -f clang" does not consult PATH at all - it resolves to
-# Xcode's own clang - but invoking that resolved path directly has the same
-# problem for a different reason: going around /usr/bin/clang skips its
-# SDK-root auto-injection regardless of which binary sits at the resolved
-# path. /usr/bin/clang is the stable wrapper that finds its SDK regardless of
-# PATH or working directory; verified against both failure modes before
-# relying on it (see the results doc).
+# Use Apple's SDK-aware compiler driver even when llvm-mingw leads PATH.
+# A bare clang then resolves to llvm-mingw; xcrun -f clang instead resolves
+# to Xcode's compiler. These are different binaries, not aliases.
 CC=/usr/bin/clang
 
 mutate=clean

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # CPU-001 systematic ISA corpus: SSE2 family through FEX/Wine (issue #104, Milestone 2).
-# Author: Tim Isaev
+# Author: Timur Isaev
 #
 # Builds testcases/isa_corpus_sse2.c as the x64 Windows guest and runs it
 # through spikes/WINE-001/work/build-2's already-built Wine+FEX, read-only,
@@ -45,6 +45,8 @@ set -euo pipefail
 
 script_dir=$(cd "$(dirname "$0")" && pwd)
 spike_root=$script_dir
+# shellcheck source=spikes/CPU-001/isa-corpus-verdict.sh
+source "$script_dir/isa-corpus-verdict.sh"
 
 wine_build=${ALLOY_WINE_BUILD:-/Users/cleverclosure/Developer/Alloy/spikes/WINE-001/work/build-2}
 toolchain_bin=${ALLOY_TOOLCHAIN_BIN:-/Users/cleverclosure/Developer/Alloy/tools/toolchains/llvm-mingw-20260616-ucrt-macos-universal/bin}
@@ -54,7 +56,7 @@ fex_src=${ALLOY_FEX_SOURCE:-/Users/cleverclosure/Developer/Alloy/third_party/src
 run_mutate=1
 usage() {
   cat <<'EOF'
-usage: run-isa-corpus.sh [--skip-mutate]
+usage: run-isa-corpus.sh [--skip-mutate | --selftest]
 
 Builds the SSE2 ISA-corpus x64 guest and runs it through build-2's Wine/FEX
 in a private, freshly-created scratch prefix. By default also builds and
@@ -70,6 +72,10 @@ EOF
 }
 while (($#)); do
   case "$1" in
+    --selftest)
+      isa_corpus_verdict_selftest
+      exit
+      ;;
     --skip-mutate)
       run_mutate=0
       shift
@@ -257,7 +263,6 @@ echo "== clean run =="
 run_guest isa_corpus_sse2.exe clean
 clean_rc=$(cat "$log_dir/clean.exit")
 clean_line=$(grep '^cpu-001 isa-corpus sse2:' "$log_dir/clean.log" || true)
-clean_checksum=$(echo "$clean_line" | grep -o 'checksum=[0-9a-f]*' | cut -d= -f2 || true)
 echo "exit=$clean_rc  $clean_line"
 
 if ! rg -qF 'find_builtin_dll looking for "libarm64ecfex.dll"' "$log_dir/clean.log"; then
@@ -268,13 +273,11 @@ echo "confirmed: Wine's module loader looked up libarm64ecfex.dll (trace present
 
 mutate_rc=
 mutate_line=
-mutate_checksum=
 if ((run_mutate)); then
   echo "== negative control run (mutate=paddb) =="
   run_guest isa_corpus_sse2-mutate-paddb.exe mutate
   mutate_rc=$(cat "$log_dir/mutate.exit")
   mutate_line=$(grep '^cpu-001 isa-corpus sse2:' "$log_dir/mutate.log" || true)
-  mutate_checksum=$(echo "$mutate_line" | grep -o 'checksum=[0-9a-f]*' | cut -d= -f2 || true)
   echo "exit=$mutate_rc  $mutate_line"
   echo "sample mismatches:"
   grep '^FAIL' "$log_dir/mutate.log" | head -3 || true
@@ -293,9 +296,13 @@ echo "fex dll sha256 (after):  $fex_sha_after"
   echo "fex_dll_sha256_before: $fex_sha_before"
   echo "fex_dll_sha256_after:  $fex_sha_after"
   echo "native_oracle: $native_line"
-  [[ -n $native_mutate_line ]] && echo "native_oracle_mutate_paddb: $native_mutate_line"
+  if [[ -n $native_mutate_line ]]; then
+    echo "native_oracle_mutate_paddb: $native_mutate_line"
+  fi
   echo "clean_run: exit=$clean_rc $clean_line"
-  [[ -n $mutate_rc ]] && echo "mutate_run: exit=$mutate_rc $mutate_line"
+  if [[ -n $mutate_rc ]]; then
+    echo "mutate_run: exit=$mutate_rc $mutate_line"
+  fi
 } | tee "$work_root/run-metadata.txt"
 
 echo "== verdict =="
@@ -304,38 +311,12 @@ if [[ $fex_sha_before != "$fex_sha_after" ]]; then
   echo "FAIL: build-2's libarm64ecfex.dll changed during this run (not read-only)" >&2
   ok=0
 fi
-if [[ $clean_rc != 0 || -z $clean_checksum || $clean_checksum != "$native_checksum" ]]; then
-  echo "FAIL: clean run did not pass with the native-oracle checksum" >&2
-  echo "  native=$native_checksum  fex=$clean_checksum  exit=$clean_rc" >&2
+if ! isa_corpus_verdict clean "$log_dir/clean.log" "$clean_rc" "$native_checksum" none; then
   ok=0
-else
-  echo "PASS: clean run matches the native oracle (checksum=$clean_checksum)"
 fi
 if ((run_mutate)); then
-  # A nonzero exit alone is not proof the negative control fired: a perl-alarm
-  # timeout (142), an unrelated SIGSEGV (139), or any other crash all exit
-  # nonzero too, and crediting any of those as "the mutation was caught" would
-  # pass this gate even when the guest never ran the real-vs-reference
-  # comparison at all. Require the specific outcome instead: the exit code
-  # run_hand_vectors()/main() actually return on a detected mismatch (1), the
-  # checksum matching the known-corrupted native oracle built above (proof
-  # this is genuinely the paddb-corrupted reference path, not some other
-  # failure), and a FAIL line naming paddb by name.
-  if [[ $mutate_rc == 0 ]]; then
-    echo "FAIL: the mutate=paddb negative control passed - it must fail" >&2
+  if ! isa_corpus_verdict mutation "$log_dir/mutate.log" "$mutate_rc" "$native_mutate_checksum" paddb; then
     ok=0
-  elif [[ $mutate_rc != 1 ]]; then
-    echo "FAIL: mutate run exited $mutate_rc, not the 1 a detected mismatch produces - cannot tell a real negative control from a crash or timeout" >&2
-    ok=0
-  elif [[ -z $mutate_checksum || $mutate_checksum != "$native_mutate_checksum" ]]; then
-    echo "FAIL: mutate run's checksum does not match the native corrupted-reference oracle" >&2
-    echo "  native_mutate=$native_mutate_checksum  fex_mutate=$mutate_checksum" >&2
-    ok=0
-  elif ! rg -qi '^FAIL (hand-vector )?paddb\b' "$log_dir/mutate.log"; then
-    echo "FAIL: mutate run never reported a paddb mismatch by name - the negative control did not demonstrably fire on the expected operation" >&2
-    ok=0
-  else
-    echo "PASS: the mutate=paddb negative control failed, as required (exit=$mutate_rc, checksum=$mutate_checksum matches the corrupted native oracle, paddb named in the log)"
   fi
 fi
 

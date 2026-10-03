@@ -1,6 +1,6 @@
 /*
  * CPU-001 systematic ISA correctness corpus - SSE2 integer family (issue #104).
- * Author: Tim Isaev
+ * Author: Timur Isaev
  *
  * Oracle method: reference-implementation parity, the pattern isa_smoke.c
  * already uses for CRC32C/PDEP/PEXT. For every SSE2 integer op, each test case
@@ -25,8 +25,8 @@
  *
  * The native build is the Milestone-1 proof that the oracle and the harness
  * are trustworthy *before* any translator is involved: build-isa-corpus-
- * native.sh builds it at -O0/-O2/-O3 and requires byte-identical output
- * across all three, and run_hand_vectors() below checks the reference
+ * native.sh builds it at -O0/-O1/-O2/-O3 and requires byte-identical output
+ * across all four, and run_hand_vectors() below checks the reference
  * against a handful of values computed by hand in this comment block rather
  * than against anything the program itself computes - a corrupted reference
  * agreeing with its own corruption cannot pass a hand-checked vector.
@@ -1127,7 +1127,7 @@ static void build_hand_vectors(void)
     h->note = "sum of |5-1..8| in the low lane = 16; the all-zero high half sums to 0";
 
     /* The five vectors below exist because a review of this corpus found that
-     * the 48 ops with no hand vector had no independent check at all: a
+     * the 47 ops with no hand vector had no independent check at all: a
      * planted bug (dropped rounding, flipped comparison, wrong shift amount,
      * swapped operands) changed the checksum but left every other signal -
      * exit code, failures=0, cross-opt-level agreement - green, because none
