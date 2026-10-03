@@ -50,10 +50,10 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  # Without this a squash merge lands the commit but leaves the linked issue
-  # open: PR #64 and #67 both merged with a correct closing keyword on 25 July
-  # 2026 and neither issue closed. scripts/finish-task.sh had to reconcile the
-  # closure afterwards and recorded the cause in its header.
+  # For closing the linked issues after the merge. A merge made with the Actions
+  # token leaves them open: every auto-merged task PR from #64 on did. This
+  # permission alone does not change that - #93 merged with it granted and its
+  # issue stayed open - so merge-gate.sh --close-linked closes them explicitly.
   issues: write
 
 concurrency:
@@ -159,3 +159,7 @@ jobs:
           echo "Merging PR #$pr."
           gh pr merge "$pr" --repo "$REPO" --squash
           echo "Merged PR #$pr."
+
+          # The merge does not close the issues it links when the Actions token
+          # performs it, and an open issue keeps its card out of Done.
+          NUMBER="$pr" REPOSITORY="$REPO" bash .github/workflows/merge-gate.sh --close-linked

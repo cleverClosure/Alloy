@@ -87,6 +87,21 @@ case "${1:-} ${2:-}" in
       cat "$FIXTURE/board.json"
     fi
     ;;
+  "issue view")
+    # State is OPEN unless a case recorded otherwise; `issue close` below
+    # records it, so a second pass sees what the first one did.
+    state=OPEN
+    [[ -e $FIXTURE/issue-$3.state ]] && state=$(cat "$FIXTURE/issue-$3.state")
+    emit "{\"state\":\"$state\"}"
+    ;;
+  "issue close")
+    if [[ -e $FIXTURE/close-$3.fail ]]; then
+      echo "HTTP 403: Resource not accessible by integration" >&2
+      exit 1
+    fi
+    echo CLOSED >"$FIXTURE/issue-$3.state"
+    echo "issue close $3" >>"$FIXTURE/mutations.log"
+    ;;
   "issue comment")
     body=""
     prev=""
@@ -178,13 +193,14 @@ make_case() { # dir "issue ..." estimate-json actual-json
 }
 
 path_prefix=""
+gate_args=()
 run_gate() { # [project-token]
   out=$(
     FIXTURE="$dir_under_test" \
       PATH="$path_prefix$work/bin:$PATH" \
       NUMBER=900 REPOSITORY="cleverClosure/Alloy" CI_RUN_ID=4242 \
       GH_TOKEN="actions-token" PROJECT_TOKEN="${1-project-token}" \
-      bash "$here/merge-gate.sh" 2>&1
+      bash "$here/merge-gate.sh" ${gate_args[@]+"${gate_args[@]}"} 2>&1
   )
   status=$?
 }
@@ -416,6 +432,64 @@ if ((status == 0)); then
 else
   pass pr-unreadable
 fi
+
+# ── After the merge: the linked issues are closed, because the merge does not ─
+gate_args=(--close-linked)
+
+# 15. Open issues are closed; one that is already closed is left alone.
+dir_under_test="$work/c15"
+make_case "$dir_under_test" '57 58' '{"number":3}' '{"number":4}'
+echo CLOSED >"$dir_under_test/issue-58.state"
+run_gate
+if ((status != 0)); then
+  fold "close-linked: failed on a well-formed merge" "$out"
+elif ! grep -qx 'issue close 57' "$dir_under_test/mutations.log"; then
+  fold "close-linked: left the linked issue open" "$(cat "$dir_under_test/mutations.log")"
+elif grep -q 'issue close 58' "$dir_under_test/mutations.log"; then
+  fold "close-linked: re-closed an issue that was already closed" "$(cat "$dir_under_test/mutations.log")"
+else
+  pass close-linked
+fi
+
+# 16. A PR that closes nothing closes nothing.
+dir_under_test="$work/c16"
+make_case "$dir_under_test" '' 'null' 'null'
+run_gate
+if ((status != 0)); then
+  fold "close-linked-none: failed on a PR with no closing reference" "$out"
+elif [[ -s $dir_under_test/mutations.log ]]; then
+  fold "close-linked-none: touched something" "$(cat "$dir_under_test/mutations.log")"
+else
+  pass close-linked-none
+fi
+
+# 17. One issue that will not close: the rest still close, and the run is red.
+dir_under_test="$work/c17"
+make_case "$dir_under_test" '57 58' '{"number":3}' '{"number":4}'
+: >"$dir_under_test/close-57.fail"
+run_gate
+if ((status == 0)); then
+  fold "close-linked-fails: reported success with an issue left open" "$out"
+elif ! grep -qx 'issue close 58' "$dir_under_test/mutations.log"; then
+  fold "close-linked-fails: one failure stopped the other issue closing" "$out"
+else
+  pass close-linked-fails
+fi
+
+# 18. An issue in another repository is not ours to close.
+dir_under_test="$work/c18"
+make_case "$dir_under_test" '' 'null' 'null'
+echo '{"closingIssuesReferences":[{"number":5,"repository":{"name":"tools","owner":{"login":"someone"}}}]}' \
+  >"$dir_under_test/pr.json"
+run_gate
+if ((status != 0)); then
+  fold "close-linked-foreign: failed" "$out"
+elif [[ -s $dir_under_test/mutations.log ]]; then
+  fold "close-linked-foreign: closed this repository's issue with the same number" "$(cat "$dir_under_test/mutations.log")"
+else
+  pass close-linked-foreign
+fi
+gate_args=()
 
 echo
 if ((fail == 0)); then
