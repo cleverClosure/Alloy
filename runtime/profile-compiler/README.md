@@ -10,8 +10,8 @@ required to run its tests.
 
 ## Milestone 1: schema and fixture conformance core
 
-This is the first of six milestones (see issue #101 for the full plan). It
-delivers only the foundation everything else is built on: hand-written,
+The first milestone (see issue #101 for the full plan) delivered the
+foundation: hand-written,
 strict decoders for the two signed-object schemas, and proof that they track
 those schemas exactly.
 
@@ -160,17 +160,29 @@ tools/test-all --tier fast --only profile-compiler-swift-test
 The package is registered in the fast tier of `tools/test-all`, which the
 existing CI job runs on every pull request.
 
-### What milestone 1 does not cover yet
+## Milestone 2: canonical bytes, local envelopes, and host selectors
 
-Everything past schema conformance is later milestones of issue #101, in
-order: canonicalization and envelope-signature verification against a local
-test key (milestone 2); real host-selector matching against this Mac's
-actual capabilities, and build/host/process-policy selector precedence and
-conflict resolution (milestones 2–3); lowering a resolved process policy
-into WINE-001's existing policy-snapshot wire format (milestone 4); the
-`LaunchSpecification` export itself, plus certification, workaround, and
-feature-mask validation (milestone 5); and a full-pipeline fuzzer with the
-canonicalization/field-coverage write-up (milestone 6). None
-of that — selectors, precedence, canonicalization, signing, or
-`LaunchSpecification` — exists in this milestone. This package also does not
-yet have a CLI or any executable target; it is a library only.
+`CanonicalJSON` implements the bounded, versioned encoding described in
+[CANONICALIZATION_V1.md](Specs/CANONICALIZATION_V1.md). `TestEnvelope.verify`
+authenticates the object type, payload and expiry using an explicitly supplied
+CryptoKit Ed25519 test key. Unsigned payloads require explicit Development
+Mode. No production trust root is bundled or implied.
+
+`HostCapabilities.current()` uses native macOS and Metal APIs. Host and
+manifest selectors match versions, exact OS builds, GPU families, memory,
+features, and entitlements. The normalized SHA-256 identity is explicitly
+`local-unregistered:…`, never a control-plane host-class identifier.
+
+The suite now has 38 tests in seven suites, including a ten-run canonical
+byte golden, 24 published numeric vectors, 10,000 independent ECMAScript
+number comparisons, signature/expiry/unsigned controls, and real-host
+positive and impossible-host negative selectors. Fixtures use only the
+committed, publicly disclosed TEST-ONLY keypair.
+
+## Remaining milestones
+
+Build/launcher and profile/process precedence remain milestone 3; WINE-001
+snapshot lowering is milestone 4; LaunchSpecification, certification,
+workarounds, and synthetic feature ceilings are milestone 5; full-pipeline
+fuzzing and final review documentation are milestone 6. This is currently a
+library without an executable target.
