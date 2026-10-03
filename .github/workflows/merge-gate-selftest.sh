@@ -60,6 +60,10 @@ emit() { # json-text
 
 case "${1:-} ${2:-}" in
   "pr view")
+    if [[ -e $FIXTURE/pr.fail ]]; then
+      echo 'HTTP 502: Bad Gateway (https://api.github.com/graphql)' >&2
+      exit 1
+    fi
     emit "$(cat "$FIXTURE/pr.json")"
     ;;
   "api graphql")
@@ -70,7 +74,18 @@ case "${1:-} ${2:-}" in
       echo '{"data":{"repository":null},"errors":[{"type":"NOT_FOUND"}]}'
       exit 1
     fi
-    cat "$FIXTURE/board.json"
+    # Answer for the issue actually asked about. A stub that serves one board
+    # to every question cannot tell a gate that checks every closed issue from
+    # one that checks only the first.
+    issue=""
+    for a in "${args[@]}"; do
+      [[ $a == number=* ]] && issue=${a#number=}
+    done
+    if [[ -e $FIXTURE/board-$issue.json ]]; then
+      cat "$FIXTURE/board-$issue.json"
+    else
+      cat "$FIXTURE/board.json"
+    fi
     ;;
   "issue comment")
     body=""
@@ -79,7 +94,8 @@ case "${1:-} ${2:-}" in
       [[ $prev == "--body" ]] && body=$a
       prev=$a
     done
-    jq --arg b "$body" '. + [{id: (length + 1000), body: $b}]' \
+    jq --arg b "$body" \
+      '. + [{id: (length + 1000), body: $b, user: {login: "github-actions[bot]"}}]' \
       "$FIXTURE/comments.json" >"$FIXTURE/comments.tmp" || {
       echo "stub: failed to record the comment" >&2
       exit 92
@@ -142,23 +158,31 @@ chmod +x "$work/bin/gh"
 
 # ── fixtures ──────────────────────────────────────────────────────────────────
 
-make_case() { # dir closes-json estimate-json actual-json
+board() { # estimate-json actual-json -> a board answer for one issue
+  cat <<EOF
+{"data":{"repository":{"issue":{"projectItems":{"nodes":[
+  {"project":{"number":1},"estimate":$1,"actual":$2}]}}}}}
+EOF
+}
+
+make_case() { # dir "issue ..." estimate-json actual-json
   local dir=$1
   mkdir -p "$dir"
   : >"$dir/mutations.log"
   echo '[]' >"$dir/comments.json"
-  printf '{"closingIssuesReferences":%s}\n' "$2" >"$dir/pr.json"
-  cat >"$dir/board.json" <<EOF
-{"data":{"repository":{"issue":{"projectItems":{"nodes":[
-  {"project":{"number":1},"estimate":$3,"actual":$4}]}}}}}
-EOF
+  # Closing references carry their repository, as the real API returns them.
+  jq -n --arg ns "$2" '{closingIssuesReferences: ($ns | split(" ") | map(select(. != ""))
+    | map({number: tonumber, repository: {name: "Alloy", owner: {login: "cleverClosure"}}}))}' \
+    >"$dir/pr.json"
+  board "$3" "$4" >"$dir/board.json"
 }
 
-run_gate() { # dir [project-token]
+path_prefix=""
+run_gate() { # [project-token]
   out=$(
     FIXTURE="$dir_under_test" \
-      PATH="$work/bin:$PATH" \
-      NUMBER=900 REPOSITORY="cleverClosure/Alloy" \
+      PATH="$path_prefix$work/bin:$PATH" \
+      NUMBER=900 REPOSITORY="cleverClosure/Alloy" CI_RUN_ID=4242 \
       GH_TOKEN="actions-token" PROJECT_TOKEN="${1-project-token}" \
       bash "$here/merge-gate.sh" 2>&1
   )
@@ -170,7 +194,7 @@ comment_body() { jq -r '.[0].body // ""' "$dir_under_test/comments.json"; }
 
 # ── 1. No closing reference: a docs PR merges exactly as before ───────────────
 dir_under_test="$work/c1"
-make_case "$dir_under_test" '[]' 'null' 'null'
+make_case "$dir_under_test" '' 'null' 'null'
 run_gate
 if ((status != 0)); then
   fold "no-reference: held a PR that closes no issue" "$out"
@@ -182,7 +206,7 @@ fi
 
 # ── 2. Actual empty: held, with exactly one comment naming the field ──────────
 dir_under_test="$work/c2"
-make_case "$dir_under_test" '[{"number":57}]' '{"number":3}' 'null'
+make_case "$dir_under_test" '57' '{"number":3}' 'null'
 run_gate
 if ((status == 0)); then
   fold "actual-missing: merged a PR whose issue has no Actual" "$out"
@@ -228,7 +252,7 @@ fi
 
 # ── 5. Estimate empty is caught too, and the comment is edited, not repeated ──
 dir_under_test="$work/c5"
-make_case "$dir_under_test" '[{"number":57}]' 'null' 'null'
+make_case "$dir_under_test" '57' 'null' 'null'
 run_gate
 first_body=$(comment_body)
 cat >"$dir_under_test/board.json" <<'EOF'
@@ -252,19 +276,19 @@ fi
 
 # ── 6. No PROJECT_TOKEN: held, not waved through ──────────────────────────────
 dir_under_test="$work/c6"
-make_case "$dir_under_test" '[{"number":57}]' '{"number":3}' '{"number":4}'
+make_case "$dir_under_test" '57' '{"number":3}' '{"number":4}'
 run_gate ""
 if ((status == 0)); then
   fold "no-token: merged without being able to read the board" "$out"
-elif [[ $(comment_body) != *'PROJECT_TOKEN'* ]]; then
-  fold "no-token: comment does not name the missing secret" "$(comment_body)"
+elif [[ $(comment_body) != *'`PROJECT_TOKEN` secret is not set'* ]]; then
+  fold "no-token: comment does not say the secret is missing" "$(comment_body)"
 else
   pass no-token
 fi
 
 # ── 7. Token present but rejected by the board: held ──────────────────────────
 dir_under_test="$work/c7"
-make_case "$dir_under_test" '[{"number":57}]' '{"number":3}' '{"number":4}'
+make_case "$dir_under_test" '57' '{"number":3}' '{"number":4}'
 run_gate "expired-token"
 if ((status == 0)); then
   fold "board-unreadable: merged on an unreadable board" "$out"
@@ -276,7 +300,7 @@ fi
 
 # ── 8. Issue is not on the board at all: held ─────────────────────────────────
 dir_under_test="$work/c8"
-make_case "$dir_under_test" '[{"number":57}]' '{"number":3}' '{"number":4}'
+make_case "$dir_under_test" '57' '{"number":3}' '{"number":4}'
 echo '{"data":{"repository":{"issue":{"projectItems":{"nodes":[]}}}}}' \
   >"$dir_under_test/board.json"
 run_gate
@@ -286,20 +310,111 @@ else
   pass off-board
 fi
 
-# ── 9. Several closed issues: one bad item holds the PR ───────────────────────
+# ── 9. Several closed issues: a bad item that is not the first still holds ────
+# The first issue is complete, so a gate that only checks the first one merges.
 dir_under_test="$work/c9"
-make_case "$dir_under_test" '[{"number":57},{"number":58}]' '{"number":3}' '{"number":4}'
-cat >"$dir_under_test/board.json" <<'EOF'
-{"data":{"repository":{"issue":{"projectItems":{"nodes":[
-  {"project":{"number":1},"estimate":{"number":3},"actual":null}]}}}}}
-EOF
+make_case "$dir_under_test" '57 58' '{"number":3}' '{"number":4}'
+board '{"number":5}' 'null' >"$dir_under_test/board-58.json"
 run_gate
 if ((status == 0)); then
-  fold "multi-issue: merged though a closed issue lacks Actual" "$out"
-elif [[ $(grep -c 'Actual' <<<"$(comment_body)") -gt 1 ]]; then
-  fold "multi-issue: named the same field twice" "$(comment_body)"
+  fold "multi-issue: merged though the second closed issue lacks Actual" "$out"
+elif [[ $(comment_body) != *'#58 `Actual`'* ]]; then
+  fold "multi-issue: comment does not name the issue that is short" "$(comment_body)"
+elif [[ $(comment_body) != *'finish-task.sh 58'* || $(comment_body) == *'finish-task.sh 57'* ]]; then
+  fold "multi-issue: helper points at the wrong issue" "$(comment_body)"
 else
   pass multi-issue
+fi
+
+# ── 10. Estimate empty only: the helper is not offered, the board is ──────────
+# finish-task.sh cannot set Estimate; offering it would loop forever.
+dir_under_test="$work/c10"
+make_case "$dir_under_test" '76' 'null' '{"number":0}'
+run_gate
+if ((status == 0)); then
+  fold "estimate-only: merged with Estimate empty" "$out"
+elif [[ $(comment_body) == *'finish-task.sh'* ]]; then
+  fold "estimate-only: offered a helper that cannot set Estimate" "$(comment_body)"
+elif [[ $(comment_body) != *'project board'* || $(comment_body) != *'gh run rerun 4242'* ]]; then
+  fold "estimate-only: comment does not say how to clear the hold" "$(comment_body)"
+else
+  pass estimate-only
+fi
+
+# ── 11. The field check itself dies: held, not read as "nothing missing" ──────
+# A jq that is killed mid-check prints nothing. Through a process substitution
+# that silence read as a complete item and merged a PR with both fields empty.
+real_jq=$(command -v jq)
+mkdir -p "$work/faultbin"
+cat >"$work/faultbin/jq" <<EOF
+#!/usr/bin/env bash
+for a in "\$@"; do
+  [[ \$a == *'select(.value == null)'* ]] && exit 137
+done
+exec "$real_jq" "\$@"
+EOF
+chmod +x "$work/faultbin/jq"
+dir_under_test="$work/c11"
+make_case "$dir_under_test" '57' 'null' 'null'
+path_prefix="$work/faultbin:"
+run_gate
+path_prefix=""
+if ((status == 0)); then
+  fold "field-check-dies: merged when the field check could not run" "$out"
+elif [[ $(comment_body) != *'could not be read'* ]]; then
+  fold "field-check-dies: hold does not say the board was unreadable" "$(comment_body)"
+else
+  pass field-check-dies
+fi
+
+# ── 12. Someone else's comment carrying the marker is never touched ───────────
+dir_under_test="$work/c12"
+make_case "$dir_under_test" '57' '{"number":3}' '{"number":4}'
+quoted='{"id":1,"body":"> <!-- auto-merge:board-fields -->\n> held\n\nOn it.","user":{"login":"cleverClosure"}}'
+echo "[$quoted]" >"$dir_under_test/comments.json"
+run_gate
+allowed_status=$status
+allowed_log=$(cat "$dir_under_test/mutations.log")
+board '{"number":3}' 'null' >"$dir_under_test/board.json"
+run_gate
+human=$(jq -c '.[] | select(.id == 1)' "$dir_under_test/comments.json")
+if ((allowed_status != 0)); then
+  fold "foreign-marker: held a complete PR" "$out"
+elif [[ -n $allowed_log ]]; then
+  fold "foreign-marker: touched a comment it did not write" "$allowed_log"
+elif [[ $human != "$quoted" ]]; then
+  fold "foreign-marker: a person's comment was edited or deleted" "${human:-<deleted>}"
+elif (($(comment_count) != 2)); then
+  fold "foreign-marker: expected the gate's own comment beside the person's" "$(comment_count)"
+else
+  pass foreign-marker
+fi
+
+# ── 13. Closing an issue in another repository: held, not checked here ────────
+# Local #5 is complete, so a gate that looked up the wrong #5 would merge.
+dir_under_test="$work/c13"
+make_case "$dir_under_test" '' '{"number":3}' '{"number":4}'
+echo '{"closingIssuesReferences":[{"number":5,"repository":{"name":"tools","owner":{"login":"someone"}}}]}' \
+  >"$dir_under_test/pr.json"
+run_gate
+if ((status == 0)); then
+  fold "cross-repo: merged on an issue the gate cannot check" "$out"
+elif [[ $(comment_body) != *'someone/tools#5'* ]]; then
+  fold "cross-repo: comment does not name the outside issue" "$(comment_body)"
+else
+  pass cross-repo
+fi
+
+# ── 14. The closing reference cannot be resolved: held, not read as "none" ────
+# An empty answer means "not a task PR"; an error must never be mistaken for it.
+dir_under_test="$work/c14"
+make_case "$dir_under_test" '57' 'null' 'null'
+: >"$dir_under_test/pr.fail"
+run_gate
+if ((status == 0)); then
+  fold "pr-unreadable: merged when the closing reference could not be read" "$out"
+else
+  pass pr-unreadable
 fi
 
 echo

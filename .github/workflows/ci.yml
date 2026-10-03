@@ -10,6 +10,15 @@ on:
   pull_request:
     branches:
       - main
+    # ready_for_review is the default set plus one. Auto-merge only looks at a PR
+    # when CI completes, and marking a draft ready does not run CI by default -
+    # so #86, #88 and #90 sat green and unmerged until merged by hand, which also
+    # walks around the board gate in auto-merge.yml.
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
   workflow_dispatch:
 
 permissions:

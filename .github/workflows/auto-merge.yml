@@ -4,7 +4,8 @@
 # Every non-draft pull request into main squash-merges itself as soon as CI is
 # green. There is no label gate: opening a PR is the decision to merge it. If a
 # PR needs a human call before landing, open it as a draft (or convert it back
-# to draft) - drafts are skipped and re-evaluated when marked ready.
+# to draft) - drafts are skipped and re-evaluated when marked ready, because
+# ci.yml runs on ready_for_review.
 #
 # This is a workflow rather than GitHub's native auto-merge because native
 # auto-merge requires branch protection with required status checks, and
@@ -20,17 +21,23 @@
 #
 # That gate needs the PROJECT_TOKEN secret, because the Actions GITHUB_TOKEN
 # cannot read a user-owned ProjectV2 at all - the API reports NOT_FOUND rather
-# than a permission error. PROJECT_TOKEN is a fine-grained PAT owned by
-# cleverClosure with:
+# than a permission error. PROJECT_TOKEN is a classic PAT owned by cleverClosure
+# with two scopes:
 #
-#   Repository access    Alloy
-#   Repository perms     Issues: Read-only        (resolve the issue's card)
-#   Account perms        Projects: Read-only      (read Estimate and Actual)
+#   repo           resolve the issue's card (the card is reached through the
+#                  issue, and this repository is private)
+#   read:project   read Estimate and Actual
 #
-# Repository access is required even though only project fields are read: the
-# card is reached through the issue, and a token that cannot see this private
-# repository sees no card either. The token needs no write access of any kind -
-# every mutation here still runs as GITHUB_TOKEN.
+# It has to be classic. Fine-grained tokens cannot reach projects owned by a
+# user account at all - GitHub lists this as a known gap, and their Projects
+# permission covers organization projects only. Classic scopes are coarse, so
+# `repo` grants more than this job uses; the job only reads with it, and every
+# mutation here still runs as GITHUB_TOKEN. Created 3 October 2026 with a
+# 90-day expiry: when it lapses, task PRs hold with a comment that says so.
+#
+# Setting a board field fires no event, so a held PR is re-evaluated when its
+# CI next completes: scripts/finish-task.sh re-runs CI after recording Actual,
+# and the hold comment names the exact run to re-run after a change by hand.
 
 name: Auto-merge
 
@@ -77,6 +84,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+          CI_RUN_ID: ${{ github.event.workflow_run.id }}
           REPO: ${{ github.repository }}
           SHA: ${{ github.event.workflow_run.head_sha }}
         run: |

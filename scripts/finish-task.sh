@@ -161,7 +161,7 @@ fi
 # ── 2. the pull request and its closing keyword ───────────────────────────────
 echo "== 2. pull request"
 prs=$(gh pr list --repo "$OWNER/$REPO" --state all --limit 100 \
-  --json number,state,isDraft,body,title,headRefName,url,closingIssuesReferences \
+  --json number,state,isDraft,body,title,headRefName,headRefOid,url,closingIssuesReferences \
   --jq "map(select((.closingIssuesReferences | map(.number) | index($issue)) != null
         or (.headRefName | startswith(\"task/$issue-\"))))")
 pr_count=$(jq -r 'length' <<<"$prs")
@@ -196,6 +196,26 @@ else
     else
       gh pr ready "$pr_num" --repo "$OWNER/$REPO" >/dev/null
       note "PR #$pr_num marked ready — auto-merge will squash it once CI is green"
+    fi
+  fi
+
+  # Setting a board field fires no repository event, and auto-merge only looks
+  # at a PR when its CI run completes. A PR that was already ready - one the
+  # board gate may be holding for this very field - is re-evaluated by
+  # re-running its latest CI run. A draft marked ready above needs nothing:
+  # ci.yml runs on ready_for_review.
+  if ((reconcile_only == 0 && fail == 0)) && [[ $pr_state == OPEN && $pr_draft != true ]]; then
+    head_sha=$(jq -r '.headRefOid' <<<"$pr")
+    ci_run=$(gh run list --repo "$OWNER/$REPO" --workflow ci.yml --event pull_request \
+      --commit "$head_sha" --limit 1 --json databaseId,status \
+      --jq '.[0] // empty | "\(.databaseId) \(.status)"')
+    if [[ -z $ci_run ]]; then
+      note "no CI run found for ${head_sha:0:7} — push or re-run CI so auto-merge re-evaluates"
+    elif [[ ${ci_run#* } == completed ]]; then
+      gh run rerun "${ci_run%% *}" --repo "$OWNER/$REPO" >/dev/null
+      note "re-ran CI run ${ci_run%% *} so auto-merge re-evaluates PR #$pr_num"
+    else
+      note "CI run ${ci_run%% *} is ${ci_run#* } — auto-merge evaluates PR #$pr_num when it completes"
     fi
   fi
 fi
