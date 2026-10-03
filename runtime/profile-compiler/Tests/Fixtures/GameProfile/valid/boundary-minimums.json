@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "profileId": "boundary.min.game",
+  "revision": 1,
+  "game": {
+    "canonicalId": "game_boundary_min",
+    "displayName": "Boundary Min Game",
+    "storefronts": [
+      { "kind": "standalone", "appId": "0" }
+    ]
+  },
+  "selectors": {
+    "gameBuild": {
+      "version": "1.0.0",
+      "requiredFiles": [
+        {
+          "path": "Game.exe",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size": 0,
+          "peTimestamp": 0
+        }
+      ]
+    },
+    "host": {
+      "architecture": "arm64",
+      "macos": {},
+      "memoryClassesGiB": [8]
+    }
+  },
+  "runtime": {
+    "generation": "rtg_boundary_min",
+    "layers": [
+      {
+        "role": "host",
+        "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "size": 0
+      }
+    ],
+    "cpuProvider": "native-arm64ec",
+    "defaultGraphicsProvider": "moltenvk"
+  },
+  "processPolicies": [
+    {
+      "id": "default",
+      "priority": 0,
+      "match": { "pathGlob": "**/*.exe" },
+      "execution": {}
+    }
+  ],
+  "healthChecks": [
+    { "kind": "clean-exit", "severity": "degraded", "deadlineSeconds": 1 }
+  ],
+  "telemetry": {
+    "sampling": 0
+  },
+  "certification": {
+    "level": "experimental",
+    "testedAt": "2026-01-01T00:00:00Z",
+    "testPlanId": "tp_boundary_min",
+    "matrixDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  }
+}
