@@ -241,3 +241,87 @@ scope for a single-corpus milestone and touches shared, contended state
 scope covers. Once done, Milestone 2 as written in `run-isa-corpus.sh` should
 run unmodified; no part of this blocker required changing the script or the
 corpus.
+
+## 6. Hardening after an independent review
+
+An independent review of §1-§5 found three real gaps, planted mutants to
+prove each, and surviving mutants for all three were confirmed here by
+re-planting the exact same bugs before fixing anything:
+
+- **The negative control's verdict trusted any nonzero exit.**
+  `run-isa-corpus.sh` credited `mutate_rc` of 142 (the perl-alarm timeout
+  above) or 139 (an unrelated segfault) exactly the same as `1` (a genuine
+  detected mismatch) — all three printed "PASS: the mutate=paddb negative
+  control failed, as required". Re-running the live script end to end after
+  the `record_git_revision` fix below reproduced the real-world case: both
+  the clean and mutate runs still time out (build-2 is still the same stale
+  `98d5e2d` build §3 describes - the fix did not touch FEX or Wine), and the
+  verdict now correctly prints `FAIL: mutate run exited 142, not the 1 a
+  detected mismatch produces` instead of a false PASS. The verdict now also
+  requires the mutate checksum to equal a native build of the identical
+  corrupted reference (built alongside the clean one) and a `FAIL ... paddb`
+  line naming the operation, so a crash or hang can no longer forge all three
+  signals at once.
+- **47 of 53 reference implementations had no check independent of the
+  binary's own output.** Hand vectors existed for only 6 operations; a
+  planted bug in `ref_pavgb`, `ref_pavgw` (dropped rounding), `ref_pcmpgtb`
+  (inverted comparison), `ref_pmulhw` (shift by 15 instead of 16), or
+  `ref_psubq` (operands swapped) changed the checksum but left every other
+  signal - exit code, `failures=0`, agreement across `-O0`..`-O3` - green.
+  Five more hand vectors now cover exactly those five operations (ten total);
+  each was confirmed to catch its own planted bug (checksums
+  `33ea1b40e573582e`, `65fa0a97e762252d`, `d7a9d082913d4c0a`,
+  `e3fa576dd660f2fc`, `2602f10ada5411c7` respectively, matching the review's
+  own numbers exactly) and the clean checksum (`21ba41417def5d07`) is
+  unchanged, since hand vectors run outside the checksum fold. The remaining
+  ~42 operations still have no check beyond cross-opt-level agreement and
+  reproducibility - real but weaker signals, since both only catch an
+  implementation that disagrees with *itself*, not one that is internally
+  consistent and wrong. Closing that fully is future work, not this pass.
+- **Pass/fail detection was one unguarded counter.** Removing the single
+  `g_fail_count++` for a hand-vector mismatch in `run_hand_vectors()` left
+  the log containing the line `FAIL hand-vector paddb ...` while the program
+  still exited 0 and printed `failures=0` at every optimisation level -
+  undetected by `build-isa-corpus-native.sh`. That script now checks exit
+  code and a `grep` for `^FAIL` independently of each other and of the
+  program's own counter (clean must have neither; mutate must have both,
+  naming the mutated op) - replanting the identical missing-increment bug
+  now fails immediately at `-O0` with `mutate=PADDB build at -O0 exited 0 -
+  the corruption must be detected`.
+
+One further bug surfaced only by re-running `run-isa-corpus.sh` live after
+the fixes above, not part of the review: `record_git_revision()`'s last
+statement was `[[ -n $dirty ]] && printf ... | sed ...`, whose own exit
+status is 1 when the checkout is clean (the test was false) - exactly FEX's
+state in every run this issue has seen. Under `set -euo pipefail`, that 1
+silently killed the whole script immediately after printing the FEX
+revision line, before the verdict section ever ran. Every prior invocation
+of this script in this issue happened to have a dirty Wine checkout logged
+*after* a clean FEX checkout, so the dirty branch's own success papered over
+it, and the script never actually reached `== verdict ==` even once before
+now. Replaced the `&&` with a proper `if`, which cannot have this problem
+regardless of which checkout is dirty. The live re-run below is the first
+time this script has printed a verdict at all.
+
+Re-running the full script end to end (own private prefix, `ps aux` checked
+for contention before and after, `fex_dll` SHA-256
+(`ef4ce1be195296ae2e1bd6612efba8fae4b8f3eb37d25985b1275aae52ef7aa6`)
+unchanged before and after) reproduces exactly §3's finding - both runs
+still time out at 142 against the same stale build-2 - and, for the first
+time, reaches and prints a verdict:
+
+```text
+clean_run: exit=142
+mutate_run: exit=142
+== verdict ==
+FAIL: clean run did not pass with the native-oracle checksum
+  native=21ba41417def5d07  fex=  exit=142
+FAIL: mutate run exited 142, not the 1 a detected mismatch produces - cannot tell a real negative control from a crash or timeout
+```
+
+This is the correct outcome given §3's blocker is still unresolved - a
+timeout is not a pass for either side - and it is the outcome the original,
+unguarded verdict logic would have gotten wrong for the mutate line, printing
+a false PASS instead. Nothing in this section changes §1-§5's finding: build-2
+is still the blocker, the fix is still unbuilt there, and this pass did not
+touch FEX, Wine, or build-2.
