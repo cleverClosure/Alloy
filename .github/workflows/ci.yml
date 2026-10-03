@@ -89,6 +89,9 @@ jobs:
       - name: Merge gate end-to-end self-test
         run: bash .github/workflows/merge-gate-selftest.sh
 
+      - name: DXMT install wiring self-test
+        run: bash spikes/GFX-001/harness/dxmt-install.sh selftest
+
       - name: Test rollback prototype
         run: swift test --package-path spikes/ROLLBACK-001/prototype --parallel
 

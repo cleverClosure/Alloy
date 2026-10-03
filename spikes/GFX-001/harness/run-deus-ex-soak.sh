@@ -98,6 +98,11 @@ cleanup() {
 }
 trap cleanup EXIT
 
+# A soak never prepares: it reuses a runtime prepared earlier. A stale DXMT
+# install does not fail the run - D3D11 falls back to Wine's builtin provider
+# and the soak measures that instead (#35).
+"$script_dir/dxmt-install.sh" check "$work_root/dxmt-install" "$wine_build"
+
 mkdir -p "$cycles_root"
 rm -f "$title_log"
 ALLOY_DXMT_METRICS_PATH="$metrics_path" \
