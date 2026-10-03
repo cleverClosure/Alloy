@@ -7,6 +7,7 @@ public enum PayloadType: String, Codable, Sendable {
     case gameProfile = "application/vnd.alloy.game-profile+json;version=1"
     case runtimeManifest = "application/vnd.alloy.runtime-manifest+json;version=1"
     case releaseMetadata = "application/vnd.alloy.local-release-metadata+json;version=1"
+    case launchEvidence = "application/vnd.alloy.local-launch-evidence+json;version=1"
 }
 
 /// There is deliberately no production trust mode or bundled trust root.
