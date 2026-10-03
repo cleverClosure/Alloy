@@ -72,9 +72,14 @@ Full-tier x64 execution currently fails on this Mac's macOS 27 runtime
 Native and ARM64-only suites remain useful while it is investigated.
 This tool reports existing tests, not performance certification.
 
-LEGAL-001 bundle/codec proofs are reserved for a later milestone. The
-substitution proof that edits shared Wine source/build trees is deliberately
-excluded from this runner.
+LEGAL-001 bundle/codec proofs are full-tier, expected-SKIP-by-default entries.
+Set ALLOY_STAGED_RUNTIME to opt in; bundle proof additionally requires
+ALLOY_RELEASE_DIR (the make-release.sh output). Optional codec inputs use
+ALLOY_CODEC_PROVIDER_DIR and ALLOY_CODEC_UNIXLIB_DIR. Missing provenance,
+bundled source or build tools is named explicitly. This runner never stages
+a release. prove-substitution.sh is deliberately excluded because it edits
+shared Wine source and builds into the shared tree; prove-bundle.sh works
+from bundled source and a private runtime copy.
 
 Usage
 -----
@@ -241,13 +246,63 @@ def wine_busy_reason(build: Path, processes: str, own_pid: int) -> Optional[str]
     return None
 
 
-def need_wine_idle(root: Path) -> Optional[str]:
+def runtime_idle(build: Path) -> Optional[str]:
     try:
         result = subprocess.run(["ps", "-axo", "pid=,ppid=,command="],
                                 capture_output=True, text=True, check=True, timeout=5)
     except (OSError, subprocess.SubprocessError) as exc:
         return f"cannot check whether build-2 is busy: {exc}"
-    return wine_busy_reason(wine_build(root), result.stdout, os.getpid())
+    return wine_busy_reason(build, result.stdout, os.getpid())
+
+
+def need_wine_idle(root: Path) -> Optional[str]:
+    return runtime_idle(wine_build(root))
+
+
+def env_argument(root: Path, variable: str) -> str:
+    return str(configured_path(root, variable, "")) if os.environ.get(variable) else f"<{variable}>"
+
+
+def need_environment_tree(variable: str, *files: str) -> ProbeFn:
+    def probe(root: Path) -> Optional[str]:
+        if not os.environ.get(variable):
+            return f"expected skip by default: no staged release input; set {variable}"
+        base = configured_path(root, variable, "")
+        if not base.is_dir():
+            return f"missing {variable} directory: {base}"
+        for name in files:
+            if not (base / name).is_file():
+                return f"missing {variable} artifact: {base / name}"
+        return None
+    return probe
+
+
+def need_codec_runtime(root: Path) -> Optional[str]:
+    reason = need_environment_tree("ALLOY_STAGED_RUNTIME", "dlls/ntdll/ntdll.so")(root)
+    if reason:
+        return reason
+    base = configured_path(root, "ALLOY_STAGED_RUNTIME", "")
+    if not any((base / name).is_file() for name in ("CODEC-EXCLUSIONS.txt", "config.log")):
+        return f"missing staged runtime provenance: {base}/CODEC-EXCLUSIONS.txt or config.log"
+    for name in ("ALLOY_CODEC_PROVIDER_DIR", "ALLOY_CODEC_UNIXLIB_DIR"):
+        if os.environ.get(name) and not configured_path(root, name, "").is_dir():
+            return f"missing {name} directory: {env_argument(root, name)}"
+    return None
+
+
+def need_staged_runtime_idle(root: Path) -> Optional[str]:
+    return runtime_idle(configured_path(root, "ALLOY_STAGED_RUNTIME", ""))
+
+
+def need_bison3(_root: Path) -> Optional[str]:
+    try:
+        result = subprocess.run(["bison", "--version"], capture_output=True, text=True, check=True, timeout=5)
+        version = result.stdout.splitlines()[0].split()[-1]
+        if int(version.split(".")[0]) >= 3:
+            return None
+        return f"bundle proof requires bison 3 or newer; PATH selects {version}"
+    except (OSError, subprocess.SubprocessError, IndexError, ValueError) as exc:
+        return f"cannot verify bison 3 for the bundle proof: {exc}"
 
 
 def sh(suite_id: str, tier: str, script: str, *args: str, timeout: float, probe: ProbeFn) -> Suite:
@@ -263,6 +318,32 @@ def sh(suite_id: str, tier: str, script: str, *args: str, timeout: float, probe:
 # ---------------------------------------------------------------------------
 
 REGISTRY: list[Suite] = [
+    # --- LEGAL-001: explicit staged inputs; expected skip on bare checkout --
+    Suite(
+        id="legal-bundle-proof", tier="full",
+        cmd=lambda root: ("bash", "spikes/LEGAL-001/lgpl-substitution/prove-bundle.sh",
+                          env_argument(root, "ALLOY_RELEASE_DIR"), env_argument(root, "ALLOY_STAGED_RUNTIME")),
+        cwd=".", timeout=1800,
+        probe=every(need_environment_tree("ALLOY_STAGED_RUNTIME", "wine", "server/wineserver", "dlls/ntdll/ntdll.so"),
+                    need_environment_tree("ALLOY_RELEASE_DIR", "SHA256SUMS",
+                                          "corresponding-source/wine/wine-src.tar.gz",
+                                          "corresponding-source/BUILD-INPUTS.txt"),
+                    need_commands("make", "codesign", "shasum", "tar", "clang", "aarch64-w64-mingw32-clang", "bison", "perl"),
+                    need_paths("spikes/LEGAL-001/lgpl-substitution/prove-bundle.sh"),
+                    need_bison3, need_staged_runtime_idle),
+        description="build-dependent; expected SKIP by default: set ALLOY_STAGED_RUNTIME and ALLOY_RELEASE_DIR",
+    ),
+    Suite(
+        id="legal-codec-scan", tier="full",
+        cmd=lambda root: ("bash", "spikes/LEGAL-001/codec-clean/codec-scan.sh",
+                          env_argument(root, "ALLOY_STAGED_RUNTIME"),
+                          env_argument(root, "ALLOY_CODEC_PROVIDER_DIR") if os.environ.get("ALLOY_CODEC_PROVIDER_DIR") else "",
+                          env_argument(root, "ALLOY_CODEC_UNIXLIB_DIR") if os.environ.get("ALLOY_CODEC_UNIXLIB_DIR") else ""),
+        cwd=".", timeout=300,
+        probe=every(need_codec_runtime, need_commands("otool", "nm", "rg"),
+                    need_paths("spikes/LEGAL-001/codec-clean/codec-scan.sh"), need_staged_runtime_idle),
+        description="build-dependent; expected SKIP by default: set ALLOY_STAGED_RUNTIME; optional ALLOY_CODEC_PROVIDER_DIR/ALLOY_CODEC_UNIXLIB_DIR",
+    ),
     # --- WINE-001 / CPU-001: full tier only, never hosted CI ---------------
     Suite(
         id="wine-policy-swift-test", tier="full",
@@ -580,7 +661,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 31
+REGISTRY_SUITE_COUNT = 33
 
 
 # ---------------------------------------------------------------------------
@@ -941,6 +1022,41 @@ def run_selftest() -> int:
               run_one(dynamic, dynamic_root).verdict == "pass")
         check("Wine and CPU entries never enter the CI fast tier",
               not any(s.id.startswith(("wine-", "cpu-")) for s in select_suites(REGISTRY, "fast", None)))
+        # Legal proofs opt in through staged inputs; bare checkout is SKIP.
+        with patch.dict(os.environ, {"ALLOY_STAGED_RUNTIME": "", "ALLOY_RELEASE_DIR": "",
+                                     "ALLOY_CODEC_PROVIDER_DIR": "", "ALLOY_CODEC_UNIXLIB_DIR": ""}):
+            legal = [s for s in REGISTRY if s.id.startswith("legal-")]
+            check("both legal suites skip by default without starting a command",
+                  len(legal) == 2 and all(run_one(s, root).verdict == "skip" for s in legal))
+            check("legal list descriptions label expected skips as build-dependent",
+                  all("build-dependent" in s.description and "expected SKIP" in s.description for s in legal))
+            staged = root / "staged runtime"
+            os.environ["ALLOY_STAGED_RUNTIME"] = str(staged)
+            check("missing staged runtime directory is named", str(staged) in (need_codec_runtime(root) or ""))
+            ntdll = staged / "dlls/ntdll/ntdll.so"
+            ntdll.parent.mkdir(parents=True); ntdll.write_text("fixture")
+            check("codec presence refuses a tree without provenance",
+                  "provenance" in (need_codec_runtime(root) or ""))
+            (staged / "CODEC-EXCLUSIONS.txt").write_text("fixture")
+            check("staged contents and provenance satisfy the codec presence probe", need_codec_runtime(root) is None)
+            os.environ["ALLOY_CODEC_PROVIDER_DIR"] = str(root / "missing providers")
+            check("an explicitly requested missing provider directory skips",
+                  "ALLOY_CODEC_PROVIDER_DIR" in (need_codec_runtime(root) or ""))
+            release_probe = need_environment_tree("ALLOY_RELEASE_DIR", "corresponding-source/wine/wine-src.tar.gz")
+            check("bundle probe names the unset release input", "ALLOY_RELEASE_DIR" in (release_probe(root) or ""))
+            os.environ["ALLOY_RELEASE_DIR"] = str(root)
+            check("bundle probe names the missing source archive", "wine-src.tar.gz" in (release_probe(root) or ""))
+            archive = root / "corresponding-source/wine/wine-src.tar.gz"
+            archive.parent.mkdir(parents=True); archive.write_text("fixture")
+            check("bundle source presence probe accepts the named artifact", release_probe(root) is None)
+            check("legal arguments preserve staged paths containing spaces",
+                  str(staged) in legal[0].argv(root))
+        with patch("subprocess.run", return_value=subprocess.CompletedProcess([], 0, "bison (GNU Bison) 2.3\n", "")):
+            check("old system bison produces a precise skip", "2.3" in (need_bison3(root) or ""))
+        with patch("subprocess.run", return_value=subprocess.CompletedProcess([], 0, "bison (GNU Bison) 3.8.2\n", "")):
+            check("bison 3 satisfies the bundle tool probe", need_bison3(root) is None)
+        check("the shared-source substitution proof is never registered",
+              not any("prove-substitution.sh" in arg for suite in REGISTRY for arg in suite.argv(root)))
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
