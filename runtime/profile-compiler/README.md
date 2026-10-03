@@ -194,9 +194,24 @@ control per precedence rule. Each control fails its named test before restored
 code passes. Matching also covers exact files, every process match dimension,
 all host/client gates, alias tampering, stale history, and expired candidates.
 
+## Milestone 4: existing Wine snapshot format
+
+`PolicySnapshotExporter` projects resolved policies through a local SPM
+reference to WINE-001's unchanged `AlloyPolicySnapshot` library. There are no
+external dependencies. The exported bytes match the existing CLI and the
+preserved July 24 snapshot byte for byte, including its recorded SHA-256.
+
+The export reports `notYetLowered` fields and is explicitly not runtime-ready:
+Wine v1 cannot encode CPU, synchronization, network, feature masks, environment,
+and other complete policy semantics. [SNAPSHOT_V1.md](Specs/SNAPSHOT_V1.md)
+documents every field, the empty-route diagnostic projection, the historical
+oracle, and a reproduction command that runs no Wine guest.
+
+All 49 tests in ten suites pass. Corrupting the projected provider breaks the
+external golden; hiding the environment coverage gap breaks its paired test.
+
 ## Remaining milestones
 
-WINE-001 snapshot lowering is milestone 4; LaunchSpecification, certification,
-workarounds, and synthetic feature ceilings are milestone 5; full-pipeline
-fuzzing and final review documentation are milestone 6. This is currently a
-library without an executable target.
+LaunchSpecification, certification, workarounds, and synthetic feature ceilings
+are milestone 5; full-pipeline fuzzing and final review documentation are
+milestone 6. This is currently a library without an executable target.

@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "defaultPolicy": {
+    "id": "unknown-restricted",
+    "graphicsProvider": "restricted",
+    "providerDirectory": "Z:\\Users\\cleverclosure\\Developer\\macgaming\\spikes\\WINE-001\\work\\policy-probe\\providers\\restricted",
+    "dllRoutes": [
+      {
+        "module": "alloygraphics.dll",
+        "loadOrder": "native"
+      }
+    ]
+  },
+  "processPolicies": [
+    {
+      "imageSHA256": "1fbae6162be04099e54d4d5aabf8fe86ce9b5db53d7eca4c4fd5e13c640e0e4f",
+      "policy": {
+        "id": "launcher",
+        "graphicsProvider": "dxmt",
+        "providerDirectory": "Z:\\Users\\cleverclosure\\Developer\\macgaming\\spikes\\WINE-001\\work\\policy-probe\\providers\\dxmt",
+        "dllRoutes": [
+          {
+            "module": "alloygraphics.dll",
+            "loadOrder": "native"
+          }
+        ]
+      }
+    },
+    {
+      "imageSHA256": "02db127009a1e2c30b4b7968de2b96732b15c4dd69b96ee3b9291ceb0cfbd30e",
+      "policy": {
+        "id": "game",
+        "graphicsProvider": "metal12",
+        "providerDirectory": "Z:\\Users\\cleverclosure\\Developer\\macgaming\\spikes\\WINE-001\\work\\policy-probe\\providers\\metal12",
+        "dllRoutes": [
+          {
+            "module": "alloygraphics.dll",
+            "loadOrder": "native"
+          }
+        ]
+      }
+    }
+  ]
+}
