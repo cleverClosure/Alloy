@@ -297,7 +297,7 @@
   "telemetry": {
     "defaultLevel": "diagnostic",
     "redactionPolicy": "standard-v3",
-    "sampling": 1.5
+    "sampling": 1.01
   },
   "certification": {
     "level": "competitive-certified",

@@ -379,13 +379,17 @@ enum SchemaPattern {
 }
 
 private func checkPattern(_ pattern: String, value: String, path: String) throws {
-    // Every pattern in these two schemas is already anchored with ^...$, so
-    // "found a match" and "the whole string matches" coincide.
     guard let regex = try? NSRegularExpression(pattern: pattern) else {
         throw ValidationFailure.malformed(path: path, reason: "internal: bad pattern \(pattern)")
     }
     let range = NSRange(value.startIndex..., in: value)
-    guard regex.firstMatch(in: value, range: range) != nil else {
+    // Every pattern in these two schemas is anchored with ^...$, but ICU's
+    // `$` (unlike ECMA-262's, which is what JSON Schema `pattern` means) still
+    // matches just before a single trailing line terminator even without the
+    // multiline option. So "found a match" is not "the whole string matches":
+    // "abc\n" matches ^[a-z]+$ at range {0,3}, not the full {0,4}. Requiring
+    // the match to span the entire string closes that gap.
+    guard let match = regex.firstMatch(in: value, range: range), match.range == range else {
         throw ValidationFailure.patternMismatch(path: path, pattern: pattern, actual: value)
     }
 }

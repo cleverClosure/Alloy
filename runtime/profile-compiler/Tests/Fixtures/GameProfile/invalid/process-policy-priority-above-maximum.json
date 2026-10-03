@@ -107,7 +107,7 @@
   "processPolicies": [
     {
       "id": "launcher",
-      "priority": 200000,
+      "priority": 100001,
       "match": {
         "pathGlob": "**/Launcher.exe",
         "sha256": "2222222222222222222222222222222222222222222222222222222222222222",

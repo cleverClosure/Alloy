@@ -89,6 +89,40 @@ struct GameProfileConformanceTests {
         #expect(profile.certification.expiresAt != nil)
     }
 
+    /// The inclusive edge of every `maximum`-bounded numeric field in the
+    /// schema (`processPolicy.priority`, `telemetry.sampling`) must decode as
+    /// a plain valid document, not merely avoid crashing. This is the fixture
+    /// that catches `checkBounds` mistakenly rejecting `value == maximum`
+    /// (an off-by-one from `value > maximum` to `value >= maximum`) — no
+    /// other fixture in this corpus ever sets a `maximum`-bounded field to
+    /// its exact limit.
+    @Test("the boundary-maximums fixture accepts every maximum-bounded field at its exact limit")
+    func boundaryMaximumsFixtureAcceptsExactLimits() throws {
+        let data = try fixtureData(.gameProfile, "valid/boundary-maximums.json")
+        let profile = try GameProfileValidator.validate(data)
+
+        #expect(profile.processPolicies[0].priority == 100_000)
+        #expect(profile.telemetry?.sampling == 1)
+    }
+
+    /// The mirror image of `boundaryMaximumsFixtureAcceptsExactLimits`: the
+    /// inclusive edge of every `minimum`-bounded numeric field that the
+    /// existing minimal/maximal fixtures happen not to hit (`revision` and
+    /// `processPolicy.priority`'s own minimum are already covered by
+    /// `minimal.json`).
+    @Test("the boundary-minimums fixture accepts every minimum-bounded field at its exact limit")
+    func boundaryMinimumsFixtureAcceptsExactLimits() throws {
+        let data = try fixtureData(.gameProfile, "valid/boundary-minimums.json")
+        let profile = try GameProfileValidator.validate(data)
+
+        #expect(profile.selectors.host.memoryClassesGiB == [8])
+        #expect(profile.runtime.layers[0].size == 0)
+        #expect(profile.selectors.gameBuild.requiredFiles?[0].size == 0)
+        #expect(profile.selectors.gameBuild.requiredFiles?[0].peTimestamp == 0)
+        #expect(profile.healthChecks?[0].deadlineSeconds == 1)
+        #expect(profile.telemetry?.sampling == 0)
+    }
+
     @Test("every invalid fixture is rejected for its one named reason", arguments: gameProfileInvalidCases)
     func invalidFixtureIsRejectedForItsReason(testCase: InvalidCase) throws {
         let data = try fixtureData(.gameProfile, "invalid/\(testCase.fixture).json")
@@ -105,6 +139,25 @@ struct GameProfileConformanceTests {
         let tabled = Set(gameProfileInvalidCases.map(\.fixture))
         #expect(onDisk == tabled)
     }
+
+    /// `.malformed` is the one `ValidationFailure` case no `invalid/` fixture
+    /// can ever trigger: a `.json` file has to itself be syntactically valid
+    /// JSON to pass `tools/lint.sh`'s own JSON-validity check, so genuinely
+    /// non-JSON bytes can only be exercised directly, in code, against the
+    /// validator's entry point. (`root-not-object.json` is syntactically
+    /// valid JSON — a bare array — so it reaches `.notAnObject`, not this.)
+    @Test("bytes that are not valid JSON at all are rejected as .malformed, naming the document root")
+    func garbageBytesAreRejectedAsMalformed() throws {
+        let data = Data("this is not JSON { [ at all".utf8)
+        do {
+            _ = try GameProfileValidator.validate(data)
+            Issue.record("expected .malformed, but validation succeeded")
+        } catch ValidationFailure.malformed(let path, _) {
+            #expect(path == "$")
+        } catch {
+            Issue.record("expected .malformed, got \(error)")
+        }
+    }
 }
 
 private let gameProfileInvalidCases: [InvalidCase] = [
@@ -117,6 +170,18 @@ private let gameProfileInvalidCases: [InvalidCase] = [
     InvalidCase(
         fixture: "profile-id-pattern",
         expected: .patternMismatch(path: "$.profileId", pattern: SchemaPattern.profileId, actual: "AB")
+    ),
+    // An otherwise-valid profileId with one trailing newline: NSRegularExpression's
+    // `$` (ICU) matches just before a trailing line terminator even without the
+    // multiline option, so "found a match" alone would wrongly accept this. See
+    // checkPattern's requirement that the match span the whole string.
+    InvalidCase(
+        fixture: "profile-id-trailing-newline",
+        expected: .patternMismatch(
+            path: "$.profileId",
+            pattern: SchemaPattern.profileId,
+            actual: "max.studio.game.steam-epic.macos-arm64\n"
+        )
     ),
     InvalidCase(
         fixture: "revision-below-minimum",
@@ -151,9 +216,13 @@ private let gameProfileInvalidCases: [InvalidCase] = [
         fixture: "gpu-families-duplicate",
         expected: .duplicateItems(path: "$.selectors.host.gpuFamilies")
     ),
+    // Boundary-1, not a far-outside value: tight enough to also catch a
+    // `>=`/`>` or `<=`/`<` off-by-one on this field's own inline bounds check
+    // (see HostSelector.init(from:) — memoryClassesGiB isn't routed through
+    // the shared checkBounds), not just a wildly-out-of-range one.
     InvalidCase(
         fixture: "memory-class-below-minimum",
-        expected: .belowMinimum(path: "$.selectors.host.memoryClassesGiB[0]", minimum: 8, actual: 4)
+        expected: .belowMinimum(path: "$.selectors.host.memoryClassesGiB[0]", minimum: 8, actual: 7)
     ),
     InvalidCase(fixture: "layers-empty", expected: .tooFewItems(path: "$.runtime.layers", minimum: 1, actual: 0)),
     InvalidCase(
@@ -176,9 +245,11 @@ private let gameProfileInvalidCases: [InvalidCase] = [
         fixture: "process-policies-empty",
         expected: .tooFewItems(path: "$.processPolicies", minimum: 1, actual: 0)
     ),
+    // Boundary+1, not a far-outside value: tight enough to also catch a
+    // `>`/`>=` off-by-one in checkBounds, not just a wildly-out-of-range one.
     InvalidCase(
         fixture: "process-policy-priority-above-maximum",
-        expected: .aboveMaximum(path: "$.processPolicies[0].priority", maximum: 100_000, actual: 200_000)
+        expected: .aboveMaximum(path: "$.processPolicies[0].priority", maximum: 100_000, actual: 100_001)
     ),
     InvalidCase(
         fixture: "process-match-empty",
@@ -228,9 +299,10 @@ private let gameProfileInvalidCases: [InvalidCase] = [
         fixture: "health-check-deadline-below-minimum",
         expected: .belowMinimum(path: "$.healthChecks[0].deadlineSeconds", minimum: 1, actual: 0)
     ),
+    // Boundary+epsilon, not a far-outside value: see the priority case above.
     InvalidCase(
         fixture: "telemetry-sampling-above-maximum",
-        expected: .aboveMaximum(path: "$.telemetry.sampling", maximum: 1, actual: 1.5)
+        expected: .aboveMaximum(path: "$.telemetry.sampling", maximum: 1, actual: 1.01)
     ),
     InvalidCase(
         fixture: "certification-missing-matrix-digest",
@@ -295,6 +367,19 @@ struct RuntimeManifestConformanceTests {
         #expect(wine.symbolsDigest != nil)
     }
 
+    /// The runtime-manifest half of `GameProfileConformanceTests`'s boundary
+    /// fixtures: `components[].size` and `activation.healthWindowSessions`
+    /// both have a `minimum` that neither `minimal.json` (size: 1) nor
+    /// `maximal.json` (healthWindowSessions: 5) happens to hit exactly.
+    @Test("the boundary-minimums fixture accepts every minimum-bounded field at its exact limit")
+    func boundaryMinimumsFixtureAcceptsExactLimits() throws {
+        let data = try fixtureData(.runtimeManifest, "valid/boundary-minimums.json")
+        let manifest = try RuntimeManifestValidator.validate(data)
+
+        #expect(manifest.components[0].size == 0)
+        #expect(manifest.activation?.healthWindowSessions == 1)
+    }
+
     @Test("every invalid fixture is rejected for its one named reason", arguments: runtimeManifestInvalidCases)
     func invalidFixtureIsRejectedForItsReason(testCase: InvalidCase) throws {
         let data = try fixtureData(.runtimeManifest, "invalid/\(testCase.fixture).json")
@@ -311,6 +396,22 @@ struct RuntimeManifestConformanceTests {
         let tabled = Set(runtimeManifestInvalidCases.map(\.fixture))
         #expect(onDisk == tabled)
     }
+
+    /// The runtime-manifest half of `GameProfileConformanceTests`'s own
+    /// `garbageBytesAreRejectedAsMalformed` — see that test's comment for why
+    /// this can only be a direct call, never a fixture file.
+    @Test("bytes that are not valid JSON at all are rejected as .malformed, naming the document root")
+    func garbageBytesAreRejectedAsMalformed() throws {
+        let data = Data("this is not JSON { [ at all".utf8)
+        do {
+            _ = try RuntimeManifestValidator.validate(data)
+            Issue.record("expected .malformed, but validation succeeded")
+        } catch ValidationFailure.malformed(let path, _) {
+            #expect(path == "$")
+        } catch {
+            Issue.record("expected .malformed, got \(error)")
+        }
+    }
 }
 
 private let runtimeManifestInvalidCases: [InvalidCase] = [
@@ -322,6 +423,16 @@ private let runtimeManifestInvalidCases: [InvalidCase] = [
     InvalidCase(
         fixture: "rm-generation-id-pattern",
         expected: .patternMismatch(path: "$.generationId", pattern: SchemaPattern.generationId, actual: "bad-id")
+    ),
+    // Same trailing-newline regression as GameProfile's profile-id-trailing-newline,
+    // exercised through RuntimeManifest's own call into the shared checkPattern.
+    InvalidCase(
+        fixture: "rm-generation-id-trailing-newline",
+        expected: .patternMismatch(
+            path: "$.generationId",
+            pattern: SchemaPattern.generationId,
+            actual: "rtg_v1_maximal_20260719_coverage\n"
+        )
     ),
     InvalidCase(
         fixture: "rm-schema-version-const",

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "profileId": "max.studio.game.steam-epic.macos-arm64",
+  "profileId": "max.studio.game.steam-epic.macos-arm64\n",
   "revision": 7,
   "supersedes": [
     "max.studio.game.steam-epic.macos-arm64.rev6"
@@ -61,7 +61,10 @@
         "apple10"
       ],
       "memoryClassesGiB": [
-        7
+        16,
+        24,
+        32,
+        64
       ]
     }
   },

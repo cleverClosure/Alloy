@@ -46,24 +46,41 @@ those schemas exactly.
 - **A fixture corpus** under `Tests/Fixtures/{GameProfile,RuntimeManifest}/`:
   - `valid/` holds the converted
     [`example-game-profile.yaml`](../../docs/examples/example-game-profile.yaml),
-    plus a hand-built `minimal.json` (only the fields each schema actually
+    a hand-built `minimal.json` (only the fields each schema actually
     requires) and `maximal.json` (every optional field populated) for both
-    schemas.
-  - `invalid/` holds 32 game-profile and 15 runtime-manifest documents, each
+    schemas, plus `boundary-maximums.json`/`boundary-minimums.json` (game
+    profile) and `boundary-minimums.json` (runtime manifest): every
+    `minimum`/`maximum`-bounded numeric field set to its exact inclusive
+    limit, not just a value comfortably inside it — `minimal`/`maximal`
+    happen to hit some bounds (`revision: 1`, `priority: 0`) but miss most of
+    them (`priority`'s own maximum, `telemetry.sampling`, `memoryClassesGiB`,
+    `deadlineSeconds`, every `size`/`peTimestamp`, `healthWindowSessions`).
+  - `invalid/` holds 33 game-profile and 16 runtime-manifest documents, each
     breaking **exactly one** rule and named for it (for example
     `profile-id-pattern.json`, `empty-storefronts.json`,
-    `process-match-empty.json`, `rm-component-size-wrong-type.json`). Every
-    `ValidationFailure` case has at least one fixture that triggers it.
+    `process-match-empty.json`, `rm-component-size-wrong-type.json`). A
+    numeric fixture that breaks a `minimum`/`maximum` rule sits one unit past
+    the limit (e.g. `priority: 100001` against a maximum of `100000`), not
+    far outside it, so it stays sensitive to an off-by-one in the bounds
+    check itself. Every `ValidationFailure` case but one has at least one
+    fixture that triggers it; `.malformed` — thrown only when the input is
+    not syntactically JSON at all — cannot be expressed as a `.json` fixture
+    without itself failing `tools/lint.sh`'s JSON-validity check, so it is
+    instead covered by a direct unit test in `ConformanceTests.swift` that
+    feeds literal non-JSON bytes straight to each validator's `validate(_:)`.
 
 - **A conformance suite** (`Tests/AlloyProfileCompilerTests/ConformanceTests.swift`,
-  `swift test`): every `valid/` fixture must decode; three of them
-  (`example-game-profile`, `minimal`, `maximal`) are additionally checked
-  field-by-field; every `invalid/` fixture must be rejected with the one
-  specific, pre-computed `ValidationFailure` it was built to trigger — not
-  merely "some error". A companion test asserts the fixture table and the
-  `invalid/` directory name exactly the same set of files in both
-  directions, so a fixture added without a table entry (or vice versa) fails
-  loudly instead of going untested.
+  `swift test`): every `valid/` fixture must decode; `example-game-profile`,
+  `minimal`, and `maximal` are additionally checked field-by-field, and the
+  `boundary-*` fixtures are checked field-by-field against the exact
+  `minimum`/`maximum` each field decoded to, so a bounds check rejecting a
+  legal edge value fails here, not just a crash or a silent accept; every
+  `invalid/` fixture must be rejected with the one specific, pre-computed
+  `ValidationFailure` it was built to trigger — not merely "some error". A
+  companion test asserts the fixture table and the `invalid/` directory name
+  exactly the same set of files in both directions, so a fixture added
+  without a table entry (or vice versa) fails loudly instead of going
+  untested.
 
 - **A schema-drift suite** (`SchemaDriftTests.swift`): reads the two live
   schema files at test time (`SchemaDocument.swift` resolves their `$ref`s
@@ -106,6 +123,19 @@ and are worth recording here as evidence the suites are not vacuous:
    exercises every enum case directly).
 3. Disabling one `pattern` check — caught by exactly the one named
    conformance fixture built for it, and no other.
+4. Relaxing `checkPattern` back to "found a match" instead of "the match
+   spans the whole string" — caught only by `profile-id-trailing-newline`
+   and `rm-generation-id-trailing-newline`, which append one `\n` to an
+   otherwise-valid pattern-checked value. NSRegularExpression's `$` (ICU)
+   matches just before a trailing line terminator even without the
+   multiline option, unlike the ECMA-262 `$` that JSON Schema `pattern`
+   means, so "found a match" and "the whole string matches" do not coincide
+   the way an anchored `^...$` pattern suggests they would.
+5. Widening `checkBounds`'s maximum comparison from `value > maximum` to
+   `value >= maximum` — caught only by `boundary-maximums.json` (and the
+   mirror case on the minimum side, by `boundary-minimums.json` and
+   `minimal.json`), because no other fixture sets a bounded field to its
+   exact inclusive limit.
 
 Each drill was reverted immediately after confirming the failure.
 
