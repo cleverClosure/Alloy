@@ -33,6 +33,11 @@ build fault_cost ""
 build noaccess_inventory ""
 build jit_pages "-mavx2"
 build isa_smoke "-msse4.2 -mavx2 -mbmi -mbmi2"
+# Issue #104 systematic ISA corpus. SSE2 is the x86-64 baseline, so no -m flag
+# is needed; the mutation-control variant is built by run-isa-corpus.sh and by
+# build-isa-corpus-native.sh directly (not here), since it is a deliberately
+# broken build that must never be the one shipped as "the corpus".
+build isa_corpus_sse2 ""
 build x87_fp_edge "-ffp-contract=off -fno-math-errno"
 build cpu_throughput "-ffp-contract=off"
 build cpu_scaling ""
