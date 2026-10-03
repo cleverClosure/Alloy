@@ -57,7 +57,7 @@ require_refusal_result() {
   [[ ! -s "$stdout_path" ]] || fail "$label wrote standard output"
   error_lines="$(wc -l <"$stderr_path" | tr -d ' ')"
   require_equal "$error_lines" "1" "$label standard-error line count"
-  rg -q '^ERROR ' "$stderr_path" || fail "$label lacked one ERROR line"
+  grep -q '^ERROR ' "$stderr_path" || fail "$label lacked one ERROR line"
 }
 
 run_refusal() {
