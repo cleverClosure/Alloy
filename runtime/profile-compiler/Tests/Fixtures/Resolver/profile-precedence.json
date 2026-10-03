@@ -1,0 +1,207 @@
+[
+  {
+    "name": "specificity",
+    "clean": {
+      "candidates": [
+        {
+          "patch": {
+            "profileId": "specific.game",
+            "selectors.gameBuild.manifestId": "manifest-1"
+          },
+          "ring": "stable"
+        },
+        {
+          "patch": {
+            "profileId": "broad.game",
+            "certification.level": "certified",
+            "revision": 99
+          },
+          "ring": "stable"
+        }
+      ],
+      "winner": 0
+    },
+    "counterfactual": {
+      "candidates": [
+        {
+          "patch": {
+            "profileId": "specific.game"
+          },
+          "ring": "stable"
+        },
+        {
+          "patch": {
+            "profileId": "broad.game",
+            "certification.level": "certified",
+            "revision": 99
+          },
+          "ring": "stable"
+        }
+      ],
+      "winner": 1
+    }
+  },
+  {
+    "name": "approved-certification",
+    "clean": {
+      "candidates": [
+        {
+          "patch": {
+            "profileId": "same.game",
+            "certification.level": "certified",
+            "revision": 1
+          },
+          "ring": "stable"
+        },
+        {
+          "patch": {
+            "profileId": "same.game",
+            "certification.level": "playable",
+            "revision": 2
+          },
+          "ring": "stable"
+        }
+      ],
+      "winner": 0
+    },
+    "counterfactual": {
+      "candidates": [
+        {
+          "patch": {
+            "profileId": "same.game",
+            "certification.level": "playable",
+            "revision": 1
+          },
+          "ring": "stable"
+        },
+        {
+          "patch": {
+            "profileId": "same.game",
+            "certification.level": "playable",
+            "revision": 2
+          },
+          "ring": "stable"
+        }
+      ],
+      "winner": 1
+    }
+  },
+  {
+    "name": "revision-within-family",
+    "clean": {
+      "candidates": [
+        {
+          "patch": {
+            "profileId": "same.game",
+            "revision": 3
+          },
+          "ring": "stable"
+        },
+        {
+          "patch": {
+            "profileId": "same.game",
+            "revision": 2
+          },
+          "ring": "stable"
+        }
+      ],
+      "winner": 0
+    },
+    "counterfactual": {
+      "candidates": [
+        {
+          "patch": {
+            "profileId": "same.game",
+            "revision": 1
+          },
+          "ring": "stable"
+        },
+        {
+          "patch": {
+            "profileId": "same.game",
+            "revision": 2
+          },
+          "ring": "stable"
+        }
+      ],
+      "winner": 1
+    }
+  },
+  {
+    "name": "explicit-supersession",
+    "clean": {
+      "candidates": [
+        {
+          "patch": {
+            "profileId": "new.game",
+            "supersedes": [
+              "old.game"
+            ]
+          },
+          "ring": "stable"
+        },
+        {
+          "patch": {
+            "profileId": "old.game"
+          },
+          "ring": "stable"
+        }
+      ],
+      "winner": 0
+    },
+    "counterfactual": {
+      "candidates": [
+        {
+          "patch": {
+            "profileId": "new.game"
+          },
+          "ring": "stable"
+        },
+        {
+          "patch": {
+            "profileId": "old.game"
+          },
+          "ring": "stable"
+        }
+      ],
+      "winner": -1
+    }
+  },
+  {
+    "name": "stable-for-non-canary",
+    "clean": {
+      "candidates": [
+        {
+          "patch": {
+            "profileId": "stable.game"
+          },
+          "ring": "stable"
+        },
+        {
+          "patch": {
+            "profileId": "canary.game"
+          },
+          "ring": "canary"
+        }
+      ],
+      "winner": 0
+    },
+    "counterfactual": {
+      "candidates": [
+        {
+          "patch": {
+            "profileId": "stable.game"
+          },
+          "ring": "canary"
+        },
+        {
+          "patch": {
+            "profileId": "canary.game"
+          },
+          "ring": "canary"
+        }
+      ],
+      "winner": -1
+    }
+  }
+]

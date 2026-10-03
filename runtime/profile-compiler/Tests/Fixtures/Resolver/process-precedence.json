@@ -1,0 +1,388 @@
+[
+  {
+    "name": "digest-before-path",
+    "clean": {
+      "rules": [
+        {
+          "id": "digest",
+          "priority": 0,
+          "match": {
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "execution": {
+            "graphicsProvider": "metal12"
+          }
+        },
+        {
+          "id": "path",
+          "priority": 100,
+          "match": {
+            "pathGlob": "**/game.exe"
+          },
+          "execution": {
+            "graphicsProvider": "dxmt"
+          }
+        }
+      ],
+      "expectedRuleIds": [
+        "digest"
+      ],
+      "graphics": "metal12",
+      "network": "deny"
+    },
+    "counterfactual": {
+      "rules": [
+        {
+          "id": "digest",
+          "priority": 0,
+          "match": {
+            "pathGlob": "**/game.exe"
+          },
+          "execution": {
+            "graphicsProvider": "metal12"
+          }
+        },
+        {
+          "id": "path",
+          "priority": 100,
+          "match": {
+            "pathGlob": "**/game.exe"
+          },
+          "execution": {
+            "graphicsProvider": "dxmt"
+          }
+        }
+      ],
+      "expectedRuleIds": [
+        "path"
+      ],
+      "graphics": "dxmt",
+      "network": "deny"
+    }
+  },
+  {
+    "name": "parent-and-child-before-child",
+    "clean": {
+      "rules": [
+        {
+          "id": "relationship",
+          "priority": 0,
+          "match": {
+            "pathGlob": "**/game.exe",
+            "parentPolicyId": "launcher"
+          },
+          "execution": {
+            "graphicsProvider": "metal12"
+          }
+        },
+        {
+          "id": "path",
+          "priority": 100,
+          "match": {
+            "pathGlob": "**/game.exe"
+          },
+          "execution": {
+            "graphicsProvider": "dxmt"
+          }
+        }
+      ],
+      "expectedRuleIds": [
+        "relationship"
+      ],
+      "graphics": "metal12",
+      "network": "deny"
+    },
+    "counterfactual": {
+      "rules": [
+        {
+          "id": "relationship",
+          "priority": 0,
+          "match": {
+            "pathGlob": "**/game.exe"
+          },
+          "execution": {
+            "graphicsProvider": "metal12"
+          }
+        },
+        {
+          "id": "path",
+          "priority": 100,
+          "match": {
+            "pathGlob": "**/game.exe"
+          },
+          "execution": {
+            "graphicsProvider": "dxmt"
+          }
+        }
+      ],
+      "expectedRuleIds": [
+        "path"
+      ],
+      "graphics": "dxmt",
+      "network": "deny"
+    }
+  },
+  {
+    "name": "explicit-priority",
+    "clean": {
+      "rules": [
+        {
+          "id": "priority",
+          "priority": 200,
+          "match": {
+            "pathGlob": "**/game.exe"
+          },
+          "execution": {
+            "graphicsProvider": "metal12"
+          }
+        },
+        {
+          "id": "path",
+          "priority": 100,
+          "match": {
+            "pathGlob": "**/game.exe"
+          },
+          "execution": {
+            "graphicsProvider": "dxmt"
+          }
+        }
+      ],
+      "expectedRuleIds": [
+        "priority"
+      ],
+      "graphics": "metal12",
+      "network": "deny"
+    },
+    "counterfactual": {
+      "rules": [
+        {
+          "id": "priority",
+          "priority": 99,
+          "match": {
+            "pathGlob": "**/game.exe"
+          },
+          "execution": {
+            "graphicsProvider": "metal12"
+          }
+        },
+        {
+          "id": "path",
+          "priority": 100,
+          "match": {
+            "pathGlob": "**/game.exe"
+          },
+          "execution": {
+            "graphicsProvider": "dxmt"
+          }
+        }
+      ],
+      "expectedRuleIds": [
+        "path"
+      ],
+      "graphics": "dxmt",
+      "network": "deny"
+    }
+  },
+  {
+    "name": "compose-restrictions",
+    "clean": {
+      "rules": [
+        {
+          "id": "allow",
+          "priority": 100,
+          "match": {
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "execution": {
+            "graphicsProvider": "metal12",
+            "networkPolicy": "allow",
+            "dllOverrides": {
+              "Bad.DLL": "native"
+            }
+          }
+        },
+        {
+          "id": "restrict",
+          "priority": 0,
+          "match": {
+            "pathGlob": "**/*.exe"
+          },
+          "execution": {
+            "networkPolicy": "deny",
+            "dllOverrides": {
+              "bad": "disabled"
+            }
+          }
+        }
+      ],
+      "expectedRuleIds": [
+        "allow"
+      ],
+      "graphics": "metal12",
+      "network": "deny",
+      "disabled": "bad"
+    },
+    "counterfactual": {
+      "rules": [
+        {
+          "id": "allow",
+          "priority": 100,
+          "match": {
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "execution": {
+            "graphicsProvider": "metal12",
+            "networkPolicy": "allow",
+            "dllOverrides": {
+              "Bad.DLL": "native"
+            }
+          }
+        }
+      ],
+      "expectedRuleIds": [
+        "allow"
+      ],
+      "graphics": "metal12",
+      "network": "allow"
+    }
+  },
+  {
+    "name": "explicit-inheritance",
+    "clean": {
+      "rules": [
+        {
+          "id": "inherit",
+          "priority": 100,
+          "match": {
+            "pathGlob": "**/game.exe"
+          },
+          "execution": {
+            "graphicsProvider": "inherit",
+            "networkPolicy": "inherit"
+          }
+        }
+      ],
+      "expectedRuleIds": [
+        "inherit"
+      ],
+      "graphics": "metal12",
+      "network": "allow"
+    },
+    "counterfactual": {
+      "rules": [
+        {
+          "id": "inherit",
+          "priority": 100,
+          "match": {
+            "pathGlob": "**/game.exe"
+          },
+          "execution": {}
+        }
+      ],
+      "expectedRuleIds": [
+        "inherit"
+      ],
+      "graphics": "moltenvk",
+      "network": "deny"
+    }
+  },
+  {
+    "name": "unknown-default",
+    "clean": {
+      "rules": [
+        {
+          "id": "known",
+          "priority": 100,
+          "match": {
+            "pathGlob": "**/game.exe"
+          },
+          "execution": {
+            "graphicsProvider": "metal12",
+            "networkPolicy": "allow"
+          }
+        }
+      ],
+      "expectedRuleIds": [],
+      "graphics": "moltenvk",
+      "network": "deny",
+      "path": "unknown.exe"
+    },
+    "counterfactual": {
+      "rules": [
+        {
+          "id": "known",
+          "priority": 100,
+          "match": {
+            "pathGlob": "**/game.exe"
+          },
+          "execution": {
+            "graphicsProvider": "metal12",
+            "networkPolicy": "allow"
+          }
+        }
+      ],
+      "expectedRuleIds": [
+        "known"
+      ],
+      "graphics": "metal12",
+      "network": "allow"
+    }
+  },
+  {
+    "name": "equal-precedence-conflict",
+    "clean": {
+      "rules": [
+        {
+          "id": "first",
+          "priority": 100,
+          "match": {
+            "pathGlob": "**/game.exe"
+          },
+          "execution": {
+            "graphicsProvider": "metal12"
+          }
+        },
+        {
+          "id": "second",
+          "priority": 100,
+          "match": {
+            "pathGlob": "**/game.exe"
+          },
+          "execution": {
+            "graphicsProvider": "dxmt"
+          }
+        }
+      ],
+      "conflict": true
+    },
+    "counterfactual": {
+      "rules": [
+        {
+          "id": "first",
+          "priority": 100,
+          "match": {
+            "pathGlob": "**/game.exe"
+          },
+          "execution": {
+            "graphicsProvider": "metal12"
+          }
+        },
+        {
+          "id": "second",
+          "priority": 99,
+          "match": {
+            "pathGlob": "**/game.exe"
+          },
+          "execution": {
+            "graphicsProvider": "dxmt"
+          }
+        }
+      ],
+      "expectedRuleIds": [
+        "first"
+      ],
+      "graphics": "metal12",
+      "network": "deny"
+    }
+  }
+]
