@@ -13,6 +13,11 @@
 #     on real arm64 hardware, with no translator involved on that side;
 #   - the -DALLOY_CORPUS_MUTATE_PADDB build must FAIL through this same
 #     path - the negative control, without which a clean pass proves nothing.
+#     A nonzero exit alone would also be produced by a timeout or an
+#     unrelated crash, so the verdict additionally requires the specific
+#     detected-mismatch exit code, the checksum matching a native build of
+#     the identical corrupted reference, and a FAIL line naming paddb -
+#     a crash cannot forge all three.
 #
 # Setup gotchas this script exists to get right every time (CLAUDE.md
 # "Runtime gotchas", results 04 and 18):
@@ -146,7 +151,15 @@ record_git_revision() { # path label
     dirty=$(git -C "$path" status --porcelain)
     printf '%s: branch=%s head=%s dirty=%s\n' "$label" "$branch" "$head" \
       "$([[ -n $dirty ]] && echo yes || echo no)"
-    [[ -n $dirty ]] && printf '%s\n' "$dirty" | sed "s/^/  $label: /"
+    # An `if`, not `[[ -n $dirty ]] && ...`: with a clean checkout the `&&`
+    # form's own exit status is 1 (the test was false), which is this
+    # function's last command and, under set -e, silently killed the whole
+    # script right here - before the verdict ever printed. Caught by running
+    # the real script end-to-end with a clean fex checkout, not part of the
+    # review findings this pass was fixing.
+    if [[ -n $dirty ]]; then
+      printf '%s\n' "$dirty" | sed "s/^/  $label: /"
+    fi
   else
     printf '%s: not a git checkout at %s\n' "$label" "$path"
   fi
@@ -168,6 +181,18 @@ echo "building native oracle"
 native_line=$(tail -n1 "$work_root/native-oracle/native-oracle-clean.log")
 native_checksum=$(echo "$native_line" | grep -o 'checksum=[0-9a-f]*' | cut -d= -f2)
 echo "native oracle: $native_line"
+
+native_mutate_line=
+native_mutate_checksum=
+if ((run_mutate)); then
+  echo "building native oracle (mutate=paddb) - the known-corrupted checksum the FEX"
+  echo "  negative control run below must reproduce, not just exit nonzero"
+  "$spike_root/testcases/build-isa-corpus-native.sh" "$work_root/native-oracle" \
+    -DALLOY_CORPUS_MUTATE_PADDB >>"$log_dir/native-oracle-build.log" 2>&1
+  native_mutate_line=$(tail -n1 "$work_root/native-oracle/native-oracle-PADDB.log")
+  native_mutate_checksum=$(echo "$native_mutate_line" | grep -o 'checksum=[0-9a-f]*' | cut -d= -f2)
+  echo "native oracle (mutate=paddb): $native_mutate_line"
+fi
 
 echo "== prefix setup =="
 fex_sha_before=$(shasum -a 256 "$fex_dll" | awk '{print $1}')
@@ -243,11 +268,13 @@ echo "confirmed: Wine's module loader looked up libarm64ecfex.dll (trace present
 
 mutate_rc=
 mutate_line=
+mutate_checksum=
 if ((run_mutate)); then
   echo "== negative control run (mutate=paddb) =="
   run_guest isa_corpus_sse2-mutate-paddb.exe mutate
   mutate_rc=$(cat "$log_dir/mutate.exit")
   mutate_line=$(grep '^cpu-001 isa-corpus sse2:' "$log_dir/mutate.log" || true)
+  mutate_checksum=$(echo "$mutate_line" | grep -o 'checksum=[0-9a-f]*' | cut -d= -f2 || true)
   echo "exit=$mutate_rc  $mutate_line"
   echo "sample mismatches:"
   grep '^FAIL' "$log_dir/mutate.log" | head -3 || true
@@ -266,6 +293,7 @@ echo "fex dll sha256 (after):  $fex_sha_after"
   echo "fex_dll_sha256_before: $fex_sha_before"
   echo "fex_dll_sha256_after:  $fex_sha_after"
   echo "native_oracle: $native_line"
+  [[ -n $native_mutate_line ]] && echo "native_oracle_mutate_paddb: $native_mutate_line"
   echo "clean_run: exit=$clean_rc $clean_line"
   [[ -n $mutate_rc ]] && echo "mutate_run: exit=$mutate_rc $mutate_line"
 } | tee "$work_root/run-metadata.txt"
@@ -284,11 +312,30 @@ else
   echo "PASS: clean run matches the native oracle (checksum=$clean_checksum)"
 fi
 if ((run_mutate)); then
+  # A nonzero exit alone is not proof the negative control fired: a perl-alarm
+  # timeout (142), an unrelated SIGSEGV (139), or any other crash all exit
+  # nonzero too, and crediting any of those as "the mutation was caught" would
+  # pass this gate even when the guest never ran the real-vs-reference
+  # comparison at all. Require the specific outcome instead: the exit code
+  # run_hand_vectors()/main() actually return on a detected mismatch (1), the
+  # checksum matching the known-corrupted native oracle built above (proof
+  # this is genuinely the paddb-corrupted reference path, not some other
+  # failure), and a FAIL line naming paddb by name.
   if [[ $mutate_rc == 0 ]]; then
     echo "FAIL: the mutate=paddb negative control passed - it must fail" >&2
     ok=0
+  elif [[ $mutate_rc != 1 ]]; then
+    echo "FAIL: mutate run exited $mutate_rc, not the 1 a detected mismatch produces - cannot tell a real negative control from a crash or timeout" >&2
+    ok=0
+  elif [[ -z $mutate_checksum || $mutate_checksum != "$native_mutate_checksum" ]]; then
+    echo "FAIL: mutate run's checksum does not match the native corrupted-reference oracle" >&2
+    echo "  native_mutate=$native_mutate_checksum  fex_mutate=$mutate_checksum" >&2
+    ok=0
+  elif ! rg -qi '^FAIL (hand-vector )?paddb\b' "$log_dir/mutate.log"; then
+    echo "FAIL: mutate run never reported a paddb mismatch by name - the negative control did not demonstrably fire on the expected operation" >&2
+    ok=0
   else
-    echo "PASS: the mutate=paddb negative control failed, as required (exit=$mutate_rc)"
+    echo "PASS: the mutate=paddb negative control failed, as required (exit=$mutate_rc, checksum=$mutate_checksum matches the corrupted native oracle, paddb named in the log)"
   fi
 fi
 
