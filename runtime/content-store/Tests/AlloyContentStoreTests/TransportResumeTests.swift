@@ -114,7 +114,7 @@ private func gate2ResumeFromFixture(
         descriptor,
         operationID: operationID
     )
-    #expect(record.state != .downloading) // DELIBERATELY BROKEN: proves CI runs this suite
+    #expect(record.state == .downloading)
     #expect(record.byteCount == gate2Checkpoint)
     #expect(try Data(contentsOf: partialURL) == payload.prefix(gate2Checkpoint))
     #expect(!store.pathEntryExists(try store.objectURL(descriptor.digest)))
