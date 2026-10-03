@@ -54,22 +54,27 @@ out. Forgetting the bump is not a quiet mistake either — every run, and
 
 What this does NOT run, and why
 ---------------------------------
-Nothing here touches third_party/src/*, spikes/*/work/, spikes/M12-*, or
-runtime/metal12: every suite is an explicit registry entry, never a
-filesystem crawl, so those shared and build-artifact trees are never at
-risk of being executed by accident.
+Every suite is an explicit registry entry, never a filesystem crawl into
+third_party/src/*, spikes/*/work/, spikes/M12-*, or runtime/metal12. Full-tier
+suites read explicitly configured runtime inputs and use private scratch
+directories. No registered suite builds into the shared Wine tree.
 
-WINE-001's policy-probe/jit-store suites, CPU-001's corpus and SEH matrix,
-and LEGAL-001's bundle/substitution/codec-scan proofs are not wired here.
-Every one of them needs a local, uncommitted build — the cross toolchain,
-a Wine build tree under spikes/WINE-001/work/build-2, or a staged release
-runtime — that a fresh checkout (including hosted CI) does not have, and
-that this Mac deliberately does not keep saved inside the project so as to
-avoid a much larger and costlier automated build setup. That is a correct,
-intentional limit of this tool today, not an oversight: wiring them is
-later milestones of issue #100, each gated on its own presence probe (and,
-for anything touching build-2, a busy-check so this tool never contends
-with the other agent's live run).
+WINE-001's policy tests/proof and native JIT decoder test, CPU-001's guest
+build and SEH matrix, and the native ISA reference/control are full-tier
+entries. ALLOY_WINE_BUILD and ALLOY_WINE_SOURCE override the checkout-local
+build-2/source defaults, including from worktrees. Put llvm-mingw on PATH.
+Missing tools, exact build artifacts or headers produce SKIP with a reason.
+Wine guest suites also skip when ps shows the selected build tree is busy.
+A ps failure is a skip, never permission to run concurrently.
+
+Full-tier x64 execution currently fails on this Mac's macOS 27 runtime
+(issue #111); that is a runtime failure, not a passing or skipped test.
+Native and ARM64-only suites remain useful while it is investigated.
+This tool reports existing tests, not performance certification.
+
+LEGAL-001 bundle/codec proofs are reserved for a later milestone. The
+substitution proof that edits shared Wine source/build trees is deliberately
+excluded from this runner.
 
 Usage
 -----
@@ -95,21 +100,28 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Callable, Optional, Sequence
+from typing import Callable, Optional, Sequence, Union
+from unittest.mock import patch
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 ProbeFn = Callable[[Path], Optional[str]]
+Command = Union[Sequence[str], Callable[[Path], Sequence[str]]]
 
 
 @dataclass(frozen=True)
 class Suite:
     id: str
     tier: str  # "fast" or "full"
-    cmd: Sequence[str]
+    cmd: Command
     cwd: str  # relative to the repo root the suite runs against; "." for that root
     timeout: float  # seconds
     probe: ProbeFn  # returns a skip reason, or None when the suite can run here
+    description: str = ""
+    environment: Optional[Callable[[Path], dict[str, str]]] = None
+
+    def argv(self, root: Path) -> Sequence[str]:
+        return self.cmd(root) if callable(self.cmd) else self.cmd
 
 
 @dataclass(frozen=True)
@@ -169,6 +181,75 @@ def every(*probes: ProbeFn) -> ProbeFn:
     return probe
 
 
+def configured_path(root: Path, variable: str, default: str) -> Path:
+    path = Path(os.environ.get(variable) or default).expanduser()
+    return (root / path).resolve()
+
+
+def wine_build(root: Path) -> Path:
+    return configured_path(root, "ALLOY_WINE_BUILD", "spikes/WINE-001/work/build-2")
+
+
+def wine_source(root: Path) -> Path:
+    return configured_path(root, "ALLOY_WINE_SOURCE", "third_party/src/wine")
+
+
+def wine_environment(root: Path) -> dict[str, str]:
+    return {"ALLOY_WINE_BUILD": str(wine_build(root)), "ALLOY_WINE_SOURCE": str(wine_source(root))}
+
+
+def need_wine_build(*, fex: bool = False) -> ProbeFn:
+    def probe(root: Path) -> Optional[str]:
+        build = wine_build(root)
+        for name in ("loader/wine", "server/wineserver", "dlls/ntdll/ntdll.so"):
+            if not (build / name).is_file():
+                return f"missing Wine build artifact: {build / name} (ALLOY_WINE_BUILD)"
+            if name in ("loader/wine", "server/wineserver") and not os.access(build / name, os.X_OK):
+                return f"Wine build artifact is not executable: {build / name}"
+        dll = build / "dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
+        if fex and not dll.is_file():
+            return f"missing FEX builtin DLL: {dll}"
+        return None
+    return probe
+
+
+def need_wine_source(root: Path) -> Optional[str]:
+    header = wine_source(root) / "dlls/ntdll/unix/arm64_jit_store.h"
+    return None if header.is_file() else f"missing Wine source header: {header} (ALLOY_WINE_SOURCE)"
+
+
+def wine_busy_reason(build: Path, processes: str, own_pid: int) -> Optional[str]:
+    rows = {}
+    for line in processes.splitlines():
+        parts = line.strip().split(None, 2)
+        if len(parts) == 3 and parts[0].isdigit() and parts[1].isdigit():
+            rows[int(parts[0])] = (int(parts[1]), parts[2])
+    # The shell that launched test-all may mention ALLOY_WINE_BUILD in its
+    # argv. Exclude only this process and its ancestors, never siblings or
+    # descendants (the latter include an actual concurrent Wine invocation).
+    ancestors = set()
+    pid = own_pid
+    while pid and pid not in ancestors:
+        ancestors.add(pid)
+        pid = rows.get(pid, (0, ""))[0]
+    names = {str(build), os.path.realpath(build)}
+    if str(build).startswith(("/private/tmp/", "/private/var/")):
+        names.add(str(build).removeprefix("/private"))
+    for pid, (_, command) in rows.items():
+        if pid not in ancestors and any(name in command for name in names):
+            return f"build-2 busy: pid {pid} uses {build}"
+    return None
+
+
+def need_wine_idle(root: Path) -> Optional[str]:
+    try:
+        result = subprocess.run(["ps", "-axo", "pid=,ppid=,command="],
+                                capture_output=True, text=True, check=True, timeout=5)
+    except (OSError, subprocess.SubprocessError) as exc:
+        return f"cannot check whether build-2 is busy: {exc}"
+    return wine_busy_reason(wine_build(root), result.stdout, os.getpid())
+
+
 def sh(suite_id: str, tier: str, script: str, *args: str, timeout: float, probe: ProbeFn) -> Suite:
     """A suite whose command is a shell script, always run through bash so a
     missing +x bit never turns into a bogus FAIL."""
@@ -182,6 +263,70 @@ def sh(suite_id: str, tier: str, script: str, *args: str, timeout: float, probe:
 # ---------------------------------------------------------------------------
 
 REGISTRY: list[Suite] = [
+    # --- WINE-001 / CPU-001: full tier only, never hosted CI ---------------
+    Suite(
+        id="wine-policy-swift-test", tier="full",
+        cmd=("swift", "test", "--package-path", "spikes/WINE-001/policy-probe"),
+        cwd=".", timeout=180,
+        probe=every(need_commands("swift"), need_paths("spikes/WINE-001/policy-probe/Package.swift")),
+        description="policy-snapshot unit tests; full tier by design",
+    ),
+    Suite(
+        id="wine-policy-proof", tier="full",
+        cmd=("bash", "spikes/WINE-001/policy-probe/run-policy-proof.sh"),
+        cwd=".", timeout=240,
+        probe=every(need_commands("swift", "jq", "aarch64-w64-mingw32-clang", "llvm-readobj", "perl"),
+                    need_paths("spikes/WINE-001/policy-probe/run-policy-proof.sh"),
+                    need_wine_build(), need_wine_idle),
+        description="build-dependent: ARM64 policy guests in a private prefix",
+        environment=wine_environment,
+    ),
+    Suite(
+        id="wine-jit-store-decode", tier="full",
+        cmd=("bash", "spikes/WINE-001/jit-store/run-decode-test.sh"),
+        cwd=".", timeout=60,
+        probe=every(need_commands("cc"), need_paths("spikes/WINE-001/jit-store/run-decode-test.sh"),
+                    need_wine_source),
+        description="build-dependent: reads the shipped Wine decoder header; native test",
+        environment=wine_environment,
+    ),
+    Suite(
+        id="cpu-corpus-build", tier="full",
+        cmd=("bash", "spikes/CPU-001/run-full-tier-corpus-build.sh"),
+        cwd=".", timeout=180,
+        probe=every(need_commands("x86_64-w64-mingw32-clang"),
+                    need_paths("spikes/CPU-001/testcases/build-corpus.sh",
+                               "spikes/CPU-001/run-full-tier-corpus-build.sh")),
+        description="build-dependent: cross-compile every CPU corpus guest; does not execute guests",
+    ),
+    Suite(
+        id="cpu-seh-matrix", tier="full",
+        cmd=lambda root: ("bash", "spikes/CPU-001/run-full-tier-seh-matrix.sh",
+                          str(root / "spikes/CPU-001/work/test-all-seh")),
+        cwd=".", timeout=360,
+        probe=every(need_commands("x86_64-w64-mingw32-clang", "llvm-readobj", "rg", "perl"),
+                    need_paths("spikes/CPU-001/run-full-tier-seh-matrix.sh",
+                               "spikes/CPU-001/run-seh-multi-matrix.sh"),
+                    need_wine_build(fex=True), need_wine_idle),
+        description="build-dependent: x64 SEH guests; current macOS 27 runtime regression is #111",
+        environment=wine_environment,
+    ),
+    Suite(
+        id="cpu-isa-native", tier="full",
+        cmd=lambda root: ("bash", "spikes/CPU-001/testcases/build-isa-corpus-native.sh",
+                          str(root / "spikes/CPU-001/work/test-all-isa-native")),
+        cwd=".", timeout=120,
+        probe=every(need_commands("clang"), need_paths("spikes/CPU-001/testcases/build-isa-corpus-native.sh")),
+        description="native SSE2 reference proof; does not execute Wine guests",
+    ),
+    Suite(
+        id="cpu-isa-native-mutation", tier="full",
+        cmd=lambda root: ("bash", "spikes/CPU-001/testcases/build-isa-corpus-native.sh",
+                          str(root / "spikes/CPU-001/work/test-all-isa-mutation"), "-DALLOY_CORPUS_MUTATE_PADDB"),
+        cwd=".", timeout=120,
+        probe=every(need_commands("clang"), need_paths("spikes/CPU-001/testcases/build-isa-corpus-native.sh")),
+        description="native SSE2 named-mutation control; no Wine guest",
+    ),
     # --- runtime/profile-compiler ----------------------------------------
     Suite(
         id="profile-compiler-swift-test",
@@ -435,7 +580,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 24
+REGISTRY_SUITE_COUNT = 31
 
 
 # ---------------------------------------------------------------------------
@@ -493,7 +638,10 @@ def run_one(suite: Suite, repo_root: Path) -> Result:
         # A new session (process group) so a timeout can reap the whole tree
         # a shell suite spawned (swift build, a fixture server), not just the
         # one shell process.
-        proc = subprocess.Popen(list(suite.cmd), cwd=str(cwd), start_new_session=True)
+        env = dict(os.environ)
+        if suite.environment:
+            env.update(suite.environment(repo_root))
+        proc = subprocess.Popen(list(suite.argv(repo_root)), cwd=str(cwd), env=env, start_new_session=True)
     except OSError as exc:
         return Result(suite.id, suite.tier, "fail", f"could not start: {exc}", time.monotonic() - start)
 
@@ -573,7 +721,7 @@ def run_selftest() -> int:
 
     tmp = tempfile.mkdtemp(prefix="alloy-test-all-selftest.")
     try:
-        root = Path(tmp)
+        root = Path(tmp).resolve()
 
         passing = Suite(
             id="synthetic-pass",
@@ -732,6 +880,67 @@ def run_selftest() -> int:
             "render_table marks the skipped suite SKIP and carries its reason",
             "SKIP" in table_rows["mixed-skip"] and "missing on PATH: foo" in table_rows["mixed-skip"],
         )
+        # Full-tier probes exercise real temporary artifacts, without Wine.
+        fake_build = root / "Wine build with spaces"
+        fake_source = root / "Wine source"
+        with patch.dict(os.environ, {"ALLOY_WINE_BUILD": str(fake_build),
+                                     "ALLOY_WINE_SOURCE": str(fake_source)}):
+            check("missing Wine loader is named precisely",
+                  str(fake_build / "loader/wine") in (need_wine_build()(root) or ""))
+            for name in ("loader/wine", "server/wineserver", "dlls/ntdll/ntdll.so"):
+                path = fake_build / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("fixture")
+                path.chmod(0o755)
+            check("present Wine artifacts pass their presence probe", need_wine_build()(root) is None)
+            check("missing FEX builtin is named precisely",
+                  "libarm64ecfex.dll" in (need_wine_build(fex=True)(root) or ""))
+            dll = fake_build / "dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
+            dll.parent.mkdir(parents=True); dll.write_text("fixture")
+            check("present FEX builtin passes", need_wine_build(fex=True)(root) is None)
+            (fake_build / "loader/wine").chmod(0o644)
+            check("a non-executable loader skips", "not executable" in (need_wine_build()(root) or ""))
+            check("missing shipped decoder header is named",
+                  "arm64_jit_store.h" in (need_wine_source(root) or ""))
+            header = fake_source / "dlls/ntdll/unix/arm64_jit_store.h"
+            header.parent.mkdir(parents=True); header.write_text("fixture")
+            check("present shipped decoder header passes", need_wine_source(root) is None)
+            check("Wine path overrides are passed to the child",
+                  wine_environment(root)["ALLOY_WINE_BUILD"] == str(fake_build))
+            busy = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(30)", str(fake_build)])
+            try:
+                blocked = Suite("busy-runtime", "full", (str(root / "must-not-run"),),
+                                ".", 1, need_wine_idle)
+                outcome = run_one(blocked, root)
+                reason = outcome.reason or ""
+                check("a real held process under build-2 causes SKIP",
+                      outcome.verdict == "skip" and "build-2 busy" in reason and str(busy.pid) in reason)
+            finally:
+                busy.terminate(); busy.wait(timeout=5)
+            check("the busy skip clears after the held process exits", need_wine_idle(root) is None)
+            with patch("subprocess.run", side_effect=FileNotFoundError("ps unavailable")):
+                check("a failed ps check never grants permission to run",
+                      "cannot check" in (need_wine_idle(root) or ""))
+
+        check("build path in the launching shell is not a false busy match",
+              wine_busy_reason(fake_build, f"10 1 shell {fake_build}\n20 10 test-all", 20) is None)
+        check("a sibling build process is still busy",
+              wine_busy_reason(fake_build, f"10 1 shell\n20 10 test-all\n21 10 build {fake_build}", 20) is not None)
+        check("missing tool probe names the absent executable",
+              need_commands("alloy-selftest-deliberately-absent")(root)
+              == "missing on PATH: alloy-selftest-deliberately-absent")
+        dynamic = Suite(
+            "dynamic", "full",
+            lambda r: (sys.executable, "-c", "import os,sys; assert sys.argv[1] == os.environ['ALLOY_TEST_ARG']", str(r)),
+            ".", 10, lambda _r: None,
+            environment=lambda r: {"ALLOY_TEST_ARG": str(r)},
+        )
+        dynamic_root = root / "argv with spaces"
+        dynamic_root.mkdir()
+        check("dynamic argv preserves spaces and environment reaches the child",
+              run_one(dynamic, dynamic_root).verdict == "pass")
+        check("Wine and CPU entries never enter the CI fast tier",
+              not any(s.id.startswith(("wine-", "cpu-")) for s in select_suites(REGISTRY, "fast", None)))
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -784,7 +993,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     if args.list:
         for s in selected:
-            print(f"{s.id}\t{s.tier}\t{' '.join(s.cmd)}")
+            print(f"{s.id}\t{s.tier}\t{' '.join(s.argv(REPO_ROOT))}\t{s.description}")
         print(f"\n{len(selected)} suite(s) selected (registry has {len(REGISTRY)} total)", file=sys.stderr)
         return 0
 

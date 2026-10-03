@@ -14,7 +14,7 @@ probe_work="$spike_root/work/policy-probe"
 # only matters when run-policy-proof.sh executes from a worktree, which has
 # no build-2 of its own and must be pointed at the primary checkout's.
 wine_build=${ALLOY_WINE_BUILD:-"$spike_root/work/build-2"}
-wine_binary="$wine_build/wine"
+wine_binary="$wine_build/loader/wine"
 wine_server="$wine_build/server/wineserver"
 # Prefer PATH, same as build-corpus.sh/testcases' build.sh, and fall back to
 # the pinned single-checkout path so existing direct invocations keep working
@@ -152,11 +152,19 @@ done
 
 prefix="$probe_work/prefix"
 mkdir -p "$prefix"
+export DYLD_FALLBACK_LIBRARY_PATH=${DYLD_FALLBACK_LIBRARY_PATH:-/opt/homebrew/lib}
+stop_server() {
+  env WINEPREFIX="$prefix" "$wine_server" -k >/dev/null 2>&1 || true
+}
+trap stop_server EXIT
+trap 'exit 143' TERM
+trap 'exit 130' INT
 env \
   PATH="$toolchain:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
   WINEPREFIX="$prefix" \
   WINEDEBUG=-all \
-  "$wine_binary" wineboot -u >"$probe_work/wineboot.log" 2>&1
+  WINEDLLOVERRIDES="mscoree,mshtml=" \
+  perl -e 'alarm shift; exec @ARGV' 60 "$wine_binary" wineboot -u >"$probe_work/wineboot.log" 2>&1
 env WINEPREFIX="$prefix" "$wine_server" -k >/dev/null 2>&1 || true
 
 run_log="$probe_work/policy-run.log"
@@ -169,7 +177,7 @@ run_log="$probe_work/policy-run.log"
     PATH="$toolchain:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
     WINEPREFIX="$prefix" \
     WINEDEBUG=+alloy,+loaddll \
-    "$wine_binary" launcher.exe
+    perl -e 'alarm shift; exec @ARGV' 60 "$wine_binary" launcher.exe
 ) 2>&1 | tee "$run_log"
 
 grep -Fq 'selected policy launcher graphics dxmt default 0' "$run_log"
@@ -210,7 +218,7 @@ expect_bootstrap_failure() {
       PATH="$toolchain:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
       WINEPREFIX="$prefix" \
       WINEDEBUG=-all \
-      "$wine_binary" unknown.exe
+      perl -e 'alarm shift; exec @ARGV' 30 "$wine_binary" unknown.exe
   ) >"$failure_log" 2>&1; then
     printf '%s unexpectedly succeeded\n' "$label" >&2
     return 1

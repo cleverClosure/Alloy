@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # tools/test-all's full-tier wrapper around run-seh-multi-matrix.sh.
-# Author: Tim Isaev
+# Author: Timur Isaev
 #
 # run-seh-multi-matrix.sh (this spike's own script) takes four
 # already-prepared inputs as positional arguments: a FEX DLL, a Wine loader,
@@ -8,8 +8,7 @@
 # that exists on a bare checkout, and per TASKS.md none of it may be written
 # under the shared build tree itself. This wrapper supplies all four from
 # ALLOY_WINE_BUILD (read-only) plus a scratch area local to this checkout,
-# builds the guest corpus fresh each run, boots its own prefix only once
-# (reused on later runs - a cold wineboot is the slow part), and then
+# builds the guest corpus fresh each run, boots a fresh private prefix for each run, and then
 # delegates to the real script unchanged.
 #
 # Usage: run-full-tier-seh-matrix.sh <work-dir>
@@ -33,7 +32,7 @@ toolchain_bin=$(dirname "$(command -v x86_64-w64-mingw32-clang)")
 
 wine_build=${ALLOY_WINE_BUILD:?ALLOY_WINE_BUILD is required}
 fex_dll="$wine_build/dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
-wine_loader="$wine_build/wine"
+wine_loader="$wine_build/loader/wine"
 
 case "$work_root" in
   "$repo_root"/spikes/CPU-001/work/*) ;;
@@ -43,9 +42,18 @@ case "$work_root" in
     ;;
 esac
 
+mkdir -p "$work_root"
+work_root=$(mktemp -d "$work_root/run.XXXXXX")
 guest_dir="$work_root/guest"
 prefix="$work_root/prefix"
 mkdir -p "$guest_dir" "$prefix"
+export DYLD_FALLBACK_LIBRARY_PATH=${DYLD_FALLBACK_LIBRARY_PATH:-/opt/homebrew/lib}
+stop_server() {
+  env WINEPREFIX="$prefix" "$wine_build/server/wineserver" -k >/dev/null 2>&1 || true
+}
+trap stop_server EXIT
+trap 'exit 143' TERM
+trap 'exit 130' INT
 
 export PATH="$toolchain_bin:$PATH"
 # run-seh-multi-matrix.sh defaults LLVM_READOBJ to a path under this repo's
@@ -87,10 +95,15 @@ if [[ ! -d "$prefix/drive_c/windows/system32" ]]; then
   run_wine regedit "$select_fex_reg" >"$work_root/regedit.log" 2>&1
 fi
 
-stop_server() {
-  # Only ever our own prefix's server - never build-2's.
-  env WINEPREFIX="$prefix" "$wine_build/server/wineserver" -k >/dev/null 2>&1 || true
-}
-trap stop_server EXIT
-
-bash "$here/run-seh-multi-matrix.sh" "$fex_dll" "$wine_loader" "$prefix" "$guest_dir" 1
+# Bound each matrix invocation too; the existing matrix script has no timeout.
+# It still receives the real builtin DLL as input, never substitutes into
+# build-2, and only copies that same DLL into this private prefix.
+export ALLOY_TEST_WINE_LOADER="$wine_loader"
+bounded_loader="$work_root/bounded-wine"
+cat >"$bounded_loader" <<'EOF'
+#!/usr/bin/env bash
+# Author: Timur Isaev
+exec perl -e 'alarm shift; exec @ARGV' 60 "$ALLOY_TEST_WINE_LOADER" "$@"
+EOF
+chmod +x "$bounded_loader"
+bash "$here/run-seh-multi-matrix.sh" "$fex_dll" "$bounded_loader" "$prefix" "$guest_dir" 1
