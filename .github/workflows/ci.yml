@@ -38,6 +38,24 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      # shfmt is pinned because the runner has none and Homebrew serves the
+      # latest. 3.14 formats a heredoc inside an `if` differently from the 3.13
+      # this tree is formatted with, so by October 2026 every PR failed lint
+      # on spikes/M12-003/prototype/run_corpus.sh without a change to main.
+      # The digest is the one GitHub publishes for the release asset. Installed
+      # first, so the Homebrew step below finds it and skips shfmt.
+      - name: Install pinned shfmt
+        env:
+          SHFMT_VERSION: v3.13.1
+          SHFMT_SHA256: 9680526be4a66ea1ffe988ed08af58e1400fe1e4f4aef5bd88b20bb9b3da33f8
+        run: |
+          mkdir -p "$RUNNER_TEMP/bin"
+          curl -fsSL -o "$RUNNER_TEMP/bin/shfmt" \
+            "https://github.com/mvdan/sh/releases/download/${SHFMT_VERSION}/shfmt_${SHFMT_VERSION}_darwin_arm64"
+          echo "${SHFMT_SHA256}  $RUNNER_TEMP/bin/shfmt" | shasum -a 256 -c -
+          chmod +x "$RUNNER_TEMP/bin/shfmt"
+          echo "$RUNNER_TEMP/bin" >>"$GITHUB_PATH"
+
       - name: Install missing lint tools
         env:
           HOMEBREW_NO_AUTO_UPDATE: "1"
