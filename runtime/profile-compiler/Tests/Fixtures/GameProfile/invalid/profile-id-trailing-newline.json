@@ -1,0 +1,312 @@
+{
+  "schemaVersion": "1.0",
+  "profileId": "max.studio.game.steam-epic.macos-arm64\n",
+  "revision": 7,
+  "supersedes": [
+    "max.studio.game.steam-epic.macos-arm64.rev6"
+  ],
+  "game": {
+    "canonicalId": "game_max_001",
+    "displayName": "Maximal Coverage Game",
+    "publisher": "Maximal Studio",
+    "storefronts": [
+      {
+        "kind": "steam",
+        "appId": "999999",
+        "branch": "beta"
+      },
+      {
+        "kind": "epic",
+        "appId": "epic-999999"
+      }
+    ]
+  },
+  "selectors": {
+    "gameBuild": {
+      "version": "2.3.1",
+      "manifestId": "steam-depot-manifest-11223344",
+      "requiredFiles": [
+        {
+          "path": "Game/Binaries/Win64/Game.exe",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size": 123456789,
+          "peTimestamp": 1700000000
+        }
+      ]
+    },
+    "launcherBuild": {
+      "version": "5.0.0",
+      "manifestId": "launcher-manifest-55667788",
+      "requiredFiles": [
+        {
+          "path": "Launcher.exe",
+          "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ]
+    },
+    "host": {
+      "architecture": "arm64",
+      "macos": {
+        "min": "14.4",
+        "maxExclusive": "99.0",
+        "allowedBuilds": [
+          "23E214",
+          "23F79"
+        ]
+      },
+      "gpuFamilies": [
+        "apple7",
+        "apple8",
+        "apple9",
+        "apple10"
+      ],
+      "memoryClassesGiB": [
+        16,
+        24,
+        32,
+        64
+      ]
+    }
+  },
+  "runtime": {
+    "generation": "rtg_v1_max_20260719",
+    "layers": [
+      {
+        "role": "host",
+        "digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "size": 1000
+      },
+      {
+        "role": "wine",
+        "digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "size": 2000
+      },
+      {
+        "role": "dependencies",
+        "digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "size": 3000
+      },
+      {
+        "role": "profile",
+        "digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "size": 4000
+      },
+      {
+        "role": "tooling",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "size": 5000
+      }
+    ],
+    "cpuProvider": "fex-arm64ec",
+    "defaultGraphicsProvider": "metal12",
+    "syncProvider": "wait-address",
+    "windowsVersion": "10",
+    "locale": "en-US",
+    "timezoneMode": "host"
+  },
+  "processPolicies": [
+    {
+      "id": "launcher",
+      "priority": 100,
+      "match": {
+        "pathGlob": "**/Launcher.exe",
+        "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "peMachine": "x64",
+        "productName": "Maximal Launcher",
+        "parentPolicyId": "root",
+        "commandLineRegex": "^.*--launcher$",
+        "moduleFingerprint": [
+          "launcher-core.dll"
+        ]
+      },
+      "execution": {
+        "cpuProvider": "inherit",
+        "graphicsProvider": "dxmt",
+        "syncProvider": "conservative",
+        "featureMask": "dxmt.launcher.rev1",
+        "dllOverrides": {
+          "d3d9": "native,builtin",
+          "dxgi": "builtin"
+        },
+        "environment": {
+          "ALLOY_LAUNCHER_MODE": "1"
+        },
+        "workingDirectory": "G:\\\\Game",
+        "networkPolicy": "allow",
+        "debugPolicy": "crash-only"
+      },
+      "services": {
+        "audio": "xaudio-coreaudio-v3",
+        "input": "xinput-gamecontroller-v2",
+        "media": "mf-videotoolbox-v2",
+        "presentation": "hdr-vrr-v4",
+        "storage": "default-v1"
+      }
+    },
+    {
+      "id": "game",
+      "priority": 200,
+      "match": {
+        "pathGlob": "**/Game/Binaries/Win64/Game.exe",
+        "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+      },
+      "execution": {
+        "cpuProvider": "fex-arm64ec",
+        "graphicsProvider": "metal12",
+        "syncProvider": "wait-address",
+        "featureMask": "metal12.apple9.game-max.rev7",
+        "dllOverrides": {
+          "wined3d": "disabled"
+        },
+        "environment": {
+          "ALLOY_GAME_MODE": "1"
+        },
+        "workingDirectory": "G:\\\\Game\\\\Binaries\\\\Win64",
+        "networkPolicy": "publisher-only",
+        "debugPolicy": "diagnostic"
+      },
+      "services": {
+        "audio": "xaudio-coreaudio-v3",
+        "input": "xinput-gamecontroller-v2",
+        "presentation": "hdr-vrr-v4"
+      }
+    }
+  ],
+  "filesystem": {
+    "denyHostRoot": true,
+    "caseMode": "windows-insensitive",
+    "driveMappings": [
+      {
+        "letter": "C",
+        "target": "runtime",
+        "access": "read-only"
+      },
+      {
+        "letter": "G",
+        "target": "game",
+        "access": "read-write"
+      },
+      {
+        "letter": "S",
+        "target": "saves",
+        "access": "read-write"
+      },
+      {
+        "letter": "E",
+        "target": "settings",
+        "access": "read-write"
+      },
+      {
+        "letter": "X",
+        "target": "cache",
+        "access": "read-write"
+      },
+      {
+        "letter": "T",
+        "target": "temp",
+        "access": "read-write"
+      },
+      {
+        "letter": "U",
+        "target": "user-grant",
+        "access": "read-only",
+        "grantId": "grant_001"
+      }
+    ]
+  },
+  "registry": {
+    "sets": [
+      {
+        "key": "HKCU\\\\Software\\\\Maximal",
+        "name": "Installed",
+        "type": "REG_DWORD",
+        "value": 1
+      },
+      {
+        "key": "HKCU\\\\Software\\\\Maximal",
+        "name": "Path",
+        "type": "REG_SZ",
+        "value": "C:\\\\Game"
+      }
+    ],
+    "deletes": [
+      "HKCU\\\\Software\\\\Maximal\\\\Stale"
+    ]
+  },
+  "dependencies": [
+    {
+      "id": "dep.directx-runtime",
+      "source": "bundled-licensed",
+      "installMode": "layer",
+      "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "licenseGate": "license.directx"
+    },
+    {
+      "id": "dep.anti-cheat",
+      "source": "publisher",
+      "installMode": "launcher-managed"
+    }
+  ],
+  "healthChecks": [
+    {
+      "kind": "process-started",
+      "target": "Game.exe",
+      "deadlineSeconds": 60,
+      "severity": "fatal"
+    },
+    {
+      "kind": "window-created",
+      "target": "main",
+      "deadlineSeconds": 30,
+      "severity": "degraded"
+    },
+    {
+      "kind": "module-loaded",
+      "target": "d3d12.dll",
+      "severity": "informational"
+    },
+    {
+      "kind": "frame-presented",
+      "target": "main-swapchain",
+      "deadlineSeconds": 120,
+      "severity": "fatal"
+    },
+    {
+      "kind": "log-pattern",
+      "target": "Ready.",
+      "deadlineSeconds": 90,
+      "severity": "degraded"
+    },
+    {
+      "kind": "clean-exit",
+      "severity": "degraded"
+    },
+    {
+      "kind": "save-written",
+      "target": "slot1.sav",
+      "deadlineSeconds": 300,
+      "severity": "informational"
+    },
+    {
+      "kind": "network-endpoint",
+      "target": "auth.example.invalid:443",
+      "deadlineSeconds": 30,
+      "severity": "fatal"
+    }
+  ],
+  "telemetry": {
+    "defaultLevel": "diagnostic",
+    "redactionPolicy": "standard-v3",
+    "sampling": 0.5
+  },
+  "certification": {
+    "level": "competitive-certified",
+    "testedAt": "2026-07-19T00:00:00Z",
+    "testPlanId": "tp_max_d3d12_99",
+    "matrixDigest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+    "knownLimitations": [
+      "Ray tracing disabled on Apple GPU families below the certified capability tier."
+    ],
+    "expiresAt": "2027-07-19T00:00:00Z"
+  }
+}

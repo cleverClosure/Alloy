@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.0",
+  "generationId": "rtg_v1_maximal_20260719_coverage",
+  "createdAt": "2026-07-19T00:00:00.500Z",
+  "components": [],
+  "hostRequirements": {
+    "architecture": "arm64",
+    "minimumMacOS": "14.4",
+    "metalFeatureSets": [
+      "apple8",
+      "apple9"
+    ],
+    "requiredEntitlements": [
+      "com.apple.security.cs.allow-jit"
+    ]
+  },
+  "provenance": {
+    "builderId": "builder-ci-77",
+    "sourceDigest": "src-digest-max",
+    "buildRecipeDigest": "recipe-digest-max",
+    "attestationDigest": "attestation-digest-max",
+    "reproducible": true
+  },
+  "activation": {
+    "minimumClientVersion": "1.4.0",
+    "releaseRing": "canary",
+    "rollbackGenerationId": "rtg_v1_previous_20260701",
+    "healthWindowSessions": 5
+  }
+}

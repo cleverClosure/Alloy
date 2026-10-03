@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "1.0",
+  "createdAt": "2026-07-19T00:00:00.500Z",
+  "components": [
+    {
+      "name": "wine-core",
+      "version": "9.0",
+      "digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+      "mediaType": "application/vnd.alloy.layer+zstd",
+      "size": 104857600,
+      "licenseId": "license.wine",
+      "sourceRevision": "wine-9.0-alloy-rev12",
+      "sbomDigest": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+      "symbolsDigest": "sha256:9999999999999999999999999999999999999999999999999999999999999999"
+    },
+    {
+      "name": "fex-arm64ec",
+      "version": "2026.7.1",
+      "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "mediaType": "application/vnd.alloy.layer+zstd",
+      "size": 52428800
+    }
+  ],
+  "hostRequirements": {
+    "architecture": "arm64",
+    "minimumMacOS": "14.4",
+    "metalFeatureSets": [
+      "apple8",
+      "apple9"
+    ],
+    "requiredEntitlements": [
+      "com.apple.security.cs.allow-jit"
+    ]
+  },
+  "provenance": {
+    "builderId": "builder-ci-77",
+    "sourceDigest": "src-digest-max",
+    "buildRecipeDigest": "recipe-digest-max",
+    "attestationDigest": "attestation-digest-max",
+    "reproducible": true
+  },
+  "activation": {
+    "minimumClientVersion": "1.4.0",
+    "releaseRing": "canary",
+    "rollbackGenerationId": "rtg_v1_previous_20260701",
+    "healthWindowSessions": 5
+  }
+}
