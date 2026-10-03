@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
   "profileId": "min.game.a",
-  "revision": 1,
+  "revision": 0,
   "game": {
     "canonicalId": "game_min_001",
     "displayName": "Minimal Game",
