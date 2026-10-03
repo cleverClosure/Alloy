@@ -8,11 +8,23 @@ spike_root=$(cd "$(dirname "$0")/.." && pwd)
 repo_root=$(cd "$spike_root/../.." && pwd)
 probe_root="$spike_root/policy-probe"
 probe_work="$spike_root/work/policy-probe"
-wine_build="$spike_root/work/build-2"
+# ALLOY_WINE_BUILD overrides the build tree location, same convention as the
+# rest of the repo (dxmt-install.sh, make-release.sh, the STORE-001 launchers).
+# The default stays the single-checkout layout so this is a no-op there; it
+# only matters when run-policy-proof.sh executes from a worktree, which has
+# no build-2 of its own and must be pointed at the primary checkout's.
+wine_build=${ALLOY_WINE_BUILD:-"$spike_root/work/build-2"}
 wine_binary="$wine_build/wine"
 wine_server="$wine_build/server/wineserver"
-toolchain="$repo_root/tools/toolchains/llvm-mingw-20260616-ucrt-macos-universal/bin"
-cross_cc="$toolchain/aarch64-w64-mingw32-clang"
+# Prefer PATH, same as build-corpus.sh/testcases' build.sh, and fall back to
+# the pinned single-checkout path so existing direct invocations keep working
+# unchanged. A worktree has no tools/toolchains/ of its own (gitignored), so
+# PATH is the only way this ever resolves there.
+cross_cc=$(command -v aarch64-w64-mingw32-clang || true)
+if [[ -z "$cross_cc" ]]; then
+  cross_cc="$repo_root/tools/toolchains/llvm-mingw-20260616-ucrt-macos-universal/bin/aarch64-w64-mingw32-clang"
+fi
+toolchain=$(dirname "$cross_cc")
 swift_cache=/tmp/alloy-policy-swift-cache
 clang_cache=/tmp/alloy-policy-clang-cache
 
