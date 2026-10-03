@@ -28,6 +28,9 @@ public struct HostCapabilities: Codable, Equatable, Sendable {
 
     /// Local placeholder, never a control-plane `hc_` identifier.
     public func localClassId() throws -> String {
+        guard memoryGiB >= 8, !macOSBuild.isEmpty, macOSBuild.utf8.count <= 64 else {
+            throw CompilerFailure.rejected("invalid host memory class or OS build")
+        }
         var normalized = self
         normalized.macOS = try SemanticVersion(macOS).description
         normalized.gpuFamilies = Array(Set(gpuFamilies)).sorted()

@@ -1,0 +1,171 @@
+{
+  "schemaVersion": "1.0",
+  "generationId": "rtg_v1_example_20260719",
+  "createdAt": "2026-01-01T00:00:00Z",
+  "components": [
+    {
+      "name": "layer-0",
+      "version": "1.0",
+      "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "mediaType": "application/vnd.alloy.layer+zstd",
+      "size": 0,
+      "licenseId": "MIT",
+      "sourceRevision": "fixture-only",
+      "sbomDigest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "name": "layer-1",
+      "version": "1.0",
+      "digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "mediaType": "application/vnd.alloy.layer+zstd",
+      "size": 0,
+      "licenseId": "MIT",
+      "sourceRevision": "fixture-only",
+      "sbomDigest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "name": "layer-2",
+      "version": "1.0",
+      "digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "mediaType": "application/vnd.alloy.layer+zstd",
+      "size": 0,
+      "licenseId": "MIT",
+      "sourceRevision": "fixture-only",
+      "sbomDigest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "name": "native-arm64ec",
+      "version": "1.0",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000001",
+      "mediaType": "application/vnd.alloy.fixture",
+      "size": 1,
+      "licenseId": "MIT",
+      "sourceRevision": "fixture-only",
+      "sbomDigest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "name": "fex-arm64ec",
+      "version": "1.0",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000002",
+      "mediaType": "application/vnd.alloy.fixture",
+      "size": 1,
+      "licenseId": "MIT",
+      "sourceRevision": "fixture-only",
+      "sbomDigest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "name": "moltenvk",
+      "version": "1.0",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000003",
+      "mediaType": "application/vnd.alloy.fixture",
+      "size": 1,
+      "licenseId": "MIT",
+      "sourceRevision": "fixture-only",
+      "sbomDigest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "name": "metal12",
+      "version": "1.0",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000004",
+      "mediaType": "application/vnd.alloy.fixture",
+      "size": 1,
+      "licenseId": "MIT",
+      "sourceRevision": "fixture-only",
+      "sbomDigest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "name": "dxmt",
+      "version": "1.0",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000005",
+      "mediaType": "application/vnd.alloy.fixture",
+      "size": 1,
+      "licenseId": "MIT",
+      "sourceRevision": "fixture-only",
+      "sbomDigest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "name": "conservative",
+      "version": "1.0",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000006",
+      "mediaType": "application/vnd.alloy.fixture",
+      "size": 1,
+      "licenseId": "MIT",
+      "sourceRevision": "fixture-only",
+      "sbomDigest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "name": "wait-address",
+      "version": "1.0",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000007",
+      "mediaType": "application/vnd.alloy.fixture",
+      "size": 1,
+      "licenseId": "MIT",
+      "sourceRevision": "fixture-only",
+      "sbomDigest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "name": "adaptive",
+      "version": "1.0",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000008",
+      "mediaType": "application/vnd.alloy.fixture",
+      "size": 1,
+      "licenseId": "MIT",
+      "sourceRevision": "fixture-only",
+      "sbomDigest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "name": "mf-videotoolbox-v2",
+      "version": "1.0",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000009",
+      "mediaType": "application/vnd.alloy.fixture",
+      "size": 1,
+      "licenseId": "MIT",
+      "sourceRevision": "fixture-only",
+      "sbomDigest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "name": "xaudio-coreaudio-v3",
+      "version": "1.0",
+      "digest": "sha256:000000000000000000000000000000000000000000000000000000000000000a",
+      "mediaType": "application/vnd.alloy.fixture",
+      "size": 1,
+      "licenseId": "MIT",
+      "sourceRevision": "fixture-only",
+      "sbomDigest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "name": "xinput-gamecontroller-v2",
+      "version": "1.0",
+      "digest": "sha256:000000000000000000000000000000000000000000000000000000000000000b",
+      "mediaType": "application/vnd.alloy.fixture",
+      "size": 1,
+      "licenseId": "MIT",
+      "sourceRevision": "fixture-only",
+      "sbomDigest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "name": "hdr-vrr-v4",
+      "version": "1.0",
+      "digest": "sha256:000000000000000000000000000000000000000000000000000000000000000c",
+      "mediaType": "application/vnd.alloy.fixture",
+      "size": 1,
+      "licenseId": "MIT",
+      "sourceRevision": "fixture-only",
+      "sbomDigest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    }
+  ],
+  "hostRequirements": {
+    "architecture": "arm64",
+    "minimumMacOS": "14.0"
+  },
+  "provenance": {
+    "builderId": "builder-min",
+    "sourceDigest": "src-digest-min",
+    "buildRecipeDigest": "recipe-digest-min",
+    "attestationDigest": "attestation-digest-min"
+  },
+  "activation": {
+    "releaseRing": "stable",
+    "rollbackGenerationId": "rtg_previous_fixture_0"
+  }
+}

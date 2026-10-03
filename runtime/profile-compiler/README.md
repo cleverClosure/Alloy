@@ -210,8 +210,29 @@ oracle, and a reproduction command that runs no Wine guest.
 All 49 tests in ten suites pass. Corrupting the projected provider breaks the
 external golden; hiding the environment coverage gap breaks its paired test.
 
-## Remaining milestones
+## Milestone 5: complete local launch export
 
-LaunchSpecification, certification, workarounds, and synthetic feature ceilings
-are milestone 5; full-pipeline fuzzing and final review documentation are
-milestone 6. This is currently a library without an executable target.
+`LaunchCompiler.compile` verifies the complete input tuple, selects a profile,
+validates exact certification/workaround/vendor scope, checks synthetic feature
+ceilings and local grants, resolves processes, and emits an immutable
+`LaunchSpecification` bound to its component and snapshot digests. `verifyExport`
+re-resolves the authoritative inputs and compares complete canonical bytes.
+[LAUNCH_V1.md](Specs/LAUNCH_V1.md) defines the local evidence contract and limits.
+
+The unchanged converted example and a minimal fixture both compile reproducibly
+across ten runs and order variations. All 56 tests in twelve suites pass.
+Paired negatives cover incomplete workarounds, expired/withdrawn certification,
+over-ceiling masks, unscoped competitive claims, foreign grants, unsafe root
+access, secret/injection environment keys, and unknown evidence fields. Seven
+deliberately disabled semantic checks each failed their named test before the
+restored suite passed. Competitive scope uses a separate public vendor test key.
+
+Exports always identify their test/development provenance and local host-ID
+placeholder. They are not production eligible or runtime ready: all unlowered
+process and profile fields remain explicit in the artifact.
+
+## Remaining milestone
+
+Full-pipeline structured fuzzing and the final pre-signing review checklist are
+milestone 6. The package is a library; no game, account, production signing
+identity, or executable guest is required to run the complete compiler tests.

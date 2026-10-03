@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0",
+  "profileId": "min.game.a",
+  "revision": 1,
+  "game": {
+    "canonicalId": "game_min_001",
+    "displayName": "Minimal Game",
+    "storefronts": [
+      {
+        "kind": "standalone",
+        "appId": "0"
+      }
+    ]
+  },
+  "selectors": {
+    "gameBuild": {
+      "version": "1.0.0"
+    },
+    "host": {
+      "architecture": "arm64",
+      "macos": {}
+    }
+  },
+  "runtime": {
+    "generation": "rtg_minimal_fixture_0",
+    "layers": [
+      {
+        "role": "host",
+        "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    ],
+    "cpuProvider": "native-arm64ec",
+    "defaultGraphicsProvider": "moltenvk"
+  },
+  "processPolicies": [
+    {
+      "id": "game",
+      "priority": 100,
+      "match": {
+        "pathGlob": "**/Game.exe",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "execution": {
+        "graphicsProvider": "metal12",
+        "syncProvider": "wait-address",
+        "featureMask": "fixture-mask",
+        "networkPolicy": "deny",
+        "environment": {
+          "LANG": "en_US.UTF-8"
+        }
+      }
+    }
+  ],
+  "certification": {
+    "level": "certified",
+    "testedAt": "2026-01-01T00:00:00Z",
+    "testPlanId": "tp_min",
+    "matrixDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "expiresAt": "2030-01-01T00:00:00Z"
+  },
+  "filesystem": {
+    "denyHostRoot": true
+  }
+}
