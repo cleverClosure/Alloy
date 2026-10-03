@@ -34,8 +34,9 @@ third_party/src/*), which is exactly what TASKS.md warns against. Give it:
            how --only and a red run's summary line name it.
   tier     "fast" (needs only git + Xcode) or "full" (slower, or needs a
            build this repo does not keep committed).
-  cmd      argv. Run a shell suite as ("bash", script, *args) so a missing
-           +x bit is never mistaken for a probe failure.
+  cmd      argv, or a function of the repo root returning argv. Run shell
+           suites as ("bash", script, *args) so a missing +x bit is never
+           mistaken for a probe failure.
   cwd      "." unless the suite genuinely needs another working directory
            (every suite wired so far locates its own package/repo root).
   timeout  generous, but finite — a hang must still fail the run, not hang
@@ -44,6 +45,9 @@ third_party/src/*), which is exactly what TASKS.md warns against. Give it:
            cannot run here, or None when it can. Build it from
            need_commands(...) / need_paths(...) / every(...) below rather
            than hand-rolling existence checks.
+
+  description  dependency/scope label shown by --list.
+  environment  optional function returning child environment overrides.
 
 Then bump REGISTRY_SUITE_COUNT below by the same amount. It is pinned by
 hand on purpose: a Suite(...) deleted by a bad merge or a careless refactor
@@ -94,6 +98,9 @@ Usage
 from __future__ import annotations
 
 import argparse
+from collections import Counter
+from contextlib import redirect_stdout, redirect_stderr
+import io
 import json
 import os
 import shutil
@@ -102,7 +109,7 @@ import subprocess
 import sys
 import tempfile
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable, Optional, Sequence, Union
@@ -689,6 +696,10 @@ def check_registry_count(registry: Sequence[Suite], expected: int) -> Optional[s
     silently disappearing in a merge or a refactor: nothing else here would
     ever notice fewer entries than before, because fewer suites still just
     means fewer rows that all say pass."""
+    ids = [suite.id for suite in registry]
+    duplicates = sorted(key for key, count in Counter(ids).items() if count > 1)
+    if duplicates:
+        return f"duplicate registry suite id(s): {', '.join(duplicates)}"
     if len(registry) == expected:
         return None
     return (
@@ -697,9 +708,30 @@ def check_registry_count(registry: Sequence[Suite], expected: int) -> Optional[s
     )
 
 
+def audit_results(selected: Sequence[Suite], results: Sequence[Result]) -> Optional[str]:
+    wanted = Counter(s.id for s in selected)
+    reported = Counter(r.id for r in results)
+    if wanted != reported:
+        missing = list((wanted - reported).elements())
+        extra = list((reported - wanted).elements())
+        return (f"selected {len(selected)} suite(s), reported {len(results)}; "
+                f"missing={missing}, unexpected_or_duplicate={extra}")
+    invalid = [r.id for r in results if r.verdict not in ("pass", "fail", "skip")]
+    if invalid:
+        return f"invalid verdict for suite(s): {', '.join(invalid)}"
+    return None
+
+
 def _kill_process_group(proc: "subprocess.Popen[bytes]") -> None:
+    # The suite's shell gets a chance to stop its private Wine server. A
+    # final group kill still reaps children that ignore TERM or outlive it.
     try:
-        os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+        os.killpg(proc.pid, signal.SIGTERM)
+        proc.wait(timeout=3)
+    except (ProcessLookupError, subprocess.TimeoutExpired):
+        pass
+    try:
+        os.killpg(proc.pid, signal.SIGKILL)
     except ProcessLookupError:
         pass
     try:
@@ -709,7 +741,10 @@ def _kill_process_group(proc: "subprocess.Popen[bytes]") -> None:
 
 
 def run_one(suite: Suite, repo_root: Path) -> Result:
-    reason = suite.probe(repo_root)
+    try:
+        reason = suite.probe(repo_root)
+    except Exception as exc:
+        return Result(suite.id, suite.tier, "fail", f"probe error: {type(exc).__name__}: {exc}", 0.0)
     if reason is not None:
         return Result(suite.id, suite.tier, "skip", reason, 0.0)
 
@@ -723,7 +758,7 @@ def run_one(suite: Suite, repo_root: Path) -> Result:
         if suite.environment:
             env.update(suite.environment(repo_root))
         proc = subprocess.Popen(list(suite.argv(repo_root)), cwd=str(cwd), env=env, start_new_session=True)
-    except OSError as exc:
+    except Exception as exc:
         return Result(suite.id, suite.tier, "fail", f"could not start: {exc}", time.monotonic() - start)
 
     try:
@@ -768,10 +803,13 @@ def render_table(results: Sequence[Result]) -> str:
     return "\n".join(lines)
 
 
-def write_json(results: Sequence[Result], path: str, tier: str) -> None:
+def write_json(results: Sequence[Result], path: str, tier: str, selected: Sequence[Suite]) -> None:
     payload = {
         "tier": tier,
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "selected_count": len(selected),
+        "reported_count": len(results),
+        "audit_error": audit_results(selected, results),
         "suites": [
             {
                 "id": r.id,
@@ -842,7 +880,10 @@ def run_selftest() -> int:
                 sys.executable,
                 "-c",
                 f"import os; open({str(hang_pid_file)!r}, 'w').write(str(os.getpid()))\n"
-                "import time; time.sleep(30)",
+                "import time, signal\n"
+                f"def cleanup(*_):\n open({str(root / 'cleanup.txt')!r}, 'w').write('cleaned'); raise SystemExit(0)\n"
+                "signal.signal(signal.SIGTERM, cleanup)\n"
+                "time.sleep(30)",
             ),
             cwd=".",
             timeout=1,
@@ -892,6 +933,8 @@ def run_selftest() -> int:
             except ProcessLookupError:
                 child_gone = True
         check("the timed-out child process is actually dead, not orphaned", child_gone)
+        check("timeout gives the suite's private-resource cleanup a chance to run",
+              (root / "cleanup.txt").read_text() == "cleaned")
 
         # 5. --list's count matches the registry — nothing can silently drop.
         listed = select_suites(synthetic, tier="full", only=None)
@@ -1057,6 +1100,46 @@ def run_selftest() -> int:
             check("bison 3 satisfies the bundle tool probe", need_bison3(root) is None)
         check("the shared-source substitution proof is never registered",
               not any("prove-substitution.sh" in arg for suite in REGISTRY for arg in suite.argv(root)))
+        # The final audit compares identities as well as totals: a duplicate
+        # row replacing a lost suite must fail even when both counts match.
+        pair_suites = [passing, unrunnable]
+        pair_results = [run_one(s, root) for s in pair_suites]
+        check("selected and reported suite identities match", audit_results(pair_suites, pair_results) is None)
+        check("audit detects a missing result", audit_results(pair_suites, pair_results[:1]) is not None)
+        check("audit detects a duplicate replacing a missing row at the same count",
+              audit_results(pair_suites, [pair_results[0], pair_results[0]]) is not None)
+        check("audit detects an extra result", audit_results(pair_suites, pair_results + pair_results[:1]) is not None)
+        check("audit rejects an unknown verdict", audit_results([passing], [replace(pair_results[0], verdict="unknown")]) is not None)
+        check("registry rejects duplicate suite IDs even with the correct total",
+              check_registry_count([passing, passing], 2) is not None)
+        broken_probe = replace(passing, probe=lambda _r: 1 / 0)
+        check("a broken probe still produces a named FAIL row", run_one(broken_probe, root).verdict == "fail")
+
+        # Exercise --list, execution, JSON and refusal through the real CLI.
+        # Add a suite, remove it, then prove the count in both directions.
+        extra = replace(passing, id="synthetic-added-suite")
+        for registry in (pair_suites, [*pair_suites, extra], pair_suites):
+            with patch.dict(globals(), {"REGISTRY": registry, "REGISTRY_SUITE_COUNT": len(registry), "REPO_ROOT": root}):
+                listed_out = io.StringIO()
+                with redirect_stdout(listed_out), redirect_stderr(io.StringIO()):
+                    listed_code = main(["--list"])
+                check(f"--list reports all {len(registry)} synthetic entries",
+                      listed_code == 0 and len(listed_out.getvalue().splitlines()) == len(registry))
+                json_path = root / "results.json"
+                with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                    ran_code = main(["--json", str(json_path)])
+                payload = json.loads(json_path.read_text())
+                check(f"execution and JSON report exactly {len(registry)} selected suites",
+                      ran_code == 0 and payload["selected_count"] == len(registry)
+                      and payload["reported_count"] == len(registry)
+                      and payload["audit_error"] is None
+                      and {row["id"] for row in payload["suites"]} == {suite.id for suite in registry})
+        with patch.dict(globals(), {"REGISTRY": [passing], "REGISTRY_SUITE_COUNT": 1, "REPO_ROOT": root,
+                                   "run_one": lambda _suite, _root: Result("lost-suite", "fast", "pass", None, 0)}):
+            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                code = main(["--json", str(root / "bad-results.json")])
+            payload = json.loads((root / "bad-results.json").read_text())
+            check("CLI cannot exit green after a reporting mismatch", code == 2 and payload["audit_error"] is not None)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -1115,7 +1198,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     results = []
     for suite in selected:
-        print(f"--- {suite.id} ({suite.tier}) ---")
+        print(f"--- {suite.id} ({suite.tier}) ---", flush=True)
         result = run_one(suite, REPO_ROOT)
         results.append(result)
         if result.verdict == "skip":
@@ -1124,11 +1207,15 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     print()
     print(render_table(results))
     print(summary_line(results))
+    audit_error = audit_results(selected, results)
+    print(f"selected={len(selected)} reported={len(results)}")
+    if audit_error:
+        print(f"test-all: reporting audit failed: {audit_error}", file=sys.stderr)
 
     if args.json:
-        write_json(results, args.json, args.tier)
+        write_json(results, args.json, args.tier, selected)
 
-    return exit_code(results)
+    return 2 if audit_error else exit_code(results)
 
 
 if __name__ == "__main__":
