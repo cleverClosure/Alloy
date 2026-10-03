@@ -1,5 +1,5 @@
 // swift-tools-version: 6.2
-// Author: Tim Isaev
+// Author: Timur Isaev
 
 import PackageDescription
 

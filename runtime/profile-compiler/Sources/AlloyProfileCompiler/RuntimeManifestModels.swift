@@ -1,4 +1,4 @@
-// Author: Tim Isaev
+// Author: Timur Isaev
 
 import Foundation
 

@@ -1,4 +1,4 @@
-<!-- Author: Tim Isaev -->
+<!-- Author: Timur Isaev -->
 
 # Alloy profile compiler
 
@@ -108,7 +108,7 @@ those schemas exactly.
 
 ### Why this design, concretely
 
-Three deliberate-breakage drills (CLAUDE.md's measurement discipline — a
+Five deliberate-breakage drills (CLAUDE.md's measurement discipline — a
 test does not get trusted until it is made to fail on purpose) found real
 bugs or confirmed real sensitivity during this milestone's own development,
 and are worth recording here as evidence the suites are not vacuous:
@@ -154,7 +154,11 @@ regression of this.
 ```sh
 swift build --package-path runtime/profile-compiler
 swift test --package-path runtime/profile-compiler
+tools/test-all --tier fast --only profile-compiler-swift-test
 ```
+
+The package is registered in the fast tier of `tools/test-all`, which the
+existing CI job runs on every pull request.
 
 ### What milestone 1 does not cover yet
 
@@ -165,8 +169,8 @@ actual capabilities, and build/host/process-policy selector precedence and
 conflict resolution (milestones 2–3); lowering a resolved process policy
 into WINE-001's existing policy-snapshot wire format (milestone 4); the
 `LaunchSpecification` export itself, plus certification, workaround, and
-feature-mask validation (milestone 5); and a full-pipeline fuzzer with CI
-wiring and the canonicalization/field-coverage write-up (milestone 6). None
+feature-mask validation (milestone 5); and a full-pipeline fuzzer with the
+canonicalization/field-coverage write-up (milestone 6). None
 of that — selectors, precedence, canonicalization, signing, or
 `LaunchSpecification` — exists in this milestone. This package also does not
 yet have a CLI or any executable target; it is a library only.
