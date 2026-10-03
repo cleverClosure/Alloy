@@ -1,0 +1,801 @@
+#!/usr/bin/env python3
+"""tools/test-all — one command that runs every test suite this repo has.
+
+Author: Tim Isaev
+
+Alloy grew a test for almost everything (the content store, store identity,
+the GFX harness, the board gates, the release-bundle proof, the Steam
+automation gate) and no single command that ran them. Worse, the one command
+that did run automatically — the CI "test" step — exercised a retired
+prototype instead of any of them (issue #79). This is that command, and the
+registry below is exactly what CI's fast tier gates on.
+
+Tiers
+-----
+fast  Suites that need nothing this Mac doesn't already have in git and
+      Xcode: no cross toolchain, no Wine build tree, no staged release
+      runtime. `--tier fast` runs only these, and it is what ci.yml's PR
+      gate calls on every push — it has to fit comfortably in the job's
+      15-minute budget.
+full  fast, plus suites that are slower or more adversarial (seeded stress
+      matrices today; once later milestones of #100 land, suites that need
+      a local build this Mac deliberately does not keep committed). `--tier
+      full` is "everything this machine can run" — see "What this does not
+      run" below for what that still excludes.
+
+Adding a suite
+---------------
+Append one `Suite(...)` to REGISTRY. No crawling, no globs: a "run
+everything" tool that discovers scripts will one day execute something that
+builds into a shared tree (spikes/WINE-001/work/build-2,
+third_party/src/*), which is exactly what TASKS.md warns against. Give it:
+
+  id       stable, kebab-case, never reused for a different suite — it is
+           how --only and a red run's summary line name it.
+  tier     "fast" (needs only git + Xcode) or "full" (slower, or needs a
+           build this repo does not keep committed).
+  cmd      argv. Run a shell suite as ("bash", script, *args) so a missing
+           +x bit is never mistaken for a probe failure.
+  cwd      "." unless the suite genuinely needs another working directory
+           (every suite wired so far locates its own package/repo root).
+  timeout  generous, but finite — a hang must still fail the run, not hang
+           test-all itself.
+  probe    a function returning a human-readable reason when the suite
+           cannot run here, or None when it can. Build it from
+           need_commands(...) / need_paths(...) / every(...) below rather
+           than hand-rolling existence checks.
+
+Then bump REGISTRY_SUITE_COUNT below by the same amount. It is pinned by
+hand on purpose: a Suite(...) deleted by a bad merge or a careless refactor
+would otherwise just make --list print one fewer entry and every verdict
+still green, which is the exact silent-drop this registry exists to rule
+out. Forgetting the bump is not a quiet mistake either — every run, and
+--selftest, refuses with the mismatch instead of passing.
+
+What this does NOT run, and why
+---------------------------------
+Nothing here touches third_party/src/*, spikes/*/work/, spikes/M12-*, or
+runtime/metal12: every suite is an explicit registry entry, never a
+filesystem crawl, so those shared and build-artifact trees are never at
+risk of being executed by accident.
+
+WINE-001's policy-probe/jit-store suites, CPU-001's corpus and SEH matrix,
+and LEGAL-001's bundle/substitution/codec-scan proofs are not wired here.
+Every one of them needs a local, uncommitted build — the cross toolchain,
+a Wine build tree under spikes/WINE-001/work/build-2, or a staged release
+runtime — that a fresh checkout (including hosted CI) does not have, and
+that this Mac deliberately does not keep saved inside the project so as to
+avoid a much larger and costlier automated build setup. That is a correct,
+intentional limit of this tool today, not an oversight: wiring them is
+later milestones of issue #100, each gated on its own presence probe (and,
+for anything touching build-2, a busy-check so this tool never contends
+with the other agent's live run).
+
+Usage
+-----
+  tools/test-all                  run every wired suite (tier "full")
+  tools/test-all --tier fast      run only the zero-toolchain suites
+  tools/test-all --only ID ...    run just these suite(s), by id
+  tools/test-all --list           print the selected suites and exit
+  tools/test-all --json PATH      also write a machine-readable result
+  tools/test-all --selftest       prove the engine against suites it makes
+                                   up itself; never touches the suites above
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import shutil
+import signal
+import subprocess
+import sys
+import tempfile
+import time
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Callable, Optional, Sequence
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+
+ProbeFn = Callable[[Path], Optional[str]]
+
+
+@dataclass(frozen=True)
+class Suite:
+    id: str
+    tier: str  # "fast" or "full"
+    cmd: Sequence[str]
+    cwd: str  # relative to the repo root the suite runs against; "." for that root
+    timeout: float  # seconds
+    probe: ProbeFn  # returns a skip reason, or None when the suite can run here
+
+
+@dataclass(frozen=True)
+class Result:
+    id: str
+    tier: str
+    verdict: str  # "pass" | "fail" | "skip"
+    reason: Optional[str]
+    elapsed: float
+
+
+class UnknownSuite(ValueError):
+    """Raised by select_suites when --only names an id the registry has not."""
+
+
+# ---------------------------------------------------------------------------
+# Probes — small, composable presence checks. A suite's probe is the only
+# thing standing between "this Mac cannot run that" and a false FAIL, so each
+# one names exactly what is missing rather than just failing the suite.
+# ---------------------------------------------------------------------------
+
+
+def need_commands(*names: str) -> ProbeFn:
+    """Every named command must resolve on PATH."""
+
+    def probe(_root: Path) -> Optional[str]:
+        missing = [n for n in names if shutil.which(n) is None]
+        if missing:
+            return f"missing on PATH: {', '.join(missing)}"
+        return None
+
+    return probe
+
+
+def need_paths(*relpaths: str) -> ProbeFn:
+    """Every path (relative to the suite's repo root) must exist."""
+
+    def probe(root: Path) -> Optional[str]:
+        missing = [p for p in relpaths if not (root / p).exists()]
+        if missing:
+            return f"missing path(s): {', '.join(missing)}"
+        return None
+
+    return probe
+
+
+def every(*probes: ProbeFn) -> ProbeFn:
+    """Combine probes — the first reason any of them gives wins."""
+
+    def probe(root: Path) -> Optional[str]:
+        for p in probes:
+            reason = p(root)
+            if reason:
+                return reason
+        return None
+
+    return probe
+
+
+def sh(suite_id: str, tier: str, script: str, *args: str, timeout: float, probe: ProbeFn) -> Suite:
+    """A suite whose command is a shell script, always run through bash so a
+    missing +x bit never turns into a bogus FAIL."""
+    return Suite(id=suite_id, tier=tier, cmd=("bash", script, *args), cwd=".", timeout=timeout, probe=probe)
+
+
+# ---------------------------------------------------------------------------
+# Registry — every suite this milestone wires. Times are one measurement on
+# this Mac, 2026-10-03, warm toolchain; they exist to size the timeout and the
+# fast tier's total, not as a performance claim.
+# ---------------------------------------------------------------------------
+
+REGISTRY: list[Suite] = [
+    # --- runtime/content-store (invoked, never modified) -------------------
+    # swift test, cold .build: ~16s measured.
+    Suite(
+        id="content-store-swift-test",
+        tier="fast",
+        cmd=("swift", "test", "--package-path", "runtime/content-store"),
+        cwd=".",
+        timeout=180,
+        probe=every(need_commands("swift"), need_paths("runtime/content-store/Package.swift")),
+    ),
+    # Process-death fault matrix over the built fault-probe binary: ~12s.
+    sh(
+        "content-store-fault-matrix",
+        "fast",
+        "runtime/content-store/run-fault-matrix.sh",
+        timeout=120,
+        probe=every(
+            need_commands("swift", "python3"),
+            need_paths("runtime/content-store/run-fault-matrix.sh"),
+        ),
+    ),
+    # Multi-process coordination matrix: ~6s, as fast as the matrix above.
+    sh(
+        "content-store-concurrency-matrix",
+        "fast",
+        "runtime/content-store/run-concurrency-matrix.sh",
+        timeout=90,
+        probe=every(
+            need_commands("swift", "python3"),
+            need_paths("runtime/content-store/run-concurrency-matrix.sh"),
+        ),
+    ),
+    # Seeded adversarial stress matrix: ~22s, the slowest content-store suite
+    # and the one most likely to grow (more seeds, more steps). Full tier so
+    # the fast gate's total stays small as it does; still runs on every
+    # `--tier full` / unfiltered invocation.
+    sh(
+        "content-store-stress-matrix",
+        "full",
+        "runtime/content-store/run-stress-matrix.sh",
+        timeout=150,
+        probe=every(
+            need_commands("swift", "python3"),
+            need_paths("runtime/content-store/run-stress-matrix.sh"),
+        ),
+    ),
+    # --- runtime/store-identity (invoked, never modified) -------------------
+    # swift test, cold .build: ~17s measured.
+    Suite(
+        id="store-identity-swift-test",
+        tier="fast",
+        cmd=("swift", "test", "--package-path", "runtime/store-identity"),
+        cwd=".",
+        timeout=180,
+        probe=every(need_commands("swift"), need_paths("runtime/store-identity/Package.swift")),
+    ),
+    # Gate 6: CLI + read-only fixture proof: ~7.5s.
+    sh(
+        "store-identity-cli-fixture-proof",
+        "fast",
+        "runtime/store-identity/run-cli-fixture-proof.sh",
+        timeout=90,
+        probe=every(
+            need_commands("swift", "python3"),
+            need_paths("runtime/store-identity/run-cli-fixture-proof.sh"),
+        ),
+    ),
+    # Gate 5: detector self-test and crash-convergence proof: ~3.5s.
+    sh(
+        "store-identity-fault-matrix",
+        "fast",
+        "runtime/store-identity/run-fault-matrix.sh",
+        timeout=60,
+        probe=every(need_commands("swift"), need_paths("runtime/store-identity/run-fault-matrix.sh")),
+    ),
+    # Gate 1: Swift/Python fingerprint parity proof: ~5.5s.
+    sh(
+        "store-identity-fingerprint-parity",
+        "fast",
+        "runtime/store-identity/run-fingerprint-parity.sh",
+        timeout=60,
+        probe=every(need_commands("swift"), need_paths("runtime/store-identity/run-fingerprint-parity.sh")),
+    ),
+    # Gate 2: Steam metadata parser proof: ~2s.
+    sh(
+        "store-identity-metadata-parser-proof",
+        "fast",
+        "runtime/store-identity/run-metadata-parser-proof.sh",
+        timeout=60,
+        probe=every(
+            need_commands("swift"), need_paths("runtime/store-identity/run-metadata-parser-proof.sh")
+        ),
+    ),
+    # Gate 4: selector and invalidation proof: ~2.2s.
+    sh(
+        "store-identity-selector-invalidation-proof",
+        "fast",
+        "runtime/store-identity/run-selector-invalidation-proof.sh",
+        timeout=60,
+        probe=every(
+            need_commands("swift"),
+            need_paths("runtime/store-identity/run-selector-invalidation-proof.sh"),
+        ),
+    ),
+    # Gate 3: update-watcher proof: ~2s.
+    sh(
+        "store-identity-update-watcher-proof",
+        "fast",
+        "runtime/store-identity/run-update-watcher-proof.sh",
+        timeout=60,
+        probe=every(
+            need_commands("swift"), need_paths("runtime/store-identity/run-update-watcher-proof.sh")
+        ),
+    ),
+    # --- GFX-001 (invoked, never modified) ----------------------------------
+    # Analyzer unit test: ~0.4s.
+    Suite(
+        id="gfx001-analyzer-unittest",
+        tier="fast",
+        cmd=("python3", "-B", "-m", "unittest", "spikes/GFX-001/harness/test_analyze_title_metrics.py"),
+        cwd=".",
+        timeout=30,
+        probe=every(
+            need_commands("python3"),
+            need_paths(
+                "spikes/GFX-001/harness/test_analyze_title_metrics.py",
+                "spikes/GFX-001/harness/analyze-title-metrics.py",
+            ),
+        ),
+    ),
+    # scene-bench's own parser self-test against committed fixtures: ~0.2s.
+    sh(
+        "gfx001-scene-bench-selftest",
+        "fast",
+        "spikes/GFX-001/harness/scene-bench.sh",
+        "selftest",
+        timeout=30,
+        probe=every(need_commands("jq"), need_paths("spikes/GFX-001/harness/scene-bench.sh")),
+    ),
+    # DXMT install wiring self-test (stale-install detection, rename survival): ~1s.
+    sh(
+        "gfx001-dxmt-install-selftest",
+        "fast",
+        "spikes/GFX-001/harness/dxmt-install.sh",
+        "selftest",
+        timeout=30,
+        probe=every(
+            need_commands("python3"), need_paths("spikes/GFX-001/harness/dxmt-install.sh")
+        ),
+    ),
+    # --- scripts/ and tools/ self-tests --------------------------------------
+    # Board gate refusal proofs (next-task.sh / finish-task.sh), stubbed `gh`: ~4.2s.
+    sh(
+        "gates-selftest",
+        "fast",
+        "scripts/gates-selftest.sh",
+        timeout=60,
+        probe=every(need_commands("jq"), need_paths("scripts/gates-selftest.sh")),
+    ),
+    # Board-invariant linter's own violation-class proof: ~0.06s.
+    Suite(
+        id="board-lint-selftest",
+        tier="fast",
+        cmd=("python3", "tools/board-lint.py", "--selftest"),
+        cwd=".",
+        timeout=30,
+        probe=every(need_commands("python3"), need_paths("tools/board-lint.py")),
+    ),
+    # Release-bundle "source that was built" proof: ~14.2s.
+    sh(
+        "make-release-selftest",
+        "fast",
+        "tools/release/make-release.sh",
+        "--selftest",
+        timeout=90,
+        probe=every(
+            need_commands("jq"),
+            need_paths("tools/release/make-release.sh", "tools/release/make-release-selftest.sh"),
+        ),
+    ),
+    # --- .github/workflows/ self-tests, exactly as ci.yml invokes them today -
+    # Issue-title normalization self-test: ~0.06s.
+    sh(
+        "title-format-selftest",
+        "fast",
+        ".github/workflows/title-format.sh",
+        "--selftest",
+        timeout=30,
+        probe=every(need_commands("jq"), need_paths(".github/workflows/title-format.sh")),
+    ),
+    # Task-form Area/Priority label self-test: ~0.5s.
+    sh(
+        "task-form-selftest",
+        "fast",
+        ".github/workflows/task-form.sh",
+        "--selftest",
+        timeout=30,
+        probe=every(need_commands("jq"), need_paths(".github/workflows/task-form.sh")),
+    ),
+    # Auto-merge board-field gate, decision logic only (stubbed API): ~0.06s.
+    sh(
+        "merge-gate-selftest",
+        "fast",
+        ".github/workflows/merge-gate.sh",
+        "--selftest",
+        timeout=30,
+        probe=every(need_commands("jq"), need_paths(".github/workflows/merge-gate.sh")),
+    ),
+    # Same gate, end-to-end through a stubbed `gh`: ~2.85s.
+    sh(
+        "merge-gate-e2e-selftest",
+        "fast",
+        ".github/workflows/merge-gate-selftest.sh",
+        timeout=60,
+        probe=every(need_commands("jq"), need_paths(".github/workflows/merge-gate-selftest.sh")),
+    ),
+    # --- Steam automation gate, exactly as ci.yml invokes it today ----------
+    # Read-only discovery posture gate against a synthetic library: ~1.2s.
+    sh(
+        "steam-automation-gate",
+        "fast",
+        "spikes/STORE-001/steam-readonly/steam-automation-gate.sh",
+        timeout=30,
+        probe=every(
+            need_commands("git", "python3"),
+            need_paths("spikes/STORE-001/steam-readonly/steam-automation-gate.sh"),
+        ),
+    ),
+    # The gate's own negative tests (each violation planted and required to be caught): ~5.8s.
+    sh(
+        "steam-automation-gate-selftest",
+        "fast",
+        "spikes/STORE-001/steam-readonly/gate-selftest.sh",
+        timeout=60,
+        probe=every(
+            need_commands("git", "python3"),
+            need_paths("spikes/STORE-001/steam-readonly/gate-selftest.sh"),
+        ),
+    ),
+]
+
+# Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
+# A constant computed from the list it is meant to audit could never disagree
+# with it.
+REGISTRY_SUITE_COUNT = 23
+
+
+# ---------------------------------------------------------------------------
+# Engine — used both for the real REGISTRY above and, with a throwaway
+# registry of its own, by --selftest. Nothing here is specific to any one
+# suite; that is the point.
+# ---------------------------------------------------------------------------
+
+
+def select_suites(registry: Sequence[Suite], tier: str, only: Optional[Sequence[str]]) -> list[Suite]:
+    if only:
+        unknown = set(only) - {s.id for s in registry}
+        if unknown:
+            raise UnknownSuite(f"unknown suite id(s): {', '.join(sorted(unknown))}")
+    return [
+        s
+        for s in registry
+        if (not only or s.id in only) and (tier == "full" or s.tier == "fast")
+    ]
+
+
+def check_registry_count(registry: Sequence[Suite], expected: int) -> Optional[str]:
+    """None when the registry's size matches what was pinned by hand, else a
+    reason naming the mismatch. This is the whole defense against a Suite(...)
+    silently disappearing in a merge or a refactor: nothing else here would
+    ever notice fewer entries than before, because fewer suites still just
+    means fewer rows that all say pass."""
+    if len(registry) == expected:
+        return None
+    return (
+        f"registry has {len(registry)} suite(s), REGISTRY_SUITE_COUNT says {expected} — "
+        "bump the constant next to REGISTRY when a suite is added or removed"
+    )
+
+
+def _kill_process_group(proc: "subprocess.Popen[bytes]") -> None:
+    try:
+        os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+    try:
+        proc.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        pass
+
+
+def run_one(suite: Suite, repo_root: Path) -> Result:
+    reason = suite.probe(repo_root)
+    if reason is not None:
+        return Result(suite.id, suite.tier, "skip", reason, 0.0)
+
+    cwd = repo_root if suite.cwd == "." else (repo_root / suite.cwd)
+    start = time.monotonic()
+    try:
+        # A new session (process group) so a timeout can reap the whole tree
+        # a shell suite spawned (swift build, a fixture server), not just the
+        # one shell process.
+        proc = subprocess.Popen(list(suite.cmd), cwd=str(cwd), start_new_session=True)
+    except OSError as exc:
+        return Result(suite.id, suite.tier, "fail", f"could not start: {exc}", time.monotonic() - start)
+
+    try:
+        code = proc.wait(timeout=suite.timeout)
+    except subprocess.TimeoutExpired:
+        _kill_process_group(proc)
+        elapsed = time.monotonic() - start
+        return Result(suite.id, suite.tier, "fail", f"timed out after {suite.timeout:.0f}s", elapsed)
+
+    elapsed = time.monotonic() - start
+    if code == 0:
+        return Result(suite.id, suite.tier, "pass", None, elapsed)
+    return Result(suite.id, suite.tier, "fail", f"exit {code}", elapsed)
+
+
+def exit_code(results: Sequence[Result]) -> int:
+    return 1 if any(r.verdict == "fail" for r in results) else 0
+
+
+def summary_line(results: Sequence[Result]) -> str:
+    passed = sum(1 for r in results if r.verdict == "pass")
+    failed = sum(1 for r in results if r.verdict == "fail")
+    skipped = sum(1 for r in results if r.verdict == "skip")
+    # Skips are never folded into "passed" here — a tool that cannot tell
+    # "verified fine" from "never ran" is worse than one that admits it.
+    return f"{len(results)} suite(s): {passed} passed, {failed} failed, {skipped} skipped"
+
+
+def render_table(results: Sequence[Result]) -> str:
+    if not results:
+        return "(no suites selected)"
+    id_w = max(len("SUITE"), max(len(r.id) for r in results))
+    tier_w = max(len("TIER"), max(len(r.tier) for r in results))
+    verdict_w = max(len("VERDICT"), max(len(r.verdict) for r in results))
+    header = f"{'SUITE':<{id_w}}  {'TIER':<{tier_w}}  {'VERDICT':<{verdict_w}}  ELAPSED  REASON"
+    lines = [header, "-" * len(header)]
+    for r in results:
+        lines.append(
+            f"{r.id:<{id_w}}  {r.tier:<{tier_w}}  {r.verdict.upper():<{verdict_w}}  "
+            f"{r.elapsed:6.1f}s  {r.reason or ''}"
+        )
+    return "\n".join(lines)
+
+
+def write_json(results: Sequence[Result], path: str, tier: str) -> None:
+    payload = {
+        "tier": tier,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "suites": [
+            {
+                "id": r.id,
+                "tier": r.tier,
+                "verdict": r.verdict,
+                "reason": r.reason,
+                "elapsed_seconds": round(r.elapsed, 3),
+            }
+            for r in results
+        ],
+    }
+    Path(path).write_text(json.dumps(payload, indent=2) + "\n")
+
+
+# ---------------------------------------------------------------------------
+# --selftest — proves pass, fail, skip and timeout against suites it makes up
+# itself in a temporary directory, never the REGISTRY above.
+# ---------------------------------------------------------------------------
+
+
+def run_selftest() -> int:
+    ok = True
+
+    def check(label: str, cond: bool) -> None:
+        nonlocal ok
+        print(f"{'ok' if cond else 'FAIL'}: {label}")
+        ok = ok and cond
+
+    tmp = tempfile.mkdtemp(prefix="alloy-test-all-selftest.")
+    try:
+        root = Path(tmp)
+
+        passing = Suite(
+            id="synthetic-pass",
+            tier="fast",
+            cmd=(sys.executable, "-c", "import sys; sys.exit(0)"),
+            cwd=".",
+            timeout=10,
+            probe=lambda _r: None,
+        )
+        failing = Suite(
+            id="synthetic-fail",
+            tier="fast",
+            cmd=(sys.executable, "-c", "import sys; print('deliberate failure'); sys.exit(1)"),
+            cwd=".",
+            timeout=10,
+            probe=lambda _r: None,
+        )
+        # The command points at a path that does not exist. If the skip logic
+        # were ever bypassed, this would show up as a startup FAIL rather than
+        # a silent PASS — the negative control is built into the fixture.
+        unrunnable = Suite(
+            id="synthetic-skip",
+            tier="fast",
+            cmd=(str(root / "does-not-exist"),),
+            cwd=".",
+            timeout=10,
+            probe=lambda _r: "synthetic fixture deliberately absent",
+        )
+        # Writes its own pid before sleeping, so the timeout check below can
+        # confirm the child actually died rather than inferring it from how
+        # long run_one() took to return.
+        hang_pid_file = root / "hang.pid"
+        hanging = Suite(
+            id="synthetic-hang",
+            tier="full",
+            cmd=(
+                sys.executable,
+                "-c",
+                f"import os; open({str(hang_pid_file)!r}, 'w').write(str(os.getpid()))\n"
+                "import time; time.sleep(30)",
+            ),
+            cwd=".",
+            timeout=1,
+            probe=lambda _r: None,
+        )
+        synthetic = [passing, failing, unrunnable, hanging]
+
+        # 1. A passing suite reports pass.
+        r = run_one(passing, root)
+        check("a passing suite reports pass", r.verdict == "pass")
+
+        # 2. A failing suite reports fail, is named, and the run exits non-zero.
+        pair = [run_one(passing, root), run_one(failing, root)]
+        check("a failing suite reports fail", pair[1].verdict == "fail")
+        check(
+            "the failing suite is the one named, not its neighbour",
+            {r.id for r in pair if r.verdict == "fail"} == {"synthetic-fail"},
+        )
+        check("one failing suite makes the run exit non-zero", exit_code(pair) != 0)
+
+        # 3. An unrunnable suite is SKIP with the probe's exact reason, and
+        #    alone it exits zero — a skip is not a failure.
+        r = run_one(unrunnable, root)
+        check("an unrunnable suite reports skip, not fail or pass", r.verdict == "skip")
+        check("the skip carries the probe's exact reason", r.reason == "synthetic fixture deliberately absent")
+        check("a run containing only a skip exits zero", exit_code([r]) == 0)
+
+        # 4. A hanging suite is failed by its timeout, well before it would
+        #    finish on its own — proves the kill, not just the verdict. Wall
+        #    clock alone cannot tell a real kill from a wait() that merely
+        #    gave up, so also confirm the child's pid no longer exists —
+        #    otherwise a `_kill_process_group` that drops its `os.killpg`
+        #    call and relies on the fallback wait would pass this unnoticed,
+        #    leaving an orphaned process behind on every real timeout.
+        start = time.monotonic()
+        r = run_one(hanging, root)
+        elapsed = time.monotonic() - start
+        check("a hanging suite is failed, never passed", r.verdict == "fail")
+        check("its failure names the timeout", "timed out" in (r.reason or ""))
+        check("the timeout actually killed it (ran far short of 30s)", elapsed < 10)
+        hang_pid = int(hang_pid_file.read_text()) if hang_pid_file.exists() else None
+        child_gone = hang_pid is not None
+        if hang_pid is not None:
+            try:
+                os.kill(hang_pid, 0)
+                child_gone = False  # still answers to signal 0: still alive
+            except ProcessLookupError:
+                child_gone = True
+        check("the timed-out child process is actually dead, not orphaned", child_gone)
+
+        # 5. --list's count matches the registry — nothing can silently drop.
+        listed = select_suites(synthetic, tier="full", only=None)
+        check("--list enumerates exactly the registry it was given", len(listed) == len(synthetic))
+        listed_fast = select_suites(synthetic, tier="fast", only=None)
+        check(
+            "fast tier excludes the full-only synthetic suite",
+            "synthetic-hang" not in {s.id for s in listed_fast},
+        )
+
+        # 6. --only rejects an id the registry does not have, instead of
+        #    silently running nothing.
+        try:
+            select_suites(synthetic, tier="full", only=["does-not-exist"])
+            check("--only on an unknown id is refused", False)
+        except UnknownSuite:
+            check("--only on an unknown id is refused", True)
+
+        # 7. Same check, but through main()'s own argv handling, not just
+        #    select_suites() in isolation — ci.yml never passes --only, but
+        #    an UnknownSuite swallowed in main() instead of returned as exit
+        #    2 would otherwise go untested forever. Safe to run here: the
+        #    bad id makes select_suites() raise before any real Suite's cmd
+        #    is ever started.
+        check(
+            "main() exits 2 for an unknown --only id, not a silent empty run",
+            main(["--only", "does-not-exist", "--tier", "fast"]) == 2,
+        )
+
+        # 8. The real REGISTRY's size matches what was pinned by hand in
+        #    REGISTRY_SUITE_COUNT. This is metadata, not execution — no real
+        #    suite's cmd runs — so it does not break "the real suites never
+        #    ran", and it is what actually catches a Suite(...) deleted from
+        #    REGISTRY: nothing else here ever inspects the real registry.
+        check(
+            "REGISTRY_SUITE_COUNT matches the real registry",
+            check_registry_count(REGISTRY, REGISTRY_SUITE_COUNT) is None,
+        )
+        check(
+            "check_registry_count flags a registry shorter than expected",
+            check_registry_count(synthetic, len(synthetic) + 1) is not None,
+        )
+        check(
+            "check_registry_count is silent when the count matches",
+            check_registry_count(synthetic, len(synthetic)) is None,
+        )
+
+        # 9. summary_line() and render_table() are what a human or CI actually
+        #    reads — prove them against a known mix of verdicts directly,
+        #    rather than trusting run_one()'s bookkeeping to stand in for them.
+        mixed = [
+            Result("mixed-pass", "fast", "pass", None, 1.0),
+            Result("mixed-fail", "fast", "fail", "exit 1", 2.0),
+            Result("mixed-skip", "fast", "skip", "missing on PATH: foo", 0.0),
+        ]
+        check(
+            "summary_line never folds a skip into passed",
+            summary_line(mixed) == "3 suite(s): 1 passed, 1 failed, 1 skipped",
+        )
+        table_rows = {line.split()[0]: line for line in render_table(mixed).splitlines()[2:]}
+        check("render_table marks the passing suite PASS", "PASS" in table_rows["mixed-pass"])
+        check(
+            "render_table marks the failing suite FAIL, not PASS",
+            "FAIL" in table_rows["mixed-fail"] and "PASS" not in table_rows["mixed-fail"],
+        )
+        check(
+            "render_table marks the skipped suite SKIP and carries its reason",
+            "SKIP" in table_rows["mixed-skip"] and "missing on PATH: foo" in table_rows["mixed-skip"],
+        )
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+    if ok:
+        print("TEST-ALL-SELFTEST: pass — pass/fail/skip/timeout all verified; the real suites never ran")
+    else:
+        print("TEST-ALL-SELFTEST: FAIL — the engine itself cannot be trusted; see above", file=sys.stderr)
+    return 0 if ok else 1
+
+
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+
+
+def main(argv: Optional[Sequence[str]] = None) -> int:
+    ap = argparse.ArgumentParser(
+        prog="tools/test-all",
+        description="Run every test suite this repo has, and say plainly what did not run.",
+    )
+    ap.add_argument(
+        "--tier",
+        choices=("fast", "full"),
+        default="full",
+        help="fast: zero-toolchain suites only; full: fast + everything else (default)",
+    )
+    ap.add_argument("--only", action="append", metavar="ID", help="run only this suite id (repeatable)")
+    ap.add_argument("--list", action="store_true", help="list the selected suites and exit, without running them")
+    ap.add_argument("--json", metavar="PATH", help="also write a machine-readable result to PATH")
+    ap.add_argument(
+        "--selftest",
+        action="store_true",
+        help="prove the engine against suites it makes up itself; never touches the suites above",
+    )
+    args = ap.parse_args(argv)
+
+    if args.selftest:
+        return run_selftest()
+
+    mismatch = check_registry_count(REGISTRY, REGISTRY_SUITE_COUNT)
+    if mismatch:
+        print(f"test-all: {mismatch}", file=sys.stderr)
+        return 2
+
+    try:
+        selected = select_suites(REGISTRY, args.tier, args.only)
+    except UnknownSuite as exc:
+        print(f"test-all: {exc}", file=sys.stderr)
+        return 2
+
+    if args.list:
+        for s in selected:
+            print(f"{s.id}\t{s.tier}\t{' '.join(s.cmd)}")
+        print(f"\n{len(selected)} suite(s) selected (registry has {len(REGISTRY)} total)", file=sys.stderr)
+        return 0
+
+    results = []
+    for suite in selected:
+        print(f"--- {suite.id} ({suite.tier}) ---")
+        result = run_one(suite, REPO_ROOT)
+        results.append(result)
+        if result.verdict == "skip":
+            print(f"SKIP {suite.id}: {result.reason}")
+
+    print()
+    print(render_table(results))
+    print(summary_line(results))
+
+    if args.json:
+        write_json(results, args.json, args.tier)
+
+    return exit_code(results)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

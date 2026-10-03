@@ -2,6 +2,7 @@
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import re
+import socketserver
 
 
 CHECKPOINT_QUANTUM = 64 * 1024
@@ -52,8 +53,19 @@ class TransportRequestHandler(BaseHTTPRequestHandler):
         pass
 
 
+class TransportServer(ThreadingHTTPServer):
+    def server_bind(self):
+        # HTTPServer.server_bind also resolves the bound address to a host
+        # name. On GitHub's hosted macOS runner that reverse lookup of
+        # 127.0.0.1 was measured at 35 seconds, so every matrix timed out
+        # waiting for this fixture's address while passing on any developer
+        # machine, where it takes 10 ms. Nothing here uses the name.
+        socketserver.TCPServer.server_bind(self)
+        self.server_name, self.server_port = self.server_address[:2]
+
+
 def main():
-    server = ThreadingHTTPServer(("127.0.0.1", 0), TransportRequestHandler)
+    server = TransportServer(("127.0.0.1", 0), TransportRequestHandler)
     print(f"http://127.0.0.1:{server.server_port}", flush=True)
     server.serve_forever()
 
