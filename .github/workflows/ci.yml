@@ -83,12 +83,6 @@ jobs:
       # tools/test-all's own header comment and registry, not here. This
       # self-test runs first so a broken engine cannot wave a red run through
       # as green.
-      - name: TEMPORARY - time the lookup http.server does at bind
-        run: |
-          python3 -c "import socket, time; t = time.time(); n = socket.getfqdn('127.0.0.1'); print(f'getfqdn(127.0.0.1): {time.time() - t:.2f}s -> {n}')"
-          python3 -c "import time; t = time.time(); from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler; s = ThreadingHTTPServer(('127.0.0.1', 0), BaseHTTPRequestHandler); print(f'server bind: {time.time() - t:.2f}s')"
-          command -v python3; python3 --version
-
       - name: Test-all engine self-test
         run: tools/test-all --selftest
 

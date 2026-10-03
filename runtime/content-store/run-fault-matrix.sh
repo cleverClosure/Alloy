@@ -66,11 +66,12 @@ transport_server_url_file="$PROBE_TMP/transport-server.url"
 python3 "$PACKAGE_ROOT/Tests/Fixtures/transport_range_server.py" \
   >"$transport_server_url_file" &
 TRANSPORT_SERVER_PID=$!
-# Up to 60 seconds. The first python3 launch on a cold hosted macOS runner took
-# longer than the five this used to allow, and the matrix failed there before
-# running a single case while passing on every developer machine. A fixture
-# that dies is still caught at once by the liveness check below.
-for _ in {1..6000}; do
+# Up to 10 seconds, the same bound the other two matrices use. The fixture
+# starts in milliseconds now that it no longer resolves its own host name; see
+# TransportServer.server_bind in transport_range_server.py for what made it
+# take 35 seconds on a hosted runner. A fixture that dies is caught at once by
+# the liveness check below.
+for _ in {1..1000}; do
   if [[ -s $transport_server_url_file ]]; then
     break
   fi
