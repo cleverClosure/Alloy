@@ -82,7 +82,10 @@ cp -f "$WORK/ntdll.baseline.so" "$BASE_LIB"
 say "5. substitute and ad-hoc sign, as a recipient would"
 cp -f "$WORK/ntdll.modified.so" "$RUNTIME/dlls/ntdll/ntdll.so"
 codesign --force --sign - "$RUNTIME/dlls/ntdll/ntdll.so" >/dev/null 2>&1
-codesign -dv "$RUNTIME/dlls/ntdll/ntdll.so" 2>&1 | grep -q adhoc || {
+# Captured, not piped into grep -q: grep exits at the first match, codesign
+# dies writing to the closed pipe, and pipefail reports that as "not signed".
+SIGNATURE=$(codesign -dv "$RUNTIME/dlls/ntdll/ntdll.so" 2>&1 || true)
+[[ $SIGNATURE == *adhoc* ]] || {
   echo "substituted library is not ad-hoc signed" >&2
   exit 5
 }
