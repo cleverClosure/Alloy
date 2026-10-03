@@ -95,6 +95,12 @@ jobs:
       - name: DXMT install wiring self-test
         run: bash spikes/GFX-001/harness/dxmt-install.sh selftest
 
+      # The release itself needs the lab's Wine build and cannot run here. What
+      # can run anywhere is the proof that the bundle it makes is the source
+      # that was built, on source trees whose right answer is known.
+      - name: Release bundle self-test
+        run: bash tools/release/make-release.sh --selftest
+
       - name: Test rollback prototype
         run: swift test --package-path spikes/ROLLBACK-001/prototype --parallel
 

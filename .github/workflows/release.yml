@@ -26,8 +26,10 @@ permissions:
 
 jobs:
   release:
-    # Requires: macOS 26+, Apple silicon, llvm-mingw on PATH, a configured Wine
-    # build tree, and the FEX and Wine fork checkouts under third_party/src.
+    # Requires: macOS 26+, Apple silicon, llvm-mingw and bison 3 on PATH, a
+    # configured Wine build tree (ALLOY_WINE_BUILD), the DXMT build that ships
+    # (ALLOY_DXMT_BUILD), and the Wine, FEX and DXMT fork checkouts under
+    # third_party/src.
     runs-on: [self-hosted, macos, arm64, alloy-lab]
     steps:
       - uses: actions/checkout@v4
@@ -49,18 +51,24 @@ jobs:
             "$ALLOY_WINE_BUILD" "$RUNNER_TEMP/staged-runtime"
 
       - name: Corresponding-source bundle
+        # Audited against the staged runtime, because that is what ships: the
+        # raw build still carries the codec path the step above removes. Any
+        # gap fails this step, and a release with a gap is not distributable.
+        env:
+          ALLOY_RUNTIME_ROOT: ${{ runner.temp }}/staged-runtime
         run: |
           tools/release/make-release.sh "${{ steps.ver.outputs.version }}" \
             "$RUNNER_TEMP/release" third_party/src/wine third_party/src/fex \
-            "${ALLOY_DXMT_SRC:-}"
+            "${ALLOY_DXMT_SRC:-third_party/src/dxmt}"
 
-      - name: Prove the modified-runtime path still works
+      - name: Prove the modified-runtime path from the bundle
         # LGPL-2.1 section 6: a recipient must be able to substitute their own
-        # build. Proven per release, not once.
+        # build. Proven per release, not once, and from the published bundle
+        # alone - the source is unpacked from it and configured with the
+        # arguments it records, not taken from this checkout.
         run: |
-          spikes/LEGAL-001/lgpl-substitution/prove-substitution.sh \
-            third_party/src/wine "$ALLOY_WINE_BUILD" \
-            "$ALLOY_RUNTIME_ROOT" "$ALLOY_GUEST_EXE"
+          spikes/LEGAL-001/lgpl-substitution/prove-bundle.sh \
+            "$RUNNER_TEMP/release" "$RUNNER_TEMP/staged-runtime"
 
       - uses: actions/upload-artifact@v4
         with:
