@@ -13,6 +13,9 @@
 # process PR - is not a task and merges exactly as before. Drafts never reach
 # this script; auto-merge.yml returns earlier.
 #
+# --close-linked is the other half, run after the merge: it closes the issues
+# the PR closes, because a merge made with the Actions token does not.
+#
 # The gate fails closed. If the board cannot be read at all (no token, expired
 # token, API error) the PR is held rather than waved through, because a gate
 # that disappears when its credential expires is the failure mode this task
@@ -214,6 +217,47 @@ clear_comment() {
   printf 'Hold cleared on PR #%s; removed the explanation.\n' "$NUMBER"
 }
 
+closing_refs() { # -> "owner/name number" per issue the PR closes
+  # GitHub's own resolution of the closing keyword, rather than a second regex
+  # that would drift from it. This is what scripts/finish-task.sh checks too,
+  # so the two agree by construction on Fixes/Closes/Resolves and their variants.
+  gh pr view "$NUMBER" --repo "$REPOSITORY" \
+    --json closingIssuesReferences \
+    --jq '.closingIssuesReferences[]
+          | "\(.repository.owner.login)/\(.repository.name) \(.number)"'
+}
+
+close_linked() { # after the merge: close what the merge itself leaves open
+  # A PR merged with the Actions token does not close its linked issues. Every
+  # auto-merged task PR from #64 to #93 left its issue open, while the PRs
+  # merged by hand in between closed theirs within two seconds - and #93 merged
+  # with issues:write already granted, so the permission alone is not the cause.
+  # Closing here is also what moves the card to Done.
+  local refs repo number here state failed=0
+  refs=$(closing_refs)
+  here=$(lower "$REPOSITORY")
+
+  while read -r repo number; do
+    [[ -n $number && $(lower "$repo") == "$here" ]] || continue
+    if ! state=$(gh issue view "$number" --repo "$REPOSITORY" --json state --jq .state); then
+      printf 'Could not read issue #%s.\n' "$number" >&2
+      failed=1
+    elif [[ $state == CLOSED ]]; then
+      printf 'Issue #%s is already closed.\n' "$number"
+    elif gh issue close "$number" --repo "$REPOSITORY" --reason completed \
+      --comment "Closed by #${NUMBER}, merged by auto-merge." >/dev/null; then
+      printf 'Closed issue #%s.\n' "$number"
+    else
+      printf 'Could not close issue #%s.\n' "$number" >&2
+      failed=1
+    fi
+  done <<<"$refs"
+
+  # One issue that will not close must not leave the others open, and must not
+  # pass quietly either: the PR is already merged, so a red run is the signal.
+  return "$failed"
+}
+
 # ── self-test ─────────────────────────────────────────────────────────────────
 
 run_selftest() {
@@ -307,8 +351,9 @@ main() {
     run_selftest
     return
   fi
-  if (($# > 0)); then
-    printf 'usage: %s [--selftest]\n' "$0" >&2
+  local mode=${1:-}
+  if (($# > 1)) || [[ -n $mode && $mode != --close-linked ]]; then
+    printf 'usage: %s [--selftest | --close-linked]\n' "$0" >&2
     return 2
   fi
 
@@ -320,15 +365,13 @@ main() {
     return 2
   fi
 
-  # GitHub's own resolution of the closing keyword, rather than a second regex
-  # that would drift from it. This is what actually closes the issue on merge,
-  # and it is what scripts/finish-task.sh checks, so the two agree by
-  # construction on Fixes/Closes/Resolves and their variants.
+  if [[ $mode == --close-linked ]]; then
+    close_linked
+    return
+  fi
+
   local refs
-  refs=$(gh pr view "$NUMBER" --repo "$REPOSITORY" \
-    --json closingIssuesReferences \
-    --jq '.closingIssuesReferences[]
-          | "\(.repository.owner.login)/\(.repository.name) \(.number)"')
+  refs=$(closing_refs)
 
   if [[ -z $refs ]]; then
     printf 'PR #%s closes no issue; not a task PR, board gate does not apply.\n' "$NUMBER"

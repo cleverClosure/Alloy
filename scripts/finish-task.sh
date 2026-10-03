@@ -19,11 +19,10 @@
 #
 # Why closure is reconciled rather than trusted: on 25 July 2026 two PRs merged
 # with a correct "Fixes #25" in the body and the issue stayed open both times.
-# The likely cause is that .github/workflows/auto-merge.yml grants the Actions
-# token contents:write and pull-requests:write but not issues:write, so the
-# merge cannot close the linked issue. That file is area:ci and out of scope
-# here; this script makes the end state correct either way and reports what it
-# had to fix, so the underlying bug stays visible instead of being papered over.
+# A merge made with the Actions token does not close linked issues - granting
+# issues:write did not change that (#93) - so auto-merge now closes them itself
+# after merging. This script still makes the end state correct either way and
+# reports what it had to fix, so a merge that slips past stays visible.
 set -euo pipefail
 
 OWNER="cleverClosure"
@@ -235,7 +234,7 @@ else
   else
     gh issue close "$issue" --repo "$OWNER/$REPO" --reason completed \
       --comment "Closed by #$(jq -r '.number' <<<"$pr"). The merge did not close it automatically; \`scripts/finish-task.sh\` reconciled it." >/dev/null
-    note "issue #$issue was still OPEN after merge — closed it (see the header note on auto-merge permissions)"
+    note "issue #$issue was still OPEN after merge — closed it (see the header note on auto-merge)"
   fi
 
   status_now=$(gh project item-list "$PROJECT" --owner "$OWNER" --format json --limit 200 |
