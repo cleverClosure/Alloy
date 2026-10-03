@@ -42,8 +42,14 @@ jobs:
 
       - name: Run the linter
         id: lint
+        # PROJECT_TOKEN, not GITHUB_TOKEN: the Actions token cannot see a
+        # project owned by a user account, and the API answers NOT_FOUND rather
+        # than a permission error. That is why this job failed on its first
+        # query on each of its first 71 nights. The linter only reads; the
+        # report below is still written as GITHUB_TOKEN. auto-merge.yml's
+        # header says what kind of token PROJECT_TOKEN has to be.
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PROJECT_TOKEN }}
         run: |
           set -euo pipefail
           python3 tools/board-lint.py > findings.txt 2>lint.err || {
