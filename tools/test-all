@@ -45,6 +45,13 @@ third_party/src/*), which is exactly what TASKS.md warns against. Give it:
            need_commands(...) / need_paths(...) / every(...) below rather
            than hand-rolling existence checks.
 
+Then bump REGISTRY_SUITE_COUNT below by the same amount. It is pinned by
+hand on purpose: a Suite(...) deleted by a bad merge or a careless refactor
+would otherwise just make --list print one fewer entry and every verdict
+still green, which is the exact silent-drop this registry exists to rule
+out. Forgetting the bump is not a quiet mistake either — every run, and
+--selftest, refuses with the mismatch instead of passing.
+
 What this does NOT run, and why
 ---------------------------------
 Nothing here touches third_party/src/*, spikes/*/work/, spikes/M12-*, or
@@ -416,6 +423,11 @@ REGISTRY: list[Suite] = [
     ),
 ]
 
+# Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
+# A constant computed from the list it is meant to audit could never disagree
+# with it.
+REGISTRY_SUITE_COUNT = 23
+
 
 # ---------------------------------------------------------------------------
 # Engine — used both for the real REGISTRY above and, with a throwaway
@@ -434,6 +446,20 @@ def select_suites(registry: Sequence[Suite], tier: str, only: Optional[Sequence[
         for s in registry
         if (not only or s.id in only) and (tier == "full" or s.tier == "fast")
     ]
+
+
+def check_registry_count(registry: Sequence[Suite], expected: int) -> Optional[str]:
+    """None when the registry's size matches what was pinned by hand, else a
+    reason naming the mismatch. This is the whole defense against a Suite(...)
+    silently disappearing in a merge or a refactor: nothing else here would
+    ever notice fewer entries than before, because fewer suites still just
+    means fewer rows that all say pass."""
+    if len(registry) == expected:
+        return None
+    return (
+        f"registry has {len(registry)} suite(s), REGISTRY_SUITE_COUNT says {expected} — "
+        "bump the constant next to REGISTRY when a suite is added or removed"
+    )
 
 
 def _kill_process_group(proc: "subprocess.Popen[bytes]") -> None:
@@ -567,10 +593,19 @@ def run_selftest() -> int:
             timeout=10,
             probe=lambda _r: "synthetic fixture deliberately absent",
         )
+        # Writes its own pid before sleeping, so the timeout check below can
+        # confirm the child actually died rather than inferring it from how
+        # long run_one() took to return.
+        hang_pid_file = root / "hang.pid"
         hanging = Suite(
             id="synthetic-hang",
             tier="full",
-            cmd=(sys.executable, "-c", "import time; time.sleep(30)"),
+            cmd=(
+                sys.executable,
+                "-c",
+                f"import os; open({str(hang_pid_file)!r}, 'w').write(str(os.getpid()))\n"
+                "import time; time.sleep(30)",
+            ),
             cwd=".",
             timeout=1,
             probe=lambda _r: None,
@@ -598,13 +633,27 @@ def run_selftest() -> int:
         check("a run containing only a skip exits zero", exit_code([r]) == 0)
 
         # 4. A hanging suite is failed by its timeout, well before it would
-        #    finish on its own — proves the kill, not just the verdict.
+        #    finish on its own — proves the kill, not just the verdict. Wall
+        #    clock alone cannot tell a real kill from a wait() that merely
+        #    gave up, so also confirm the child's pid no longer exists —
+        #    otherwise a `_kill_process_group` that drops its `os.killpg`
+        #    call and relies on the fallback wait would pass this unnoticed,
+        #    leaving an orphaned process behind on every real timeout.
         start = time.monotonic()
         r = run_one(hanging, root)
         elapsed = time.monotonic() - start
         check("a hanging suite is failed, never passed", r.verdict == "fail")
         check("its failure names the timeout", "timed out" in (r.reason or ""))
         check("the timeout actually killed it (ran far short of 30s)", elapsed < 10)
+        hang_pid = int(hang_pid_file.read_text()) if hang_pid_file.exists() else None
+        child_gone = hang_pid is not None
+        if hang_pid is not None:
+            try:
+                os.kill(hang_pid, 0)
+                child_gone = False  # still answers to signal 0: still alive
+            except ProcessLookupError:
+                child_gone = True
+        check("the timed-out child process is actually dead, not orphaned", child_gone)
 
         # 5. --list's count matches the registry — nothing can silently drop.
         listed = select_suites(synthetic, tier="full", only=None)
@@ -622,6 +671,58 @@ def run_selftest() -> int:
             check("--only on an unknown id is refused", False)
         except UnknownSuite:
             check("--only on an unknown id is refused", True)
+
+        # 7. Same check, but through main()'s own argv handling, not just
+        #    select_suites() in isolation — ci.yml never passes --only, but
+        #    an UnknownSuite swallowed in main() instead of returned as exit
+        #    2 would otherwise go untested forever. Safe to run here: the
+        #    bad id makes select_suites() raise before any real Suite's cmd
+        #    is ever started.
+        check(
+            "main() exits 2 for an unknown --only id, not a silent empty run",
+            main(["--only", "does-not-exist", "--tier", "fast"]) == 2,
+        )
+
+        # 8. The real REGISTRY's size matches what was pinned by hand in
+        #    REGISTRY_SUITE_COUNT. This is metadata, not execution — no real
+        #    suite's cmd runs — so it does not break "the real suites never
+        #    ran", and it is what actually catches a Suite(...) deleted from
+        #    REGISTRY: nothing else here ever inspects the real registry.
+        check(
+            "REGISTRY_SUITE_COUNT matches the real registry",
+            check_registry_count(REGISTRY, REGISTRY_SUITE_COUNT) is None,
+        )
+        check(
+            "check_registry_count flags a registry shorter than expected",
+            check_registry_count(synthetic, len(synthetic) + 1) is not None,
+        )
+        check(
+            "check_registry_count is silent when the count matches",
+            check_registry_count(synthetic, len(synthetic)) is None,
+        )
+
+        # 9. summary_line() and render_table() are what a human or CI actually
+        #    reads — prove them against a known mix of verdicts directly,
+        #    rather than trusting run_one()'s bookkeeping to stand in for them.
+        mixed = [
+            Result("mixed-pass", "fast", "pass", None, 1.0),
+            Result("mixed-fail", "fast", "fail", "exit 1", 2.0),
+            Result("mixed-skip", "fast", "skip", "missing on PATH: foo", 0.0),
+        ]
+        check(
+            "summary_line never folds a skip into passed",
+            summary_line(mixed) == "3 suite(s): 1 passed, 1 failed, 1 skipped",
+        )
+        table_rows = {line.split()[0]: line for line in render_table(mixed).splitlines()[2:]}
+        check("render_table marks the passing suite PASS", "PASS" in table_rows["mixed-pass"])
+        check(
+            "render_table marks the failing suite FAIL, not PASS",
+            "FAIL" in table_rows["mixed-fail"] and "PASS" not in table_rows["mixed-fail"],
+        )
+        check(
+            "render_table marks the skipped suite SKIP and carries its reason",
+            "SKIP" in table_rows["mixed-skip"] and "missing on PATH: foo" in table_rows["mixed-skip"],
+        )
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -660,6 +761,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     if args.selftest:
         return run_selftest()
+
+    mismatch = check_registry_count(REGISTRY, REGISTRY_SUITE_COUNT)
+    if mismatch:
+        print(f"test-all: {mismatch}", file=sys.stderr)
+        return 2
 
     try:
         selected = select_suites(REGISTRY, args.tier, args.only)
