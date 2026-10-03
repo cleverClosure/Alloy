@@ -35,17 +35,23 @@ mkdir -p "$OUT"
 # (exactly what building the x64 guest, or tools/lint.sh, asks for) a bare
 # "clang" silently compiles for this host anyway but cannot find <stdio.h> -
 # fails loud, but easy to misread as a missing SDK rather than the wrong
-# compiler. "xcrun -f clang" resolves to the toolchain's own clang binary,
-# which has the identical problem when invoked by that resolved path rather
-# than through xcrun itself. /usr/bin/clang is the stable wrapper that finds
-# its SDK regardless of PATH or working directory; verified against both
-# failure modes before relying on it (see the results doc).
+# compiler. "xcrun -f clang" does not consult PATH at all - it resolves to
+# Xcode's own clang - but invoking that resolved path directly has the same
+# problem for a different reason: going around /usr/bin/clang skips its
+# SDK-root auto-injection regardless of which binary sits at the resolved
+# path. /usr/bin/clang is the stable wrapper that finds its SDK regardless of
+# PATH or working directory; verified against both failure modes before
+# relying on it (see the results doc).
 CC=/usr/bin/clang
 
 mutate=clean
 for arg in "$@"; do
   [[ $arg == -DALLOY_CORPUS_MUTATE_* ]] && mutate=${arg#-DALLOY_CORPUS_MUTATE_}
 done
+# Lower-cased so it matches the op-table name the program itself prints
+# (e.g. mutate=PADDB -> op_tag=paddb), used below to confirm a FAIL line
+# actually names the operation this build was supposed to break.
+op_tag=$(printf '%s' "$mutate" | tr '[:upper:]' '[:lower:]')
 
 for opt in O0 O1 O2 O3; do
   echo "cc -$opt $*"
@@ -62,6 +68,33 @@ for opt in O0 O1 O2 O3; do
   rc=$?
   set -e
   printf 'run -%s: exit=%d\n' "$opt" "$rc"
+
+  # Pass/fail here must not rest on the program's own failure counter alone -
+  # a single missed g_fail_count++ among its ~50 call sites would otherwise
+  # print an explicit FAIL line and still exit 0, and nothing would notice.
+  # So exit code and the FAIL lines the program printed are checked
+  # independently of each other, and independently of that counter.
+  if [[ $mutate == clean ]]; then
+    if [[ $rc != 0 ]]; then
+      echo "clean build at -$opt exited $rc, expected 0 (no reference is supposed to be broken)" >&2
+      exit 1
+    fi
+    if grep -q '^FAIL' "$log"; then
+      echo "clean build at -$opt exited 0 but printed a FAIL line - exit code alone was not enough evidence:" >&2
+      grep '^FAIL' "$log" >&2
+      exit 1
+    fi
+  else
+    if [[ $rc == 0 ]]; then
+      echo "mutate=$mutate build at -$opt exited 0 - the corruption must be detected" >&2
+      exit 1
+    fi
+    if ! grep -qi "FAIL.*$op_tag" "$log"; then
+      echo "mutate=$mutate build at -$opt exited $rc but never printed a FAIL line naming $op_tag - a nonzero exit alone is not evidence the corruption itself was caught" >&2
+      exit 1
+    fi
+  fi
+
   if [[ -z $first ]]; then
     first=$log
   elif ! cmp -s "$first" "$log"; then

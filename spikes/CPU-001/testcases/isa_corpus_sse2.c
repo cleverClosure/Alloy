@@ -1063,12 +1063,13 @@ struct hand_vector
     v128 a, b, expected;
     const char *note;
 };
-#define HAND_VECTOR_COUNT 5
+#define HAND_VECTOR_COUNT 10
 static struct hand_vector hand_vectors[HAND_VECTOR_COUNT];
 
 static void build_hand_vectors(void)
 {
     struct hand_vector *h;
+    unsigned i;
 
     h = &hand_vectors[0];
     h->op_name = "paddb";
@@ -1124,6 +1125,70 @@ static void build_hand_vectors(void)
     h->expected.q[0] = 16; /* |5-1|+|5-2|+|5-3|+|5-4|+0+|5-6|+|5-7|+|5-8| = 4+3+2+1+0+1+2+3 */
     h->expected.q[1] = 0;  /* both halves all-zero vs all-zero */
     h->note = "sum of |5-1..8| in the low lane = 16; the all-zero high half sums to 0";
+
+    /* The five vectors below exist because a review of this corpus found that
+     * the 48 ops with no hand vector had no independent check at all: a
+     * planted bug (dropped rounding, flipped comparison, wrong shift amount,
+     * swapped operands) changed the checksum but left every other signal -
+     * exit code, failures=0, cross-opt-level agreement - green, because none
+     * of those compare against anything outside the binary itself. These five
+     * are the ones that review actually planted; they do not close the gap
+     * for the remaining ops (see the results doc). */
+
+    h = &hand_vectors[5];
+    h->op_name = "pavgb";
+    make_all(&h->a, 0x03);
+    make_all(&h->b, 0x04);
+    make_all(&h->expected, 0x04);
+    h->note = "(3 + 4 + 1) >> 1 = 4, not 3 - catches a dropped round-to-nearest";
+
+    h = &hand_vectors[6];
+    h->op_name = "pavgw";
+    memset(&h->a, 0, sizeof h->a);
+    memset(&h->b, 0, sizeof h->b);
+    memset(&h->expected, 0, sizeof h->expected);
+    for (i = 0; i < 8; i++)
+    {
+        h->a.w[i] = 3;
+        h->b.w[i] = 4;
+        h->expected.w[i] = 4; /* (3 + 4 + 1) >> 1 = 4, same rounding as pavgb */
+    }
+    h->note = "(3 + 4 + 1) >> 1 = 4, not 3 - catches a dropped round-to-nearest";
+
+    h = &hand_vectors[7];
+    h->op_name = "pcmpgtb";
+    make_all(&h->a, 0x05);
+    make_all(&h->b, 0x03);
+    make_all(&h->expected, 0xFF);
+    h->note = "5 > 3 in every lane - catches the comparison direction flipped (a<b for a>b)";
+
+    h = &hand_vectors[8];
+    h->op_name = "pmulhw";
+    memset(&h->a, 0, sizeof h->a);
+    memset(&h->b, 0, sizeof h->b);
+    memset(&h->expected, 0, sizeof h->expected);
+    for (i = 0; i < 8; i++)
+    {
+        h->a.w[i] = 0x4000; /* 16384, positive as int16_t */
+        h->b.w[i] = 0x4000;
+        /* 16384*16384 = 0x10000000; the high 16 bits (>>16) are 0x1000. A
+         * shift of 15 instead of 16 would read 0x2000 here instead. */
+        h->expected.w[i] = 0x1000;
+    }
+    h->note = "16384*16384 >> 16 = 0x1000 - catches an off-by-one shift amount";
+
+    h = &hand_vectors[9];
+    h->op_name = "psubq";
+    memset(&h->a, 0, sizeof h->a);
+    memset(&h->b, 0, sizeof h->b);
+    memset(&h->expected, 0, sizeof h->expected);
+    h->a.q[0] = 10;
+    h->a.q[1] = 20;
+    h->b.q[0] = 3;
+    h->b.q[1] = 5;
+    h->expected.q[0] = 7;  /* 10 - 3 */
+    h->expected.q[1] = 15; /* 20 - 5 */
+    h->note = "10-3=7 and 20-5=15 - catches the operands swapped (b-a instead of a-b)";
 }
 
 struct shuffle_hand_vector
