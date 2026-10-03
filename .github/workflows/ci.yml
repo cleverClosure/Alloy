@@ -79,6 +79,9 @@ jobs:
       - name: Title format self-test
         run: bash .github/workflows/title-format.sh --selftest
 
+      - name: Task form self-test
+        run: bash .github/workflows/task-form.sh --selftest
+
       # The merge gate is the one check that cannot be exercised by opening a
       # PR: workflow_run only ever runs the copy already on main, so a broken
       # gate would first be observed by it wrongly merging or wrongly holding
