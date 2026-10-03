@@ -66,6 +66,10 @@ ALLOY_DXMT_SHADER_CACHE_PATH="$cache_path" \
   ALLOY_RUN_LABEL="$pair_id-prepare" \
   "$launcher" prepare
 
+# Both runs reuse the prepared runtime. A stale DXMT install does not fail them:
+# D3D11 falls back to Wine's builtin provider and the pair measures that (#35).
+"$script_dir/dxmt-install.sh" check "$work_root/dxmt-install" "$wine_build"
+
 ALLOY_DXMT_SHADER_CACHE_PATH="$cache_path" \
   ALLOY_DXMT_METRICS_PATH="$metrics_dir/cold.tsv" \
   ALLOY_RUN_LABEL="$pair_id-cold" \

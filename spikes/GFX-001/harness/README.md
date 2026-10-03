@@ -28,6 +28,28 @@ Set `DXMT_SHADER_CACHE_PATH` to an explicit, isolated directory for comparable c
 pairs. A cold run must point to a previously absent/empty directory. Its warm partner
 must reuse that exact directory.
 
+## DXMT install wiring
+
+`winemetal.so` is not self-contained: it loads `ntdll.so`, `winemac.so` and
+`win32u.so` as siblings, so an install outside the Wine tree needs three links to
+the Wine build's own files. `dxmt-install.sh` owns them:
+
+```sh
+spikes/GFX-001/harness/dxmt-install.sh wire    # (re)create the links, then check
+spikes/GFX-001/harness/dxmt-install.sh check   # exit 1 unless bound to the Wine build
+spikes/GFX-001/harness/dxmt-install.sh selftest
+```
+
+Both take an optional install directory and Wine build; the defaults are
+`spikes/GFX-001/work/dxmt-install` and `$ALLOY_WINE_BUILD`, falling back to
+`spikes/WINE-001/work/build-2`. Links are relative, so they survive the
+repository being renamed or moved.
+
+Never make these links by hand. A dangling link does not stop a run: D3D11 falls
+back to Wine's builtin provider and reports `device creation failed: 80004005`,
+which reads as a DXMT regression. The cache-pair and soak scripts run `check`
+before every title launch that reuses a prepared runtime.
+
 ## Analysis
 
 `analyze-title-metrics.py` validates the TSV schema, stably restores timestamp
