@@ -41,8 +41,8 @@ public enum ProfileResolver {
         if matches.isEmpty {
             return ProfileResolution(outcome: stale ? .stale : .unknown, selected: nil, rejectedCandidates: rejections)
         }
-        let specificity = matches.map { specificity($0.candidate.profile, input: input) }.max()!
-        matches = matches.filter { Self.specificity($0.candidate.profile, input: input) == specificity }
+        let maximumSpecificity = matches.map { Self.specificity($0.candidate.profile, input: input) }.max()!
+        matches = matches.filter { Self.specificity($0.candidate.profile, input: input) == maximumSpecificity }
         let certification = matches.map { certificationRank($0.candidate.metadata.approvedCertification) }.max()!
         matches = matches.filter { certificationRank($0.candidate.metadata.approvedCertification) == certification }
         matches = newestWithinFamily(matches)
