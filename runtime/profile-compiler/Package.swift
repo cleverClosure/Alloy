@@ -14,9 +14,13 @@ let package = Package(
             targets: ["AlloyProfileCompiler"]
         )
     ],
+    dependencies: [
+        .package(path: "../../spikes/WINE-001/policy-probe")
+    ],
     targets: [
         .target(
-            name: "AlloyProfileCompiler"
+            name: "AlloyProfileCompiler",
+            dependencies: [.product(name: "AlloyPolicySnapshot", package: "policy-probe")]
         ),
         .testTarget(
             name: "AlloyProfileCompilerTests",
