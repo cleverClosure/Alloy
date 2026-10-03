@@ -1,5 +1,10 @@
 # Keep shaped issue titles uniform on lists, boards, and branches.
 # Author: Timur Isaev
+#
+# The Task form's Area and Priority choices are applied as labels first, in the
+# same job, because the title's domain comes from the first area label. Two
+# workflows would race, and labels added with the Actions token start no new
+# run that could catch the title up afterwards.
 
 name: Title format
 
@@ -26,6 +31,19 @@ jobs:
       # trusted code rather than content supplied by the issue author.
       - name: Check out normalizer
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # The script's awk program is tested in CI on macOS. This runner's awk is
+      # a different implementation, so it proves itself here before it is
+      # allowed to rewrite an issue.
+      - name: Task form self-test on this runner
+        run: bash .github/workflows/task-form.sh --selftest
+
+      - name: Apply the Task form's Area and Priority as labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+          REPOSITORY: ${{ github.repository }}
+        run: bash .github/workflows/task-form.sh
 
       - name: Normalize title
         env:

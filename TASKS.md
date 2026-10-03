@@ -20,7 +20,9 @@ per-agent swimlanes.
 
 ## Shaping a task
 
-Use the **Task** issue template. Every task must have, before it leaves Backlog:
+Use the **Task** issue form. It refuses an issue with an empty PM summary,
+Goal, Touches, Done when, Area or Priority, and turns the Area and Priority
+choices into the matching labels. Every task must have, before it leaves Backlog:
 
 - A title in `[<domain>-<issue#>]: <summary>` form; the Title format workflow
   normalizes legacy `DOMAIN: summary` titles and uses the first `area:*` label

@@ -1,8 +1,20 @@
 # Author: Tim Isaev
 # Task template shaped for parallel agent execution — see TASKS.md for the protocol.
+#
+# Area and Priority are dropdowns because GitHub can require a form field but
+# cannot require a label. .github/workflows/task-form.sh turns the choices into
+# the matching labels when the issue is opened and removes the two sections
+# again, so the body keeps the five headings every existing reader and tool
+# expects. Every option must be the exact name of a label that exists.
 name: Task
 description: A unit of work sized for one agent, shaped for parallel execution
 body:
+  - type: markdown
+    attributes:
+      value: >-
+        **Title:** write a plain summary. The `[<domain>-<issue#>]:` prefix is
+        added after creation, from the first Area chosen below and the issue's
+        own number.
   - type: textarea
     id: pm-summary
     attributes:
@@ -29,19 +41,20 @@ body:
     attributes:
       label: Depends on
       description: >-
-        Blocking issues, or "none". After creating the issue, ALSO set the
-        native "blocked by" relationship (issue sidebar → Relationships) —
-        the picker script reads the native relationship, not this text.
-      placeholder: "#12, #14 — or: none"
+        Blocking issues, each with the artifact this task waits for. Leave empty
+        for none. After creating the issue, ALSO set the native "blocked by"
+        relationship (issue sidebar → Relationships) — the picker script reads
+        the native relationship, not this text.
+      placeholder: "#12 — the measured baseline this task compares against"
     validations:
-      required: true
+      required: false
   - type: textarea
     id: touches
     attributes:
       label: Touches
       description: >-
-        Paths this task will modify. Must match the issue's area:* labels —
-        one label per top-level track it touches.
+        Paths this task will modify. Must match the Area chosen below — one
+        area per top-level track it touches.
       placeholder: |
         spikes/CPU-001/
         docs/research/
@@ -52,5 +65,38 @@ body:
     attributes:
       label: Done when
       description: Verifiable completion criteria.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: >-
+        One per top-level track in Touches. Each choice becomes an area label,
+        which is also the lock the task picker uses to keep two agents out of
+        the same files.
+      multiple: true
+      options:
+        - area:cpu
+        - area:gfx
+        - area:wine
+        - area:store
+        - area:rollback
+        - area:m12
+        - area:docs
+        - area:tools
+        - area:ci
+        - area:third-party
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: P0 blocks the critical path, P1 is next in line, P2 has no urgency.
+      options:
+        - priority:P0
+        - priority:P1
+        - priority:P2
     validations:
       required: true
