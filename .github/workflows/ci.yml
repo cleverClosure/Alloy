@@ -76,45 +76,18 @@ jobs:
       - name: Lint
         run: tools/lint.sh
 
-      - name: Title format self-test
-        run: bash .github/workflows/title-format.sh --selftest
+      # tools/test-all replaced the standalone self-test and suite steps that
+      # used to live here one by one (issue #100) - including the step that,
+      # until #79, tested the retired ROLLBACK-001 prototype instead of the
+      # content store that ships. What each suite is and why lives in
+      # tools/test-all's own header comment and registry, not here. This
+      # self-test runs first so a broken engine cannot wave a red run through
+      # as green.
+      - name: Test-all engine self-test
+        run: tools/test-all --selftest
 
-      - name: Task form self-test
-        run: bash .github/workflows/task-form.sh --selftest
-
-      # The merge gate is the one check that cannot be exercised by opening a
-      # PR: workflow_run only ever runs the copy already on main, so a broken
-      # gate would first be observed by it wrongly merging or wrongly holding
-      # every task PR. Both self-tests are offline and stub every API call.
-      - name: Merge gate self-test
-        run: bash .github/workflows/merge-gate.sh --selftest
-
-      - name: Merge gate end-to-end self-test
-        run: bash .github/workflows/merge-gate-selftest.sh
-
-      - name: DXMT install wiring self-test
-        run: bash spikes/GFX-001/harness/dxmt-install.sh selftest
-
-      # The release itself needs the lab's Wine build and cannot run here. What
-      # can run anywhere is the proof that the bundle it makes is the source
-      # that was built, on source trees whose right answer is known.
-      - name: Release bundle self-test
-        run: bash tools/release/make-release.sh --selftest
-
-      # The production content store, not the ROLLBACK-001 prototype it replaced:
-      # this step used to test the superseded copy while the library that ships
-      # ran no checks at all.
-      - name: Test production content store
-        run: swift test --package-path runtime/content-store
-
-      - name: Content store process-death fault matrix
-        run: runtime/content-store/run-fault-matrix.sh
-
-      # Counsel item 6: the shipped Steam posture is read-only discovery plus
-      # user-driven actions in Steam's own UI (doc 18 section 9). The gate runs
-      # against a synthetic library, so it needs no Steam install.
-      - name: Steam automation gate
-        run: spikes/STORE-001/steam-readonly/steam-automation-gate.sh
-
-      - name: Steam automation gate selftest
-        run: spikes/STORE-001/steam-readonly/gate-selftest.sh
+      # The fast tier: every wired suite that needs nothing beyond this
+      # checkout and Xcode. Prints a per-suite table, so a red run names the
+      # suite instead of just failing the job.
+      - name: Fast test suites
+        run: tools/test-all --tier fast
