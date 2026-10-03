@@ -38,6 +38,15 @@ build isa_smoke "-msse4.2 -mavx2 -mbmi -mbmi2"
 # build-isa-corpus-native.sh directly (not here), since it is a deliberately
 # broken build that must never be the one shipped as "the corpus".
 build isa_corpus_sse2 ""
+# Vector breadth (issue #104, M3). Each clean binary has a separate native
+# reference proof and deliberately corrupted build in verify-isa-vectors.py.
+build isa_corpus_sse "-msse2 -ffp-contract=off -fno-fast-math"
+build isa_corpus_sse3 "-msse3 -ffp-contract=off -fno-fast-math"
+build isa_corpus_ssse3 "-mssse3 -ffp-contract=off -fno-fast-math"
+build isa_corpus_sse41 "-msse4.1 -ffp-contract=off -fno-fast-math"
+build isa_corpus_sse42 "-msse4.2 -ffp-contract=off -fno-fast-math"
+build isa_corpus_avx "-mavx -ffp-contract=off -fno-fast-math"
+build isa_corpus_avx2 "-mavx2 -ffp-contract=off -fno-fast-math"
 build x87_fp_edge "-ffp-contract=off -fno-math-errno"
 build cpu_throughput "-ffp-contract=off"
 build cpu_scaling ""
