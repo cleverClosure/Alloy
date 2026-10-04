@@ -66,3 +66,5 @@ the current 28-commit union or the isolated macOS 27 fix against fresh upstream.
 3. On trigger-level deltas: configure + build in the worktree, run the baseline
    corpus against it, then fast-forward the real branch only after green.
 4. `git worktree remove` — the live tree and build-2 stay untouched throughout.
+
+Current Wine, FEX and DXMT replay evidence: [4 October 2026 three-fork drill](2026-10-04-14-three-fork-upstream-replay.md).

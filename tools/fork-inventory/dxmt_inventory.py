@@ -57,7 +57,7 @@ def patch_paths(content):
 def scratch_git(repo, *args, check=True):
     env = {key: value for key, value in os.environ.items() if not key.startswith('GIT_')}
     env.update(GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL='/dev/null', GIT_TERMINAL_PROMPT='0', GIT_NO_LAZY_FETCH='1', LC_ALL='C')
-    command = ['git', '-c', 'protocol.no_fetch.allow=never', '-c', 'core.hooksPath=/dev/null', '-c', 'submodule.recurse=false', '-c', 'fetch.recurseSubmodules=false', '-C', str(repo), *map(str, args)]
+    command = ['git', '-c', 'protocol.no_fetch.allow=never', '-c', 'gc.auto=0', '-c', 'maintenance.auto=false', '-c', 'core.hooksPath=/dev/null', '-c', 'submodule.recurse=false', '-c', 'fetch.recurseSubmodules=false', '-C', str(repo), *map(str, args)]
     result = subprocess.run(command, env=env, capture_output=True, timeout=90, check=False)
     require(not check or result.returncode == 0, f'scratch_git:{args[0]}:exit_{result.returncode}')
     return result
@@ -72,6 +72,14 @@ def allowed_worktree(source, target, base, allowed):
     require(common.git(source, 'cat-file', '-t', base) == 'commit', 'base:missing_commit')
     target.mkdir()
     scratch_git(target, 'init', '-q')
+    # Preserve promisor semantics for sparse replay with borrowed filtered
+    # objects. The inert remote can never fetch a missing blob implicitly.
+    for key, value in (('remote.borrowed.url', 'no_fetch://alloy-guard'),
+                       ('remote.borrowed.promisor', 'true'),
+                       ('remote.borrowed.partialclonefilter', 'blob:none'),
+                       ('protocol.no_fetch.allow', 'never'),
+                       ('gc.auto', '0'), ('maintenance.auto', 'false')):
+        scratch_git(target, 'config', key, value)
     objects = Path(common.git(source, 'rev-parse', '--git-path', 'objects'))
     if not objects.is_absolute():
         objects = (Path(source) / objects).resolve()
@@ -79,8 +87,9 @@ def allowed_worktree(source, target, base, allowed):
     shallow = Path(common.git(source, 'rev-parse', '--git-path', 'shallow'))
     if not shallow.is_absolute():
         shallow = Path(source) / shallow
-    if shallow.exists():
-        (target / '.git/shallow').write_bytes(shallow.read_bytes())
+    shallow_bytes = shallow.read_bytes() if shallow.exists() else None
+    if shallow_bytes is not None:
+        (target / '.git/shallow').write_bytes(shallow_bytes)
     # Validate mode/path metadata before checkout: no symlink, gitlink, or excluded blob.
     for path in allowed:
         metadata = common.git(source, 'ls-tree', base, '--', path)

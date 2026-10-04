@@ -1,0 +1,313 @@
+{
+  "author": "Timur Isaev",
+  "controls": {
+    "conflicting": {
+      "first_stop_unmerged_paths": [
+        "PROVENANCE-ALLOY.md"
+      ],
+      "real_commit": "60981445ceb876117a33f36c91b181adae392890",
+      "status": "conflict"
+    },
+    "unrelated": {
+      "first_stop_unmerged_paths": [],
+      "real_commit": "60981445ceb876117a33f36c91b181adae392890",
+      "status": "clean"
+    }
+  },
+  "forks": {
+    "dxmt": {
+      "combined_apply_check": {
+        "allowed_paths": [
+          "src/d3d11/d3d11_pipeline.cpp",
+          "src/d3d11/d3d11_pipeline_gs.cpp",
+          "src/d3d11/d3d11_pipeline_ts.cpp",
+          "src/d3d11/d3d11_resource_helper.cpp",
+          "src/d3d11/d3d11_shader.cpp",
+          "src/d3d11/d3d11_swapchain.cpp",
+          "src/d3d11/d3d11_title_metrics.hpp"
+        ],
+        "base": "fb4515681daefb789a4d0f403c4bdbca88f3b3de",
+        "exit_code": 0,
+        "materialized_paths": [
+          "src/d3d11/d3d11_pipeline.cpp",
+          "src/d3d11/d3d11_pipeline_gs.cpp",
+          "src/d3d11/d3d11_pipeline_ts.cpp",
+          "src/d3d11/d3d11_resource_helper.cpp",
+          "src/d3d11/d3d11_shader.cpp",
+          "src/d3d11/d3d11_swapchain.cpp"
+        ],
+        "status": "clean"
+      },
+      "patch_count": 2,
+      "upstream": {
+        "branch": "main",
+        "commit": "fb4515681daefb789a4d0f403c4bdbca88f3b3de",
+        "commit_time": "2026-10-01T12:47:39+08:00",
+        "freshness": "fresh anonymous ls-remote and filtered fetch",
+        "observed_at_utc": "2026-10-04T10:48:07Z",
+        "url": "https://github.com/3Shain/dxmt.git"
+      }
+    },
+    "fex": {
+      "branches": [
+        {
+          "first_conflicting_commit": "635922cfa7734e9869ea2ae97667e953310e5590",
+          "first_stop_unmerged_paths": [
+            "FEXCore/Source/Interface/Core/CPUBackend.cpp",
+            "Source/Windows/Common/JITGuardPage.h"
+          ],
+          "merge_base": "0589d9b872861970b9085f114a261a0885b6ccb6",
+          "original_commit_count": 6,
+          "ref": "refs/heads/alloy/spike-fex-001",
+          "replayed_commit_count": 1,
+          "status": "conflict",
+          "tip": "ce60231a44538f8566389a47ca380d0782e6646d",
+          "unattempted_commits_after_stop": 4
+        },
+        {
+          "first_conflicting_commit": "635922cfa7734e9869ea2ae97667e953310e5590",
+          "first_stop_unmerged_paths": [
+            "FEXCore/Source/Interface/Core/CPUBackend.cpp",
+            "Source/Windows/Common/JITGuardPage.h"
+          ],
+          "merge_base": "0589d9b872861970b9085f114a261a0885b6ccb6",
+          "original_commit_count": 11,
+          "ref": "refs/heads/alloy/task-12-census",
+          "replayed_commit_count": 1,
+          "status": "conflict",
+          "tip": "64261b2ea9e74ee2a70578f5151da8fc08518b7e",
+          "unattempted_commits_after_stop": 9
+        },
+        {
+          "first_conflicting_commit": "635922cfa7734e9869ea2ae97667e953310e5590",
+          "first_stop_unmerged_paths": [
+            "FEXCore/Source/Interface/Core/CPUBackend.cpp",
+            "Source/Windows/Common/JITGuardPage.h"
+          ],
+          "merge_base": "0589d9b872861970b9085f114a261a0885b6ccb6",
+          "original_commit_count": 10,
+          "ref": "refs/heads/alloy/task-20-null-call",
+          "replayed_commit_count": 1,
+          "status": "conflict",
+          "tip": "658630b3e7bc91746adc7ca84585c98cd4d4d493",
+          "unattempted_commits_after_stop": 8
+        },
+        {
+          "first_conflicting_commit": "635922cfa7734e9869ea2ae97667e953310e5590",
+          "first_stop_unmerged_paths": [
+            "FEXCore/Source/Interface/Core/CPUBackend.cpp",
+            "Source/Windows/Common/JITGuardPage.h"
+          ],
+          "merge_base": "0589d9b872861970b9085f114a261a0885b6ccb6",
+          "original_commit_count": 13,
+          "ref": "refs/heads/alloy/task-37-anomaly-telemetry",
+          "replayed_commit_count": 1,
+          "status": "conflict",
+          "tip": "77f9ae5d8307fb127cc175725fdbbebbeef10641",
+          "unattempted_commits_after_stop": 11
+        },
+        {
+          "first_conflicting_commit": "635922cfa7734e9869ea2ae97667e953310e5590",
+          "first_stop_unmerged_paths": [
+            "FEXCore/Source/Interface/Core/CPUBackend.cpp",
+            "Source/Windows/Common/JITGuardPage.h"
+          ],
+          "merge_base": "0589d9b872861970b9085f114a261a0885b6ccb6",
+          "original_commit_count": 3,
+          "ref": "refs/heads/alloy/task-6-local",
+          "replayed_commit_count": 1,
+          "status": "conflict",
+          "tip": "93cae98c140e568dc5294d8a5b715d749f2f4b2a",
+          "unattempted_commits_after_stop": 1
+        },
+        {
+          "first_conflicting_commit": "635922cfa7734e9869ea2ae97667e953310e5590",
+          "first_stop_unmerged_paths": [
+            "FEXCore/Source/Interface/Core/CPUBackend.cpp",
+            "Source/Windows/Common/JITGuardPage.h"
+          ],
+          "merge_base": "0589d9b872861970b9085f114a261a0885b6ccb6",
+          "original_commit_count": 7,
+          "ref": "refs/heads/alloy/task-7-mxcsr",
+          "replayed_commit_count": 1,
+          "status": "conflict",
+          "tip": "98d5e2dcd8c618cccdfa68e4b76134cd450d1555",
+          "unattempted_commits_after_stop": 5
+        },
+        {
+          "first_conflicting_commit": "635922cfa7734e9869ea2ae97667e953310e5590",
+          "first_stop_unmerged_paths": [
+            "FEXCore/Source/Interface/Core/CPUBackend.cpp",
+            "Source/Windows/Common/JITGuardPage.h"
+          ],
+          "merge_base": "0589d9b872861970b9085f114a261a0885b6ccb6",
+          "original_commit_count": 12,
+          "ref": "refs/heads/alloy/task-8-dispatcher-teb",
+          "replayed_commit_count": 1,
+          "status": "conflict",
+          "tip": "ad942313dca79d32133cceaaf617016821e3b952",
+          "unattempted_commits_after_stop": 10
+        }
+      ],
+      "branches_stopped_on_conflict": 7,
+      "first_stop_unmerged_path_occurrences": 14,
+      "historical_branches_not_replayed": [
+        "refs/heads/alloy/task-7-mxcsr-wip"
+      ],
+      "live_branches": 7,
+      "supplemental": [],
+      "upstream": {
+        "branch": "main",
+        "commit": "3648ee97e8354bb2e6757da8bdb00c48439a561d",
+        "commit_time": "2026-10-02T23:22:02-04:00",
+        "freshness": "fresh anonymous ls-remote and filtered fetch",
+        "observed_at_utc": "2026-10-04T10:47:58Z",
+        "url": "https://github.com/FEX-Emu/FEX.git"
+      }
+    },
+    "wine": {
+      "branches": [
+        {
+          "first_conflicting_commit": "0e693a03c13706c1837d6e543d29350d51d80c1c",
+          "first_stop_unmerged_paths": [
+            "dlls/ntdll/unix/virtual.c"
+          ],
+          "merge_base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+          "original_commit_count": 22,
+          "ref": "refs/heads/alloy/lgpl-substitution-proof",
+          "replayed_commit_count": 0,
+          "status": "conflict",
+          "tip": "8d5974ac877d19696c61dba2a2672cfa18c3ad20",
+          "unattempted_commits_after_stop": 21
+        },
+        {
+          "first_conflicting_commit": "0e693a03c13706c1837d6e543d29350d51d80c1c",
+          "first_stop_unmerged_paths": [
+            "dlls/ntdll/unix/virtual.c"
+          ],
+          "merge_base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+          "original_commit_count": 25,
+          "ref": "refs/heads/alloy/spike-wine-001",
+          "replayed_commit_count": 0,
+          "status": "conflict",
+          "tip": "420c70bdcb7615c3dc0395d162f93645f098fe56",
+          "unattempted_commits_after_stop": 24
+        },
+        {
+          "first_conflicting_commit": "0e693a03c13706c1837d6e543d29350d51d80c1c",
+          "first_stop_unmerged_paths": [
+            "dlls/ntdll/unix/virtual.c"
+          ],
+          "merge_base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+          "original_commit_count": 24,
+          "ref": "refs/heads/alloy/task-12-fault-census",
+          "replayed_commit_count": 0,
+          "status": "conflict",
+          "tip": "619c4c0e1ed7b0fb964c0b29388ff227a7dadf72",
+          "unattempted_commits_after_stop": 23
+        },
+        {
+          "first_conflicting_commit": "0e693a03c13706c1837d6e543d29350d51d80c1c",
+          "first_stop_unmerged_paths": [
+            "dlls/ntdll/unix/virtual.c"
+          ],
+          "merge_base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+          "original_commit_count": 24,
+          "ref": "refs/heads/alloy/task-34-jit-view-protect",
+          "replayed_commit_count": 0,
+          "status": "conflict",
+          "tip": "372f8e60120911d92f0bdbc223f277e1b47fa530",
+          "unattempted_commits_after_stop": 23
+        },
+        {
+          "first_conflicting_commit": "0e693a03c13706c1837d6e543d29350d51d80c1c",
+          "first_stop_unmerged_paths": [
+            "dlls/ntdll/unix/virtual.c"
+          ],
+          "merge_base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+          "original_commit_count": 24,
+          "ref": "refs/heads/alloy/task-59-ec-delayload-thunks",
+          "replayed_commit_count": 0,
+          "status": "conflict",
+          "tip": "fbbdf994ccd06598da75133c49c7268fd0d10ee4",
+          "unattempted_commits_after_stop": 23
+        },
+        {
+          "first_conflicting_commit": "0e693a03c13706c1837d6e543d29350d51d80c1c",
+          "first_stop_unmerged_paths": [
+            "dlls/ntdll/unix/virtual.c"
+          ],
+          "merge_base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+          "original_commit_count": 25,
+          "ref": "refs/heads/alloy/task-65-scaleform",
+          "replayed_commit_count": 0,
+          "status": "conflict",
+          "tip": "420c70bdcb7615c3dc0395d162f93645f098fe56",
+          "unattempted_commits_after_stop": 24
+        },
+        {
+          "first_conflicting_commit": "0e693a03c13706c1837d6e543d29350d51d80c1c",
+          "first_stop_unmerged_paths": [
+            "dlls/ntdll/unix/virtual.c"
+          ],
+          "merge_base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+          "original_commit_count": 23,
+          "ref": "refs/heads/alloy/task-8-absorb-attribution",
+          "replayed_commit_count": 0,
+          "status": "conflict",
+          "tip": "54048cbd2bf69aee8cc7be2beb14c5ab63a17842",
+          "unattempted_commits_after_stop": 22
+        }
+      ],
+      "branches_stopped_on_conflict": 7,
+      "first_stop_unmerged_path_occurrences": 7,
+      "historical_branches_not_replayed": [],
+      "live_branches": 7,
+      "supplemental": [
+        {
+          "commit": "f0937d595166631dd00eaab31fef4fb5a6f37031",
+          "parent": "420c70bdcb7615c3dc0395d162f93645f098fe56",
+          "patch_sha256": "da99584650e1c0a9fe38a31608558f0cd9980968bec63adf0b22437080b48c0f",
+          "status": "blocked-by-shared-stack-conflict"
+        }
+      ],
+      "upstream": {
+        "branch": "master",
+        "commit": "455e3509b98a6919fd4ad1def4803e08c41c03b2",
+        "commit_time": "2026-10-02T23:15:08+02:00",
+        "freshness": "fresh anonymous ls-remote and filtered fetch",
+        "observed_at_utc": "2026-10-04T10:47:30Z",
+        "url": "https://gitlab.winehq.org/wine/wine.git"
+      }
+    }
+  },
+  "input_inventory_sha256": {
+    "dxmt": "7ef94f6cd166aa1fc69749dd9541ce8152de235462f3c6e9b67217c8bbf0602c",
+    "fex": "5218d9492173b4868c25029fe58dcd241a58fca097ed2452c2b38501c1d7654f",
+    "wine": "9b2177ede6ab48248da62c2e52fdc338d8c2c3a7c32892672abb239c2075e09f"
+  },
+  "scope": "first stopping conflict per branch; not total conflicts or runtime compatibility",
+  "source_preservation": {
+    "checkouts": {
+      "dxmt": {
+        "branch": "alloy/task-11-metrics",
+        "head": "e520fea415ba4b82b0c346dae77bbb1be4897453",
+        "index_sha256": "cefb9050c95b5eeba67f696b0cd3f357b6f8b480ee59ef0a0d2443848e990d63"
+      },
+      "fex": {
+        "branch": "alloy/task-8-dispatcher-teb",
+        "head": "ad942313dca79d32133cceaaf617016821e3b952",
+        "index_sha256": "4c660d18d5ec077322eafb62a8b3d170fc0fe92578a8e0fd2c889058b06d2d0c"
+      },
+      "wine": {
+        "branch": "alloy/spike-wine-001",
+        "head": "420c70bdcb7615c3dc0395d162f93645f098fe56",
+        "index_sha256": "12c49b8566bf4a0b4ff64cd3b276ffb8d265e318c31d5ec48a1e0c694dbe6bb6"
+      }
+    },
+    "scope": "exact refs, index and non-excluded dirty bytes; excluded contents never read",
+    "snapshot_sha256": "f0a1aeb18ca4d76cc8bc05626b6c8c6e9c59321a34e48ed8594c9868662f4d9d",
+    "status": "unchanged"
+  },
+  "version": 1
+}
