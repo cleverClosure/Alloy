@@ -1,0 +1,228 @@
+diff --git a/dlls/ntdll/unix/darwin-jit-resume.h b/dlls/ntdll/unix/darwin-jit-resume.h
+new file mode 100644
+index 0000000..2a11ee7
+--- /dev/null
++++ b/dlls/ntdll/unix/darwin-jit-resume.h
+@@ -0,0 +1,116 @@
++/* Darwin JIT signal resumption. Author: Timur Isaev */
++#ifndef ALLOY_DARWIN_JIT_RESUME_H
++#define ALLOY_DARWIN_JIT_RESUME_H
++
++#if !defined(__APPLE__) || !defined(__aarch64__) || defined(__arm64e__)
++#error This bridge requires the Darwin arm64 signal context used by Wine.
++#endif
++
++#include <errno.h>
++#include <pthread.h>
++#include <signal.h>
++#include <stddef.h>
++#include <stdint.h>
++#include <sys/mman.h>
++#include <sys/ucontext.h>
++#include <unistd.h>
++
++struct alloy_jit_resume
++{
++    struct __darwin_mcontext64 context;
++    sigset_t mask;
++    int onstack;
++    volatile sig_atomic_t pending;
++    size_t mapping_size;
++    void *stack_top;
++};
++
++/* Allocate outside signal handling. Guard pages separate the context from the
++ * private stack and bound its upper end; neither interrupted stack is reused. */
++static struct alloy_jit_resume *alloy_jit_resume_create(void)
++{
++    long page = sysconf(_SC_PAGESIZE);
++    size_t stack_size, size;
++    char *mapping;
++    struct alloy_jit_resume *resume;
++
++    if (page <= 0 || (size_t)page < sizeof(*resume))
++    {
++        errno = ENOTSUP;
++        return NULL;
++    }
++    stack_size = ((size_t)SIGSTKSZ + (size_t)page - 1) & ~((size_t)page - 1);
++    size = stack_size + 3 * (size_t)page;
++    mapping = mmap(NULL, size, PROT_NONE, MAP_PRIVATE | MAP_ANON, -1, 0);
++    if (mapping == MAP_FAILED)
++        return NULL;
++    if (mprotect(mapping, (size_t)page, PROT_READ | PROT_WRITE) ||
++        mprotect(mapping + 2 * page, stack_size, PROT_READ | PROT_WRITE))
++    {
++        int error = errno;
++        munmap(mapping, size);
++        errno = error;
++        return NULL;
++    }
++    resume = (struct alloy_jit_resume *)mapping;
++    resume->mapping_size = size;
++    resume->stack_top = mapping + 2 * page + stack_size;
++    return resume;
++}
++
++static void alloy_jit_resume_destroy(struct alloy_jit_resume *resume)
++{
++    if (resume)
++        munmap(resume, resume->mapping_size);
++}
++
++/* macOS 27 can undo an execute-mode transition made inside the original fault
++ * handler. This runs after that handler's normal return. SIGUSR2 then captures
++ * executable JIT permissions, and its normal return restores the saved state.
++ * No private registers, synthetic sigreturn tokens, or register-clobbering
++ * indirect branches are needed. */
++static void alloy_jit_resume_enter(void)
++{
++    sigset_t mask;
++
++    pthread_jit_write_protect_np(1);
++    sigemptyset(&mask);
++    sigaddset(&mask, SIGUSR2);
++    if (pthread_sigmask(SIG_UNBLOCK, &mask, NULL))
++        _exit(127);
++    raise(SIGUSR2);
++    _exit(127); /* A successful context restore does not return here. */
++}
++
++/* Call with SIGUSR2 blocked (Wine's signal-handler mask already does this).
++ * The original mask, alt-stack state, every GPR, NZCV, FPCR/FPSR, and all SIMD
++ * registers are retained. The private stack also protects the guest red zone.
++ * Block asynchronous delivery throughout the bridge; unblock only SIGUSR2 once
++ * execution has been enabled, then restore the original mask in its context. */
++static int alloy_jit_resume_prepare(struct alloy_jit_resume *resume, ucontext_t *context)
++{
++    if (!resume || resume->pending)
++        return 0;
++    resume->context = *context->uc_mcontext;
++    resume->mask = context->uc_sigmask;
++    resume->onstack = context->uc_onstack;
++    resume->pending = 1;
++    sigfillset(&context->uc_sigmask);
++    context->uc_mcontext->__ss.__pc = (uintptr_t)alloy_jit_resume_enter;
++    context->uc_mcontext->__ss.__sp = (uintptr_t)resume->stack_top;
++    return 1;
++}
++
++/* First branch of Wine's SIGUSR2 handler, before its ordinary NtContinue path. */
++static int alloy_jit_resume_finish(struct alloy_jit_resume *resume, ucontext_t *context)
++{
++    if (!resume || !resume->pending)
++        return 0;
++    *context->uc_mcontext = resume->context;
++    context->uc_sigmask = resume->mask;
++    context->uc_onstack = resume->onstack;
++    resume->pending = 0;
++    return 1;
++}
++
++#endif
+diff --git a/dlls/ntdll/unix/signal_arm64.c b/dlls/ntdll/unix/signal_arm64.c
+index cd7ec16..d338936 100644
+--- a/dlls/ntdll/unix/signal_arm64.c
++++ b/dlls/ntdll/unix/signal_arm64.c
+@@ -58,6 +58,9 @@
+ #include "wine/asm.h"
+ #include "unix_private.h"
+ #include "arm64_jit_store.h"
++#ifdef __APPLE__
++# include "darwin-jit-resume.h"
++#endif
+ #include "wine/debug.h"
+ 
+ WINE_DEFAULT_DEBUG_CHANNEL(seh);
+@@ -68,6 +71,9 @@ WINE_DEFAULT_DEBUG_CHANNEL(seh);
+ struct arm64_thread_data
+ {
+     BOOL suspend_pending;
++#ifdef __APPLE__
++    struct alloy_jit_resume *jit_resume;
++#endif
+ };
+ 
+ C_ASSERT( sizeof(struct arm64_thread_data) <= sizeof(((struct teb_data *)0)->cpu_data) );
+@@ -1446,6 +1452,13 @@ static void segv_handler( int signal, siginfo_t *siginfo, void *_sigcontext )
+         static unsigned int entry_count;
+         unsigned int e = __atomic_fetch_add( &entry_count, 1, __ATOMIC_RELAXED );
+         NTSTATUS status = virtual_handle_fault( data, &rec, (void *)SP_sig(sigcontext) );
++#ifdef __APPLE__
++        if (status == STATUS_RETRY)
++        {
++            if (!data->teb || !alloy_jit_resume_prepare( arm64_thread_data( data )->jit_resume, sigcontext )) _exit(1);
++            return;
++        }
++#endif
+         if (e && !(e % 100000))
+             ERR( "segv heartbeat #%u status %08x addr %p pc %p\n",
+                  e, (int)status, (void *)rec.ExceptionInformation[1], (void *)PC_sig(sigcontext) );
+@@ -1742,6 +1755,10 @@ static void usr2_handler( int signal, siginfo_t *siginfo, void *_sigcontext )
+     struct syscall_frame *frame = get_syscall_frame( data );
+     DWORD i;
+ 
++#ifdef __APPLE__
++    if (data->teb && alloy_jit_resume_finish( arm64_thread_data( data )->jit_resume, sigcontext )) return;
++#endif
++
+     if (!is_inside_syscall( data, SP_sig(sigcontext) )) return;
+     if (!frame) return;
+ 
+@@ -1784,6 +1801,11 @@ NTSTATUS get_thread_ldt_entry( HANDLE handle, THREAD_DESCRIPTOR_INFORMATION *inf
+  */
+ NTSTATUS signal_alloc_thread( TEB *teb )
+ {
++#ifdef __APPLE__
++    struct arm64_thread_data *data = (struct arm64_thread_data *)&teb->GdiTebBatch;
++
++    if (!(data->jit_resume = alloy_jit_resume_create())) return STATUS_NO_MEMORY;
++#endif
+     return STATUS_SUCCESS;
+ }
+ 
+@@ -1793,6 +1815,12 @@ NTSTATUS signal_alloc_thread( TEB *teb )
+  */
+ void signal_free_thread( TEB *teb )
+ {
++#ifdef __APPLE__
++    struct arm64_thread_data *data = (struct arm64_thread_data *)&teb->GdiTebBatch;
++
++    alloy_jit_resume_destroy( data->jit_resume );
++    data->jit_resume = NULL;
++#endif
+ }
+ 
+ 
+@@ -1804,7 +1832,11 @@ void signal_init_process( TEB *teb )
+     struct sigaction sig_act;
+ 
+     alloc_syscall_frame( sizeof(struct syscall_frame) );
+-    signal_alloc_thread( teb );
++    if (signal_alloc_thread( teb ))
++    {
++        ERR( "could not allocate signal context\n" );
++        exit(1);
++    }
+ 
+     sig_act.sa_mask = server_block_set;
+     sig_act.sa_flags = SA_SIGINFO | SA_RESTART | SA_ONSTACK;
+diff --git a/dlls/ntdll/unix/virtual.c b/dlls/ntdll/unix/virtual.c
+index 1ea7ded..6e916cc 100644
+--- a/dlls/ntdll/unix/virtual.c
++++ b/dlls/ntdll/unix/virtual.c
+@@ -4987,10 +4987,11 @@ NTSTATUS virtual_handle_fault( struct thread_data *data, EXCEPTION_RECORD *rec,
+             ret = STATUS_SUCCESS;
+             goto done;
+         }
+-        if (err == EXCEPTION_EXECUTE_FAULT)
++        if (err == EXCEPTION_EXECUTE_FAULT && (vprot & VPROT_EXEC))
+         {
+-            pthread_jit_write_protect_np( 1 );
+-            ret = STATUS_SUCCESS;
++            /* The ARM64 signal handler must finish this transition outside
++             * the faulting signal context before restoring the registers. */
++            ret = STATUS_RETRY;
+             goto done;
+         }
+     }

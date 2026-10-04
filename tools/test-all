@@ -74,9 +74,10 @@ Missing tools, exact build artifacts or headers produce SKIP with a reason.
 Wine guest suites also skip when ps shows the selected build tree is busy.
 A ps failure is a skip, never permission to run concurrently.
 
-Full-tier x64 execution currently fails on this Mac's macOS 27 runtime
-(issue #111); that is a runtime failure, not a passing or skipped test.
-Native and ARM64-only suites remain useful while it is investigated.
+Issue #111's macOS 27 signal-resume fix is tested in a separate Wine build;
+select it with ALLOY_WINE_BUILD. The shared build is not replaced by that
+repair. Its old x64 fault loop remains a failure, never a passing or skipped
+test. The native JIT signal suite exercises the installable repair patch.
 This tool reports existing tests, not performance certification.
 
 LEGAL-001 bundle/codec proofs are full-tier, expected-SKIP-by-default entries.
@@ -361,6 +362,12 @@ def need_bison3(_root: Path) -> Optional[str]:
         return f"cannot verify bison 3 for the bundle proof: {exc}"
 
 
+def need_jit_signal_host(_root: Path) -> Optional[str]:
+    if platform.system() != "Darwin" or platform.machine() != "arm64":
+        return "Darwin JIT signal proof requires an arm64 macOS host"
+    return None
+
+
 def sh(suite_id: str, tier: str, script: str, *args: str, timeout: float, probe: ProbeFn) -> Suite:
     """A suite whose command is a shell script, always run through bash so a
     missing +x bit never turns into a bogus FAIL."""
@@ -426,6 +433,18 @@ REGISTRY: list[Suite] = [
                     need_wine_source),
         description="build-dependent: reads the shipped Wine decoder header; native test",
         environment=wine_environment,
+    ),
+    Suite(
+        id="wine-jit-signal-native", tier="full",
+        cmd=("python3", "spikes/WINE-001/jit-signal/run-native.py"),
+        cwd=".", timeout=180,
+        probe=every(need_jit_signal_host, need_commands("python3"),
+                    need_paths("/usr/bin/clang", "spikes/WINE-001/jit-signal/run-native.py",
+                               "spikes/WINE-001/jit-signal/wine.patch",
+                               "spikes/WINE-001/jit-signal/darwin-jit-resume.h",
+                               "spikes/WINE-001/jit-signal/signal-probe.c",
+                               "spikes/WINE-001/jit-signal/register-probe.S")),
+        description="native Darwin JIT resume, register/mask/stack preservation, threads and corruption controls; no Wine guest",
     ),
     Suite(
         id="cpu-corpus-build", tier="full",
@@ -733,7 +752,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 35
+REGISTRY_SUITE_COUNT = 36
 
 
 # ---------------------------------------------------------------------------
