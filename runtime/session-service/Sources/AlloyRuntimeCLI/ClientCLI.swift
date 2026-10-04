@@ -10,6 +10,7 @@ import Foundation
             let configuration = try ServiceConfiguration.read(CommandLine.arguments[1])
             let client = RuntimeClient(configuration: configuration)
             let method = CommandLine.arguments[2]
+            if try TypedCommands.run(method, client: client) { return }
             let response: RuntimeResponse
             if method == "raw" {
                 let bytes = FileHandle.standardInput.readData(ofLength: RuntimeLimits.messageBytes + 1)

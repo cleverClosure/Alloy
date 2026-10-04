@@ -151,6 +151,10 @@ The service binds compilation to the actual host and a validated active content
 reference, and retains the compiler's complete `notYetLowered` report. It requires
 both `runtimeReady` and `productionEligible` to remain false.
 
+The actual host must satisfy the existing compiler's >=8 GiB memory minimum;
+an ineligible host receives a refusal. Reported host capabilities are never
+inflated for a virtual machine or test runner.
+
 A preview lasts 1–120 seconds. Its owner-only durable record preserves the input,
 compilation time, host, generation reference, full specification and canonical
 export. Verification recompiles at that frozen time, compares the full export,

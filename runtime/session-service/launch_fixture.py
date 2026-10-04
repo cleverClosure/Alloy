@@ -16,7 +16,7 @@ def digest(value):
     return "sha256:" + hashlib.sha256(canonical(value)).hexdigest()
 
 
-def launch_input(fixture, layer_digest, layer_size, lifetime=120):
+def launch_input(fixture, layer_digest, layer_size, lifetime=120, discovered=None):
     source = PACKAGE.parent / "profile-compiler/Tests/Fixtures/Launch"
     profile = json.loads((source / "profile.json").read_text())
     profile["game"]["canonicalId"] = "fixture"
@@ -28,9 +28,17 @@ def launch_input(fixture, layer_digest, layer_size, lifetime=120):
     manifest["components"][0]["digest"] = layer_digest
     manifest["components"][0]["size"] = layer_size
     manifest["activation"] = {"releaseRing": "development"}
+    build = {"id": "service-fixture-build", "version": "1.0.0", "files": []}
+    if discovered is not None:
+        fingerprint = discovered["fingerprint"]
+        profile["game"]["canonicalId"] = "steam-" + fingerprint["appid"]
+        profile["game"]["storefronts"] = [{"kind": "steam", "appId": fingerprint["appid"]}]
+        profile["selectors"]["gameBuild"] = {"manifestId": fingerprint["buildid"]}
+        build = {"id": "steam:" + fingerprint["appid"] + ":" + fingerprint["buildid"] + ":"
+                 + fingerprint["aggregate_sha256"], "manifestId": fingerprint["buildid"],
+                 "files": fingerprint["files"]}
     metadata = {"profileDigest": digest(profile), "releaseRing": "development", "approvedCertification": "experimental",
                 "gameAliases": [], "launcherAliases": [], "deniedMacOSBuilds": [], "requiredFeatures": []}
-    build = {"id": "service-fixture-build", "version": "1.0.0", "files": []}
     host = fixture.request("host.info")
     for key in ("gpuFamilies", "features", "entitlements"):
         host[key] = sorted(set(host[key]))
