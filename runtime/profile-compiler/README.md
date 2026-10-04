@@ -3,7 +3,7 @@
 # Alloy profile compiler
 
 `AlloyProfileCompiler` is EPIC-004 (issue #101): the standalone package that
-will turn a signed game profile, a runtime manifest, this exact Mac, and the
+turns a signed game profile, a runtime manifest, this exact Mac, and the
 exact game build into one reproducible `LaunchSpecification`. It is a
 small, self-contained program — no game, no account, and no signing identity
 required to run its tests.
@@ -173,7 +173,7 @@ manifest selectors match versions, exact OS builds, GPU families, memory,
 features, and entitlements. The normalized SHA-256 identity is explicitly
 `local-unregistered:…`, never a control-plane host-class identifier.
 
-The suite now has 38 tests in seven suites, including a ten-run canonical
+Milestone 2 added six tests (38 total in seven suites), including a ten-run canonical
 byte golden, 24 published numeric vectors, 10,000 independent ECMAScript
 number comparisons, signature/expiry/unsigned controls, and real-host
 positive and impossible-host negative selectors. Fixtures use only the
@@ -231,8 +231,23 @@ Exports always identify their test/development provenance and local host-ID
 placeholder. They are not production eligible or runtime ready: all unlowered
 process and profile fields remain explicit in the artifact.
 
-## Remaining milestone
+## Milestone 6: full-pipeline fuzzing and completion
 
-Full-pipeline structured fuzzing and the final pre-signing review checklist are
-milestone 6. The package is a library; no game, account, production signing
-identity, or executable guest is required to run the complete compiler tests.
+The complete compiler suite now has **57 tests in 13 suites**, including a
+512-iteration structured fuzzer over the profile + manifest + build + host +
+evidence tuple. The fixed seed is `0x101600DCAFE`. Each iteration accepts a
+coherent clean tuple and rejects a paired invalid tuple; all 14 mutation
+categories have seeded controls before the run is trusted. The audit also
+checks output identities and component digests against the input documents.
+
+The completed run reports 512 valid compiles, 512 rejections, zero crashes,
+and zero false accepts. Full launch-output digests are pinned for both valid
+fixtures and checked across ten separate processes. These regression goldens
+complement the independent Wine snapshot and ECMAScript number oracles.
+
+[PIPELINE_VERIFICATION.md](Specs/PIPELINE_VERIFICATION.md) records commands,
+controls, CI evidence, limits, and the applicable doc 05 pre-signing checklist.
+The package remains a library with no external dependencies and no executable
+guest requirement. Its one local package dependency is WINE-001's existing
+snapshot library, used read-only. No production signing identity or account is
+needed; the committed test keys are intentionally public fixtures.

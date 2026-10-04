@@ -10,6 +10,11 @@ struct LaunchCompilerTests {
     func stableBytesAndExportReresolution(_ name: String) throws {
         let input = try launchFixture(name)
         let golden = try LaunchCompiler.compile(input)
+        let expectedDigests = try JSONDecoder().decode(
+            [String: String].self, from: extraFixture("Launch/golden-digests.json")
+        )
+        #expect(CanonicalJSON.digest(golden.canonicalJSON) == expectedDigests[name])
+        try auditAgainstInputs(golden, input: input)
         #expect(golden.specification.hostClassId.hasPrefix("local-unregistered:"))
         #expect(!golden.specification.productionEligible)
         #expect(!golden.specification.runtimeReady)

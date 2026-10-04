@@ -3,7 +3,7 @@
 import Foundation
 
 public enum LaunchCompiler {
-    public static let version = "0.5.0"
+    public static let version = "0.6.0"
 
     public static func compile(_ input: LaunchCompilationInput) throws -> CompiledLaunch {
         guard (1...256).contains(input.candidates.count), (1...4095).contains(input.processes.count) else {
