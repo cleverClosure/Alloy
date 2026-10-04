@@ -15,7 +15,11 @@ import Foundation
                 let bytes = FileHandle.standardInput.readData(ofLength: RuntimeLimits.messageBytes + 1)
                 response = try JSONDecoder().decode(RuntimeResponse.self, from: client.exchange(bytes))
             } else {
-                response = try client.call(method)
+                let payload: Data
+                if CommandLine.arguments.count == 4, CommandLine.arguments[3] == "--stdin" {
+                    payload = FileHandle.standardInput.readData(ofLength: RuntimeLimits.messageBytes + 1)
+                } else { payload = Data("{}".utf8) }
+                response = try client.call(method, payload: payload)
             }
             let payload = try JSONSerialization.jsonObject(with: response.payload)
             let output: [String: Any] = ["requestID": response.requestID, "code": response.status.code.rawValue,

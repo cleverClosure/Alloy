@@ -37,7 +37,7 @@ def build():
 
 
 class ServiceFixture:
-    def __init__(self, binaries):
+    def __init__(self, binaries, libraries=(), fault=None):
         self.binaries = binaries
         self.temporary = tempfile.TemporaryDirectory(prefix="alloy-runtime-")
         self.root = Path(self.temporary.name).resolve()
@@ -50,7 +50,9 @@ class ServiceFixture:
             (self.root / name).mkdir(mode=0o700)
         self.configuration = {"serviceName": self.name, "credential": secrets.token_hex(32),
                               "stateRoot": str(self.root / "state"),
-                              "contentRoot": str(self.root / "content")}
+                              "contentRoot": str(self.root / "content"),
+                              "libraryRoots": [str(p) for p in libraries],
+                              "fixtureMode": True, "testFault": fault}
         self.endpoint = self.root / "endpoint.json"
         self.endpoint.write_text(json.dumps(self.configuration))
         self.endpoint.chmod(0o600)
@@ -58,7 +60,7 @@ class ServiceFixture:
         self.plist.write_bytes(plistlib.dumps({
             "Label": self.name,
             "ProgramArguments": [str(binaries / "alloy-runtime-service"), str(self.endpoint)],
-            "MachServices": {self.name: True}, "RunAtLoad": True,
+            "MachServices": {self.name: True}, "RunAtLoad": True, "ThrottleInterval": 1,
             "EnvironmentVariables": {"PATH": "/usr/bin:/bin:/usr/sbin:/sbin"},
             "StandardOutPath": str(self.root / "stdout.log"),
             "StandardErrorPath": str(self.root / "stderr.log"),
@@ -89,10 +91,27 @@ class ServiceFixture:
 
     def call(self, method, payload=None, check=True):
         command = [self.binaries / "alloy-runtime-client", self.endpoint, method]
+        if method != "raw" and payload is not None:
+            command.append("--stdin")
         result = run(command, input=payload, timeout=15)
         if check and result.returncode:
             raise RuntimeError(f"client {method} failed: {result.stdout} {result.stderr}")
         return result
+
+    def request(self, method, payload=None, code="OK"):
+        result = self.call(method, json.dumps(payload) if payload is not None else None, check=False)
+        if result.returncode not in (0, 2):
+            raise RuntimeError("client transport failure: " + result.stderr)
+        response = json.loads(result.stdout)
+        if response["code"] != code:
+            raise RuntimeError(f"{method}: wanted {code}, got {response['code']}")
+        return response["payload"]
+
+    def restart(self):
+        result = run(["launchctl", "kickstart", "-k", self.target])
+        if result.returncode:
+            raise RuntimeError("private service restart: " + result.stderr)
+        return self.wait_ready()
 
     def __exit__(self, *_):
         if self.loaded:
