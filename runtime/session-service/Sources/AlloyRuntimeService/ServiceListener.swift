@@ -6,11 +6,17 @@ import Foundation
 public final class ServiceListener: NSObject, NSXPCListenerDelegate {
     private let listener: NSXPCListener
     private let router: RequestRouter
-    public init(configuration: ServiceConfiguration) throws {
+    public init(configuration: ServiceConfiguration, fixtureExecutable: URL) throws {
         listener = NSXPCListener(machServiceName: configuration.serviceName)
         let operations = try OperationService(configuration: configuration)
-        router = RequestRouter(configuration: configuration, methods: OperationService.methods) {
-            try operations.handle($0)
+        let launches = try LaunchService(configuration: configuration)
+        let sessions = try SessionSupervisor(configuration: configuration, launches: launches,
+                                             executable: fixtureExecutable)
+        router = RequestRouter(configuration: configuration,
+                               methods: OperationService.methods + LaunchService.methods + SessionSupervisor.methods) {
+            if LaunchService.methods.contains($0.method) { return try launches.handle($0) }
+            if SessionSupervisor.methods.contains($0.method) { return try sessions.handle($0) }
+            return try operations.handle($0)
         }
         super.init()
         listener.delegate = self

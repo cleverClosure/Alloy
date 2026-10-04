@@ -5,14 +5,16 @@
 Issue #161 supplies the internal local-service foundation for the client and
 live diagnostics. Milestone 1 implements a versioned XPC boundary and a reusable
 Swift client. Milestone 2 connects the existing installation engine and durable
-operation history, including reconnect and crash recovery. Fixture session
-supervision follows in milestone 3. `info` reports game launch as unavailable.
+operation history, including reconnect and crash recovery. Milestone 3 adds
+compiler-verified development previews and fixed native fixture supervision.
+`info` reports game launch as unavailable.
 
 ```sh
 swift test --package-path runtime/session-service
 python3 runtime/session-service/run-boundary-proof.py
 python3 runtime/session-service/run-boundary-proof.py --negative-control
 python3 runtime/session-service/run-operation-proof.py
+python3 runtime/session-service/run-session-proof.py
 ```
 
 The ordinary proof must report `pass=9 fail=0 total=9`. The deliberately wrong
@@ -36,3 +38,8 @@ service, catalog and content store, including thirteen service-kill boundaries
 and client death before a persisted request's reply. It is also registered in
 the existing fast tier. `OperationCursor` supplies a pull subscription that can
 resume across process and connection restarts.
+
+The [session proof](Results/2026-10-04-sessions.md) preserves incomplete compiler
+exports, refuses real game launch and exercises bounded native process trees,
+exact-generation leases, stop escalation, death and restart reconciliation.
+It is registered in the fast tier and requires no x64 guest.

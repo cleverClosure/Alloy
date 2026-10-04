@@ -37,7 +37,7 @@ def build():
 
 
 class ServiceFixture:
-    def __init__(self, binaries, libraries=(), fault=None):
+    def __init__(self, binaries, libraries=(), fault=None, fixture_mode=True):
         self.binaries = binaries
         self.temporary = tempfile.TemporaryDirectory(prefix="alloy-runtime-")
         self.root = Path(self.temporary.name).resolve()
@@ -52,7 +52,7 @@ class ServiceFixture:
                               "stateRoot": str(self.root / "state"),
                               "contentRoot": str(self.root / "content"),
                               "libraryRoots": [str(p) for p in libraries],
-                              "fixtureMode": True, "testFault": fault}
+                              "fixtureMode": fixture_mode, "testFault": fault}
         self.endpoint = self.root / "endpoint.json"
         self.endpoint.write_text(json.dumps(self.configuration))
         self.endpoint.chmod(0o600)
