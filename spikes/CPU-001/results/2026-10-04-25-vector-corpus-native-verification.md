@@ -1,9 +1,9 @@
-# CPU-001 result 25 — vector corpus prepared; FEX validation remains blocked
+# CPU-001 result 25 — vector corpus verified through FEX
 
 **Author:** Timur Isaev  
 **Date:** 4 October 2026  
 **Host:** Apple Silicon, macOS 27.0 (26A428)  
-**Issue:** #104, milestone 3 preparation; runtime dependency #111
+**Issue:** #104, milestone 3; isolated runtime repair #111
 
 ## What was verified
 
@@ -12,8 +12,10 @@ SSE floating point, SSE3, SSSE3, SSE4.1, SSE4.2, AVX and AVX2. SSE2's existing
 53-operation integer corpus is unchanged. Every new clean native reference
 and independent Rosetta instruction build passed. Every family's deliberately
 corrupted reference exited 1 and reported its named mutation, both natively
-and under Rosetta. These are **not FEX outcomes**. Milestone 3's FEX acceptance
-condition remains unobserved while #111 blocks even the minimal x64 guest.
+and under Rosetta. Those independent oracle checks are now supplemented by
+actual FEX execution: all seven clean guests exit 0 with zero failures and
+all seven corrupted guests exit 1 with their exact named mismatch counts.
+Their checksums match every pin in the table below.
 
 | Family | Operation forms | Cases | Clean checksum | Mutation / corrupted checksum |
 | --- | ---: | ---: | --- | --- |
@@ -113,12 +115,29 @@ and the primary LLVM intrinsic declarations for
 [SSSE3](https://clang.llvm.org/doxygen/tmmintrin_8h.html).
 No third-party corpus, PRNG, or reference implementation was imported.
 
-## Remaining acceptance work
+## FEX acceptance evidence
 
-Milestone 2 still needs its clean and corrupted SSE2 runs through the restored
-FEX runtime. Milestone 3 then needs the same pair for every new family, through
-the read-only build-2 loader and a private prefix, with a full before/after
-runtime-directory inventory. This report records no FEX pass and no completed
-milestone 3. BMI1/BMI2, atomics/flags, x87 and the final aggregate remain in the
-following milestones. No GitHub Actions job was added. Issue #78 remains
+All fourteen required guest outcomes passed through the existing builtin FEX
+DLL in #111's isolated, repaired Wine build. Each log contains an actual builtin
+FEX load event. The complete run's `aggregate.json` is under
+`/private/tmp/alloy-104-m5/spikes/CPU-001/work/isa-corpus-runs/run-i5v8lx3u/`.
+This milestone's seven family source files, vector/common headers, seeded
+manifest entries and checksums match that run's inputs exactly. The shared
+scalar helper declarations use the same inline form as the aggregate build.
+
+Wine source is clean at `f0937d595166631dd00eaab31fef4fb5a6f37031`;
+FEX source is unchanged at `ad942313dca79d32133cceaaf617016821e3b952`.
+The actual FEX DLL SHA-256 is
+`ef4ce1be195296ae2e1bd6612efba8fae4b8f3eb37d25985b1275aae52ef7aa6`.
+The full selected runtime inventory is identical before and after:
+`8f0fa54a52cdd63ac7eb8fb722f210a375649e96fbd0cfadaf727423c7fa763a`
+across 21,652 entries. Per-invocation metadata records source revisions,
+binary hashes and idle-runtime checks. See
+[result 28](2026-10-04-28-macos27-jit-signal-resume.md) for the runtime identities,
+shared-tree preservation and isolated repair instructions.
+
+The corpus does not rebuild or install the runtime. The shared build-2 remains
+unchanged; tests select the repaired copy explicitly. Milestone 3 is complete.
+BMI1/BMI2, atomics/flags, x87 and the standing aggregate command are delivered in
+the following milestones. No GitHub Actions job was added. Issue #78 remains
 separate, open and unmodified.

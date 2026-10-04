@@ -1,7 +1,7 @@
 {
   "author": "Timur Isaev",
   "seed": "a1c0ffee5eed0003",
-  "oracle": "arm64 reference and independent Rosetta parity; FEX unverified",
+  "oracle": "arm64 reference and independent Rosetta parity; measured FEX outcomes are recorded in dated CPU-001 results",
   "families": {
     "sse": {
       "flag": "-msse2",

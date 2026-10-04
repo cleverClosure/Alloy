@@ -43,7 +43,7 @@ typedef struct
     unsigned random_cases;
 } corpus_op;
 
-static uint64_t corpus_random(uint64_t *state)
+static inline uint64_t corpus_random(uint64_t *state)
 {
     uint64_t x = *state;
     x ^= x << 13;
@@ -53,7 +53,7 @@ static uint64_t corpus_random(uint64_t *state)
     return *state;
 }
 
-static void corpus_fold(uint64_t *hash, const void *data, size_t size)
+static inline void corpus_fold(uint64_t *hash, const void *data, size_t size)
 {
     const uint8_t *bytes = data;
     for (size_t i = 0; i < size; ++i)
@@ -63,13 +63,13 @@ static void corpus_fold(uint64_t *hash, const void *data, size_t size)
     }
 }
 
-static void corpus_hex(const corpus_vec *v, unsigned width)
+static inline void corpus_hex(const corpus_vec *v, unsigned width)
 {
     for (unsigned i = 0; i < width; ++i)
         printf("%02x", v->b[i]);
 }
 
-static int corpus_parse_hex(const char *text, corpus_vec *v, unsigned width)
+static inline int corpus_parse_hex(const char *text, corpus_vec *v, unsigned width)
 {
     if (strlen(text) != width * 2)
         return 0;
@@ -92,7 +92,7 @@ static int corpus_parse_hex(const char *text, corpus_vec *v, unsigned width)
     return 1;
 }
 
-static int64_t corpus_signed(uint64_t v, unsigned bits)
+static inline int64_t corpus_signed(uint64_t v, unsigned bits)
 {
     uint64_t sign = UINT64_C(1) << (bits - 1);
     uint64_t mask = bits == 64 ? UINT64_MAX : (UINT64_C(1) << bits) - 1;
@@ -103,7 +103,7 @@ static int64_t corpus_signed(uint64_t v, unsigned bits)
     return -1 - (int64_t)((~v) & mask);
 }
 
-static uint32_t corpus_asr32(uint32_t value, uint32_t count)
+static inline uint32_t corpus_asr32(uint32_t value, uint32_t count)
 {
     if (count >= 32)
         return value & UINT32_C(0x80000000) ? UINT32_MAX : 0;
@@ -115,22 +115,22 @@ static uint32_t corpus_asr32(uint32_t value, uint32_t count)
     return out;
 }
 
-static int32_t corpus_saturate16(int32_t value)
+static inline int32_t corpus_saturate16(int32_t value)
 {
     return value < -32768 ? -32768 : value > 32767 ? 32767 : value;
 }
 
-static int corpus_nan32(uint32_t bits)
+static inline int corpus_nan32(uint32_t bits)
 {
     return (bits & UINT32_C(0x7fffffff)) > UINT32_C(0x7f800000);
 }
 
-static int corpus_nan64(uint64_t bits)
+static inline int corpus_nan64(uint64_t bits)
 {
     return (bits & UINT64_C(0x7fffffffffffffff)) > UINT64_C(0x7ff0000000000000);
 }
 
-static void corpus_normalize(corpus_vec *v, const corpus_op *op)
+static inline void corpus_normalize(corpus_vec *v, const corpus_op *op)
 {
     if (op->nan_width == 32)
         for (unsigned i = 0; i < op->width / 4; ++i)
@@ -145,7 +145,7 @@ static void corpus_normalize(corpus_vec *v, const corpus_op *op)
 /* Distinct upper lanes catch accidental 128-bit-only implementations. The
  * Cartesian edge product also exercises both operand orders. */
 #define CORPUS_EDGE_COUNT 24
-static void corpus_edge(unsigned index, corpus_vec *v)
+static inline void corpus_edge(unsigned index, corpus_vec *v)
 {
     static const uint32_t edges[CORPUS_EDGE_COUNT] = {
         0,          0xffffffff, 1,          0x7fffffff, 0x80000000, 0x55555555,
