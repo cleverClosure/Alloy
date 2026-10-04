@@ -25,7 +25,7 @@ public final class ContentStore: @unchecked Sendable {
     let encoder: JSONEncoder
     let decoder: JSONDecoder
 
-    public init(root: URL) throws {
+    public init(root: URL, allowDamagedCatalog: Bool = false) throws {
         self.root = root.standardizedFileURL
         fileManager = FileManager()
         encoder = JSONEncoder()
@@ -41,7 +41,10 @@ public final class ContentStore: @unchecked Sendable {
         try createDirectory(volumesDirectory)
         try ensureLockFile()
         try withExclusiveLock {
-            _ = try ensureCatalogUnlocked(faultInjector: nil)
+            try recoverMaintenanceUnlocked()
+            if !allowDamagedCatalog {
+                _ = try ensureCatalogUnlocked(faultInjector: nil)
+            }
         }
     }
 
@@ -58,6 +61,7 @@ public final class ContentStore: @unchecked Sendable {
         gameID: String,
         generationID: String,
         layers: [LayerInput],
+        operationID requestedOperationID: String? = nil,
         healthOutcome: HealthOutcome = .pass,
         availableBytes: UInt64? = nil,
         faultInjector: FaultInjector? = nil
@@ -65,13 +69,25 @@ public final class ContentStore: @unchecked Sendable {
         try validateIdentifier(gameID)
         try validateIdentifier(generationID)
         try validateLayerInputs(layers)
+        if let requestedOperationID {
+            try validateIdentifier(requestedOperationID)
+        }
 
         return try withExclusiveLock {
+            try recoverMaintenanceUnlocked()
+            if let result = try resumeRequestedActivation(
+                operationID: requestedOperationID, gameID: gameID, generationID: generationID,
+                layers: layers, healthOutcome: healthOutcome, faultInjector: faultInjector
+            ) {
+                return result
+            }
+            if requestedOperationID != nil { try requireNoPendingActivation(gameID: gameID) }
             if let availableBytes {
                 let plan = try preflightDiskSpaceUnlocked(for: layers.map(\.descriptor))
                 try plan.requireFits(availableBytes: availableBytes)
             }
-            let operationID = "\(gameID)-\(generationID)-\(UUID().uuidString.lowercased())"
+            let operationID = requestedOperationID
+                ?? "\(gameID)-\(generationID)-\(UUID().uuidString.lowercased())"
             var operation = ActivationOperation(
                 operationID: operationID,
                 gameID: gameID,
@@ -104,6 +120,7 @@ public final class ContentStore: @unchecked Sendable {
     }
 
     func recoverAllUnlocked(faultInjector: FaultInjector? = nil) throws {
+        try recoverMaintenanceUnlocked(faultInjector: faultInjector)
         let journalURLs = try fileManager.contentsOfDirectory(
             at: journalsDirectory,
             includingPropertiesForKeys: nil

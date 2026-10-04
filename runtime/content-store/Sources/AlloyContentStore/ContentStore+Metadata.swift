@@ -20,7 +20,8 @@ extension ContentStore {
 
     func readReference(
         _ kind: ReferenceKind,
-        gameID: String
+        gameID: String,
+        validateContents: Bool = true
     ) throws -> GenerationReference? {
         let url = referenceURL(kind, gameID: gameID)
         guard pathEntryExists(url) else {
@@ -33,7 +34,9 @@ extension ContentStore {
             GenerationReference.self,
             from: Data(contentsOf: url)
         )
-        try validateReference(reference, gameID: gameID)
+        try validateIdentifier(reference.generationID)
+        _ = try rawSHA256(reference.manifestDigest)
+        if validateContents { try validateReference(reference, gameID: gameID) }
         return reference
     }
 
