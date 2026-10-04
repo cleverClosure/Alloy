@@ -127,3 +127,65 @@ configuration (`fixtureMode`, `testFault`); no public RPC can enable it. A once
 marker distinguishes an injected kill from an unobserved fault. The separate
 reply gate pauses after persistence so the proof can kill the client before its
 reply. Neither hook is activated by a profile or ordinary operation payload.
+
+## Launch previews and fixture sessions (milestone 3)
+
+| Method | Request | Result |
+| --- | --- | --- |
+| `host.info` | empty | HostCapabilities from the actual local host |
+| `launch.resolve` | DevelopmentLaunchInput | LaunchPreview |
+| `launch.verify` | IdentifierRequest (preview ID) | reverified LaunchPreview |
+| `launch.game` | IdentifierRequest (preview ID) | always LAUNCH_NOT_RUNTIME_READY |
+| `fixture.start` | FixtureStart | SessionSnapshot |
+| `session.get`, `session.stop` | IdentifierRequest (session ID) | SessionSnapshot |
+| `session.list` | empty | SessionSnapshot array |
+| `fixture.kill-agent` | IdentifierRequest (session ID) | SessionSnapshot (fixture fault only) |
+
+Preview creation and fixture execution require out-of-band `fixtureMode=true`.
+A normal endpoint cannot turn either on through a request or profile. Resolution
+uses the existing compiler's unsigned development mode: experimental profile,
+development manifest/metadata and draft evidence. No release certification or
+production trust is manufactured. The supplied documents/build/process/volume
+identities are development inputs; this API does not independently attest them.
+The service binds compilation to the actual host and a validated active content
+reference, and retains the compiler's complete `notYetLowered` report. It requires
+both `runtimeReady` and `productionEligible` to remain false.
+
+A preview lasts 1–120 seconds. Its owner-only durable record preserves the input,
+compilation time, host, generation reference, full specification and canonical
+export. Verification recompiles at that frozen time, compares the full export,
+checks current expiry/host and requires the same active generation. A modified
+export, stale preview or changed generation cannot authorize a new fixture.
+Existing sessions retain their acquired generation independently of later active
+reference changes. There are at most 256 retained previews per development store;
+this is a bounded development fixture, without an automatic retention policy.
+
+Only the fixed sibling `alloy-session-fixture` executable can run. Its digest is
+checked before launch and by each descendant. No RPC supplies a command, binary,
+working directory or environment. A session ID is a digest of its idempotency key;
+replay returns the same durable session and never relaunches it. Conflicting input
+under that key is rejected. At most four owned trees run concurrently and 128
+session records are retained. Each tree is exactly agent → child → grandchild.
+Each process independently acquires the exact generation lease and records its
+PID plus kernel start seconds/microseconds. Those identities, not a PID alone,
+authorize signaling and determine liveness. Unknown kernel liveness retains the
+lease and keeps the session conservatively live.
+
+Control pipes provide cooperative stop and parent-death notification. Normal
+stop closes the pipe. The termination-resistant fixture exercises TERM, a
+one-second wait, exact-identity KILL, and a two-second exit wait. Every fixture
+also has a 20-second hard watchdog; expiry exits 43 and reports FAILED, with an
+EXITED_WATCHDOG node. Startup failure exits 42 without acquiring a lease. The
+fixed fixture is cooperative code, not arbitrary-process containment or Wine
+policy enforcement. The service does not invoke Wine or FEX.
+
+Snapshots use RUNNING, STOPPING, STOPPED, SUCCEEDED, FAILED or INTERRUPTED. Poll
+until a terminal state **and** an empty `liveNodes` array; an agent's exit alone
+is not proof that descendants exited. Node records retain the exact lease
+identity as historical evidence after release. A service crash closes the root
+control pipe; descendants exit and the new service reconciles durable records
+against kernel identities. Without a durably observed exit result it reports
+INTERRUPTED rather than inventing success. Stop intent and observed exit codes
+are durable. Sessions are never automatically restarted. Content-store GC
+remains the authority for stale lease reconciliation and must protect every
+live fixture generation even after uninstall removes its active reference.

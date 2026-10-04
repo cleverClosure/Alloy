@@ -200,6 +200,19 @@ def every(*probes: ProbeFn) -> ProbeFn:
     return probe
 
 
+
+def need_launch_host(_root: Path) -> Optional[str]:
+    """The unchanged compiler requires a real arm64 host with at least 8 GiB."""
+    if platform.system() != "Darwin" or platform.machine() != "arm64":
+        return "launch compiler requires arm64 macOS"
+    result = subprocess.run(["/usr/sbin/sysctl", "-n", "hw.memsize"], check=True,
+                            capture_output=True, text=True, timeout=5)
+    memory = int(result.stdout.strip()) // (1 << 30)
+    if memory < 8:
+        return f"launch compiler requires >=8 GiB; actual host has {memory} GiB (live host-refusal suite still runs)"
+    return None
+
+
 def configured_path(root: Path, variable: str, default: str) -> Path:
     path = Path(os.environ.get(variable) or default).expanduser()
     return (root / path).resolve()
@@ -527,6 +540,24 @@ REGISTRY: list[Suite] = [
         description="real XPC lifecycle, cursor reconnect and bounded client/service death recovery; loopback only",
         cleanup_grace=15,
     ),
+    Suite(
+        id="runtime-service-session-proof", tier="fast",
+        cmd=("python3", "runtime/session-service/run-session-proof.py"),
+        cwd=".", timeout=360,
+        probe=every(need_commands("swift", "python3", "launchctl"),
+                    need_paths("runtime/session-service/run-session-proof.py"), need_launch_host),
+        description="incomplete launch refusal, bounded native fixture trees, exact leases and crash reconciliation",
+        cleanup_grace=15,
+    ),
+    Suite(
+        id="runtime-service-launch-host", tier="fast",
+        cmd=("python3", "runtime/session-service/run-launch-host-proof.py"),
+        cwd=".", timeout=300,
+        probe=every(need_commands("swift", "python3", "launchctl"),
+                    need_paths("runtime/session-service/run-launch-host-proof.py")),
+        description="actual host identity and compiler refusal controls, including the 7 GiB hosted runner",
+        cleanup_grace=15,
+    ),
     # --- runtime/profile-compiler ----------------------------------------
     Suite(
         id="profile-compiler-swift-test",
@@ -826,7 +857,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 45
+REGISTRY_SUITE_COUNT = 47
 
 
 # ---------------------------------------------------------------------------
@@ -1285,6 +1316,17 @@ def run_selftest() -> int:
                 patch("shutil.which", return_value=str(cross)):
             check("PATH selects the cross compiler's directory without a primary-checkout assumption",
                   isa_toolchain(root) == isa_bin)
+        with patch("platform.system", return_value="Darwin"), patch("platform.machine", return_value="arm64"):
+            for memory, expected in [(7, "7 GiB"), (8, None), (32, None)]:
+                with patch("subprocess.run", return_value=subprocess.CompletedProcess(
+                        [], 0, str(memory * (1 << 30)), "")):
+                    reason = need_launch_host(root)
+                    check(f"launch host probe reports {memory} GiB truthfully",
+                          reason is None if expected is None else expected in (reason or ""))
+            with patch("subprocess.run", side_effect=FileNotFoundError("sysctl unavailable")):
+                host_probe = Suite("launch-host-probe", "fast", ("true",), ".", 1, need_launch_host)
+                check("broken host probe fails instead of hiding coverage as SKIP",
+                      run_one(host_probe, root).verdict == "fail")
         # Legal proofs opt in through staged inputs; bare checkout is SKIP.
         with patch.dict(os.environ, {"ALLOY_STAGED_RUNTIME": "", "ALLOY_RELEASE_DIR": "",
                                      "ALLOY_CODEC_PROVIDER_DIR": "", "ALLOY_CODEC_UNIXLIB_DIR": ""}):
