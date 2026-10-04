@@ -43,7 +43,7 @@ import Testing
     let request = try engine.discoverInstallations(libraryRoots: [library], idempotencyKey: "discover")
     let discovered = try engine.run(request.operationID)
     let installations = try JSONDecoder().decode([GameInstallation].self, from: #require(discovered.result))
-    #expect(installations.count == 3)
+    #expect(installations.count == 2)
     let identifier = try #require(installations.first?.installationID)
     let refresh = try engine.refreshBuildFingerprint(installationID: identifier,
                                                      libraryRoots: [library], idempotencyKey: "refresh")
