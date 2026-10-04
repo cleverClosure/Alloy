@@ -9,9 +9,14 @@
 # the exception unhandled. This cost result 08 its dispatch-defect attribution.
 #
 # Usage: build-corpus.sh <output-dir>   (toolchain must be on PATH)
+#        build-corpus.sh --isa-corpus [--native-only] [--rosetta] [--selftest]
 set -e
-OUT=${1:?output dir required}
 SRC=$(cd "$(dirname "$0")" && pwd)
+if [[ ${1:-} == --isa-corpus ]]; then
+  shift
+  exec bash "$SRC/../run-isa-corpus.sh" "$@"
+fi
+OUT=${1:?output dir required (or --isa-corpus to build and run the ISA corpus)}
 CC=x86_64-w64-mingw32-clang
 
 SEH_FLAGS="-fms-extensions -Xclang -fasync-exceptions"
