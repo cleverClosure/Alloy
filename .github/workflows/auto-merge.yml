@@ -1,5 +1,5 @@
-# Alloy automatic merge on green CI
-# Author: Tim Isaev
+# Alloy automatic merge on green CI and CodeQL
+# Author: Timur Isaev
 #
 # Every non-draft pull request into main squash-merges itself as soon as CI is
 # green. There is no label gate: opening a PR is the decision to merge it. If a
@@ -7,10 +7,9 @@
 # to draft) - drafts are skipped and re-evaluated when marked ready, because
 # ci.yml runs on ready_for_review.
 #
-# This is a workflow rather than GitHub's native auto-merge because native
-# auto-merge requires branch protection with required status checks, and
-# protected branches need GitHub Pro on a private repository (the REST API
-# returns 403 "Upgrade to GitHub Pro" for this repo today).
+# Main now has free public-repository branch rules requiring CI and CodeQL.
+# Keep this workflow because it also enforces the board's Estimate/Actual gate.
+# Either analysis may finish last, so both completions must trigger evaluation.
 #
 # NOTE: workflow_run only fires for workflow files that exist on the default
 # branch, so this file does nothing until it is on main.
@@ -43,7 +42,7 @@ name: Auto-merge
 
 on:
   workflow_run:
-    workflows: ["CI"]
+    workflows: ["CI", "CodeQL"]
     types:
       - completed
 

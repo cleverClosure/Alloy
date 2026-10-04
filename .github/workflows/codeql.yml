@@ -1,0 +1,83 @@
+# Author: Timur Isaev
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  schedule:
+    - cron: "23 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: CodeQL (${{ matrix.language }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: actions
+            runner: ubuntu-latest
+            build-mode: none
+          - language: python
+            runner: ubuntu-latest
+            build-mode: none
+          - language: c-cpp
+            runner: ubuntu-latest
+            build-mode: none
+          - language: swift
+            runner: macos-26
+            build-mode: manual
+    steps:
+      - name: Check out first-party repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          submodules: false
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+          config-file: ./.github/codeql/config.yml
+
+      # Manual compiled-language analysis follows what is actually built, not
+      # paths-ignore. Only tracked first-party Swift packages are built here.
+      # Fresh scratch directories ensure the extractor sees every compilation.
+      - name: Build all first-party Swift packages and tests
+        if: matrix.language == 'swift'
+        shell: bash
+        run: |
+          set -euo pipefail
+          count=0
+          while IFS= read -r -d '' manifest; do
+            package=${manifest%/Package.swift}
+            case "$package" in
+              */work/*) continue ;;
+            esac
+            count=$((count + 1))
+            swift build --package-path "$package" --build-tests --jobs 2 \
+              --scratch-path "$RUNNER_TEMP/codeql-swift/$count"
+          done < <(git ls-files -z -- 'runtime/**/Package.swift' 'spikes/**/Package.swift')
+          test "$count" -gt 0
+          echo "Built $count first-party Swift packages."
+
+      - name: Analyze and upload results
+        uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
+        with:
+          category: /language:${{ matrix.language }}
