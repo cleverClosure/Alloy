@@ -1,0 +1,345 @@
+{
+  "annotations": {
+    "0dfe17e5bac7d5352936b0647383aad53b267b39": {
+      "classification": "temporary-pending-reviewed-darwin-teb-abi",
+      "evidence": [
+        {
+          "heading": "## Recovered provenance: the runtime rested on four uncommitted patches",
+          "path": "spikes/CPU-001/results/2026-07-24-05-shear-cost-and-census.md"
+        }
+      ],
+      "justification": "Restores x18 on external ARM64EC entry and emulates narrowly identified TEB loads after Darwin clears it. Keep the backstop until the Darwin ABI and remaining prebuilt consumers have a supported replacement.",
+      "status": "retained"
+    },
+    "0e693a03c13706c1837d6e543d29350d51d80c1c": {
+      "classification": "temporary-pending-portable-darwin-layout",
+      "evidence": [
+        {
+          "heading": "## 3. Wine patches (branch `alloy/spike-wine-001`)",
+          "path": "spikes/WINE-001/results/2026-07-23-03-macos26-exec-policy-and-va-floor.md"
+        }
+      ],
+      "justification": "Drops the loader low-pagezero flags and relocates shared data/TEBs above Darwin’s low-address floor. This bundled spike workaround needs a portable host-layout design before upstreaming.",
+      "status": "retained"
+    },
+    "0ef284dc28b074760f97decc210c049a22410e81": {
+      "classification": "temporary-pending-history-squash",
+      "evidence": [
+        {
+          "heading": "## Fork experiment that was reverted, and its lesson (`4d5daa4` → revert `0ef284d`)",
+          "path": "spikes/GFX-001/results/2026-07-24-02-first-light-blockers.md"
+        }
+      ],
+      "justification": "Reverts the broad x18 repair experiment 4d5daa4 and restores the narrow backstop. Both reachable commits count conservatively until a deliberate reviewed history cleanup removes the pair.",
+      "status": "revert-of-experiment"
+    },
+    "24bad684929f61bf1bb37d03ff1bb72febaa23cb": {
+      "classification": "temporary-pending-large-page-protection-design",
+      "evidence": [
+        {
+          "heading": "## Kill-chain (in discovery order)",
+          "path": "spikes/WINE-001/results/2026-07-23-06-gate3-wine-side-proven.md"
+        }
+      ],
+      "justification": "Allows the x64 loader to progress when 4 KiB guest protections share a 16 KiB host page and redirects emulator entry pointers. The dropped-execute fallback and bundled diagnostics remain platform-specific compromises.",
+      "status": "retained"
+    },
+    "36a24a1a1b81daed35e389622a9347e9561e98ee": {
+      "classification": "Alloy-specific",
+      "evidence": [
+        {
+          "heading": "## 2. What is actually running",
+          "path": "spikes/CPU-001/results/2026-07-24-16-item-24-not-reproducible-toolchain-restored-null-rip-guard.md"
+        }
+      ],
+      "justification": "Publishes Wine’s diagnostic sink through the optional FEXWineLogSink export before emulator initialization. This deliberately couples the selected in-process emulator’s logging contract to Wine diagnostics.",
+      "status": "retained"
+    },
+    "372f8e60120911d92f0bdbc223f277e1b47fa530": {
+      "classification": "temporary-pending-guest-jit-protection-enforcement",
+      "evidence": [
+        {
+          "heading": "## 3. The limitation, stated plainly",
+          "path": "spikes/WINE-001/results/2026-07-25-12-jit-view-protection.md"
+        }
+      ],
+      "justification": "Records a guest’s narrowed JIT protection and respects that intent in fault paths, while the host mapping still cannot enforce the narrowing. Keep the documented compromise pending real guest-page protection enforcement.",
+      "status": "retained"
+    },
+    "3ffe3247fde31debc20f1a0212b27e4d91666380": {
+      "classification": "temporary-pending-upstream-darwin-jit-design",
+      "evidence": [
+        {
+          "heading": "## Recovered provenance: the runtime rested on four uncommitted patches",
+          "path": "spikes/CPU-001/results/2026-07-24-05-shear-cost-and-census.md"
+        }
+      ],
+      "justification": "Allocates anonymous executable/writeable code-cache views with MAP_JIT. A necessary Darwin host mechanism, but its protection and signal-transition interactions require the broader tracked JIT fixes before proposing it upstream.",
+      "status": "retained"
+    },
+    "420c70bdcb7615c3dc0395d162f93645f098fe56": {
+      "classification": "upstreamable",
+      "evidence": [
+        {
+          "heading": "## 4. What landed instead",
+          "path": "spikes/WINE-001/results/2026-07-25-11-arm64ec-variadic-delay-imports.md"
+        }
+      ],
+      "justification": "Carries the ARM64EC lazy delay-import repair on the live branch after the JIT-view protection fix. Preserve its exact commit identity; same-subject side-branch history is counted separately, not presumed patch-equivalent.",
+      "status": "retained"
+    },
+    "47e4cdb75d7bf25ce7fecc6301a12bf9aa317b90": {
+      "classification": "Alloy-specific",
+      "evidence": [
+        {
+          "heading": "## Contract proven",
+          "path": "spikes/WINE-001/results/2026-07-24-08-policy-hook-and-rebase-readiness.md"
+        }
+      ],
+      "justification": "Installs Alloy’s inherited, per-process policy snapshot before normal imports. Provider routing, exact executable identity and fail-closed snapshot semantics are product integration policy.",
+      "status": "retained"
+    },
+    "4d5daa40ce81cfd4c6281cca34f23b2cb32dd6ba": {
+      "classification": "temporary-pending-history-squash",
+      "evidence": [
+        {
+          "heading": "## Fork experiment that was reverted, and its lesson (`4d5daa4` → revert `0ef284d`)",
+          "path": "spikes/GFX-001/results/2026-07-24-02-first-light-blockers.md"
+        }
+      ],
+      "justification": "Historical broad x18 repair/retry experiment changed a benign FEX probe into a successful read and hung the baseline. It was reverted; retained here as replay history, never represented as an active fix.",
+      "status": "reverted-experiment"
+    },
+    "54048cbd2bf69aee8cc7be2beb14c5ab63a17842": {
+      "classification": "temporary-pending-telemetry-consolidation",
+      "evidence": [
+        {
+          "heading": "## 1. Attribution: the sites were never in any image",
+          "path": "spikes/CPU-001/results/2026-07-25-21-x18-absorbs-attributed-and-removed.md"
+        }
+      ],
+      "justification": "Describes absorbed-fault pages and Mach regions to identify FEX’s generated dispatch emitter. Keep as attributable diagnostic burden until consolidated instrumentation replaces it.",
+      "status": "retained"
+    },
+    "5a0d3a375d31d6dde654b62635af6d1d55378b5c": {
+      "classification": "temporary-pending-telemetry-consolidation",
+      "evidence": [
+        {
+          "heading": "## 2. Fault census — exact totals, and a conservation law",
+          "path": "spikes/CPU-001/results/2026-07-25-19-real-title-execution-census.md"
+        }
+      ],
+      "justification": "Traces x18 backstop absorbs with a sampler for attribution. Exact totals require the later census side branch; sampled log-line counts must never be reported as total fault counts.",
+      "status": "retained"
+    },
+    "5a0f6d44729c2ff0d70d5d31540a2f55d25af5d9": {
+      "classification": "temporary-pending-darwin-crt-rebuild",
+      "evidence": [
+        {
+          "heading": "## What stood between result 02 and green: five blockers, in order",
+          "path": "spikes/GFX-001/results/2026-07-24-03-first-light-green.md"
+        }
+      ],
+      "justification": "Handles the exact prebuilt CRT x18 reads at TEB offsets 0x8 and 0x58 without accepting the failing FEX probe. Replace when a supported Darwin-compatible CRT removes those residual consumers.",
+      "status": "retained"
+    },
+    "619c4c0e1ed7b0fb964c0b29388ff227a7dadf72": {
+      "classification": "temporary-pending-telemetry-consolidation",
+      "evidence": [
+        {
+          "heading": "## 2. Fault census — exact totals, and a conservation law",
+          "path": "spikes/CPU-001/results/2026-07-25-19-real-title-execution-census.md"
+        }
+      ],
+      "justification": "Moves census emission after fault classification so entries equal resolved plus access violations. It corrects the side-branch counter’s one-event accounting gap; retire only with a replacement exact telemetry contract.",
+      "status": "retained"
+    },
+    "61bf5698be12c8bb493b99e87752931c553c254a": {
+      "classification": "temporary-pending-telemetry-consolidation",
+      "evidence": [
+        {
+          "heading": "## Shear census (fork commit `61bf569`)",
+          "path": "spikes/CPU-001/results/2026-07-24-05-shear-cost-and-census.md"
+        }
+      ],
+      "justification": "Adds rate-limited page-shear diagnostics to measure guest/host page conflicts. It is an investigation instrument, not an exact event count or production telemetry interface.",
+      "status": "retained"
+    },
+    "7b1b3be6bc6692ec2d488f3583234ba4e7368309": {
+      "classification": "upstreamable",
+      "evidence": [
+        {
+          "heading": "## Recovered provenance: the runtime rested on four uncommitted patches",
+          "path": "spikes/CPU-001/results/2026-07-24-05-shear-cost-and-census.md"
+        }
+      ],
+      "justification": "Reports native ARM CPU features through Darwin sysctl instead of the empty host stub. This is a general host capability fix; the classification means an upstream candidate, not an accepted or submission-ready change.",
+      "status": "retained"
+    },
+    "87adaaa93346c2c87cbd7c32bdb1cda7f141986d": {
+      "classification": "temporary-pending-darwin-dispatch-convergence",
+      "evidence": [
+        {
+          "heading": "## Cold-boot crash: root-caused in our own fork code, fixed (`87adaaa`)",
+          "path": "spikes/GFX-001/results/2026-07-24-05-measured-scene-and-coldboot-fix.md"
+        }
+      ],
+      "justification": "Extends the narrow x18 backstop to the dispatch wrappers’ TSD-load pattern at offset 0x30, eliminating the measured cold-boot crash. Retain until generated and static dispatch paths no longer need this recovery.",
+      "status": "retained"
+    },
+    "8870df9d617ab15729a6dd404f1d23288be53b6b": {
+      "classification": "temporary-pending-reviewed-darwin-teb-abi",
+      "evidence": [
+        {
+          "heading": "## EC TEB fixes — applied",
+          "path": "spikes/WINE-001/results/2026-07-23-05-gate3-arm64ec-groundwork.md"
+        }
+      ],
+      "justification": "Extends TSD TEB access to ARM64EC dispatchers and adds protection diagnostics. The TSD convention and bundled investigation logs need separation before general upstream use.",
+      "status": "retained"
+    },
+    "8d5974ac877d19696c61dba2a2672cfa18c3ad20": {
+      "classification": "temporary-pending-upstream-darwin-jit-design",
+      "evidence": [
+        {
+          "heading": "## 7. Disposition for #30",
+          "path": "spikes/WINE-001/results/2026-07-25-10-translated-writes-across-map-jit-views.md"
+        }
+      ],
+      "justification": "Finishes or rejects translated stores without retry livelocks, reports the first invalid target byte, and shares the actual decoder with tests. It belongs with the Darwin JIT host mechanism, whose limitations remain explicit.",
+      "status": "retained"
+    },
+    "a88236486c9652063c66d5f471d6a19d133fea86": {
+      "classification": "temporary-pending-telemetry-consolidation",
+      "evidence": [
+        {
+          "heading": "## 2. Fault census — exact totals, and a conservation law",
+          "path": "spikes/CPU-001/results/2026-07-25-19-real-title-execution-census.md"
+        }
+      ],
+      "justification": "Adds exact cumulative fault totals beside the samplers, with known-answer guest controls. This side-branch instrument is required to reproduce the census evidence and must not disappear from a live-tip-only inventory.",
+      "status": "retained"
+    },
+    "b93a982387bbfba9478e338fe7d9ce5e45135831": {
+      "classification": "temporary-pending-portable-darwin-layout",
+      "evidence": [
+        {
+          "heading": "## Fix",
+          "path": "spikes/WINE-001/results/2026-07-24-07-wineboot-spin-va-floor-usd.md"
+        }
+      ],
+      "justification": "Repoints the remaining tick-count/shared-data readers to the relocated page, stopping wineboot’s fault storm. Retire with a reviewed portable shared-data mapping rather than treating the hard-coded address as general policy.",
+      "status": "retained"
+    },
+    "c5785dbc012dbcf2f2aa947b030d863697b4ebaa": {
+      "classification": "upstreamable",
+      "evidence": [
+        {
+          "heading": "## The mitigation (wine, `c5785db`) — amplifier only",
+          "path": "spikes/CPU-001/results/2026-07-24-11-multi-worker-dispatch-defect-characterized.md"
+        }
+      ],
+      "justification": "Refuses syscall-fault recovery when the saved resume PC is zero, converting a known endless re-fault loop into normal exception failure. This defensive invariant is independent of the FEX root cause.",
+      "status": "retained"
+    },
+    "ddad4ac757b9397c4daa6fe5210f388fa6c9b9fa": {
+      "classification": "Alloy-specific",
+      "evidence": [
+        {
+          "heading": "## What stood between result 02 and green: five blockers, in order",
+          "path": "spikes/GFX-001/results/2026-07-24-03-first-light-green.md"
+        }
+      ],
+      "justification": "Exports the DXMT-facing macdrv table with a layout compatibility shim and on-demand client views. It is a specific Wine/DXMT provider ABI bridge, not a general Windows API behavior change.",
+      "status": "retained"
+    },
+    "de36e21186d2b991895ea53884b7c2507b94764b": {
+      "classification": "temporary-pending-upstream-darwin-jit-design",
+      "evidence": [
+        {
+          "heading": "## Outcome",
+          "path": "spikes/WINE-001/results/2026-07-25-10-translated-writes-across-map-jit-views.md"
+        }
+      ],
+      "justification": "Introduces translated-store handling between Darwin JIT views. The original rejection behavior needed the following corrective commit; inventory keeps the complete lineage rather than claiming this prototype alone was sufficient.",
+      "status": "retained"
+    },
+    "efd41b9e9813216e3e0ab93c059ab1c8e05e4f74": {
+      "classification": "temporary-pending-reviewed-darwin-teb-abi",
+      "evidence": [
+        {
+          "heading": "### Change set (commit `efd41b9`)",
+          "path": "spikes/WINE-001/results/2026-07-23-04-teb-in-tsd-and-first-pe-execution.md"
+        }
+      ],
+      "justification": "Replaces Darwin-clobbered x18 TEB access with pthread TSD slot 6 across native dispatch paths. Retain until the Darwin TEB storage ABI is reviewed and supported beyond this fork.",
+      "status": "retained"
+    },
+    "f24425cdd8bbc32a45876bc2e8b64ab3777af801": {
+      "classification": "upstreamable",
+      "evidence": [
+        {
+          "heading": "## Fork fix that stays: EC entry points are x64 thunks (commit `f24425c`)",
+          "path": "spikes/GFX-001/results/2026-07-24-02-first-light-blockers.md"
+        }
+      ],
+      "justification": "Redirects ARM64EC DLL entry points and TLS callbacks through the module redirection table before native calls. The observed x64-thunk/native-call mismatch is a loader correctness issue independent of Alloy policy.",
+      "status": "retained"
+    },
+    "f85bde57d14b411aae58e841650dbfbf8bbe03a5": {
+      "classification": "temporary-pending-defensive-guard-and-telemetry-split",
+      "evidence": [
+        {
+          "heading": "## The mechanism (wine-side trace, per-thread)",
+          "path": "spikes/CPU-001/results/2026-07-24-11-multi-worker-dispatch-defect-characterized.md"
+        }
+      ],
+      "justification": "Prevents recursive faults while reading an invalid fault PC and adds anomaly sentinels. The defensive guard is a plausible upstream candidate, but this mixed guard/diagnostic commit needs a deliberate split and broader validation.",
+      "status": "retained"
+    },
+    "fbbdf994ccd06598da75133c49c7268fd0d10ee4": {
+      "classification": "upstreamable",
+      "evidence": [
+        {
+          "heading": "## 4. What landed instead",
+          "path": "spikes/WINE-001/results/2026-07-25-11-arm64ec-variadic-delay-imports.md"
+        }
+      ],
+      "justification": "Keeps lazy ARM64EC delay-import first calls in ARM64EC so variadic stack arguments survive. This side-branch commit remains separately identified from the later live-branch commit with the same subject.",
+      "status": "retained"
+    }
+  },
+  "author": "Timur Isaev",
+  "bounds": {
+    "shared_commit_ids": 28,
+    "supplemental_patches": 1,
+    "total_maintenance_items": 29
+  },
+  "expected_checkout": "alloy/spike-wine-001",
+  "supplemental": [
+    {
+      "annotation": {
+        "classification": "temporary-pending-upstream-darwin-jit-design",
+        "evidence": [
+          {
+            "heading": "## Exact identities",
+            "path": "spikes/CPU-001/results/2026-10-04-28-macos27-jit-signal-resume.md"
+          },
+          {
+            "heading": "## Applying the fork patch in isolation",
+            "path": "spikes/WINE-001/jit-signal/README.md"
+          }
+        ],
+        "justification": "Restores JIT execute permission outside the original fault signal context on macOS27 and preserves interrupted state through a new signal. This verified #111 repair remains an isolated first-party patch/private commit; shared Wine and build-2 have not been promoted. Count the two representations as one additional maintained change.",
+        "status": "isolated-not-promoted"
+      },
+      "branch": "alloy/task-111-macos27-runtime",
+      "commit": "f0937d595166631dd00eaab31fef4fb5a6f37031",
+      "parent": "420c70bdcb7615c3dc0395d162f93645f098fe56",
+      "patch": "spikes/WINE-001/jit-signal/wine.patch",
+      "patch_sha256": "da99584650e1c0a9fe38a31608558f0cd9980968bec63adf0b22437080b48c0f"
+    }
+  ],
+  "upstream_ref": "refs/remotes/origin/master",
+  "version": 1
+}
