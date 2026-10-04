@@ -1,0 +1,659 @@
+{
+  "author": "Timur Isaev",
+  "seed": "a1c0ffee5eed0003",
+  "oracle": "native references or host atomics; x87 guest self-check only; measured FEX outcomes are recorded in dated CPU-001 results",
+  "families": {
+    "bmi1": {
+      "flag": "-mbmi",
+      "cases": 33324,
+      "checksum": "5a36ed60bc454d14",
+      "mutation": "andn32",
+      "mutation_checksum": "20eadcbd0e12aa65",
+      "mutation_instruction_failures": 2778,
+      "operations": [
+        {
+          "name": "andn32",
+          "cases": 2777,
+          "mnemonics": [
+            "andnl"
+          ]
+        },
+        {
+          "name": "andn64",
+          "cases": 2777,
+          "mnemonics": [
+            "andnq"
+          ]
+        },
+        {
+          "name": "blsi32",
+          "cases": 2777,
+          "mnemonics": [
+            "blsil"
+          ]
+        },
+        {
+          "name": "blsi64",
+          "cases": 2777,
+          "mnemonics": [
+            "blsiq"
+          ]
+        },
+        {
+          "name": "blsr32",
+          "cases": 2777,
+          "mnemonics": [
+            "blsrl"
+          ]
+        },
+        {
+          "name": "blsr64",
+          "cases": 2777,
+          "mnemonics": [
+            "blsrq"
+          ]
+        },
+        {
+          "name": "blsmsk32",
+          "cases": 2777,
+          "mnemonics": [
+            "blsmskl"
+          ]
+        },
+        {
+          "name": "blsmsk64",
+          "cases": 2777,
+          "mnemonics": [
+            "blsmskq"
+          ]
+        },
+        {
+          "name": "bextr32",
+          "cases": 2777,
+          "mnemonics": [
+            "bextrl"
+          ]
+        },
+        {
+          "name": "bextr64",
+          "cases": 2777,
+          "mnemonics": [
+            "bextrq"
+          ]
+        },
+        {
+          "name": "tzcnt32",
+          "cases": 2777,
+          "mnemonics": [
+            "tzcntl"
+          ]
+        },
+        {
+          "name": "tzcnt64",
+          "cases": 2777,
+          "mnemonics": [
+            "tzcntq"
+          ]
+        }
+      ]
+    },
+    "bmi2": {
+      "flag": "-mbmi2",
+      "cases": 44432,
+      "checksum": "0fa7cb1768b0cd21",
+      "mutation": "pdep32",
+      "mutation_checksum": "c3df897b1512a714",
+      "mutation_instruction_failures": 2778,
+      "operations": [
+        {
+          "name": "pdep32",
+          "cases": 2777,
+          "mnemonics": [
+            "pdepl"
+          ]
+        },
+        {
+          "name": "pdep64",
+          "cases": 2777,
+          "mnemonics": [
+            "pdepq"
+          ]
+        },
+        {
+          "name": "pext32",
+          "cases": 2777,
+          "mnemonics": [
+            "pextl"
+          ]
+        },
+        {
+          "name": "pext64",
+          "cases": 2777,
+          "mnemonics": [
+            "pextq"
+          ]
+        },
+        {
+          "name": "bzhi32",
+          "cases": 2777,
+          "mnemonics": [
+            "bzhil"
+          ]
+        },
+        {
+          "name": "bzhi64",
+          "cases": 2777,
+          "mnemonics": [
+            "bzhiq"
+          ]
+        },
+        {
+          "name": "mulx32",
+          "cases": 2777,
+          "mnemonics": [
+            "mulxl"
+          ]
+        },
+        {
+          "name": "mulx64",
+          "cases": 2777,
+          "mnemonics": [
+            "mulxq"
+          ]
+        },
+        {
+          "name": "shlx32",
+          "cases": 2777,
+          "mnemonics": [
+            "shlxl"
+          ]
+        },
+        {
+          "name": "shlx64",
+          "cases": 2777,
+          "mnemonics": [
+            "shlxq"
+          ]
+        },
+        {
+          "name": "shrx32",
+          "cases": 2777,
+          "mnemonics": [
+            "shrxl"
+          ]
+        },
+        {
+          "name": "shrx64",
+          "cases": 2777,
+          "mnemonics": [
+            "shrxq"
+          ]
+        },
+        {
+          "name": "sarx32",
+          "cases": 2777,
+          "mnemonics": [
+            "sarxl"
+          ]
+        },
+        {
+          "name": "sarx64",
+          "cases": 2777,
+          "mnemonics": [
+            "sarxq"
+          ]
+        },
+        {
+          "name": "rorx32",
+          "cases": 2777,
+          "mnemonics": [
+            "rorxl"
+          ]
+        },
+        {
+          "name": "rorx64",
+          "cases": 2777,
+          "mnemonics": [
+            "rorxq"
+          ]
+        }
+      ]
+    },
+    "flags": {
+      "flag": "-msse2",
+      "cases": 99620,
+      "checksum": "dabc6bdd3b7d41af",
+      "mutation": "add32",
+      "mutation_checksum": "93c7f7c6028d282b",
+      "mutation_instruction_failures": 2933,
+      "operations": [
+        {
+          "name": "add32",
+          "cases": 2930,
+          "mnemonics": [
+            "addl"
+          ]
+        },
+        {
+          "name": "add64",
+          "cases": 2930,
+          "mnemonics": [
+            "addq"
+          ]
+        },
+        {
+          "name": "sub32",
+          "cases": 2930,
+          "mnemonics": [
+            "subl"
+          ]
+        },
+        {
+          "name": "sub64",
+          "cases": 2930,
+          "mnemonics": [
+            "subq"
+          ]
+        },
+        {
+          "name": "adc32",
+          "cases": 2930,
+          "mnemonics": [
+            "adcl"
+          ]
+        },
+        {
+          "name": "adc64",
+          "cases": 2930,
+          "mnemonics": [
+            "adcq"
+          ]
+        },
+        {
+          "name": "sbb32",
+          "cases": 2930,
+          "mnemonics": [
+            "sbbl"
+          ]
+        },
+        {
+          "name": "sbb64",
+          "cases": 2930,
+          "mnemonics": [
+            "sbbq"
+          ]
+        },
+        {
+          "name": "cmp32",
+          "cases": 2930,
+          "mnemonics": [
+            "cmpl"
+          ]
+        },
+        {
+          "name": "cmp64",
+          "cases": 2930,
+          "mnemonics": [
+            "cmpq"
+          ]
+        },
+        {
+          "name": "test32",
+          "cases": 2930,
+          "mnemonics": [
+            "testl"
+          ]
+        },
+        {
+          "name": "test64",
+          "cases": 2930,
+          "mnemonics": [
+            "testq"
+          ]
+        },
+        {
+          "name": "and32",
+          "cases": 2930,
+          "mnemonics": [
+            "andl"
+          ]
+        },
+        {
+          "name": "and64",
+          "cases": 2930,
+          "mnemonics": [
+            "andq"
+          ]
+        },
+        {
+          "name": "or32",
+          "cases": 2930,
+          "mnemonics": [
+            "orl"
+          ]
+        },
+        {
+          "name": "or64",
+          "cases": 2930,
+          "mnemonics": [
+            "orq"
+          ]
+        },
+        {
+          "name": "xor32",
+          "cases": 2930,
+          "mnemonics": [
+            "xorl"
+          ]
+        },
+        {
+          "name": "xor64",
+          "cases": 2930,
+          "mnemonics": [
+            "xorq"
+          ]
+        },
+        {
+          "name": "inc32",
+          "cases": 2930,
+          "mnemonics": [
+            "incl"
+          ]
+        },
+        {
+          "name": "inc64",
+          "cases": 2930,
+          "mnemonics": [
+            "incq"
+          ]
+        },
+        {
+          "name": "dec32",
+          "cases": 2930,
+          "mnemonics": [
+            "decl"
+          ]
+        },
+        {
+          "name": "dec64",
+          "cases": 2930,
+          "mnemonics": [
+            "decq"
+          ]
+        },
+        {
+          "name": "neg32",
+          "cases": 2930,
+          "mnemonics": [
+            "negl"
+          ]
+        },
+        {
+          "name": "neg64",
+          "cases": 2930,
+          "mnemonics": [
+            "negq"
+          ]
+        },
+        {
+          "name": "shl32",
+          "cases": 2930,
+          "mnemonics": [
+            "shll"
+          ]
+        },
+        {
+          "name": "shl64",
+          "cases": 2930,
+          "mnemonics": [
+            "shlq"
+          ]
+        },
+        {
+          "name": "shr32",
+          "cases": 2930,
+          "mnemonics": [
+            "shrl"
+          ]
+        },
+        {
+          "name": "shr64",
+          "cases": 2930,
+          "mnemonics": [
+            "shrq"
+          ]
+        },
+        {
+          "name": "sar32",
+          "cases": 2930,
+          "mnemonics": [
+            "sarl"
+          ]
+        },
+        {
+          "name": "sar64",
+          "cases": 2930,
+          "mnemonics": [
+            "sarq"
+          ]
+        },
+        {
+          "name": "rol32",
+          "cases": 2930,
+          "mnemonics": [
+            "roll"
+          ]
+        },
+        {
+          "name": "rol64",
+          "cases": 2930,
+          "mnemonics": [
+            "rolq"
+          ]
+        },
+        {
+          "name": "ror32",
+          "cases": 2930,
+          "mnemonics": [
+            "rorl"
+          ]
+        },
+        {
+          "name": "ror64",
+          "cases": 2930,
+          "mnemonics": [
+            "rorq"
+          ]
+        }
+      ],
+      "native_mutation_failures": 3
+    },
+    "atomics": {
+      "flag": "-msse2",
+      "cases": 35512,
+      "checksum": "faad3e1498581db0",
+      "mutation": "cas-success32",
+      "mutation_checksum": "2476aea558e8f030",
+      "mutation_instruction_failures": 2245,
+      "operations": [
+        {
+          "name": "cas-success32",
+          "cases": 2244,
+          "mnemonics": [
+            "cmpxchgl"
+          ]
+        },
+        {
+          "name": "cas-success64",
+          "cases": 2244,
+          "mnemonics": [
+            "cmpxchgq"
+          ]
+        },
+        {
+          "name": "cas-failure32",
+          "cases": 2244,
+          "mnemonics": [
+            "cmpxchgl"
+          ]
+        },
+        {
+          "name": "cas-failure64",
+          "cases": 2244,
+          "mnemonics": [
+            "cmpxchgq"
+          ]
+        },
+        {
+          "name": "fetch-add32",
+          "cases": 2244,
+          "mnemonics": [
+            "xaddl"
+          ]
+        },
+        {
+          "name": "fetch-add64",
+          "cases": 2244,
+          "mnemonics": [
+            "xaddq"
+          ]
+        },
+        {
+          "name": "exchange32",
+          "cases": 2244,
+          "mnemonics": [
+            "xchgl"
+          ]
+        },
+        {
+          "name": "exchange64",
+          "cases": 2244,
+          "mnemonics": [
+            "xchgq"
+          ]
+        },
+        {
+          "name": "fetch-or32",
+          "cases": 2244,
+          "mnemonics": [
+            "cmpxchgl"
+          ]
+        },
+        {
+          "name": "fetch-or64",
+          "cases": 2244,
+          "mnemonics": [
+            "cmpxchgq"
+          ]
+        },
+        {
+          "name": "fetch-and32",
+          "cases": 2244,
+          "mnemonics": [
+            "cmpxchgl"
+          ]
+        },
+        {
+          "name": "fetch-and64",
+          "cases": 2244,
+          "mnemonics": [
+            "cmpxchgq"
+          ]
+        },
+        {
+          "name": "fetch-xor32",
+          "cases": 2244,
+          "mnemonics": [
+            "cmpxchgl"
+          ]
+        },
+        {
+          "name": "fetch-xor64",
+          "cases": 2244,
+          "mnemonics": [
+            "cmpxchgq"
+          ]
+        },
+        {
+          "name": "tickets",
+          "cases": 4096,
+          "mnemonics": []
+        }
+      ],
+      "native_mode": "native-parity",
+      "native_mutation_failures": 2245,
+      "ticket_control": {
+        "checksum": "cf73f23dd9bcc99f",
+        "diagnostic": "FAIL tickets invariant count=4096 sum=4192256 duplicates=2048"
+      }
+    },
+    "x87": {
+      "flag": "-msse2",
+      "cases": 4096,
+      "checksum": "cc376fd87725cdb0",
+      "mutation": "fadd-precision",
+      "mutation_checksum": "95eec97d57d7a340",
+      "mutation_instruction_failures": 513,
+      "operations": [
+        {
+          "name": "fadd-precision",
+          "cases": 512,
+          "mnemonics": [
+            "faddp"
+          ]
+        },
+        {
+          "name": "fsub-precision",
+          "cases": 512,
+          "mnemonics": [
+            "fsubrp"
+          ]
+        },
+        {
+          "name": "fmul-scale",
+          "cases": 512,
+          "mnemonics": [
+            "fmulp"
+          ]
+        },
+        {
+          "name": "fdiv-scale",
+          "cases": 512,
+          "mnemonics": [
+            "fdivrp"
+          ]
+        },
+        {
+          "name": "fsqrt-square",
+          "cases": 512,
+          "mnemonics": [
+            "fsqrt"
+          ]
+        },
+        {
+          "name": "frndint-even",
+          "cases": 512,
+          "mnemonics": [
+            "frndint"
+          ]
+        },
+        {
+          "name": "fucomi-order",
+          "cases": 512,
+          "mnemonics": [
+            "fucompi"
+          ]
+        },
+        {
+          "name": "fucomi-unordered",
+          "cases": 512,
+          "mnemonics": [
+            "fucompi"
+          ]
+        }
+      ],
+      "native": false,
+      "instruction_mode": "x87-self-check"
+    }
+  }
+}
