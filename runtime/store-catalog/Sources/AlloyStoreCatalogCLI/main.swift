@@ -1,6 +1,7 @@
 // Author: Timur Isaev
 import AlloyStoreCatalog
 import Foundation
+import Darwin
 
 @main
 struct CatalogCLI {
@@ -9,6 +10,10 @@ struct CatalogCLI {
             let args = Array(CommandLine.arguments.dropFirst())
             guard args.count >= 2 else {
                 throw CatalogError.invalidInput("usage: alloy-store-catalog list|discover|get|fingerprint LIBRARY [ID]")
+            }
+            if args[0] == "journal-probe" {
+                try journalProbe(args)
+                return
             }
             let catalog = try StoreCatalog(libraryRoots: [URL(fileURLWithPath: args[1])])
             switch args[0] {
@@ -22,6 +27,20 @@ struct CatalogCLI {
             FileHandle.standardError.write(Data("\(error)\n".utf8))
             exit(1)
         }
+    }
+
+    static func journalProbe(_ args: [String]) throws {
+        guard args.count == 3 else { throw CatalogError.invalidInput("journal-probe ROOT seed|run") }
+        let point = ProcessInfo.processInfo.environment["ALLOY_CATALOG_FAULT"]
+        let journal = try OperationJournal(root: URL(fileURLWithPath: args[1])) { observed in
+            if observed == point { kill(getpid(), SIGKILL) }
+        }
+        let operation = try journal.create(kind: .install, idempotencyKey: "probe", payload: ["fixture": "known"])
+        if args[2] == "run" && operation.state == .queued {
+            try printJSON(journal.transition(operation.operationID, to: .running, stage: "RUNNING"))
+        } else if args[2] == "seed" {
+            try printJSON(operation)
+        } else { throw CatalogError.invalidInput("unknown journal probe") }
     }
 
     static func printJSON<T: Encodable>(_ value: T) throws {
