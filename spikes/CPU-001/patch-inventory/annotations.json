@@ -1,0 +1,396 @@
+{
+  "annotations": {
+    "062a6ff1176996871a54e754ed09e586fa5a3ef0": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "temporary-pending-telemetry-consolidation",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-25-19-real-title-execution-census.md"
+          }
+        ],
+        "justification": "Adds an opt-in decoded-instruction census; decodes are not executed instruction counts. Keep its diagnostics until a reviewed permanent telemetry interface replaces them.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "- `062a6ff` **FEXCore: add a fork-local execution census over decoded\n  instructions.** Per-thread tally of `DecodedInst->TableInfo` in the decoder,\n  merged and emitted through LogMan, plus emission of the `FEXCore::Telemetry`\n  anomaly counters that nothing on the ARM64EC path had ever written out.\n  Off unless `ALLOY_CENSUS` is set.\n- `0b619bf` **Label census telemetry as flags, not counts.** No\n  `FEXCORE_TELEMETRY_INC` exists in the tree; every setter assigns or ORs.\n- `53d2311` **Name the instructions the census cannot dispatch**, so an\n  untranslatable form found in a real title can be attributed and filed.",
+        "ref": "refs/heads/alloy/task-12-census"
+      },
+      "role": "code"
+    },
+    "0b619bfc1a0b4492e2a1b86afe96defbd94dbd33": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "temporary-pending-telemetry-consolidation",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-25-19-real-title-execution-census.md"
+          }
+        ],
+        "justification": "Corrects anomaly output labels to flags rather than counts, avoiding a false frequency interpretation. Retire together with the provisional census instrument.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "- `0b619bf` **Label census telemetry as flags, not counts.** No\n  `FEXCORE_TELEMETRY_INC` exists in the tree; every setter assigns or ORs.\n- `53d2311` **Name the instructions the census cannot dispatch**, so an\n  untranslatable form found in a real title can be attributed and filed.",
+        "ref": "refs/heads/alloy/task-12-census"
+      },
+      "role": "code"
+    },
+    "53d23112928e3cbeb17e2667f7aec0033cd8c4a2": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "temporary-pending-telemetry-consolidation",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-25-19-real-title-execution-census.md"
+          }
+        ],
+        "justification": "Names unsupported decoded forms so a title failure can be attributed. Retain this opt-in diagnostic pending consolidated production telemetry.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "- `53d2311` **Name the instructions the census cannot dispatch**, so an\n  untranslatable form found in a real title can be attributed and filed.",
+        "ref": "refs/heads/alloy/task-12-census"
+      },
+      "role": "code"
+    },
+    "5944be066762ce2b7b52fa33c32d62ee2e8599af": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "Alloy-specific",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-25-21-x18-absorbs-attributed-and-removed.md"
+          }
+        ],
+        "justification": "Changes generated dispatch TEB loads to the Darwin TSD convention, complementing the static gadgets and removing the measured x18 backstop tax.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "- `5944be0` **Source generated TEB loads from the Darwin TSD.** Converts the six\n  runtime emit sites in `Dispatcher.cpp`, `MiscOps.cpp` and `Arm64Emitter.cpp`\n  that read the TEB through x18, matching what `ce60231` did for the static\n  gadgets in `Module.S`. Takes an entitled title boot from over 400,000\n  absorbed faults to 8.",
+        "ref": "refs/heads/alloy/task-8-dispatcher-teb"
+      },
+      "role": "code"
+    },
+    "60981445ceb876117a33f36c91b181adae392890": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "Alloy-specific",
+        "evidence": [
+          {
+            "heading": "## Founder note",
+            "path": "spikes/CPU-001/results/2026-07-24-09-guard-granularity-fixed-and-attribution-corrected.md"
+          }
+        ],
+        "justification": "Records the founder-authorized fork-local exception and starts the provenance record; retained policy administration, not a runtime feature.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "This fork of FEX (upstream base 0589d9b) carries Alloy-local changes. Upstream's\ncontribution policy excludes AI-generated code; the founder authorized AI-assisted\nwork for fork-local branches on 24 July 2026 (see CLAUDE.md). Commits listed here\nare AI-assisted and are not eligible for upstream contribution without independent\nreimplementation.",
+        "ref": "refs/heads/alloy/task-8-dispatcher-teb"
+      },
+      "role": "fork-policy"
+    },
+    "635922cfa7734e9869ea2ae97667e953310e5590": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "upstreamable",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-24-09-guard-granularity-fixed-and-attribution-corrected.md"
+          }
+        ],
+        "justification": "Host-sized guard regions restore actual protection on 16 KiB hosts. The problem is a portable correctness candidate; exact assisted code cannot be submitted upstream.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "- guard-granularity fix (this branch, following the policy-exception commit):\n  host-page-sized guard regions (FEX_GUARD_PAGE_SIZE, build-selected via\n  -DFEX_HOST_GUARD_PAGE_SIZE) for the JIT temp-buffer guard, code-buffer tail\n  guard, and call-ret stack guards, which 16 KB hosts otherwise leave\n  unenforced. Validated by a purpose-built enforcement experiment\n  (spikes/CPU-001/testcases/guard_enforce.c): a 4 KB NOACCESS guard does not\n  fault on the 16 KB host (child survives), a 16 KB guard does\n  (STATUS_ACCESS_VIOLATION). Not eligible for upstream contribution without\n  independent founder reimplementation.",
+        "ref": "refs/heads/alloy/task-8-dispatcher-teb"
+      },
+      "role": "code"
+    },
+    "64261b2ea9e74ee2a70578f5151da8fc08518b7e": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "Alloy-specific",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-25-19-real-title-execution-census.md"
+          }
+        ],
+        "justification": "Records the three assisted census changes in the branch-local provenance ledger. This documentation-only maintenance entry is distinct from its code commits.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "## `alloy/task-12-census` — execution census (issue #12)",
+        "ref": "refs/heads/alloy/task-12-census"
+      },
+      "role": "provenance-record"
+    },
+    "658630b3e7bc91746adc7ca84585c98cd4d4d493": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "Alloy-specific",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-25-20-null-call-dispatch-fixed.md"
+          }
+        ],
+        "justification": "Records the assisted null-call dispatch branch in the provenance ledger. Count its documentation commit separately without presenting it as another behavioral fix.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "## `alloy/task-20-null-call` — null-pointer call dispatch (issue #20)",
+        "ref": "refs/heads/alloy/task-8-dispatcher-teb"
+      },
+      "role": "provenance-record"
+    },
+    "6f8268fb4e008a28403078edc895b14584451075": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "upstreamable",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-24-16-item-24-not-reproducible-toolchain-restored-null-rip-guard.md"
+          }
+        ],
+        "justification": "Refuses invalid saved guest RIP while preserving real execute-at-zero faults. It prevents unresumable dispatch; exact assisted bytes remain fork-only.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "- Null-RIP guest-dispatch refusal: RethrowGuestException now reports whether\n  the packed guest state is fit to dispatch, and refuses when the packed RIP is\n  zero for any exception other than a genuine instruction-fetch fault at\n  address 0. A zero RIP hands the guest a KiUserExceptionDispatcher frame it\n  can never resume from, which is the unbounded pc-0 re-fault loop recorded as\n  item #24; refusing lets the exception pass through to the host so the process\n  terminates with an attributable message instead of hanging. Mirrors the\n  accepted wine-side `sf->pc == 0` refusal in handle_syscall_fault. Verified\n  not to fire across the 17-test corpus. See CPU-001 result 16. Not eligible\n  for upstream contribution without independent founder reimplementation.",
+        "ref": "refs/heads/alloy/task-8-dispatcher-teb"
+      },
+      "role": "code"
+    },
+    "71d19ad33cd466f9d496516f7b967fdd842f0151": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "Alloy-specific",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-24-16-item-24-not-reproducible-toolchain-restored-null-rip-guard.md"
+          }
+        ],
+        "justification": "Accepts the selected Wine host logging callback before emulator initialization; this is the downstream Wine/FEX integration contract.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "- ARM64EC Wine log-sink bridge: libarm64ecfex exports a writable callback slot\n  which the Alloy Wine fork fills before ProcessInit. The Windows logging\n  initialization prefers that native callback over its in-module\n  GetProcAddress lookup, retaining the existing file fallback. This restores\n  FEX breadcrumbs under Wine without changing exception-dispatch behavior.\n  Not eligible for upstream contribution without independent founder\n  reimplementation.",
+        "ref": "refs/heads/alloy/task-8-dispatcher-teb"
+      },
+      "role": "code"
+    },
+    "77f9ae5d8307fb127cc175725fdbbebbeef10641": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "Alloy-specific",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-25-22-arm64ec-anomaly-telemetry-calibrated.md"
+          }
+        ],
+        "justification": "Records the assisted anomaly checkpoints and the limitations of their negative evidence. Keeps branch-local provenance that the current checkout does not contain.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "## `alloy/task-37-anomaly-telemetry` — ARM64EC anomaly checkpoints (issue #37)",
+        "ref": "refs/heads/alloy/task-37-anomaly-telemetry"
+      },
+      "role": "provenance-record"
+    },
+    "7e4de3e4c66f97be61a17c60dd8ed01aa404d963": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "temporary-pending-history-cleanup",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-25-18-mxcsr-sticky-flags-implemented.md"
+          }
+        ],
+        "justification": "Retained superseded MXCSR prototype associated with the stale-image false negative. Its WIP branch is historical and excluded from live replay, but retained IDs remain bounded.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "- (WIP, branch `alloy/task-7-mxcsr-wip`, not merged) MXCSR sticky\n  exception-status flags via host FPSR. Implemented and regression-free but\n  without runtime effect; see CPU-001 issue #7 for the verified dead-end.",
+        "ref": "refs/heads/alloy/task-7-mxcsr-wip"
+      },
+      "role": "code"
+    },
+    "86c8130fda2f31e78384146e654aee2055e74bd4": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "upstreamable",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-25-20-null-call-dispatch-fixed.md"
+          }
+        ],
+        "justification": "Dispatches null-pointer guest branches with the saved guest stack so guest exception handlers can catch the fault. Exact assisted bytes remain fork-only.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "- `86c8130` **Dispatch guest branches through a null pointer to the guest.**\n  Routes a null-Pc execute fault into `RethrowGuestException` instead of the\n  pass-through branch, so the guest context carries FEX's saved guest RSP\n  rather than the dispatcher gadget's stack.\n- `ff1a395` **Report RIP 0 for a guest branch into the null page**, matching\n  Windows, so the unwinder resolves the SEH scope from the pushed return\n  address rather than from a RIP one stack frame too shallow.",
+        "ref": "refs/heads/alloy/task-8-dispatcher-teb"
+      },
+      "role": "code"
+    },
+    "93cae98c140e568dc5294d8a5b715d749f2f4b2a": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "upstreamable",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-24-10-exception-dispatch-family-resolved.md"
+          }
+        ],
+        "justification": "Rejects an unset JIT guard pointer so unrelated null dereferences are not swallowed as buffer overflow. Exact assisted code requires independent reimplementation.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "- JITGuardPage null-claim fix: HandleJITGuardPage no longer claims faults when\n  Thread->JITGuardPage is unset (zero until the thread's first compilation);\n  previously every null-page dereference on a cache-hit-only thread was\n  treated as a JIT buffer overflow and the context replaced from the stale\n  restart jump buffer (thread resumed at pc 0). Upstream-latent bug, widened\n  by the guard-granularity change. Validated by spikes/CPU-001 seh_worker /\n  seh_deep going green (main-thread and worker-thread caught AVs, plus\n  continue-execution with modified Rip). See CPU-001 result 10. Not eligible\n  for upstream contribution without independent founder reimplementation.",
+        "ref": "refs/heads/alloy/task-8-dispatcher-teb"
+      },
+      "role": "code"
+    },
+    "9529e2d1c4b64435b2324d1d3733cbee26ad458b": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "temporary-pending-history-cleanup",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-25-18-mxcsr-sticky-flags-implemented.md"
+          }
+        ],
+        "justification": "Records the historical WIP investigation and its then-observed lack of runtime effect; later result 18 corrects the stale-image interpretation. Retained documentation is counted.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "- (WIP, branch `alloy/task-7-mxcsr-wip`, not merged) MXCSR sticky\n  exception-status flags via host FPSR. Implemented and regression-free but\n  without runtime effect; see CPU-001 issue #7 for the verified dead-end.",
+        "ref": "refs/heads/alloy/task-7-mxcsr-wip"
+      },
+      "role": "provenance-record"
+    },
+    "98d5e2dcd8c618cccdfa68e4b76134cd450d1555": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "upstreamable",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-25-18-mxcsr-sticky-flags-implemented.md"
+          }
+        ],
+        "justification": "Preserves x86 sticky floating-point status through ARM FPSR translation. This semantic correctness problem is an upstream candidate after independent reimplementation.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "- MXCSR sticky exception-status virtualization: GetMXCSR and\n  RestoreMXCSRState translate the six x86 status bits to and from the host\n  FPSR cumulative exception field through ordered GetFPSR/SetFPSR IR\n  operations, and XSAVE now advertises the complete 0xFFFF MXCSR mask.\n  Verified by direct ldmxcsr/stmxcsr probes and CPU-001 x87_fp_edge assertions\n  that clear the field, raise divide-by-zero, accumulate invalid, and clear it\n  again. An earlier apparent no-op was a stale-image test: Wine loads the\n  build-tree libarm64ecfex builtin before the system32 copy; a 0xDEAD sentinel\n  reached the guest after the active image was replaced. See CPU-001 result\n  18. Not eligible for upstream contribution without independent founder\n  reimplementation.",
+        "ref": "refs/heads/alloy/task-8-dispatcher-teb"
+      },
+      "role": "code"
+    },
+    "ad942313dca79d32133cceaaf617016821e3b952": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "Alloy-specific",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-25-21-x18-absorbs-attributed-and-removed.md"
+          }
+        ],
+        "justification": "Records the generated TEB-load branch in the provenance ledger. This is a separately retained administrative commit, not another runtime optimization.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "## `alloy/task-8-dispatcher-teb` — generated TEB loads (issue #8)",
+        "ref": "refs/heads/alloy/task-8-dispatcher-teb"
+      },
+      "role": "provenance-record"
+    },
+    "ce60231a44538f8566389a47ca380d0782e6646d": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "Alloy-specific",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-25-17-x18-fault-tax-premise-not-supported.md"
+          }
+        ],
+        "justification": "Loads static dispatcher TEB state through Darwin TSD rather than Windows x18. Removes an implicit Wine preamble dependency; not a portable Windows change.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "- ARM64EC dispatcher-gadget TEB loads via tpidrro_el0: the five x18-relative TEB\n  reads in Source/Windows/ARM64EC/Module.S now source the TEB from the Darwin\n  TSD through a LOAD_TEB macro, matching the Alloy wine fork's own dispatch\n  wrappers. Kept as a robustness fix, not a performance one: measurement showed\n  the gadgets were not faulting (wine establishes x18 before entering FEX) and\n  the change moves the absorbed-fault count not at all. It removes an\n  undocumented dependency on that wine preamble. Wrong on real Windows-on-ARM,\n  where x18 is the TEB. Corpus green with it in. See CPU-001 result 17. Not\n  eligible for upstream contribution without independent founder\n  reimplementation.",
+        "ref": "refs/heads/alloy/task-8-dispatcher-teb"
+      },
+      "role": "code"
+    },
+    "eee1aa9e1db40972a404425cd1329067e08ff72a": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "temporary-pending-telemetry-consolidation",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-25-22-arm64ec-anomaly-telemetry-calibrated.md"
+          }
+        ],
+        "justification": "Emits anomaly flags after ARM64EC unaligned helpers can set them and provides a zero baseline. Retire with consolidated telemetry; unsupported CAS-tear zeros are not clean evidence.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "- `eee1aa9` **Emit anomaly flags when ARM64EC's unaligned-access helper sets\n  them.** `ProcessInit` emits an explicit zero baseline, then the ARM64EC fault\n  path checks FEX's atomic telemetry values after each unaligned-access helper\n  invocation and logs only newly observed bits. The log labels every value as a\n  flag or mask rather than a frequency.",
+        "ref": "refs/heads/alloy/task-37-anomaly-telemetry"
+      },
+      "role": "code"
+    },
+    "ff1a3951154b40d8c8e56b4d432480ad409d25ba": {
+      "ai_assisted": true,
+      "annotation": {
+        "classification": "upstreamable",
+        "evidence": [
+          {
+            "heading": "## Outcome",
+            "path": "spikes/CPU-001/results/2026-07-25-20-null-call-dispatch-fixed.md"
+          }
+        ],
+        "justification": "Reports guest RIP zero for null-page branches so unwinding resolves the proper caller frame, matching the measured Windows behavior; requires independent upstream reimplementation.",
+        "status": "retained"
+      },
+      "provenance": {
+        "literal": "- `ff1a395` **Report RIP 0 for a guest branch into the null page**, matching\n  Windows, so the unwinder resolves the SEH scope from the pushed return\n  address rather than from a RIP one stack frame too shallow.",
+        "ref": "refs/heads/alloy/task-8-dispatcher-teb"
+      },
+      "role": "code"
+    }
+  },
+  "author": "Timur Isaev",
+  "bounds": {
+    "historical_only_commit_ids": 2,
+    "live_commit_ids": 18,
+    "retained_commit_ids": 20
+  },
+  "expected_checkout": "alloy/task-8-dispatcher-teb",
+  "historical_branches": [
+    "refs/heads/alloy/task-7-mxcsr-wip"
+  ],
+  "upstream_ref": "refs/remotes/origin/main",
+  "version": 1
+}
