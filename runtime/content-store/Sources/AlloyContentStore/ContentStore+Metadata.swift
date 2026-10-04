@@ -73,6 +73,9 @@ extension ContentStore {
             throw ContentStoreError.invalidJournal(url.deletingPathExtension().lastPathComponent)
         }
 
+        guard operation.operationID == url.deletingPathExtension().lastPathComponent else {
+            throw ContentStoreError.invalidJournal(url.deletingPathExtension().lastPathComponent)
+        }
         guard operation.schemaVersion == ActivationOperation.currentSchemaVersion else {
             throw ContentStoreError.unsupportedSchema(
                 kind: "activation journal",
