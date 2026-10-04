@@ -1,0 +1,16 @@
+[
+  {
+    "package": "content-store",
+    "assertion_file": "Tests/AlloyContentStoreTests/IntegrityAttackTests.swift",
+    "exit": 1,
+    "seconds": 18.825,
+    "hosted": false
+  },
+  {
+    "package": "store-identity",
+    "assertion_file": "Tests/AlloyStoreIdentityTests/UnicodeFilenameTests.swift",
+    "exit": 1,
+    "seconds": 5.115,
+    "hosted": false
+  }
+]
