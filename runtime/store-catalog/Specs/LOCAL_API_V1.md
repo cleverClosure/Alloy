@@ -21,11 +21,11 @@ One immutable catalog snapshot contains fully fingerprinted installations.
 Manifest parsing and fingerprinting use the existing production package.
 Pagination is sorted by game ID with a limit of 1–1000; a token from a different
 snapshot is rejected. Discovery and refresh return observations; the operation
-engine records their durable operation/result envelope in later milestones.
+engine records their durable operation/result envelope.
 
 ## Installation and storage records
 
-The following field-level contract is the target of the next two milestones.
+The installation and storage APIs use the following field-level contract.
 Each plan is frozen and content-addressed before an operation starts. No plan
 names a Steam payload as a mutation target.
 

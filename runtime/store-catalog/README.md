@@ -81,3 +81,7 @@ only the synthetic CLI process at an instrumented point. The matrix's
 `ALLOY_CATALOG_CONTROL=pause|cancel` and `ALLOY_CATALOG_CONTROL_OPERATION=ID`
 exercise a real control call after the first layer fetch. They are test hooks,
 not a user-facing background service.
+
+Both proof commands are registered as fast suites in `tools/test-all` and run
+in the existing on-PR CI job. The [hosted gate evidence](Results/2026-10-04-ci-proof.md)
+records the deliberate assertion failure, repaired green run, and job budget.
