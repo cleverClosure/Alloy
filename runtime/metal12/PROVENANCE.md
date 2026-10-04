@@ -278,3 +278,22 @@ are appended and never rewritten.
     evidence only. New integration commits and measured check identities are
     reported separately; the historical pressure, shader and presentation
     results are not relabeled as measurements on the current host or head.
+
+- **2026-10-04 — #91 native integration checks and signature verification.**
+  - The frozen signed merge `87f9c89e042f897365325f61f8132a797de6a11f` built
+    successfully and passed the descriptor/barrier and canonical lowering
+    checks recorded in M12-006 result 08. Their deliberate-failure controls
+    were observed. The model runner's status 3 explicitly leaves residency
+    unrun; no new pressure, shader, presentation or Wine/DXC result is claimed.
+  - Git/SSH signature verification authenticated the merge and original tag
+    with the previously authorized public-key fingerprint. Only public-key
+    identity metadata was displayed; the existing private key was used by
+    the signing tool without exposing its contents. A separate read-only
+    review independently checked the signatures and preserved source/log
+    bytes. All first-party scripts and implementation bytes remain unchanged.
+  - Tool outputs include native build/run manifests, local logs and result 08.
+    The following documentation-only closeout does not replace the exact
+    tested commit identity. Hosted CI and automatic merge/board reconciliation
+    are the remaining publication steps; the July private evidence snapshot
+    does not cover this later session. No excluded source or new external
+    implementation input was consulted.
