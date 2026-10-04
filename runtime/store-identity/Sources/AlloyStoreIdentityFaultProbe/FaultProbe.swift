@@ -88,6 +88,7 @@ private enum AlloyStoreIdentityFaultProbe {
     guard arguments.count >= 2 else {
       throw ProbeError.usage
     }
+    if try runDiskPressureProbe(arguments) { return }
     let fault = try FaultConfiguration()
     switch arguments[1] {
     case "scan":

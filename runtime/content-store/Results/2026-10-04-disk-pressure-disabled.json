@@ -1,0 +1,56 @@
+{
+  "author": "Timur Isaev",
+  "filesystem": "APFS",
+  "image_mib": 128,
+  "injected": false,
+  "cases": [
+    {
+      "name": "download",
+      "status": "PASS",
+      "injected": false,
+      "enospc_failures": 0,
+      "filler_bytes": 0,
+      "rejection": null,
+      "seconds": 0.193
+    },
+    {
+      "name": "materialization",
+      "status": "PASS",
+      "injected": false,
+      "enospc_failures": 0,
+      "filler_bytes": 0,
+      "rejection": null,
+      "seconds": 0.072
+    },
+    {
+      "name": "catalog",
+      "status": "PASS",
+      "injected": false,
+      "enospc_failures": 0,
+      "filler_bytes": 0,
+      "rejection": null,
+      "seconds": 0.078
+    },
+    {
+      "name": "identity-scan",
+      "status": "PASS",
+      "injected": false,
+      "enospc_failures": 0,
+      "filler_bytes": 0,
+      "rejection": null,
+      "seconds": 0.025
+    },
+    {
+      "name": "identity-cache",
+      "status": "PASS",
+      "injected": false,
+      "enospc_failures": 0,
+      "filler_bytes": 0,
+      "rejection": null,
+      "seconds": 0.034
+    }
+  ],
+  "pass": 5,
+  "fail": 0,
+  "enospc_failures": 0
+}

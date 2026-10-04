@@ -1,0 +1,56 @@
+{
+  "author": "Timur Isaev",
+  "filesystem": "APFS",
+  "image_mib": 128,
+  "injected": true,
+  "cases": [
+    {
+      "name": "download",
+      "status": "PASS",
+      "injected": true,
+      "enospc_failures": 1,
+      "filler_bytes": 129478656,
+      "rejection": "error: write partial download failed with errno 28",
+      "seconds": 0.842
+    },
+    {
+      "name": "materialization",
+      "status": "PASS",
+      "injected": true,
+      "enospc_failures": 1,
+      "filler_bytes": 129515520,
+      "rejection": "error: Error Domain=NSCocoaErrorDomain Code=640 \"You can\u2019t save the file \u201c.generation-b.game-generation-b-da9f9b9b-77c3-4bb5-88c1-d6782a8c4500.staging\u201d because the volume \u201cAlloyPressure\u201d is out of space.\" UserInfo={NSFilePath=<APFS>/materialization/generations/game/.generation-b.game-generation-b-da9f9b9b-77c3-4bb5-88c1-d6782a8c4500.staging, NSURL=file://<APFS>/materialization/generations/game/.generation-b.game-generation-b-da9f9b9b-77c3-4bb5-88c1-d6782a8c4500.staging, NSUnderlyingError=<address> {Error Domain=NSPOSIXErrorDomain Code=28 \"No space left on device\"}}",
+      "seconds": 0.63
+    },
+    {
+      "name": "catalog",
+      "status": "PASS",
+      "injected": true,
+      "enospc_failures": 1,
+      "filler_bytes": 129470464,
+      "rejection": "error: SQLite error 13: database or disk is full",
+      "seconds": 0.677
+    },
+    {
+      "name": "identity-scan",
+      "status": "PASS",
+      "injected": true,
+      "enospc_failures": 1,
+      "filler_bytes": 129593344,
+      "rejection": "DISK_PRESSURE ENOSPC Error Domain=NSCocoaErrorDomain Code=640 \"Creating a temporary file via mktemp failed. Creating the temporary file via _amkrtemp previously also failed with errno 28\" UserInfo={NSUserStringVariant=(\n    Folder\n), NSFilePath=<APFS>/identity-scan/fingerprint.json, NSURL=file://<APFS>/identity-scan/fingerprint.json, NSDebugDescription=Creating a temporary file via mktemp failed. Creating the temporary file via _amkrtemp previously also failed with errno 28, NSUnderlyingError=<address> {Error Domain=NSPOSIXErrorDomain Code=28 \"No space left on device\"}}",
+      "seconds": 0.827
+    },
+    {
+      "name": "identity-cache",
+      "status": "PASS",
+      "injected": true,
+      "enospc_failures": 1,
+      "filler_bytes": 129605632,
+      "rejection": "DISK_PRESSURE ENOSPC fileSystem(operation: \"open temporary\", path: \"<APFS>/identity-cache/cache/invalidations/.9a84944a5b3505977b5f1ea1288d69cf75b773c853a2fa6e8a99649c3666d9be.tmp-0356abba-6db1-4724-98bc-b6dec5294009\", code: 28)",
+      "seconds": 0.732
+    }
+  ],
+  "pass": 5,
+  "fail": 0,
+  "enospc_failures": 5
+}
