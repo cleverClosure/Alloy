@@ -114,20 +114,21 @@
     "imageHashes": {
       "type": "object",
       "minProperties": 1,
-      "additionalProperties": false,
-      "required": [
-        "The Life and Suffering of Sir Brante.exe"
-      ],
-      "properties": {
-        "The Life and Suffering of Sir Brante.exe": {
-          "$ref": "#/$defs/lowercaseSha256"
-        },
-        "executableSHA256": {
-          "$ref": "#/$defs/lowercaseSha256"
-        },
-        "processPolicies[].imageSHA256": {
-          "$ref": "#/$defs/lowercaseSha256"
-        }
+      "maxProperties": 3,
+      "propertyNames": {
+        "allOf": [
+          {
+            "$ref": "#/$defs/safeRelativePath"
+          },
+          {
+            "not": {
+              "pattern": "[\\x00-\\x1f\\x7f]"
+            }
+          }
+        ]
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/lowercaseSha256"
       }
     },
     "selector": {
@@ -188,7 +189,30 @@
                 "required": [
                   "executableSHA256",
                   "processPolicies[].imageSHA256"
-                ]
+                ],
+                "minProperties": 3,
+                "maxProperties": 3
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "image_hashes": {
+                "maxProperties": 1,
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "executableSHA256"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "processPolicies[].imageSHA256"
+                      ]
+                    }
+                  ]
+                }
               }
             }
           }

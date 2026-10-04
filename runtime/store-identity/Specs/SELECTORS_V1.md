@@ -54,12 +54,17 @@ Each selector contains exactly:
 repository-relative POSIX path with no empty, `.` or `..` component.
 `sha256` is the lowercase SHA-256 of the exact committed artifact bytes.
 
-`image_hashes` always contains the exact installed image path
-`The Life and Suffering of Sir Brante.exe`. A `launch-policy` also contains
+`image_hashes` contains exactly one safe relative installed image path, using
+the same path-component rules as `artifact.path` and no control characters.
+The path is selected by the artifact binding, with exact UTF-8 comparison and
+no case or Unicode normalization. A `launch-policy` also contains
 `executableSHA256` and `processPolicies[].imageSHA256`, preserving both field
 names emitted by the launch harness. All values MUST be identical because they
-name the same executable bytes. No other image-hash key is defined by the
-committed v1 registry.
+name the same executable bytes. These two aliases are reserved and cannot serve
+as installed image paths. Other artifact kinds MUST NOT contain either alias.
+Multiple installed image paths are not defined in v1. The committed registry
+continues to bind `The Life and Suffering of Sir Brante.exe`; selecting another
+title's own executable does not change those historical bindings.
 
 ## 4. Exact-match semantics
 

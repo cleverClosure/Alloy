@@ -179,7 +179,7 @@ extension FingerprintScanner {
         break
       }
       if let candidate = try observedCandidate(
-        at: url.standardizedFileURL,
+        at: url,
         rootComponents: rootComponents
       ) {
         candidates.append(candidate)
@@ -222,13 +222,16 @@ extension FingerprintScanner {
     for url: URL,
     rootComponents: [String]
   ) -> String {
-    let components = url.pathComponents
+    let components = url.standardizedFileURL.pathComponents
     guard components.count > rootComponents.count,
       components.starts(with: rootComponents)
     else {
       return url.path
     }
-    return components.dropFirst(rootComponents.count).joined(separator: "/")
+    // Standardization aligns root aliases such as /private/tmp and /tmp, but also
+    // normalizes Unicode. Retain the unstandardized directory-entry suffix for identity.
+    let relativeCount = components.count - rootComponents.count
+    return url.pathComponents.suffix(relativeCount).joined(separator: "/")
   }
 
   fileprivate static func hash(candidate: Candidate) throws -> HashedFile {
