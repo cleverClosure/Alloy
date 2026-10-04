@@ -1,7 +1,7 @@
 {
   "author": "Timur Isaev",
   "seed": "a1c0ffee5eed0003",
-  "oracle": "native references or host atomics; x87 guest self-check only; FEX unverified",
+  "oracle": "native references or host atomics; x87 guest self-check only; measured FEX outcomes are recorded in dated CPU-001 results",
   "families": {
     "bmi1": {
       "flag": "-mbmi",

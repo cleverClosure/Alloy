@@ -1,9 +1,9 @@
-# CPU-001 result 26 — integer, atomic and x87 corpus prepared; FEX pending
+# CPU-001 result 26 — integer, atomic and x87 corpus verified through FEX
 
 **Author:** Timur Isaev  
 **Date:** 4 October 2026  
 **Host:** Apple Silicon, macOS 27.0 (26A428)  
-**Issue:** #104 milestone 4 preparation; runtime dependency #111
+**Issue:** #104 milestone 4; isolated runtime repair #111
 
 ## Observed outcomes
 
@@ -13,7 +13,9 @@ Rosetta instruction builds. Atomics execute real operations on both hosts and
 agree with a serial reference. x87 executes exact guest-side self-checks on
 Rosetta and has **no arm64 floating-point comparison**. Every clean run passed;
 every family's deliberately corrupted build failed by name with exit 1.
-These are local oracle and harness proofs. **No FEX outcome is claimed.**
+Actual FEX execution now reproduces all five clean checksums with zero
+failures and rejects every corrupted guest with its exact named failures and
+exit 1. The separate atomic ticket corruption also fails as expected.
 
 | Family | Forms/invariants | Cases | Clean checksum | Corrupted-reference checksum |
 | --- | ---: | ---: | --- | --- |
@@ -119,8 +121,9 @@ with exceptions masked, then is restored. Every operation gets 512 seeded
 cases. The corruption changes the first family's exact expected significand.
 
 Rosetta runs sanity-check the guest and its failure control; they are not a
-native-arm64 oracle and do not satisfy the required FEX run. The authoritative
-FEX-side result remains pending. A future FEX precision mismatch must be
+native-arm64 oracle. The separate FEX execution now passes the clean self-checks
+and rejects the corrupted guest at the recorded pins. A future FEX precision
+mismatch must be
 reported as a translator finding, not removed by weakening these expectations.
 
 The explicit FSUBP/FDIVP bytes use Intel operand order. LLVM's AT&T disassembly
@@ -131,10 +134,28 @@ and LLVM's
 [BMI1](https://clang.llvm.org/doxygen/bmiintrin_8h.html) and
 [BMI2](https://clang.llvm.org/doxygen/bmi2intrin_8h.html) declarations.
 
-## Remaining acceptance work
+## FEX acceptance evidence
 
-Milestone 4 remains pending until these clean and corrupted Windows guests
-actually execute through the restored FEX runtime with the required recorded
-identities and unchanged before/after runtime inventory. Milestone 5 still
-needs its end-to-end FEX aggregate. No Wine guest, shared source edit, shared
-runtime build, GitHub Actions job, or issue #78 change occurred in this work.
+All ten clean/corrupted guest outcomes and the additional atomic ticket control
+passed their expected verdicts through #111's isolated Wine repair and the
+unchanged builtin FEX DLL. Every guest has an actual builtin load event and
+exact expected exit status. x87 remains a guest-side self-check, with no arm64
+FP oracle implied by its FEX pass.
+
+The complete run's report and logs are under
+`/private/tmp/alloy-104-m5/spikes/CPU-001/work/isa-corpus-runs/run-i5v8lx3u/`.
+All family sources, headers and manifest entries in this milestone match that
+run's inputs exactly. The clean Wine revision is
+`f0937d595166631dd00eaab31fef4fb5a6f37031`; unchanged FEX is
+`ad942313dca79d32133cceaaf617016821e3b952`. The actual builtin FEX DLL SHA-256 is
+`ef4ce1be195296ae2e1bd6612efba8fae4b8f3eb37d25985b1275aae52ef7aa6`.
+The selected runtime's complete 21,652-entry inventory is identical before and
+after: `8f0fa54a52cdd63ac7eb8fb722f210a375649e96fbd0cfadaf727423c7fa763a`.
+Per-invocation metadata records idle-runtime checks, source revisions and four
+binary hashes. [Result 28](2026-10-04-28-macos27-jit-signal-resume.md) records the
+runtime repair and shared-tree preservation.
+
+Milestone 4 is complete. Milestone 5 supplies the final aggregate report and
+standing terminal command. This milestone changes only tests and evidence;
+shared Wine/FEX sources and build-2 are unchanged. No GitHub Actions job was
+added, and issue #78 remains separate, open and unmodified.
