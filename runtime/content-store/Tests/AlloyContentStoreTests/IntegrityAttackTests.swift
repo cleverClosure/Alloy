@@ -90,7 +90,7 @@ struct IntegrityAttackTests {
         try withIntegrityStore { _, store in
             let input = integrityLayer("", version: "empty")
             let emptyDigest = "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-            #expect(input.descriptor.digest != emptyDigest)
+            #expect(input.descriptor.digest == emptyDigest)
             let plan = try store.preflightDiskSpace(for: [input.descriptor])
             #expect(plan.activationPeakBytesRequired == 0)
             let generation = try store.activate(gameID: "game", generationID: "empty", layers: [input])
