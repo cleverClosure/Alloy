@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "id": "synthetic-rgb-v1",
+  "command": ["{python}", "{root}/subject.py", "--output", "{output}", "--mode", "{mode}"],
+  "timeout_seconds": 2.0,
+  "capture": {"format": "ppm-p6", "width": 16, "height": 16, "count": 4},
+  "expected": {
+    "clean": {
+      "frames": [
+        "9111c4af2b0946cb4fad68fba6319e898b188167e4e2e5b2c23bb04f9cd11c65",
+        "f5b51be865c1b6cffb7392da515ae38d81abcdb6be3b81c3b788f662226b25b4",
+        "a18367bf6f4f654e7302993da879f78a09ef4105e426437af24b28e700b02be5",
+        "e32ae1dbd611ee6d918ac2a5a343cb748f7066ca27ce0b548f2d401d6aa3ffd2"
+      ],
+      "metrics": {"frame_count": 4, "pixel_count": 1024, "pixel_sum": 344064}
+    },
+    "seeded": {
+      "frames": [
+        "4ed1998287ec39d6bb583cc575f815751adfa172e44bbdc569b43999244152a5",
+        "f5b51be865c1b6cffb7392da515ae38d81abcdb6be3b81c3b788f662226b25b4",
+        "a18367bf6f4f654e7302993da879f78a09ef4105e426437af24b28e700b02be5",
+        "e32ae1dbd611ee6d918ac2a5a343cb748f7066ca27ce0b548f2d401d6aa3ffd2"
+      ],
+      "metrics": {"frame_count": 4, "pixel_count": 1024, "pixel_sum": 344065}
+    }
+  }
+}
