@@ -2,7 +2,7 @@
 
 # Offline diagnostic model, version 1
 
-The package is an offline Foundation/Swift library. It creates no processes, reads no player data, makes no network requests, and adds no dependencies. Tests use synthetic values and the repository's existing privacy document. This milestone provides identities and explicit content classifications for subsequent capture, redaction, bundle, and classifier modules.
+The M1 model layer uses Foundation and the Swift standard library. This layer creates no processes, reads no player data, makes no network requests, and adds no dependencies. Tests use synthetic values and the repository's existing privacy document. This milestone provides identities and explicit content classifications for subsequent capture, redaction, bundle, and classifier modules.
 
 ## Correlation and events
 

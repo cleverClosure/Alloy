@@ -1,0 +1,147 @@
+Building for debugging...
+[Pre-planning 1 / 183]
+[Planning deferred tasks]
+[54 / 91]
+[56 / 93] AlloyDiagnosticsSubject-product
+[66 / 145]
+[71 / 145]
+[75 / 145]
+[76 / 145]
+[80 / 145]
+[82 / 145]
+[85 / 145]
+[89 / 145]
+[91 / 145]
+[92 / 145]
+[106 / 145] AlloyDiagnostics
+[107 / 145] AlloyDiagnosticsSubject-product
+[110 / 145] AlloyDiagnostics
+[122 / 146] AlloyDiagnosticsSubject-product
+[133 / 149] DiagnosticsOracle-product
+[136 / 149] AlloyDiagnosticsTests-product
+[138 / 160] DiagnosticsOracle-product
+[139 / 160]
+[149 / 160] AlloyDiagnosticsTests-product
+[154 / 160] AlloyDiagnosticsTests-product
+[156 / 160] AlloyDiagnosticsTests-product
+Build complete! (9,10 secs)
+Test Suite 'All tests' started at 2026-10-04 13:16:12.401.
+Test Suite 'All tests' passed at 2026-10-04 13:16:12.401.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+􀟈  Test run started.
+􀄵  Testing Library Version: 2084
+􀄵  Target Platform: arm64e-apple-macos14.0
+􀟈  Suite "Local sealed bundle controls" started.
+􀟈  Suite "Document-derived privacy taxonomy" started.
+􀟈  Suite "Offline redaction controls" started.
+􀟈  Suite "Synthetic native capture" started.
+􀟈  Suite "Diagnostics model" started.
+􀟈  Suite "Sealed-bundle failure oracle" started.
+􀟈  Test "symlinked roots, manifests, and payloads are rejected even with identical bytes" started.
+􀟈  Test "library sources use no network APIs and package declares no external dependencies" started.
+􀟈  Test "the issue's seven privacy groups and documented visual/identity classes are represented" started.
+􀟈  Test "construction and reading enforce file, aggregate, and entry limits" started.
+􀟈  Test "all sensitive document classes are excluded, including opaque media" started.
+􀟈  Test "rewritten hashes cannot make known sensitive text or event fields acceptable" started.
+􀟈  Test "otherwise permitted fields cannot hide a known secret pattern" started.
+􀟈  Test "capture export retains only typed summaries and excludes raw stack content" started.
+􀟈  Test "tampered bytes, absent members, and unlisted members break the seal" started.
+􀟈  Test "adding a document category exposes missing taxonomy coverage" started.
+􀟈  Test "every category in security doc sections 17.1 and 18 has exactly one case" started.
+􀟈  Test "all ten sensitive classes exclude entire fields and opaque documents" started.
+􀟈  Test "clean fixture remains byte identical including Unicode and digest data" started.
+􀟈  Test "literal seeded fixture has twenty secrets and no survivors after redaction" started.
+􀟈  Test "preview precedes consent and exported content exactly matches its manifest" started.
+􀟈  Test "bounded scanning rejects oversized or invalid text without lossy decoding" started.
+􀟈  Test "three logged seeds catch every randomized synthetic insertion" started.
+􀟈  Test "scanner failure control distinguishes unclassified arbitrary private text" started.
+􀟈  Test "event codes and field names also fail when they contain a known secret pattern" started.
+􀟈  Test "unknown envelope and nested identity fields are not silently discarded" started.
+􀟈  Test "correlation groups round trip without optional lab context" started.
+􀟈  Test "unsupported schemas and invalid fields are rejected on decode" started.
+􀟈  Test "invalid correlation values cannot bypass construction through decoding" started.
+􀟈  Test "missing classification and invented classifications fail closed" started.
+􀟈  Test "overlapping Unicode findings merge safely and a second scan is unchanged" started.
+􀟈  Test "literal event fixture pins every wire key and value" started.
+􀟈  Test "malformed, noncanonical, unknown-field, and inconsistent manifests are rejected" started.
+􀟈  Test "Eight fixtures come from actual scripted operations and survive relocation" started.
+􀟈  Test "relative traversal, absolute paths, nested paths, and duplicate entries are rejected" started.
+􀟈  Test "An actual crash is symbolicated and clean exit has no report" started.
+􀟈  Test "each required correlation member is necessary when decoding" started.
+􀟈  Test "consent levels preserve all four mechanisms without selecting a default" started.
+􀟈  Test "unsafe values in every correlation slot and provider map fail before export" started.
+redaction-clean bytes=316 changed_bytes=0
+redaction-fixture planted=20 survivors=0
+􁁛  Test "the issue's seven privacy groups and documented visual/identity classes are represented" passed after 0.055 seconds.
+􁁛  Test "adding a document category exposes missing taxonomy coverage" passed after 0.063 seconds.
+􁁛  Test "every category in security doc sections 17.1 and 18 has exactly one case" passed after 0.063 seconds.
+􁁛  Test "all sensitive document classes are excluded, including opaque media" passed after 0.063 seconds.
+􁁛  Test "clean fixture remains byte identical including Unicode and digest data" passed after 0.063 seconds.
+􁁛  Test "scanner failure control distinguishes unclassified arbitrary private text" passed after 0.063 seconds.
+􁁛  Test "bounded scanning rejects oversized or invalid text without lossy decoding" passed after 0.063 seconds.
+􁁛  Test "literal seeded fixture has twenty secrets and no survivors after redaction" passed after 0.063 seconds.
+􁁛  Test "unknown envelope and nested identity fields are not silently discarded" passed after 0.063 seconds.
+􁁛  Test "correlation groups round trip without optional lab context" passed after 0.063 seconds.
+􁁛  Test "unsupported schemas and invalid fields are rejected on decode" passed after 0.063 seconds.
+􁁛  Test "invalid correlation values cannot bypass construction through decoding" passed after 0.063 seconds.
+􁁛  Test "literal event fixture pins every wire key and value" passed after 0.063 seconds.
+􁁛  Test "event codes and field names also fail when they contain a known secret pattern" passed after 0.063 seconds.
+􁁛  Test "overlapping Unicode findings merge safely and a second scan is unchanged" passed after 0.063 seconds.
+􁁛  Test "missing classification and invented classifications fail closed" passed after 0.063 seconds.
+􁁛  Test "otherwise permitted fields cannot hide a known secret pattern" passed after 0.063 seconds.
+􁁛  Test "capture export retains only typed summaries and excludes raw stack content" passed after 0.063 seconds.
+􁁛  Test "library sources use no network APIs and package declares no external dependencies" passed after 0.063 seconds.
+􁁛  Test "each required correlation member is necessary when decoding" passed after 0.063 seconds.
+􁁛  Test "consent levels preserve all four mechanisms without selecting a default" passed after 0.063 seconds.
+􁁛  Test "rewritten hashes cannot make known sensitive text or event fields acceptable" passed after 0.063 seconds.
+􁁛  Suite "Document-derived privacy taxonomy" passed after 0.064 seconds.
+􁁛  Suite "Diagnostics model" passed after 0.064 seconds.
+􁁛  Test "preview precedes consent and exported content exactly matches its manifest" passed after 0.072 seconds.
+􁁛  Test "all ten sensitive classes exclude entire fields and opaque documents" passed after 0.073 seconds.
+􁁛  Test "tampered bytes, absent members, and unlisted members break the seal" passed after 0.075 seconds.
+􁁛  Test "symlinked roots, manifests, and payloads are rejected even with identical bytes" passed after 0.090 seconds.
+􁁛  Test "unsafe values in every correlation slot and provider map fail before export" passed after 0.104 seconds.
+􁁛  Test "relative traversal, absolute paths, nested paths, and duplicate entries are rejected" passed after 0.112 seconds.
+􁁛  Test "malformed, noncanonical, unknown-field, and inconsistent manifests are rejected" passed after 0.155 seconds.
+redaction-fuzz seed=3517317121 planted=360 survivors=0 catch_rate=1.0
+redaction-fuzz seed=3517317122 planted=360 survivors=0 catch_rate=1.0
+􁁛  Test "An actual crash is symbolicated and clean exit has no report" passed after 2.940 seconds.
+􀟈  Test "A blocked native thread is sampled and fast exit has no snapshot" started.
+redaction-fuzz seed=3517317123 planted=360 survivors=0 catch_rate=1.0
+􁁛  Test "three logged seeds catch every randomized synthetic insertion" passed after 3.022 seconds.
+􁁛  Suite "Offline redaction controls" passed after 3.023 seconds.
+DIAG_ORACLE fixture=bundle-00 observed=profile_mismatch matched=true
+DIAG_ORACLE fixture=bundle-01 observed=wrong_provider matched=true
+DIAG_ORACLE fixture=bundle-02 observed=shader_compiler_crash matched=true
+DIAG_ORACLE fixture=bundle-03 observed=permission_denial matched=true
+DIAG_ORACLE fixture=bundle-04 observed=corrupt_cache matched=true
+DIAG_ORACLE fixture=bundle-05 observed=memory_pressure matched=true
+DIAG_ORACLE fixture=bundle-06 observed=guest_crash matched=true
+DIAG_ORACLE fixture=bundle-07 observed=insufficient_evidence matched=true
+􁁛  Test "Eight fixtures come from actual scripted operations and survive relocation" passed after 3.150 seconds.
+􀟈  Test "Committed sealed examples reproduce the literal eight-answer oracle" started.
+􁁛  Test "Committed sealed examples reproduce the literal eight-answer oracle" passed after 0.037 seconds.
+􀟈  Test "Disabling each injection yields no diagnosis, including native clean exits" started.
+􁁛  Test "Disabling each injection yields no diagnosis, including native clean exits" passed after 2.358 seconds.
+􀟈  Test "Removing any distinguishing signal prevents classification" started.
+􁁛  Test "A blocked native thread is sampled and fast exit has no snapshot" passed after 3.213 seconds.
+􀟈  Test "Tool timeout is bounded and invalid setup is rejected" started.
+􁁛  Test "Tool timeout is bounded and invalid setup is rejected" passed after 0.178 seconds.
+􀟈  Test "A ready subject exiting nonzero is never a clean fast control" started.
+􁁛  Test "A ready subject exiting nonzero is never a clean fast control" passed after 0.135 seconds.
+􀟈  Test "A real output flood fires the byte cap" started.
+􁁛  Test "A real output flood fires the byte cap" passed after 0.196 seconds.
+􀟈  Test "Unavailable initial process identity fails closed and reaps the direct child" started.
+􁁛  Test "Unavailable initial process identity fails closed and reaps the direct child" passed after 0.071 seconds.
+􀟈  Test "An inherited pipe uses the original deadline and its descendant is removed" started.
+􁁛  Test "An inherited pipe uses the original deadline and its descendant is removed" passed after 0.684 seconds.
+􀟈  Test "LLDB timeout removes its separately grouped hanging inferior" started.
+􁁛  Test "Removing any distinguishing signal prevents classification" passed after 2.383 seconds.
+􀟈  Test "Contradictory diagnoses, mixed identities, and empty evidence never guess" started.
+􁁛  Test "Contradictory diagnoses, mixed identities, and empty evidence never guess" passed after 0.058 seconds.
+􁁛  Suite "Sealed-bundle failure oracle" passed after 7.989 seconds.
+􁁛  Test "construction and reading enforce file, aggregate, and entry limits" passed after 8.254 seconds.
+􁁛  Suite "Local sealed bundle controls" passed after 8.254 seconds.
+􁁛  Test "LLDB timeout removes its separately grouped hanging inferior" passed after 3.201 seconds.
+􁁛  Suite "Synthetic native capture" passed after 10.623 seconds.
+􁁛  Test run with 44 tests in 6 suites passed after 10.623 seconds.
