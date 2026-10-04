@@ -32,7 +32,7 @@ jobs:
     # third_party/src.
     runs-on: [self-hosted, macos, arm64, alloy-lab]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Resolve version
         id: ver
@@ -70,7 +70,7 @@ jobs:
           spikes/LEGAL-001/lgpl-substitution/prove-bundle.sh \
             "$RUNNER_TEMP/release" "$RUNNER_TEMP/staged-runtime"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: alloy-release-${{ steps.ver.outputs.version }}
           path: ${{ runner.temp }}/release
