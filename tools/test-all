@@ -65,8 +65,11 @@ directories. No registered suite builds into the shared Wine tree.
 
 WINE-001's policy tests/proof and native JIT decoder test, CPU-001's guest
 build and SEH matrix, and the native ISA reference/control are full-tier
-entries. ALLOY_WINE_BUILD and ALLOY_WINE_SOURCE override the checkout-local
-build-2/source defaults, including from worktrees. Put llvm-mingw on PATH.
+entries. The complete ISA corpus has separate native-preparation and FEX
+entries: native success never credits a guest outcome (x87 is cross-built
+only). ALLOY_WINE_BUILD, ALLOY_WINE_SOURCE and ALLOY_FEX_SOURCE override the
+checkout-local runtime/source defaults, including from worktrees. Put
+llvm-mingw on PATH; ALLOY_TOOLCHAIN_BIN can select the ISA corpus toolchain.
 Missing tools, exact build artifacts or headers produce SKIP with a reason.
 Wine guest suites also skip when ps shows the selected build tree is busy.
 A ps failure is a skip, never permission to run concurrently.
@@ -103,6 +106,7 @@ from contextlib import redirect_stdout, redirect_stderr
 import io
 import json
 import os
+import platform
 import shutil
 import signal
 import subprocess
@@ -228,6 +232,51 @@ def need_wine_build(*, fex: bool = False) -> ProbeFn:
 def need_wine_source(root: Path) -> Optional[str]:
     header = wine_source(root) / "dlls/ntdll/unix/arm64_jit_store.h"
     return None if header.is_file() else f"missing Wine source header: {header} (ALLOY_WINE_SOURCE)"
+
+
+def isa_toolchain(root: Path) -> Path:
+    if os.environ.get("ALLOY_TOOLCHAIN_BIN"):
+        return configured_path(root, "ALLOY_TOOLCHAIN_BIN", "")
+    compiler = shutil.which("x86_64-w64-mingw32-clang")
+    return Path(compiler).parent.resolve() if compiler else root / "tools/toolchains/llvm-mingw/bin"
+
+
+def isa_environment(root: Path) -> dict[str, str]:
+    return {**wine_environment(root), "ALLOY_TOOLCHAIN_BIN": str(isa_toolchain(root)),
+            "ALLOY_FEX_SOURCE": str(configured_path(root, "ALLOY_FEX_SOURCE", "third_party/src/fex"))}
+
+
+def need_isa_toolchain(root: Path) -> Optional[str]:
+    if platform.system() != "Darwin" or platform.machine() != "arm64":
+        return "ISA native reference proof requires an arm64 macOS host"
+    if not os.access("/usr/bin/clang", os.X_OK):
+        return "missing Apple compiler: /usr/bin/clang"
+    directory = isa_toolchain(root)
+    for name in ("x86_64-w64-mingw32-clang", "llvm-objdump"):
+        path = directory / name
+        if not path.is_file() or not os.access(path, os.X_OK):
+            return f"missing executable ISA tool: {path} (ALLOY_TOOLCHAIN_BIN or llvm-mingw on PATH)"
+    return None
+
+
+def need_isa_source_metadata(root: Path) -> Optional[str]:
+    for variable, default in (("ALLOY_WINE_SOURCE", "third_party/src/wine"),
+                              ("ALLOY_FEX_SOURCE", "third_party/src/fex")):
+        path = configured_path(root, variable, default) / ".git"
+        if not path.exists():
+            return f"missing source revision metadata: {path} ({variable})"
+    return None
+
+
+ISA_CORPUS_PROBE = every(
+    need_paths("spikes/CPU-001/run-isa-corpus.sh", "spikes/CPU-001/isa-corpus-runner.py",
+               "spikes/CPU-001/isa-corpus-controls.py",
+               "spikes/CPU-001/testcases/build-isa-corpus-native.sh",
+               "spikes/CPU-001/testcases/verify-isa-vectors.py",
+               "spikes/CPU-001/testcases/isa-corpus-vectors.json",
+               "spikes/CPU-001/testcases/isa-corpus-integer.json"),
+    need_commands("python3"), need_isa_toolchain,
+)
 
 
 def wine_busy_reason(build: Path, processes: str, own_pid: int) -> Optional[str]:
@@ -414,6 +463,22 @@ REGISTRY: list[Suite] = [
         cwd=".", timeout=120,
         probe=every(need_commands("clang"), need_paths("spikes/CPU-001/testcases/build-isa-corpus-native.sh")),
         description="native SSE2 named-mutation control; no Wine guest",
+    ),
+    Suite(
+        id="cpu-isa-all-native", tier="full",
+        cmd=("bash", "spikes/CPU-001/run-isa-corpus.sh", "--native-only"),
+        cwd=".", timeout=1200, probe=ISA_CORPUS_PROBE,
+        description="build-dependent: all ISA native references, mutations and PE opcode checks; x87 cross-built only; FEX NOT RUN",
+        environment=isa_environment,
+    ),
+    Suite(
+        id="cpu-isa-all-fex", tier="full",
+        cmd=("bash", "spikes/CPU-001/run-isa-corpus.sh"),
+        cwd=".", timeout=2400,
+        probe=every(ISA_CORPUS_PROBE, need_commands("git", "ps"), need_wine_build(fex=True),
+                    need_isa_source_metadata, need_wine_idle),
+        description="build-dependent: every ISA family and mutation in a private FEX prefix; current runtime regression is #111",
+        environment=isa_environment,
     ),
     # --- runtime/profile-compiler ----------------------------------------
     Suite(
@@ -668,7 +733,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 33
+REGISTRY_SUITE_COUNT = 35
 
 
 # ---------------------------------------------------------------------------
@@ -1065,6 +1130,53 @@ def run_selftest() -> int:
               run_one(dynamic, dynamic_root).verdict == "pass")
         check("Wine and CPU entries never enter the CI fast tier",
               not any(s.id.startswith(("wine-", "cpu-")) for s in select_suites(REGISTRY, "fast", None)))
+        # ISA preparation and guest execution share tools, but their verdicts
+        # stay separate. Source revisions are metadata only, never source reads.
+        isa = {s.id: s for s in REGISTRY if s.id.startswith("cpu-isa-all-")}
+        check("ISA native preparation explicitly excludes guest execution",
+              "--native-only" in isa["cpu-isa-all-native"].argv(root)
+              and "--native-only" not in isa["cpu-isa-all-fex"].argv(root))
+        check("an absent aggregate runner is a precise skip",
+              "run-isa-corpus.sh" in (isa["cpu-isa-all-native"].probe(root) or ""))
+        isa_bin = root / "ISA tools with spaces"
+        fex_source = root / "FEX metadata only"
+        with patch.dict(os.environ, {"ALLOY_TOOLCHAIN_BIN": isa_bin.name,
+                                     "ALLOY_WINE_SOURCE": str(fake_source),
+                                     "ALLOY_FEX_SOURCE": str(fex_source)}), \
+                patch("platform.system", return_value="Darwin"), \
+                patch("platform.machine", return_value="arm64"):
+            check("relative ISA toolchain override is rooted at the checkout",
+                  isa_environment(root)["ALLOY_TOOLCHAIN_BIN"] == str(isa_bin))
+            check("missing ISA cross compiler is named",
+                  "x86_64-w64-mingw32-clang" in (need_isa_toolchain(root) or ""))
+            isa_bin.mkdir()
+            cross = isa_bin / "x86_64-w64-mingw32-clang"
+            cross.write_text("fixture"); cross.chmod(0o755)
+            check("missing ISA opcode inspector is named",
+                  "llvm-objdump" in (need_isa_toolchain(root) or ""))
+            inspector = isa_bin / "llvm-objdump"
+            inspector.write_text("fixture"); inspector.chmod(0o755)
+            check("both executable ISA tools satisfy the probe", need_isa_toolchain(root) is None)
+            inspector.chmod(0o644)
+            check("a present non-executable ISA tool still skips",
+                  "llvm-objdump" in (need_isa_toolchain(root) or ""))
+            with patch("platform.machine", return_value="x86_64"):
+                check("an Intel host cannot be credited as an ARM reference proof",
+                      "arm64 macOS" in (need_isa_toolchain(root) or ""))
+            check("missing Wine revision metadata is named",
+                  "ALLOY_WINE_SOURCE" in (need_isa_source_metadata(root) or ""))
+            (fake_source / ".git").write_text("synthetic worktree metadata")
+            check("missing FEX revision metadata is named",
+                  "ALLOY_FEX_SOURCE" in (need_isa_source_metadata(root) or ""))
+            (fex_source / ".git").mkdir(parents=True)
+            check("metadata presence accepts worktree files and checkout directories",
+                  need_isa_source_metadata(root) is None)
+            check("FEX source override reaches the child intact",
+                  isa_environment(root)["ALLOY_FEX_SOURCE"] == str(fex_source))
+        with patch.dict(os.environ, {"ALLOY_TOOLCHAIN_BIN": ""}), \
+                patch("shutil.which", return_value=str(cross)):
+            check("PATH selects the cross compiler's directory without a primary-checkout assumption",
+                  isa_toolchain(root) == isa_bin)
         # Legal proofs opt in through staged inputs; bare checkout is SKIP.
         with patch.dict(os.environ, {"ALLOY_STAGED_RUNTIME": "", "ALLOY_RELEASE_DIR": "",
                                      "ALLOY_CODEC_PROVIDER_DIR": "", "ALLOY_CODEC_UNIXLIB_DIR": ""}):
