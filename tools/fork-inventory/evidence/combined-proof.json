@@ -1,0 +1,128 @@
+{
+  "author": "Timur Isaev",
+  "combined_runs": {
+    "byte_identical": true,
+    "bytes_each": 2182,
+    "count": 2,
+    "sha256": "a542ca82d07407f5f88429cfe548d7ed1ff959e90e1d368341b9b3962332f39e"
+  },
+  "hosted": false,
+  "independent_recounts": {
+    "fex": {
+      "branches": [
+        {
+          "base": "0589d9b872861970b9085f114a261a0885b6ccb6",
+          "branch": "alloy/spike-fex-001",
+          "commits": 6
+        },
+        {
+          "base": "0589d9b872861970b9085f114a261a0885b6ccb6",
+          "branch": "alloy/task-12-census",
+          "commits": 11
+        },
+        {
+          "base": "0589d9b872861970b9085f114a261a0885b6ccb6",
+          "branch": "alloy/task-20-null-call",
+          "commits": 10
+        },
+        {
+          "base": "0589d9b872861970b9085f114a261a0885b6ccb6",
+          "branch": "alloy/task-37-anomaly-telemetry",
+          "commits": 13
+        },
+        {
+          "base": "0589d9b872861970b9085f114a261a0885b6ccb6",
+          "branch": "alloy/task-6-local",
+          "commits": 3
+        },
+        {
+          "base": "0589d9b872861970b9085f114a261a0885b6ccb6",
+          "branch": "alloy/task-7-mxcsr",
+          "commits": 7
+        },
+        {
+          "base": "0589d9b872861970b9085f114a261a0885b6ccb6",
+          "branch": "alloy/task-7-mxcsr-wip",
+          "commits": 7
+        },
+        {
+          "base": "0589d9b872861970b9085f114a261a0885b6ccb6",
+          "branch": "alloy/task-8-dispatcher-teb",
+          "commits": 12
+        }
+      ],
+      "head": "ad942313dca79d32133cceaaf617016821e3b952",
+      "independent_recount": "per-branch merge-base against cached origin/main; no fetch or patch reads",
+      "live_branch": "alloy/task-8-dispatcher-teb",
+      "unchanged": true,
+      "unique_commit_ids": 20
+    },
+    "wine": {
+      "branches": [
+        {
+          "base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+          "branch": "alloy/lgpl-substitution-proof",
+          "commits": 22
+        },
+        {
+          "base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+          "branch": "alloy/spike-wine-001",
+          "commits": 25
+        },
+        {
+          "base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+          "branch": "alloy/task-12-fault-census",
+          "commits": 24
+        },
+        {
+          "base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+          "branch": "alloy/task-34-jit-view-protect",
+          "commits": 24
+        },
+        {
+          "base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+          "branch": "alloy/task-59-ec-delayload-thunks",
+          "commits": 24
+        },
+        {
+          "base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+          "branch": "alloy/task-65-scaleform",
+          "commits": 25
+        },
+        {
+          "base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+          "branch": "alloy/task-8-absorb-attribution",
+          "commits": 23
+        }
+      ],
+      "head": "420c70bdcb7615c3dc0395d162f93645f098fe56",
+      "independent_recount": "per-branch merge-base against cached origin/master; no fetch or patch reads",
+      "live_branch": "alloy/spike-wine-001",
+      "maintenance_bound": 29,
+      "supplemental_issue_111_patch": 1,
+      "unchanged": true,
+      "unique_commit_ids": 28
+    }
+  },
+  "lowered_bound_control": {
+    "actual": 29,
+    "author": "Timur Isaev",
+    "control": "lower combined Wine ceiling below actual inventory",
+    "exit_code": 1,
+    "lowered_bound": 28,
+    "stderr": "FAIL bound:wine_total_maintenance_items:observed_29:limit_28\n",
+    "stdout": ""
+  },
+  "source_parent_commit": "16328c083e3f21b947de038c8dc6d574c2b63471",
+  "tested_files_sha256": {
+    "tools/fork-inventory/bounds.json": "86a7d5744e43e764f8f21719d09565c2dbc173389c6487a3a42d5d11f7373967",
+    "tools/fork-inventory/check-all.sh": "18fe54fe046e8162ffc308c413d9358ca14da4e474c65736386cb8fb37ca3851",
+    "tools/fork-inventory/check_all.py": "96eb81ff181b4811e4a64f74b683bf49d607e5246936f79a152e3c3cff42fc97",
+    "tools/fork-inventory/test_check_all.py": "23eebd5adff1fcfc113cb4dab306783625626d0c32136be9b92c89e32cae76a6"
+  },
+  "unit_controls": {
+    "fork_inventory": 32,
+    "wine_inventory": 12
+  },
+  "version": 1
+}

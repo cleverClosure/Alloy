@@ -1,0 +1,13 @@
+{
+  "author": "Timur Isaev",
+  "limits": {
+    "dxmt_patch_files": 2,
+    "fex_historical_only_commit_ids": 2,
+    "fex_live_commit_ids": 18,
+    "fex_retained_commit_ids": 20,
+    "wine_shared_commit_ids": 28,
+    "wine_supplemental_patches": 1,
+    "wine_total_maintenance_items": 29
+  },
+  "version": 1
+}
