@@ -20,7 +20,9 @@ extension ContentStore {
         }
     }
 
-    /// Plans and refuses an operation before it starts when it will not fit.
+    /// Checks additional CAS bytes against caller-supplied capacity.
+    /// Activation separately checks `activationPeakBytesRequired`, including
+    /// its private publication copy. Neither value reserves filesystem metadata.
     @discardableResult
     public func preflightDiskSpace(
         for layers: [LayerDescriptor],
@@ -76,6 +78,7 @@ extension ContentStore {
         var presentObjectCount = 0
         var missingObjectCount = 0
         var additionalBytesRequired: UInt64 = 0
+        var publicationScratchBytes: UInt64 = 0
         for descriptor in uniqueLayers.values {
             if (try? validateObject(descriptor)) != nil {
                 presentObjectCount += 1
@@ -83,6 +86,7 @@ extension ContentStore {
             }
 
             missingObjectCount += 1
+            publicationScratchBytes = max(publicationScratchBytes, UInt64(descriptor.size))
             additionalBytesRequired = try addingByteCount(
                 UInt64(descriptor.size),
                 to: additionalBytesRequired
@@ -94,7 +98,9 @@ extension ContentStore {
             uniqueObjectCount: uniqueLayers.count,
             presentObjectCount: presentObjectCount,
             missingObjectCount: missingObjectCount,
-            additionalBytesRequired: additionalBytesRequired
+            additionalBytesRequired: additionalBytesRequired,
+            publicationScratchBytes: publicationScratchBytes,
+            activationPeakBytesRequired: try addingByteCount(publicationScratchBytes, to: additionalBytesRequired)
         )
     }
 

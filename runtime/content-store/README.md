@@ -28,9 +28,11 @@ library under the source layout selected by
 - Mark-and-sweep collection roots every game's active, rollback, and candidate
   references plus live leases; it removes unreachable generations, CAS
   objects, abandoned downloads, and quarantine leftovers.
-- Dedup-aware disk preflight reports additional CAS bytes, refuses a
-  caller-supplied insufficient capacity, and makes activation stage at most one
-  payload per missing digest.
+- Dedup-aware disk preflight reports additional CAS bytes. Activation also
+  checks peak logical content bytes, including one private publication copy
+  of the largest missing object, before starting. Metadata/allocation overhead
+  and concurrent writers are outside this estimate. Duplicate missing digests
+  share one staged input.
 - GC reclaim reports separate generation, CAS, download, and quarantine bytes;
   it states whether deferred journals make the value a conservative lower
   bound.

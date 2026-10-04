@@ -12,6 +12,20 @@ public struct DiskSpacePlan: Equatable, Sendable {
     public let presentObjectCount: Int
     public let missingObjectCount: Int
     public let additionalBytesRequired: UInt64
+    /// Largest missing object, copied privately before CAS publication.
+    public let publicationScratchBytes: UInt64
+    /// Missing object bytes plus one private publication copy; excludes metadata.
+    public let activationPeakBytesRequired: UInt64
+
+    /// Checks activation's peak logical content footprint, including its copy.
+    /// Filesystem metadata, allocation rounding and concurrent writers are not reserved.
+    public func requireActivationFits(availableBytes: UInt64) throws {
+        guard activationPeakBytesRequired <= availableBytes else {
+            throw InsufficientDiskSpaceError(
+                requiredBytes: activationPeakBytesRequired, availableBytes: availableBytes
+            )
+        }
+    }
 
     /// Refuses the planned operation when its additional CAS content will not fit.
     public func requireFits(availableBytes: UInt64) throws {

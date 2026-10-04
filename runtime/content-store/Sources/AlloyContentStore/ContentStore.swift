@@ -84,7 +84,7 @@ public final class ContentStore: @unchecked Sendable {
             if requestedOperationID != nil { try requireNoPendingActivation(gameID: gameID) }
             if let availableBytes {
                 let plan = try preflightDiskSpaceUnlocked(for: layers.map(\.descriptor))
-                try plan.requireFits(availableBytes: availableBytes)
+                try plan.requireActivationFits(availableBytes: availableBytes)
             }
             let operationID = requestedOperationID
                 ?? "\(gameID)-\(generationID)-\(UUID().uuidString.lowercased())"

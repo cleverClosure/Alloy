@@ -126,6 +126,8 @@ func diskPreflightIsDedupAware() throws {
         #expect(partiallyPresentPlan.presentObjectCount == 1)
         #expect(partiallyPresentPlan.missingObjectCount == 1)
         #expect(partiallyPresentPlan.additionalBytesRequired == UInt64(second.contents.count))
+        #expect(partiallyPresentPlan.publicationScratchBytes == UInt64(second.contents.count))
+        #expect(partiallyPresentPlan.activationPeakBytesRequired == UInt64(second.contents.count * 2))
 
         _ = try store.activate(
             gameID: "game",
@@ -136,6 +138,8 @@ func diskPreflightIsDedupAware() throws {
         #expect(reinstallPlan.presentObjectCount == 2)
         #expect(reinstallPlan.missingObjectCount == 0)
         #expect(reinstallPlan.additionalBytesRequired == 0)
+        #expect(reinstallPlan.publicationScratchBytes == 0)
+        #expect(reinstallPlan.activationPeakBytesRequired == 0)
     }
 }
 
@@ -168,7 +172,7 @@ func diskPreflightRefusesInsufficientSpace() throws {
 func activationRefusesBeforeStarting() throws {
     try withPlanningStore { _, store in
         let input = planningLayer("activation-space", version: "1")
-        let requiredBytes = UInt64(input.contents.count)
+        let requiredBytes = UInt64(input.contents.count * 2)
 
         #expect(throws: InsufficientDiskSpaceError(
             requiredBytes: requiredBytes,
@@ -198,7 +202,7 @@ func activationRefusesBeforeStarting() throws {
 func activationDeduplicatesMissingDownloads() throws {
     try withPlanningStore { _, store in
         let input = planningLayer("one-staged-payload", version: "1")
-        let requiredBytes = UInt64(input.contents.count)
+        let requiredBytes = UInt64(input.contents.count * 2)
 
         #expect(throws: ContentStoreError.injectedTermination("after-download-action")) {
             _ = try store.activate(
