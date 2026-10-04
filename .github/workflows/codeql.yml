@@ -42,7 +42,9 @@ jobs:
             runner: ubuntu-latest
             build-mode: none
           - language: swift
-            runner: macos-26
+            # Standard public-repository runner, not a paid -large runner.
+            # Compiled CodeQL extraction on Apple Silicon requires Rosetta.
+            runner: macos-26-intel
             build-mode: manual
     steps:
       - name: Check out first-party repository

@@ -3,7 +3,9 @@
 # Public repository protections
 
 Task #157 configures features available without a paid subscription on Alloy's
-public repository. CodeQL uses standard GitHub-hosted Ubuntu and macOS runners.
+public repository. CodeQL uses standard GitHub-hosted Ubuntu and Intel macOS
+runners. The Swift scan uses `macos-26-intel` to avoid CodeQL's Rosetta-based
+compiled extraction on Apple Silicon. Normal CI still runs on Apple Silicon.
 
 ## Repository settings
 
