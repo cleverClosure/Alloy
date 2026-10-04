@@ -11,10 +11,11 @@ func scratchDirectory() throws -> URL {
 
 func treeBytes(_ root: URL) throws -> [String: Data] {
     var result: [String: Data] = [:]
-    let entries = FileManager.default.enumerator(at: root, includingPropertiesForKeys: [.isRegularFileKey])
+    let base = root.resolvingSymlinksInPath()
+    let entries = FileManager.default.enumerator(at: base, includingPropertiesForKeys: [.isRegularFileKey])
     while let file = entries?.nextObject() as? URL {
         if try file.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true {
-            result[String(file.path.dropFirst(root.path.count))] = try Data(contentsOf: file)
+            result[String(file.path.dropFirst(base.path.count))] = try Data(contentsOf: file)
         }
     }
     return result

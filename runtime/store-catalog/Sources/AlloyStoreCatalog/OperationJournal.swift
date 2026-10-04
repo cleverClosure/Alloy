@@ -96,16 +96,18 @@ public final class OperationJournal: @unchecked Sendable {
 
     @discardableResult
     public func checkpoint(
-        _ identifier: String, stage: String, progress: OperationProgress? = nil, controllable: Bool = true
+        _ identifier: String, stage: String, progress: OperationProgress? = nil, controllable: Bool = true,
+        interimResult: Data? = nil
     ) throws -> CatalogOperation {
         try locked {
             var operation = try read(identifier)
             guard operation.state == .running else { throw OperationError.cannotControl(identifier) }
             if operation.stage == stage && operation.progress == (progress ?? operation.progress)
-                && operation.canPause == controllable { return operation }
+                && operation.canPause == controllable && interimResult == nil { return operation }
             operation.stage = stage
             operation.updatedAt = Self.timestamp()
             operation.progress = progress ?? operation.progress
+            operation.result = interimResult ?? operation.result
             operation.events.append(OperationEvent(state: .running, stage: stage))
             operation.canPause = controllable
             operation.canCancel = controllable
