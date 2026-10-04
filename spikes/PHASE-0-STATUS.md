@@ -58,3 +58,5 @@ measurement, review, or decision evidence proves the roadmap wording at its full
 3. STORE-001 install/fingerprint and LAB-001 deterministic reproduction.
 4. Qualified legal review and explicit bootstrap/Metal12 leadership decision.
 5. Final requirement-by-requirement Phase-0 completion audit and go/narrow/pivot decision.
+
+- 4 October 2026: [DIAG-001 offline diagnostics evidence](DIAG-001/results/2026-10-04-01-offline-diagnostics.md) passes the seven seeded bundle-only classifications plus insufficient-evidence control; native capture, redaction and local privacy preview are proven at synthetic scope, while live integration and upload remain deferred.

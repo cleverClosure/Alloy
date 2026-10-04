@@ -1,0 +1,109 @@
+{
+  "author": "Timur Isaev",
+  "command": "swift test --package-path /private/tmp/alloy-103-final-verify/spikes/DIAG-001/prototype",
+  "date": "2026-10-04",
+  "fixture_files": {
+    "bundle-00/events.json": "94d76b7508950490ff6a47d6a8108428b600033d5d9993c6977b66e3076f9f2f",
+    "bundle-00/manifest.json": "ce7de5b7d452e40fc09c02eda032e2cecbf79aaf341ed4c939820ce0012aad2f",
+    "bundle-01/events.json": "6447268dc543077b0e9d2579833f2f4cda9d5da13960bef65a610c1171a4d937",
+    "bundle-01/manifest.json": "9ec724fdf3b155c348bb724da06f268a46c604f6d895ede50d2e5d0abeecab80",
+    "bundle-02/events.json": "08facdbf4a52360a781f2f601adc032d8f16b24335d0b380c31c3d01ee09f813",
+    "bundle-02/manifest.json": "689c813680304e4a5d77d479ec09b1598fb04eb13bc65f2c833e6f6bc2c08514",
+    "bundle-03/events.json": "56a1d70de41af7c9481a7dc1d78f6bc65375aea411320e0ec7aa4de02610f091",
+    "bundle-03/manifest.json": "0c919933e98507c0c473bd741e19e09b1ff02f1e56bab17961586dfed475635f",
+    "bundle-04/events.json": "e92e8d5d84386c65dc8c13240d78ceb1887dec2c8020e0d8976bb393ed0fcdb8",
+    "bundle-04/manifest.json": "c9dc70887a59736704f081d85e8e304f82f4724f42a2704e4844a8a807ae8659",
+    "bundle-05/events.json": "b4b8c50bdc75ddff9204521ff3f65bdb0a9b6822d5af760799fe3763970fdd41",
+    "bundle-05/manifest.json": "19fc4318f4bd6a063ad4fedf85094c721a6aa582073a0fe3872fa28d731299d1",
+    "bundle-06/events.json": "546b1475f9a6c0d954800935e7b9409b2ab4d9311b84aea2afecd2a54f99497d",
+    "bundle-06/manifest.json": "798e2629d6709bbc06374e64c42751805950df2dc5ae829d5d3e5f15a9f7147f",
+    "bundle-07/events.json": "dbeaf76e9d1f9052778861fde88f6a01c85698c57e78c7b04badde33b8058545",
+    "bundle-07/manifest.json": "45b6154771317ea31b53faf6f7b2d4d1e9af64506b23f68bc4a5b08d581751a3",
+    "oracle.json": "0fef5562c26f616b8e99bccdf6dbcd43f0d9747a6e0d9d2dc2ccdd6dcd364eb8"
+  },
+  "fuzz": [
+    {
+      "catch_rate": 1.0,
+      "planted": 360,
+      "seed": 3517317121,
+      "survivors": 0
+    },
+    {
+      "catch_rate": 1.0,
+      "planted": 360,
+      "seed": 3517317122,
+      "survivors": 0
+    },
+    {
+      "catch_rate": 1.0,
+      "planted": 360,
+      "seed": 3517317123,
+      "survivors": 0
+    }
+  ],
+  "host": {
+    "architecture": "arm64",
+    "build": "26A428",
+    "cpu": "Apple M2 Pro",
+    "macos": "27.0",
+    "swift": "Apple Swift 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)"
+  },
+  "literal_redaction": {
+    "changed_clean_bytes": 0,
+    "clean_bytes": 316,
+    "planted": 20,
+    "survivors": 0
+  },
+  "log": {
+    "file": "2026-10-04-offline-diagnostics-tests.log",
+    "sha256": "4d413cabe4f5e549772d66fab22a60fcb467ea418ec95385f26d29ee94cc4b92"
+  },
+  "oracle": [
+    {
+      "expected": "profile_mismatch",
+      "fixture": "bundle-00",
+      "observed": "profile_mismatch"
+    },
+    {
+      "expected": "wrong_provider",
+      "fixture": "bundle-01",
+      "observed": "wrong_provider"
+    },
+    {
+      "expected": "shader_compiler_crash",
+      "fixture": "bundle-02",
+      "observed": "shader_compiler_crash"
+    },
+    {
+      "expected": "permission_denial",
+      "fixture": "bundle-03",
+      "observed": "permission_denial"
+    },
+    {
+      "expected": "corrupt_cache",
+      "fixture": "bundle-04",
+      "observed": "corrupt_cache"
+    },
+    {
+      "expected": "memory_pressure",
+      "fixture": "bundle-05",
+      "observed": "memory_pressure"
+    },
+    {
+      "expected": "guest_crash",
+      "fixture": "bundle-06",
+      "observed": "guest_crash"
+    },
+    {
+      "expected": "insufficient_evidence",
+      "fixture": "bundle-07",
+      "observed": "insufficient_evidence"
+    }
+  ],
+  "schema_version": 1,
+  "seconds": 10.623,
+  "source_commit": "9fcbfef202e1e1fb5c0cfe50cdf22e6ff995410e",
+  "source_snapshot": "git archive of spikes/DIAG-001/prototype and docs/docs/09_SECURITY_PRIVACY_THREAT_MODEL.md",
+  "suites": 6,
+  "tests": 44
+}
