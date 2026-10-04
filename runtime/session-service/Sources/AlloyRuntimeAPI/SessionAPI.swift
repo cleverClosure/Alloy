@@ -12,6 +12,18 @@ public struct DevelopmentLaunchInput: Codable, Sendable {
     public let processes: [ProcessIdentity]
     public let volumes: [String: String]
     public let validForSeconds: Int
+    public init(profile: Data, manifest: Data, metadata: Data, evidence: Data,
+                build: BuildIdentity, processes: [ProcessIdentity], volumes: [String: String],
+                validForSeconds: Int = 120) {
+        self.profile = profile
+        self.manifest = manifest
+        self.metadata = metadata
+        self.evidence = evidence
+        self.build = build
+        self.processes = processes
+        self.volumes = volumes
+        self.validForSeconds = validForSeconds
+    }
 }
 
 public struct LaunchPreview: Codable, Sendable {

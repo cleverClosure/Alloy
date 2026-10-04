@@ -3,7 +3,16 @@
 # Alloy local runtime service
 
 Issue #161 supplies the internal local-service foundation for the client and
-live diagnostics. Milestone 1 implements a versioned XPC boundary and a reusable
+live diagnostics. Run the complete handoff in one command:
+
+```sh
+python3 runtime/session-service/run-integration-proof.py
+```
+
+The [consumer handoff](Specs/CLIENT_HANDOFF.md) covers the public Swift API,
+reconnect contract and reusable native fixture for #162 and #163.
+
+Milestone 1 implements a versioned XPC boundary and a reusable
 Swift client. Milestone 2 connects the existing installation engine and durable
 operation history, including reconnect and crash recovery. Milestone 3 adds
 compiler-verified development previews and fixed native fixture supervision.
@@ -17,7 +26,7 @@ python3 runtime/session-service/run-operation-proof.py
 python3 runtime/session-service/run-session-proof.py
 ```
 
-The ordinary proof must report `pass=9 fail=0 total=9`. The deliberately wrong
+The boundary proof must report `pass=9 fail=0 total=9`. The deliberately wrong
 authorization oracle reports `pass=8 fail=1 total=9` and exits 1. The proof loads
 a uniquely named current-user launchd job from a private temporary plist, makes
 calls from a separate client process, and removes the job and files afterward.

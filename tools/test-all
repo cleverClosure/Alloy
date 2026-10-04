@@ -558,6 +558,15 @@ REGISTRY: list[Suite] = [
         description="actual host identity and compiler refusal controls, including the 7 GiB hosted runner",
         cleanup_grace=15,
     ),
+    Suite(
+        id="runtime-service-integration", tier="fast",
+        cmd=("python3", "runtime/session-service/run-integration-proof.py"),
+        cwd=".", timeout=300,
+        probe=every(need_commands("swift", "python3", "launchctl"),
+                    need_paths("runtime/session-service/run-integration-proof.py"), need_launch_host),
+        description="synthetic discovery through typed client preview/session/reconnect and exact reclamation",
+        cleanup_grace=15,
+    ),
     # --- runtime/profile-compiler ----------------------------------------
     Suite(
         id="profile-compiler-swift-test",
@@ -857,7 +866,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 47
+REGISTRY_SUITE_COUNT = 48
 
 
 # ---------------------------------------------------------------------------
