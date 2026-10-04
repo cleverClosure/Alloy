@@ -2,7 +2,7 @@
 
 # Local rerun variance and cost
 
-Calibration and evaluation are separate invocations and separate subjects. The
+Calibration and evaluation are separate invocations and separate subject processes. The
 envelope is frozen before evaluation; its SHA-256 binds its sample IDs, raw-record
 digests, algorithm source digest, host capabilities and selected execution inputs.
 Reusing a calibration sample ID in evaluation is an error. The validator checks
