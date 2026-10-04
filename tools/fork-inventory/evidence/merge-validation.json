@@ -1,0 +1,79 @@
+{
+  "author": "Timur Isaev",
+  "version": 1,
+  "observed_at_utc": "2026-10-04T13:03:05.389385+00:00",
+  "local_continuation_checks": {
+    "count": 2,
+    "byte_identical": true,
+    "bytes_each": 2182,
+    "sha256": "a542ca82d07407f5f88429cfe548d7ed1ff959e90e1d368341b9b3962332f39e",
+    "matches_original_committed_result": true,
+    "original_source_manifest_verified": true
+  },
+  "local_unit_controls": {
+    "fork_inventory": 32,
+    "wine_inventory": 12
+  },
+  "hosted_scope": "Existing repository lint, test-engine self-test, and fast suites only; the fork-specific inventory/replay/bound gate remains local-only.",
+  "previous_milestone_ci": [
+    {
+      "label": "milestone-1",
+      "run_id": 37189487259,
+      "url": "https://github.com/cleverClosure/Alloy/actions/runs/37189487259",
+      "head_sha": "cab00234fea8c36cba74c1cfb9c756239237491c",
+      "conclusion": "success",
+      "job_started_at": "2026-10-04T08:36:51Z",
+      "job_completed_at": "2026-10-04T08:40:20Z",
+      "job_elapsed_seconds": 209.0,
+      "budget_seconds": 900,
+      "log_sha256": "5a82defd6a4a9a38cbad623815a5ea90f5ae044c62264d897c471976692abfda",
+      "counts": {
+        "selected": 25,
+        "reported": 25,
+        "passed": 25,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "milestone-2",
+      "run_id": 37203086163,
+      "url": "https://github.com/cleverClosure/Alloy/actions/runs/37203086163",
+      "head_sha": "f7a9fb2fd87ede3ba4d68a020a4cc3e13bbbb6a0",
+      "conclusion": "success",
+      "job_started_at": "2026-10-04T12:43:35Z",
+      "job_completed_at": "2026-10-04T12:51:40Z",
+      "job_elapsed_seconds": 485.0,
+      "budget_seconds": 900,
+      "log_sha256": "f2eda05bc304ed5708c1271d38d50121f6f1f01a2e4807df92d75a078a64d3ef",
+      "counts": {
+        "selected": 30,
+        "reported": 30,
+        "passed": 30,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "milestone-3",
+      "run_id": 37203682645,
+      "url": "https://github.com/cleverClosure/Alloy/actions/runs/37203682645",
+      "head_sha": "54f6ba65bb54635c8e2a47866e5ac04b16fd567e",
+      "conclusion": "success",
+      "job_started_at": "2026-10-04T12:53:43Z",
+      "job_completed_at": "2026-10-04T13:00:49Z",
+      "job_elapsed_seconds": 426.0,
+      "budget_seconds": 900,
+      "log_sha256": "e9b536a52513871848748a5d4068d69f5737ae14b15d804eb1459ebda61493e8",
+      "counts": {
+        "selected": 30,
+        "reported": 30,
+        "passed": 30,
+        "failed": 0,
+        "skipped": 0
+      }
+    }
+  ],
+  "final_pr": "https://github.com/cleverClosure/Alloy/pull/154",
+  "final_ci_note": "The final PR also requires green CI; its own result and elapsed time are recorded on the PR before task reconciliation."
+}

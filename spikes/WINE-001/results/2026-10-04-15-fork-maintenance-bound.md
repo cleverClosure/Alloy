@@ -44,7 +44,28 @@ contains seven stopped Wine branches, seven stopped live FEX branches and clean
 combined DXMT application. It records only the first conflict reached per branch.
 An advanced remote tip fails the ordinary check and requires explicit refresh.
 
-Local implementation and proof are complete. Hosted repository lint/CI before
-merging the milestone PRs remains blocked by GitHub account billing. Keep #105
-open until the separate milestone PRs pass their normal merge gates; #80 already
-completed the Wine inventory work and is not reopened.
+After repository CI became available, two more full local checks reproduced
+the same 2,182 bytes and hash above, including after the final milestone was
+rebased onto the separately merged prerequisites. The advertised upstream tips
+still match the receipt, all 32 fork-tool and 12 Wine controls passed again,
+and the original tested-source manifest still matches the final implementation.
+Shared source identities and allowed dirty bytes remain unchanged.
+
+The existing repository CI passed for each preceding milestone:
+
+| Milestone | Hosted run | Result | Job wall time |
+| --- | --- | --- | --- |
+| FEX inventory (#148) | [37189487259](https://github.com/cleverClosure/Alloy/actions/runs/37189487259) | 25 suites passed | 209s |
+| DXMT inventory (#149) | [37203086163](https://github.com/cleverClosure/Alloy/actions/runs/37203086163) | 30 suites passed | 485s |
+| Fresh replay (#153) | [37203682645](https://github.com/cleverClosure/Alloy/actions/runs/37203682645) | 30 suites passed | 426s |
+
+These are the existing repository lint, engine self-test, and fast-suite gates;
+the fork-specific check remains local-only. The suite count increased because
+the independently merged storage-hardening task extended the existing registry.
+This task adds no workflow, registry entry, hosted job, or schedule.
+
+The [merge-validation record](../../../tools/fork-inventory/evidence/merge-validation.json)
+preserves the continuation checks, source-manifest verification, and preceding
+CI receipts. The final milestone [PR #154](https://github.com/cleverClosure/Alloy/pull/154)
+also requires its own green CI run; its final result and wall time are recorded
+on that PR before #105 is reconciled. #80 remains complete.
