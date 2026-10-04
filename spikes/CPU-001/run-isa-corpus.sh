@@ -26,7 +26,7 @@
 #     tree (dlls/libarm64ecfex/aarch64-windows/), never from anything placed
 #     in the prefix's system32 - so nothing is copied there, and this script
 #     instead hashes that exact file before and after the run and asserts
-#     the WINEDEBUG=+module trace actually looked it up, rather than assuming
+#     the WINEDEBUG=+loaddll trace actually loaded it, rather than assuming
 #     the registry key alone is enough.
 #   - A fresh prefix has no x64 emulator registered under
 #     HKLM\Software\Microsoft\Wow64\amd64 - run the guest before writing that
@@ -98,7 +98,7 @@ for dir in "$wine_build" "$toolchain_bin"; do
     exit 2
   }
 done
-for cmd in rg perl shasum; do
+for cmd in rg perl shasum python3; do
   command -v "$cmd" >/dev/null || {
     echo "missing required command: $cmd" >&2
     exit 2
@@ -116,37 +116,59 @@ for f in "$wine_loader" "$wineserver" "$fex_dll" "$cross_cc"; do
   }
 done
 
-# Never race the other agent's build. The bracketed class ([A]lloy) keeps this
-# command's own argv out of its own match.
-contention=$(ps aux | rg '[A]lloy/spikes/WINE-001/work/build-2' || true)
-if [[ -n $contention ]]; then
-  echo "another process is using build-2 right now - aborting:" >&2
-  echo "$contention" >&2
-  exit 2
-fi
-
-work_root="$spike_root/work/isa-corpus"
+# Every invocation checks the selected runtime and the shared runtime separately.
+work_parent="$spike_root/work/isa-corpus"
+runtime_guard="$script_dir/isa-corpus-runtime.py"
+python3 "$runtime_guard" check-directory "$wine_build" "$work_parent"
+mkdir -p "$work_parent"
+work_root=$(mktemp -d "$work_parent/run.XXXXXX")
 guest_dir="$work_root/guest"
 prefix="$work_root/prefix"
 log_dir="$work_root/logs"
-rm -rf "$work_root"
 mkdir -p "$guest_dir" "$prefix" "$log_dir" "$work_root/native-oracle"
+python3 "$runtime_guard" snapshot "$wine_build" "$work_root/runtime-before.json"
+inventory_done=0
 
 wine_dyld_path=${DYLD_FALLBACK_LIBRARY_PATH:-/opt/homebrew/lib}
 
-# Bounds a Wine invocation with a timeout - macOS ships no timeout(1).
-timeout_wine() { # seconds wine-args...
-  local seconds=$1
-  shift
-  perl -e 'alarm shift; exec @ARGV' "$seconds" "$wine_loader" "$@"
+# Bound both time and diagnostic volume, and record exact source/binary identity.
+timeout_wine() { # seconds log wine-args...
+  local seconds=$1 log=$2
+  shift 2
+  python3 "$runtime_guard" run --build "$wine_build" --wine-source "$wine_src" \
+    --fex-source "$fex_src" --baseline "$work_root/runtime-before.json" \
+    --timeout "$seconds" --log "$log" -- "$@"
 }
 
 stop_server() {
-  WINEPREFIX="$prefix" DYLD_FALLBACK_LIBRARY_PATH="$wine_dyld_path" "$wineserver" -k \
-    >/dev/null 2>&1 || true
+  local option rc
+  for option in -k -w; do
+    rc=0
+    WINEPREFIX="$prefix" DYLD_FALLBACK_LIBRARY_PATH="$wine_dyld_path" \
+      perl -e 'alarm shift; exec @ARGV' 10 "$wineserver" "$option" >/dev/null 2>&1 || rc=$?
+    # -k returns 1 when this private prefix's server has already exited.
+    # A timeout or another failure must still fail cleanup; -w must succeed.
+    if ((rc != 0)) && ! [[ $option == -k && $rc == 1 ]]; then
+      return 1
+    fi
+  done
 }
-# Only ever stop OUR OWN prefix's server - never anything another run started.
-trap stop_server EXIT
+finish() {
+  local rc=$?
+  trap - EXIT
+  stop_server || rc=1
+  if ((!inventory_done)); then
+    if ! python3 "$runtime_guard" snapshot "$wine_build" "$work_root/runtime-after.json" ||
+      ! cmp -s "$work_root/runtime-before.json" "$work_root/runtime-after.json"; then
+      echo "FAIL: runtime inventory changed or could not be verified" >&2
+      rc=1
+    fi
+  fi
+  exit "$rc"
+}
+trap finish EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 record_git_revision() { # path label
   local path=$1 label=$2
@@ -209,7 +231,7 @@ echo "fex dll sha256 (before): $fex_sha_before"
 # nobody here can answer.
 WINEPREFIX="$prefix" WINEDLLOVERRIDES="mscoree,mshtml=" WINEDEBUG=-all \
   DYLD_FALLBACK_LIBRARY_PATH="$wine_dyld_path" FEX_SILENTLOG=1 \
-  timeout_wine 120 wineboot -u >"$log_dir/wineboot.log" 2>&1
+  timeout_wine 120 "$log_dir/wineboot.log" wineboot -u
 stop_server
 
 echo "-- setup negative control: unregistered prefix must refuse the x64 guest --"
@@ -219,14 +241,17 @@ set +e
   # WINEDEBUG=-all suppresses even err-class messages, so the channel that
   # carries the expected refusal (err:xtajit) must be turned on explicitly -
   # "-all" alone silently hides the very message this probe is looking for.
-  WINEPREFIX="$prefix" WINEDEBUG=-all,+xtajit \
+  WINEPREFIX="$prefix" WINEDLLOVERRIDES="xtajit64=b;mscoree,mshtml=" WINEDEBUG=-all,+xtajit,+loaddll \
     DYLD_FALLBACK_LIBRARY_PATH="$wine_dyld_path" FEX_SILENTLOG=1 \
-    timeout_wine 30 isa_corpus_sse2.exe
-) >"$log_dir/unregistered.log" 2>&1
+    timeout_wine 60 "$log_dir/unregistered.log" isa_corpus_sse2.exe
+)
 unregistered_rc=$?
 set -e
 stop_server
-if rg -qi 'x64 emulation not implemented' "$log_dir/unregistered.log"; then
+if [[ $unregistered_rc == 1 ]] &&
+  rg -qi 'x64 emulation not implemented' "$log_dir/unregistered.log" &&
+  rg -q 'trace:loaddll:build_module Loaded L"[^"\n]*xtajit64\.dll" at [0-9A-Fa-f]+: builtin' "$log_dir/unregistered.log" &&
+  ! rg -q 'trace:loaddll:build_module Loaded L"[^"\n]*libarm64ecfex\.dll" at [0-9A-Fa-f]+: builtin' "$log_dir/unregistered.log"; then
   echo "confirmed: unregistered prefix refuses the x64 guest (\"x64 emulation not implemented\")"
 else
   echo "FAIL setup check: expected \"x64 emulation not implemented\" from an unregistered prefix" >&2
@@ -242,7 +267,7 @@ REGEDIT4
 EOF
 WINEPREFIX="$prefix" WINEDEBUG=-all \
   DYLD_FALLBACK_LIBRARY_PATH="$wine_dyld_path" FEX_SILENTLOG=1 \
-  timeout_wine 60 regedit "$work_root/select-fex.reg" >"$log_dir/regedit.log" 2>&1
+  timeout_wine 60 "$log_dir/regedit.log" regedit "$work_root/select-fex.reg"
 stop_server
 printf 'registered libarm64ecfex.dll under HKLM\\Software\\Microsoft\\Wow64\\amd64\n'
 
@@ -253,10 +278,16 @@ run_guest() { # exe-name label
     cd "$guest_dir"
     WINEPREFIX="$prefix" WINEDLLOVERRIDES=xtajit64=n WINEDEBUG=-all,+module,+loaddll \
       DYLD_FALLBACK_LIBRARY_PATH="$wine_dyld_path" FEX_SILENTLOG=1 \
-      timeout_wine 60 "$exe"
-  ) >"$log_dir/$label.log" 2>&1
-  echo $? >"$log_dir/$label.exit"
+      timeout_wine 60 "$log_dir/$label.log" "$exe"
+  )
+  local result=$?
   set -e
+  echo "$result" >"$log_dir/$label.exit"
+  stop_server
+  if ! rg -q 'trace:loaddll:build_module Loaded L"[^"\n]*libarm64ecfex\.dll" at [0-9A-Fa-f]+: builtin' "$log_dir/$label.log"; then
+    echo "FAIL: no actual builtin FEX load in $label" >&2
+    exit 1
+  fi
 }
 
 echo "== clean run =="
@@ -265,11 +296,7 @@ clean_rc=$(cat "$log_dir/clean.exit")
 clean_line=$(grep '^cpu-001 isa-corpus sse2:' "$log_dir/clean.log" || true)
 echo "exit=$clean_rc  $clean_line"
 
-if ! rg -qF 'find_builtin_dll looking for "libarm64ecfex.dll"' "$log_dir/clean.log"; then
-  echo "FAIL: never observed Wine look up the libarm64ecfex builtin - cannot trust this run" >&2
-  exit 1
-fi
-echo "confirmed: Wine's module loader looked up libarm64ecfex.dll (trace present in $log_dir/clean.log)"
+echo "confirmed: Wine loaded builtin libarm64ecfex.dll (trace present in $log_dir/clean.log)"
 
 mutate_rc=
 mutate_line=
@@ -286,6 +313,11 @@ fi
 stop_server
 fex_sha_after=$(shasum -a 256 "$fex_dll" | awk '{print $1}')
 echo "fex dll sha256 (after):  $fex_sha_after"
+python3 "$runtime_guard" snapshot "$wine_build" "$work_root/runtime-after.json"
+cmp "$work_root/runtime-before.json" "$work_root/runtime-after.json"
+inventory_done=1
+echo "confirmed: complete runtime inventory unchanged"
+echo "runtime inventories and per-run source/binary identities: $work_root"
 
 {
   echo "run: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -321,4 +353,8 @@ if ((run_mutate)); then
 fi
 
 ((ok)) || exit 1
-echo "run-isa-corpus: all required outcomes observed"
+if ((run_mutate)); then
+  echo "run-isa-corpus: all required outcomes observed"
+else
+  echo "run-isa-corpus: clean development check passed; required mutation NOT RUN"
+fi
