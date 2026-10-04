@@ -48,6 +48,7 @@ third_party/src/*), which is exactly what TASKS.md warns against. Give it:
 
   description  dependency/scope label shown by --list.
   environment  optional function returning child environment overrides.
+  cleanup_grace  bounded TERM grace for private-resource cleanup (default 3s).
 
 Then bump REGISTRY_SUITE_COUNT below by the same amount. It is pinned by
 hand on purpose: a Suite(...) deleted by a bad merge or a careless refactor
@@ -136,6 +137,7 @@ class Suite:
     probe: ProbeFn  # returns a skip reason, or None when the suite can run here
     description: str = ""
     environment: Optional[Callable[[Path], dict[str, str]]] = None
+    cleanup_grace: float = 3.0
 
     def argv(self, root: Path) -> Sequence[str]:
         return self.cmd(root) if callable(self.cmd) else self.cmd
@@ -573,6 +575,14 @@ REGISTRY: list[Suite] = [
     # --- runtime/store-identity (invoked, never modified) -------------------
     # swift test, cold .build: ~17s measured.
     Suite(
+        id="content-store-disk-pressure", tier="fast",
+        cmd=("bash", "runtime/content-store/run-disk-pressure-matrix.sh"),
+        cwd=".", timeout=300, cleanup_grace=50,
+        probe=every(need_commands("swift", "python3", "hdiutil", "diskutil"),
+                    need_paths("runtime/content-store/run-disk-pressure-matrix.py")),
+        description="five real ENOSPC points and five disabled controls in a private 128 MiB APFS image",
+    ),
+    Suite(
         id="store-identity-swift-test",
         tier="fast",
         cmd=("swift", "test", "--package-path", "runtime/store-identity"),
@@ -768,7 +778,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 38
+REGISTRY_SUITE_COUNT = 39
 
 
 # ---------------------------------------------------------------------------
@@ -822,12 +832,12 @@ def audit_results(selected: Sequence[Suite], results: Sequence[Result]) -> Optio
     return None
 
 
-def _kill_process_group(proc: "subprocess.Popen[bytes]") -> None:
+def _kill_process_group(proc: "subprocess.Popen[bytes]", grace_seconds: float = 3) -> None:
     # The suite's shell gets a chance to stop its private Wine server. A
     # final group kill still reaps children that ignore TERM or outlive it.
     try:
         os.killpg(proc.pid, signal.SIGTERM)
-        proc.wait(timeout=3)
+        proc.wait(timeout=grace_seconds)
     except (ProcessLookupError, subprocess.TimeoutExpired):
         pass
     try:
@@ -864,7 +874,7 @@ def run_one(suite: Suite, repo_root: Path) -> Result:
     try:
         code = proc.wait(timeout=suite.timeout)
     except subprocess.TimeoutExpired:
-        _kill_process_group(proc)
+        _kill_process_group(proc, suite.cleanup_grace)
         elapsed = time.monotonic() - start
         return Result(suite.id, suite.tier, "fail", f"timed out after {suite.timeout:.0f}s", elapsed)
 
@@ -1035,6 +1045,21 @@ def run_selftest() -> int:
         check("the timed-out child process is actually dead, not orphaned", child_gone)
         check("timeout gives the suite's private-resource cleanup a chance to run",
               (root / "cleanup.txt").read_text() == "cleaned")
+
+        # A private filesystem detach may exceed the default TERM grace.
+        # Exercise the actual custom allowance, with cleanup delayed past 3s.
+        extended_marker = root / "extended-cleanup.txt"
+        extended = Suite(
+            id="synthetic-extended-cleanup", tier="fast", cwd=".", timeout=0.2,
+            cleanup_grace=5, probe=lambda _r: None,
+            cmd=(sys.executable, "-c", "import time, signal\n"
+                 f"def cleanup(*_):\n time.sleep(3.2); open({str(extended_marker)!r}, 'w').write('cleaned'); "
+                 "raise SystemExit(0)\n"
+                 "signal.signal(signal.SIGTERM, cleanup)\ntime.sleep(30)"),
+        )
+        extended_result = run_one(extended, root)
+        check("custom cleanup grace waits for resource cleanup beyond default three seconds",
+              extended_result.verdict == "fail" and extended_marker.exists())
 
         # 5. --list's count matches the registry — nothing can silently drop.
         listed = select_suites(synthetic, tier="full", only=None)
