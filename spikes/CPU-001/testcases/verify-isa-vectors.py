@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reproduce the vector oracle proofs without running Wine. Author: Timur Isaev."""
+"""Reproduce ISA reference proofs without running Wine. Author: Timur Isaev."""
 
 import argparse
 import hashlib
@@ -14,18 +14,27 @@ import sys
 
 ROOT = Path(__file__).resolve().parent
 MANIFEST = json.loads((ROOT / "isa-corpus-vectors.json").read_text())
+if (ROOT / "isa-corpus-integer.json").is_file():
+    integer_manifest = json.loads((ROOT / "isa-corpus-integer.json").read_text())
+    if integer_manifest["seed"] != MANIFEST["seed"]:
+        raise ValueError("integer and vector seeds disagree")
+    MANIFEST["families"].update(integer_manifest["families"])
 FLAGS = [
     "-std=c11", "-Wall", "-Wextra", "-Werror", "-fno-fast-math",
     "-ffp-contract=off", "-fno-vectorize", "-fno-slp-vectorize",
 ]
 
 
-def validate(text, rc, family, mutated, instruction=False):
+def validate(text, rc, family, mutated, instruction=False, control=None):
     """Exit code, named diagnostics, coverage, seed and checksum must agree."""
     spec = MANIFEST["families"][family]
+    if not spec.get("native", True) and not instruction:
+        raise ValueError("this family has no native arm64 comparison")
     lines = text.splitlines()
-    tag = spec["mutation"] if mutated else "none"
-    mode = "instruction-parity" if instruction else "reference-only"
+    if control not in (None, "tickets") or (control == "tickets" and family != "atomics"):
+        raise ValueError("unknown extra control")
+    tag = control or (spec["mutation"] if mutated else "none")
+    mode = spec.get("instruction_mode", "instruction-parity") if instruction else spec.get("native_mode", "reference-only")
     header = (f"cpu-001 isa-corpus {family} mode={mode} "
               f"seed={MANIFEST['seed']} mutate={tag}")
     if lines.count(header) != 1 or lines[0] != header:
@@ -37,7 +46,7 @@ def validate(text, rc, family, mutated, instruction=False):
     if summary is None or lines[-1] != summaries[0]:
         raise ValueError("missing, duplicate or incomplete summary")
     cases, failures, checksum, actual_tag = summary.groups()
-    expected_hash = spec["mutation_checksum"] if mutated else spec["checksum"]
+    expected_hash = spec["ticket_control"]["checksum"] if control else spec["mutation_checksum"] if mutated else spec["checksum"]
     if int(cases) != spec["cases"] or checksum != expected_hash or actual_tag != tag:
         raise ValueError("case count, checksum or mutation tag disagrees with recorded oracle")
     rows = []
@@ -47,10 +56,14 @@ def validate(text, rc, family, mutated, instruction=False):
             if row is None:
                 raise ValueError("malformed operation record")
             rows.append({"name": row[1], "cases": int(row[2])})
-    if rows != spec["operations"] or sum(row["cases"] for row in rows) != int(cases):
+    inventory = [{"name": op["name"], "cases": op["cases"]} for op in spec["operations"]]
+    if rows != inventory or sum(row["cases"] for row in rows) != int(cases):
         raise ValueError("operation inventory is missing, duplicated or reordered")
     fail_lines = [line for line in lines if line.startswith("FAIL")]
-    if not mutated:
+    if control:
+        if rc != 1 or int(failures) != 1 or fail_lines != [spec["ticket_control"]["diagnostic"]]:
+            raise ValueError("ticket control did not report its exact known broken invariant")
+    elif not mutated:
         if rc != 0 or int(failures) != 0 or fail_lines:
             raise ValueError("clean run must exit zero with no failure counter or diagnostics")
     else:
@@ -59,12 +72,12 @@ def validate(text, rc, family, mutated, instruction=False):
                 or not all(line.startswith(named) for line in fail_lines)
                 or not any(line.startswith(named + "hand-vector ") for line in fail_lines)):
             raise ValueError("mutation was not caught by its named hand vector with exit 1")
-        if instruction and not any(line.startswith(named + "parity ") for line in fail_lines):
+        if mode != "reference-only" and not any(line.startswith(named + "parity ") for line in fail_lines):
             raise ValueError("instruction comparison did not observe the mutation")
         if instruction and int(failures) != spec["mutation_instruction_failures"]:
             raise ValueError("instruction failure count includes missing or unexpected mismatches")
-        if not instruction and int(failures) != 1:
-            raise ValueError("native mutation must fail exactly its one literal hand vector")
+        if not instruction and int(failures) != spec.get("native_mutation_failures", 1):
+            raise ValueError("native mutation includes missing or unexpected mismatches")
     return checksum
 
 
@@ -149,7 +162,9 @@ def inspect_instructions(binary, toolchain, spec):
     present = set(re.findall(r"^\s*[0-9a-f]+:\s+([a-z][a-z0-9]*)", disassembly, re.MULTILINE))
     aliases = {"blendps5": "blendps", "palignr13": "palignr", "crc32d": "crc32l",
                "pcmpestrm-any": "pcmpestrm", "pcmpestrm-each": "pcmpestrm"}
-    required = {aliases.get(op["name"], op["name"]) for op in spec["operations"]}
+    required = set()
+    for op in spec["operations"]:
+        required.update(op.get("mnemonics", [aliases.get(op["name"], op["name"])]))
     missing = required - present
     if missing:
         raise RuntimeError(f"{binary.name} does not execute its named instructions: {sorted(missing)}")
@@ -169,14 +184,19 @@ def build_and_run(args):
         "clang": subprocess.check_output(["/usr/bin/clang", "--version"], text=True).splitlines()[0],
         "families": {},
     }
-    for family, spec in MANIFEST["families"].items():
+    selected = args.families.split(",") if args.families else list(MANIFEST["families"])
+    if len(selected) != len(set(selected)) or any(name not in MANIFEST["families"] for name in selected):
+        raise ValueError("families must be a unique list of names in the committed manifest")
+    for family in selected:
+        spec = MANIFEST["families"][family]
+        native = spec.get("native", True)
         source = ROOT / f"isa_corpus_{family}.c"
         results = {}
         for mutated in (False, True):
             tag = "mutation" if mutated else "clean"
             extra = ["-DALLOY_CORPUS_MUTATE"] if mutated else []
             baseline = None
-            for opt in (0, 1, 2, 3):
+            for opt in ((0, 1, 2, 3) if native else ()):
                 name = f"{family}-{tag}-arm64-O{opt}"
                 binary = out / name
                 subprocess.run(["/usr/bin/clang", *FLAGS, f"-O{opt}", *extra,
@@ -187,7 +207,7 @@ def build_and_run(args):
                     raise RuntimeError(f"{family} {tag} output changed with optimization")
                 baseline = text
             binary = out / f"{family}-{tag}-arm64-O2"
-            for repeat in range(3):
+            for repeat in (range(3) if native else ()):
                 text, rc = run(binary, out / f"{family}-{tag}-repeat-{repeat}.log")
                 validate(text, rc, family, mutated)
                 if text != baseline:
@@ -196,20 +216,45 @@ def build_and_run(args):
             subprocess.run([str(cross), *FLAGS, "-O2", spec["flag"], *extra,
                             str(source), "-o", str(pe)], check=True)
             inspect_instructions(pe, args.toolchain, spec)
-            results[tag] = {"native": "PASS", "pe": "BUILT, NOT EXECUTED",
+            results[tag] = {"native": "PASS" if native else "NOT APPLICABLE: x87 guest self-check only",
+                            "pe": "BUILT, NOT EXECUTED",
                             "pe_sha256": hashlib.sha256(pe.read_bytes()).hexdigest()}
             if args.rosetta:
-                binary = out / f"{family}-{tag}-rosetta"
-                subprocess.run(["/usr/bin/clang", *FLAGS, "-O2", "-arch", "x86_64", spec["flag"],
-                                *extra, str(source), "-o", str(binary)], check=True)
-                text, rc = run(binary, out / f"{family}-{tag}-rosetta.log")
-                validate(text, rc, family, mutated, instruction=True)
+                rosetta_baseline = None
+                for opt in ((2,) if native else (0, 1, 2, 3)):
+                    binary = out / f"{family}-{tag}-rosetta-O{opt}"
+                    subprocess.run(["/usr/bin/clang", *FLAGS, f"-O{opt}", "-arch", "x86_64", spec["flag"],
+                                    *extra, str(source), "-o", str(binary)], check=True)
+                    text, rc = run(binary, out / f"{binary.name}.log")
+                    validate(text, rc, family, mutated, instruction=True)
+                    if rosetta_baseline is not None and text != rosetta_baseline:
+                        raise RuntimeError(f"{family} guest self-check changed with optimization")
+                    rosetta_baseline = text
+                if not native:
+                    for repeat in range(3):
+                        text, rc = run(out / f"{family}-{tag}-rosetta-O2",
+                                       out / f"{family}-{tag}-rosetta-repeat-{repeat}.log")
+                        validate(text, rc, family, mutated, instruction=True)
+                        if text != rosetta_baseline:
+                            raise RuntimeError("x87 guest self-check changed across invocations")
                 results[tag]["rosetta"] = "PASS (independent translator, not FEX)"
-            print(f"PASS {family} {tag}: O0/O1/O2/O3, three repeats, PE build"
+            outcome = "PASS" if native or args.rosetta else "BUILT"
+            print(f"{outcome} {family} {tag}: " + ("native O0/O1/O2/O3, three repeats, " if native else "no arm64 comparison, ") + "PE build"
                   + (", Rosetta instruction parity" if args.rosetta else ""), flush=True)
+        if family == "atomics":
+            results["tickets"] = {}
+            for label in (["arm64", "rosetta"] if args.rosetta else ["arm64"]):
+                binary = out / f"atomics-tickets-{label}"
+                extra = ["-arch", "x86_64"] if label == "rosetta" else []
+                subprocess.run(["/usr/bin/clang", *FLAGS, "-O2", "-DALLOY_CORPUS_MUTATE_THREADS",
+                                *extra, str(source), "-o", str(binary)], check=True)
+                text, rc = run(binary, out / f"{binary.name}.log")
+                validate(text, rc, family, True, instruction=label == "rosetta", control="tickets")
+                results["tickets"][label] = "PASS: duplicate/missing ticket control rejected"
+                print(f"PASS atomics {label} ticket control", flush=True)
         report["families"][family] = results
     (out / "verification.json").write_text(json.dumps(report, indent=2) + "\n")
-    print(f"Native vector proof complete. FEX NOT RUN. Report: {out / 'verification.json'}")
+    print(f"ISA reference proof complete. FEX NOT RUN. Report: {out / 'verification.json'}")
 
 
 def main():
@@ -217,6 +262,7 @@ def main():
     parser.add_argument("output", type=Path, nargs="?")
     parser.add_argument("--rosetta", action="store_true", help="also require independent x86 Mach-O instruction parity")
     parser.add_argument("--selftest", action="store_true", help="only check the output reader's controls")
+    parser.add_argument("--families", help="comma-separated subset of the committed family inventory")
     parser.add_argument("--toolchain", type=Path, default=Path(os.environ.get(
         "ALLOY_TOOLCHAIN_BIN", "/Users/cleverclosure/Developer/Alloy/tools/toolchains/"
         "llvm-mingw-20260616-ucrt-macos-universal/bin")))
