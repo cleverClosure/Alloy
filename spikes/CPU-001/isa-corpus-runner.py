@@ -144,9 +144,9 @@ def bounded(command, log, timeout, env=None, cwd=None):
     return {"exit": child.returncode, "failure": reason, "log": str(log)}
 
 
-def loaded_builtin(text):
+def loaded_builtin(text, name="libarm64ecfex.dll"):
     return bool(re.search(
-        r'trace:loaddll:build_module Loaded L"[^"\n]*libarm64ecfex\.dll" at [0-9A-Fa-f]+: builtin', text))
+        rf'trace:loaddll:build_module Loaded L"[^"\n]*{re.escape(name)}" at [0-9A-Fa-f]+: builtin', text))
 
 
 def sse2_verdict(text, rc, mutated, instruction=False):
@@ -390,6 +390,7 @@ def run_fex(args, work, report):
                WINEDEBUG="-all,+loaddll,+xtajit", WINEDLLOVERRIDES="xtajit64=n;mscoree,mshtml=",
                DYLD_FALLBACK_LIBRARY_PATH=os.environ.get("DYLD_FALLBACK_LIBRARY_PATH", "/opt/homebrew/lib"), FEX_SILENTLOG="1")
     report["runtime"] = {"build": str(build), "prefix": str(prefix), "runs": []}
+    assert_idle(PRIMARY / "spikes/WINE-001/work/build-2")
     assert_idle(build)
     before = inventory(build)
     (work / "runtime-before.json").write_text(json.dumps(before, indent=2) + "\n")
@@ -402,13 +403,16 @@ def run_fex(args, work, report):
             if result["failure"]:
                 raise RuntimeError(f"private prefix server cleanup failed: {result}")
 
-    def invoke(label, arguments, timeout=60):
+    def invoke(label, arguments, timeout=60, dll_overrides=None):
         preflight = assert_idle(build)
+        preflight["shared_runtime"] = assert_idle(PRIMARY / "spikes/WINE-001/work/build-2")
         preflight.update(label=label, wine=revision(args.wine_source), fex=revision(args.fex_source),
                          binaries={str(path.relative_to(build)): digest(path) for path in binaries})
         if preflight["binaries"] != report["runtime"]["binaries"]:
             raise RuntimeError("runtime binary changed between invocations")
-        result = bounded([str(loader), *arguments], work / f"{label}.log", timeout, env=env, cwd=work)
+        invocation_env = env if dll_overrides is None else {**env, "WINEDLLOVERRIDES": dll_overrides}
+        preflight["dll_overrides"] = invocation_env["WINEDLLOVERRIDES"]
+        result = bounded([str(loader), *arguments], work / f"{label}.log", timeout, env=invocation_env, cwd=work)
         preflight["result"] = result
         report["runtime"]["runs"].append(preflight)
         cleanup()
@@ -418,8 +422,15 @@ def run_fex(args, work, report):
         result, _ = invoke("wineboot", ["wineboot", "-u"], 120)
         if result["failure"] or result["exit"]:
             raise RuntimeError(f"private prefix creation failed: {result}")
-        result, text = invoke("unregistered", [str(work / "isa_corpus_sse2-clean.exe")], 15)
-        if result["failure"] or result["exit"] == 0 or "x64 emulation not implemented" not in text:
+        # The control must load Wine's known refusal stub. Forcing a nonexistent
+        # native xtajit64 instead merely fails while loading kernel32, before
+        # the intended emulator-registration control can execute.
+        # Restarting the private server can make Wine wait for service startup;
+        # use the same finite startup budget as the registered guest runs.
+        result, text = invoke("unregistered", [str(work / "isa_corpus_sse2-clean.exe")], 60,
+                              dll_overrides="xtajit64=b;mscoree,mshtml=")
+        if (result["failure"] or result["exit"] == 0 or "x64 emulation not implemented" not in text or
+                not loaded_builtin(text, "xtajit64.dll") or loaded_builtin(text)):
             raise RuntimeError("the fresh unregistered prefix did not produce its expected refusal")
         report["registration_control"] = True
         registration = work / "select-fex.reg"

@@ -19,8 +19,14 @@ if sys.argv[1]=='regedit':
     (prefix/'registered').write_text('yes')
     sys.exit(0)
 if not (prefix/'registered').exists():
+    if os.environ.get('WINEDLLOVERRIDES')!='xtajit64=b;mscoree,mshtml=':
+        print('wine: could not load kernel32.dll, status c0000135')
+        sys.exit(53)
+    if os.environ['ALLOY_SYNTHETIC_CONTROL']!='refusal-without-stub':
+        print('0024:trace:loaddll:build_module Loaded L"C:\\\\windows\\\\system32\\\\xtajit64.dll" at 00005678: builtin')
     print('x64 emulation not implemented')
-    sys.exit(53)
+    sys.exit(1)
+assert os.environ.get('WINEDLLOVERRIDES')=='xtajit64=n;mscoree,mshtml='
 if os.environ['ALLOY_SYNTHETIC_CONTROL']=='lookup-only':
     print('find_builtin_dll looking for "libarm64ecfex.dll"')
 else:
@@ -40,7 +46,7 @@ with (Path(os.environ['WINEPREFIX'])/'server-actions').open('a') as output:
 '''
     total = 0
     with tempfile.TemporaryDirectory(prefix="alloy-isa-synthetic-") as scratch:
-        for control in ("valid", "lookup-only", "runtime-write"):
+        for control in ("valid", "lookup-only", "runtime-write", "refusal-without-stub"):
             root = Path(scratch) / control
             build, work = root / "runtime", root / "work"
             work.mkdir(parents=True)
@@ -114,8 +120,11 @@ with (Path(os.environ['WINEPREFIX'])/'server-actions').open('a') as output:
                 if control == "lookup-only":
                     assert "actual libarm64ecfex builtin" in report["error"]
                     assert report["runtime_unchanged"]
-                else:
+                elif control == "runtime-write":
                     assert not report["runtime_unchanged"]
+                else:
+                    assert "unregistered prefix" in report["error"]
+                    assert report["runtime_unchanged"]
             actions = (work / "prefix/server-actions").read_text().splitlines()
             assert actions and all(line.startswith(str(work / "prefix") + " ") for line in actions)
             assert actions[-1].endswith(" -w")
