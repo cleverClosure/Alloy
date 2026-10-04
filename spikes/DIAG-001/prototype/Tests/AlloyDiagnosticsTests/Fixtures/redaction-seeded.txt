@@ -1,0 +1,27 @@
+Author: Timur Isaev
+Synthetic launch completed normally.
+runtime_generation=generation-4 error=ALLOY_OK
+frame_count=240 process_count=2 exit_status=0
+reference=https://synthetic.invalid/docs
+unicode=Пример 🎮 synthetic_fixture
+provider=sha256:1111111111111111111111111111111111111111111111111111111111111111
+api_key=alloy_seeded_api_AzByCxDwEvFuGtHs
+fake_payment=4111 1111 1111 1111
+path=/Users/synthetic-person/Documents/player-save.bin
+windows=C:\Users\synthetic-person\SavedGames\campaign.sav
+escaped_windows=C:\\Users\\synthetic-person\\SavedGames\\escaped.sav
+percent_path=%2FUsers%2Fsynthetic-person%2FDocuments%2Fcapture.log
+percent_windows=C%3A%5CUsers%5Csynthetic-person%5CSavedGames%5Ccampaign.sav
+encoded_letters=%2F%55%73%65%72%73%2Fsynthetic-person%2FDocuments%2Fencoded.log
+url=https://support.invalid/report?account=synthetic-user&key=seeded-query-secret
+url_credentials=https://synthetic-user:synthetic-password@host.invalid/private
+access_token=seeded_access_token_AzByCxDwEvFuGtHs
+authorization=Bearer seeded_bearer_AzByCxDwEvFuGtHs
+Cookie: session=fake_cookie_secret_AzByCxDwEvFuGtHs; path=/
+<save>level=3; seeded-save-fragment-private</save>
+<chat>seeded-chat-private-message</chat>
+SAVE_CONTENT[seeded-save-marked-private]
+CHAT_CONTENT[seeded-chat-marked-private]
+username=fixture_private_username_AzByCxDw
+jwt=eyJhbGciOiJub25lIn0.eyJzdWIiOiJzeW50aGV0aWMifQ.ZmFrZVNpZ25hdHVyZQ
+standalone=sk_test_DxjqpkWDcoicQLFqnCsghgksThCCnrVi
