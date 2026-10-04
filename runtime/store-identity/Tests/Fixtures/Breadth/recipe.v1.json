@@ -1,0 +1,34 @@
+{
+  "author": "Timur Isaev",
+  "record": "alloy-synthetic-steam-breadth-recipe",
+  "version": 1,
+  "titles": [
+    {
+      "appid": "910001",
+      "name": "Synthetic Orchard",
+      "buildid": "10000001",
+      "image": "Orchard.exe",
+      "file_count": 100,
+      "depots": ["910011", "910012"],
+      "dlc_appid": "911001"
+    },
+    {
+      "appid": "910002",
+      "name": "Synthetic 星の港",
+      "buildid": "10000002",
+      "image": "bin/港の旅.exe",
+      "file_count": 1000,
+      "depots": ["910021", "910022", "910023"],
+      "dlc_appid": "911002"
+    },
+    {
+      "appid": "910003",
+      "name": "Synthetic Atlas Ω",
+      "buildid": "10000003",
+      "image": "engine/Atlas-Win64.exe",
+      "file_count": 20000,
+      "depots": ["910031", "910032", "910033"],
+      "dlc_appid": "911003"
+    }
+  ]
+}

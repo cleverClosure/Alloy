@@ -90,6 +90,9 @@ public struct EvidenceArtifact: Codable, Equatable, Sendable {
 public struct BuildSelector: Codable, Equatable, Sendable {
   public static let anchoredImagePath =
     "The Life and Suffering of Sir Brante.exe"
+  private static let launchImageAliases: Set<String> = [
+    "executableSHA256", "processPolicies[].imageSHA256"
+  ]
 
   public let selectorID: String
   public let artifact: EvidenceArtifact
@@ -141,13 +144,14 @@ public struct BuildSelector: Codable, Equatable, Sendable {
         value: aggregateSHA256
       )
     }
-    let baseImageKeys = Set([Self.anchoredImagePath])
-    var launchImageKeys = baseImageKeys
-    launchImageKeys.insert("executableSHA256")
-    launchImageKeys.insert("processPolicies[].imageSHA256")
-    let expectedImageKeys =
-      artifact.kind == "launch-policy" ? launchImageKeys : baseImageKeys
-    guard Set(imageHashes.keys) == expectedImageKeys else {
+    let installedImageKeys = Set(imageHashes.keys).subtracting(Self.launchImageAliases)
+    let requiredAliases = artifact.kind == "launch-policy" ? Self.launchImageAliases : []
+    guard installedImageKeys.count == 1,
+      let installedImagePath = installedImageKeys.first,
+      StoreIdentityRecordValidation.isSafeRelativePath(installedImagePath),
+      StoreIdentityRecordValidation.isSafeMapKey(installedImagePath),
+      Set(imageHashes.keys) == installedImageKeys.union(requiredAliases)
+    else {
       throw SelectorRegistryError.invalidField("image_hashes")
     }
     var commonImageDigest: String?
@@ -242,8 +246,9 @@ public struct BuildSelector: Codable, Equatable, Sendable {
       return false
     }
     guard
+      let installedImagePath = imageHashes.keys.first(where: { !Self.launchImageAliases.contains($0) }),
       let image = fingerprint.files.first(where: {
-        StoreIdentityRecordValidation.sameText($0.path, Self.anchoredImagePath)
+        StoreIdentityRecordValidation.sameText($0.path, installedImagePath)
       })
     else {
       return false
