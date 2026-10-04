@@ -1,0 +1,1075 @@
+{
+  "author": "Timur Isaev",
+  "bounds": {
+    "shared_commit_ids": 28,
+    "supplemental_patches": 1,
+    "total_maintenance_items": 29
+  },
+  "branches": [
+    {
+      "count": 22,
+      "downstream_commit_ids": [
+        "0dfe17e5bac7d5352936b0647383aad53b267b39",
+        "0e693a03c13706c1837d6e543d29350d51d80c1c",
+        "0ef284dc28b074760f97decc210c049a22410e81",
+        "24bad684929f61bf1bb37d03ff1bb72febaa23cb",
+        "36a24a1a1b81daed35e389622a9347e9561e98ee",
+        "3ffe3247fde31debc20f1a0212b27e4d91666380",
+        "47e4cdb75d7bf25ce7fecc6301a12bf9aa317b90",
+        "4d5daa40ce81cfd4c6281cca34f23b2cb32dd6ba",
+        "5a0d3a375d31d6dde654b62635af6d1d55378b5c",
+        "5a0f6d44729c2ff0d70d5d31540a2f55d25af5d9",
+        "61bf5698be12c8bb493b99e87752931c553c254a",
+        "7b1b3be6bc6692ec2d488f3583234ba4e7368309",
+        "87adaaa93346c2c87cbd7c32bdb1cda7f141986d",
+        "8870df9d617ab15729a6dd404f1d23288be53b6b",
+        "8d5974ac877d19696c61dba2a2672cfa18c3ad20",
+        "b93a982387bbfba9478e338fe7d9ce5e45135831",
+        "c5785dbc012dbcf2f2aa947b030d863697b4ebaa",
+        "ddad4ac757b9397c4daa6fe5210f388fa6c9b9fa",
+        "de36e21186d2b991895ea53884b7c2507b94764b",
+        "efd41b9e9813216e3e0ab93c059ab1c8e05e4f74",
+        "f24425cdd8bbc32a45876bc2e8b64ab3777af801",
+        "f85bde57d14b411aae58e841650dbfbf8bbe03a5"
+      ],
+      "merge_base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+      "ref": "refs/heads/alloy/lgpl-substitution-proof",
+      "tip": "8d5974ac877d19696c61dba2a2672cfa18c3ad20"
+    },
+    {
+      "count": 25,
+      "downstream_commit_ids": [
+        "0dfe17e5bac7d5352936b0647383aad53b267b39",
+        "0e693a03c13706c1837d6e543d29350d51d80c1c",
+        "0ef284dc28b074760f97decc210c049a22410e81",
+        "24bad684929f61bf1bb37d03ff1bb72febaa23cb",
+        "36a24a1a1b81daed35e389622a9347e9561e98ee",
+        "372f8e60120911d92f0bdbc223f277e1b47fa530",
+        "3ffe3247fde31debc20f1a0212b27e4d91666380",
+        "420c70bdcb7615c3dc0395d162f93645f098fe56",
+        "47e4cdb75d7bf25ce7fecc6301a12bf9aa317b90",
+        "4d5daa40ce81cfd4c6281cca34f23b2cb32dd6ba",
+        "54048cbd2bf69aee8cc7be2beb14c5ab63a17842",
+        "5a0d3a375d31d6dde654b62635af6d1d55378b5c",
+        "5a0f6d44729c2ff0d70d5d31540a2f55d25af5d9",
+        "61bf5698be12c8bb493b99e87752931c553c254a",
+        "7b1b3be6bc6692ec2d488f3583234ba4e7368309",
+        "87adaaa93346c2c87cbd7c32bdb1cda7f141986d",
+        "8870df9d617ab15729a6dd404f1d23288be53b6b",
+        "8d5974ac877d19696c61dba2a2672cfa18c3ad20",
+        "b93a982387bbfba9478e338fe7d9ce5e45135831",
+        "c5785dbc012dbcf2f2aa947b030d863697b4ebaa",
+        "ddad4ac757b9397c4daa6fe5210f388fa6c9b9fa",
+        "de36e21186d2b991895ea53884b7c2507b94764b",
+        "efd41b9e9813216e3e0ab93c059ab1c8e05e4f74",
+        "f24425cdd8bbc32a45876bc2e8b64ab3777af801",
+        "f85bde57d14b411aae58e841650dbfbf8bbe03a5"
+      ],
+      "merge_base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+      "ref": "refs/heads/alloy/spike-wine-001",
+      "tip": "420c70bdcb7615c3dc0395d162f93645f098fe56"
+    },
+    {
+      "count": 24,
+      "downstream_commit_ids": [
+        "0dfe17e5bac7d5352936b0647383aad53b267b39",
+        "0e693a03c13706c1837d6e543d29350d51d80c1c",
+        "0ef284dc28b074760f97decc210c049a22410e81",
+        "24bad684929f61bf1bb37d03ff1bb72febaa23cb",
+        "36a24a1a1b81daed35e389622a9347e9561e98ee",
+        "3ffe3247fde31debc20f1a0212b27e4d91666380",
+        "47e4cdb75d7bf25ce7fecc6301a12bf9aa317b90",
+        "4d5daa40ce81cfd4c6281cca34f23b2cb32dd6ba",
+        "5a0d3a375d31d6dde654b62635af6d1d55378b5c",
+        "5a0f6d44729c2ff0d70d5d31540a2f55d25af5d9",
+        "619c4c0e1ed7b0fb964c0b29388ff227a7dadf72",
+        "61bf5698be12c8bb493b99e87752931c553c254a",
+        "7b1b3be6bc6692ec2d488f3583234ba4e7368309",
+        "87adaaa93346c2c87cbd7c32bdb1cda7f141986d",
+        "8870df9d617ab15729a6dd404f1d23288be53b6b",
+        "8d5974ac877d19696c61dba2a2672cfa18c3ad20",
+        "a88236486c9652063c66d5f471d6a19d133fea86",
+        "b93a982387bbfba9478e338fe7d9ce5e45135831",
+        "c5785dbc012dbcf2f2aa947b030d863697b4ebaa",
+        "ddad4ac757b9397c4daa6fe5210f388fa6c9b9fa",
+        "de36e21186d2b991895ea53884b7c2507b94764b",
+        "efd41b9e9813216e3e0ab93c059ab1c8e05e4f74",
+        "f24425cdd8bbc32a45876bc2e8b64ab3777af801",
+        "f85bde57d14b411aae58e841650dbfbf8bbe03a5"
+      ],
+      "merge_base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+      "ref": "refs/heads/alloy/task-12-fault-census",
+      "tip": "619c4c0e1ed7b0fb964c0b29388ff227a7dadf72"
+    },
+    {
+      "count": 24,
+      "downstream_commit_ids": [
+        "0dfe17e5bac7d5352936b0647383aad53b267b39",
+        "0e693a03c13706c1837d6e543d29350d51d80c1c",
+        "0ef284dc28b074760f97decc210c049a22410e81",
+        "24bad684929f61bf1bb37d03ff1bb72febaa23cb",
+        "36a24a1a1b81daed35e389622a9347e9561e98ee",
+        "372f8e60120911d92f0bdbc223f277e1b47fa530",
+        "3ffe3247fde31debc20f1a0212b27e4d91666380",
+        "47e4cdb75d7bf25ce7fecc6301a12bf9aa317b90",
+        "4d5daa40ce81cfd4c6281cca34f23b2cb32dd6ba",
+        "54048cbd2bf69aee8cc7be2beb14c5ab63a17842",
+        "5a0d3a375d31d6dde654b62635af6d1d55378b5c",
+        "5a0f6d44729c2ff0d70d5d31540a2f55d25af5d9",
+        "61bf5698be12c8bb493b99e87752931c553c254a",
+        "7b1b3be6bc6692ec2d488f3583234ba4e7368309",
+        "87adaaa93346c2c87cbd7c32bdb1cda7f141986d",
+        "8870df9d617ab15729a6dd404f1d23288be53b6b",
+        "8d5974ac877d19696c61dba2a2672cfa18c3ad20",
+        "b93a982387bbfba9478e338fe7d9ce5e45135831",
+        "c5785dbc012dbcf2f2aa947b030d863697b4ebaa",
+        "ddad4ac757b9397c4daa6fe5210f388fa6c9b9fa",
+        "de36e21186d2b991895ea53884b7c2507b94764b",
+        "efd41b9e9813216e3e0ab93c059ab1c8e05e4f74",
+        "f24425cdd8bbc32a45876bc2e8b64ab3777af801",
+        "f85bde57d14b411aae58e841650dbfbf8bbe03a5"
+      ],
+      "merge_base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+      "ref": "refs/heads/alloy/task-34-jit-view-protect",
+      "tip": "372f8e60120911d92f0bdbc223f277e1b47fa530"
+    },
+    {
+      "count": 24,
+      "downstream_commit_ids": [
+        "0dfe17e5bac7d5352936b0647383aad53b267b39",
+        "0e693a03c13706c1837d6e543d29350d51d80c1c",
+        "0ef284dc28b074760f97decc210c049a22410e81",
+        "24bad684929f61bf1bb37d03ff1bb72febaa23cb",
+        "36a24a1a1b81daed35e389622a9347e9561e98ee",
+        "3ffe3247fde31debc20f1a0212b27e4d91666380",
+        "47e4cdb75d7bf25ce7fecc6301a12bf9aa317b90",
+        "4d5daa40ce81cfd4c6281cca34f23b2cb32dd6ba",
+        "54048cbd2bf69aee8cc7be2beb14c5ab63a17842",
+        "5a0d3a375d31d6dde654b62635af6d1d55378b5c",
+        "5a0f6d44729c2ff0d70d5d31540a2f55d25af5d9",
+        "61bf5698be12c8bb493b99e87752931c553c254a",
+        "7b1b3be6bc6692ec2d488f3583234ba4e7368309",
+        "87adaaa93346c2c87cbd7c32bdb1cda7f141986d",
+        "8870df9d617ab15729a6dd404f1d23288be53b6b",
+        "8d5974ac877d19696c61dba2a2672cfa18c3ad20",
+        "b93a982387bbfba9478e338fe7d9ce5e45135831",
+        "c5785dbc012dbcf2f2aa947b030d863697b4ebaa",
+        "ddad4ac757b9397c4daa6fe5210f388fa6c9b9fa",
+        "de36e21186d2b991895ea53884b7c2507b94764b",
+        "efd41b9e9813216e3e0ab93c059ab1c8e05e4f74",
+        "f24425cdd8bbc32a45876bc2e8b64ab3777af801",
+        "f85bde57d14b411aae58e841650dbfbf8bbe03a5",
+        "fbbdf994ccd06598da75133c49c7268fd0d10ee4"
+      ],
+      "merge_base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+      "ref": "refs/heads/alloy/task-59-ec-delayload-thunks",
+      "tip": "fbbdf994ccd06598da75133c49c7268fd0d10ee4"
+    },
+    {
+      "count": 25,
+      "downstream_commit_ids": [
+        "0dfe17e5bac7d5352936b0647383aad53b267b39",
+        "0e693a03c13706c1837d6e543d29350d51d80c1c",
+        "0ef284dc28b074760f97decc210c049a22410e81",
+        "24bad684929f61bf1bb37d03ff1bb72febaa23cb",
+        "36a24a1a1b81daed35e389622a9347e9561e98ee",
+        "372f8e60120911d92f0bdbc223f277e1b47fa530",
+        "3ffe3247fde31debc20f1a0212b27e4d91666380",
+        "420c70bdcb7615c3dc0395d162f93645f098fe56",
+        "47e4cdb75d7bf25ce7fecc6301a12bf9aa317b90",
+        "4d5daa40ce81cfd4c6281cca34f23b2cb32dd6ba",
+        "54048cbd2bf69aee8cc7be2beb14c5ab63a17842",
+        "5a0d3a375d31d6dde654b62635af6d1d55378b5c",
+        "5a0f6d44729c2ff0d70d5d31540a2f55d25af5d9",
+        "61bf5698be12c8bb493b99e87752931c553c254a",
+        "7b1b3be6bc6692ec2d488f3583234ba4e7368309",
+        "87adaaa93346c2c87cbd7c32bdb1cda7f141986d",
+        "8870df9d617ab15729a6dd404f1d23288be53b6b",
+        "8d5974ac877d19696c61dba2a2672cfa18c3ad20",
+        "b93a982387bbfba9478e338fe7d9ce5e45135831",
+        "c5785dbc012dbcf2f2aa947b030d863697b4ebaa",
+        "ddad4ac757b9397c4daa6fe5210f388fa6c9b9fa",
+        "de36e21186d2b991895ea53884b7c2507b94764b",
+        "efd41b9e9813216e3e0ab93c059ab1c8e05e4f74",
+        "f24425cdd8bbc32a45876bc2e8b64ab3777af801",
+        "f85bde57d14b411aae58e841650dbfbf8bbe03a5"
+      ],
+      "merge_base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+      "ref": "refs/heads/alloy/task-65-scaleform",
+      "tip": "420c70bdcb7615c3dc0395d162f93645f098fe56"
+    },
+    {
+      "count": 23,
+      "downstream_commit_ids": [
+        "0dfe17e5bac7d5352936b0647383aad53b267b39",
+        "0e693a03c13706c1837d6e543d29350d51d80c1c",
+        "0ef284dc28b074760f97decc210c049a22410e81",
+        "24bad684929f61bf1bb37d03ff1bb72febaa23cb",
+        "36a24a1a1b81daed35e389622a9347e9561e98ee",
+        "3ffe3247fde31debc20f1a0212b27e4d91666380",
+        "47e4cdb75d7bf25ce7fecc6301a12bf9aa317b90",
+        "4d5daa40ce81cfd4c6281cca34f23b2cb32dd6ba",
+        "54048cbd2bf69aee8cc7be2beb14c5ab63a17842",
+        "5a0d3a375d31d6dde654b62635af6d1d55378b5c",
+        "5a0f6d44729c2ff0d70d5d31540a2f55d25af5d9",
+        "61bf5698be12c8bb493b99e87752931c553c254a",
+        "7b1b3be6bc6692ec2d488f3583234ba4e7368309",
+        "87adaaa93346c2c87cbd7c32bdb1cda7f141986d",
+        "8870df9d617ab15729a6dd404f1d23288be53b6b",
+        "8d5974ac877d19696c61dba2a2672cfa18c3ad20",
+        "b93a982387bbfba9478e338fe7d9ce5e45135831",
+        "c5785dbc012dbcf2f2aa947b030d863697b4ebaa",
+        "ddad4ac757b9397c4daa6fe5210f388fa6c9b9fa",
+        "de36e21186d2b991895ea53884b7c2507b94764b",
+        "efd41b9e9813216e3e0ab93c059ab1c8e05e4f74",
+        "f24425cdd8bbc32a45876bc2e8b64ab3777af801",
+        "f85bde57d14b411aae58e841650dbfbf8bbe03a5"
+      ],
+      "merge_base": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd",
+      "ref": "refs/heads/alloy/task-8-absorb-attribution",
+      "tip": "54048cbd2bf69aee8cc7be2beb14c5ab63a17842"
+    }
+  ],
+  "checkout": {
+    "branch": "alloy/spike-wine-001",
+    "head": "420c70bdcb7615c3dc0395d162f93645f098fe56"
+  },
+  "commits": [
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "temporary-pending-reviewed-darwin-teb-abi",
+      "commit": "0dfe17e5bac7d5352936b0647383aad53b267b39",
+      "evidence": [
+        {
+          "heading": "## Recovered provenance: the runtime rested on four uncommitted patches",
+          "path": "spikes/CPU-001/results/2026-07-24-05-shear-cost-and-census.md"
+        }
+      ],
+      "justification": "Restores x18 on external ARM64EC entry and emulates narrowly identified TEB loads after Darwin clears it. Keep the backstop until the Darwin ABI and remaining prebuilt consumers have a supported replacement.",
+      "parents": [
+        "7b1b3be6bc6692ec2d488f3583234ba4e7368309"
+      ],
+      "paths": [
+        "dlls/ntdll/signal_arm64ec.c",
+        "dlls/ntdll/unix/signal_arm64.c"
+      ],
+      "status": "retained",
+      "subject": "ntdll: Keep the ARM64EC x18 TEB contract alive on macOS."
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "temporary-pending-portable-darwin-layout",
+      "commit": "0e693a03c13706c1837d6e543d29350d51d80c1c",
+      "evidence": [
+        {
+          "heading": "## 3. Wine patches (branch `alloy/spike-wine-001`)",
+          "path": "spikes/WINE-001/results/2026-07-23-03-macos26-exec-policy-and-va-floor.md"
+        }
+      ],
+      "justification": "Drops the loader low-pagezero flags and relocates shared data/TEBs above Darwin’s low-address floor. This bundled spike workaround needs a portable host-layout design before upstreaming.",
+      "parents": [
+        "5bb70f23d1278088d9ea55d44efe7d51f87d35bd"
+      ],
+      "paths": [
+        "configure.ac",
+        "dlls/ntdll/thread.c",
+        "dlls/ntdll/unix/virtual.c"
+      ],
+      "status": "retained",
+      "subject": "macOS arm64: fix loader exec denial and lift low-VA assumptions"
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "temporary-pending-history-squash",
+      "commit": "0ef284dc28b074760f97decc210c049a22410e81",
+      "evidence": [
+        {
+          "heading": "## Fork experiment that was reverted, and its lesson (`4d5daa4` → revert `0ef284d`)",
+          "path": "spikes/GFX-001/results/2026-07-24-02-first-light-blockers.md"
+        }
+      ],
+      "justification": "Reverts the broad x18 repair experiment 4d5daa4 and restores the narrow backstop. Both reachable commits count conservatively until a deliberate reviewed history cleanup removes the pair.",
+      "parents": [
+        "4d5daa40ce81cfd4c6281cca34f23b2cb32dd6ba"
+      ],
+      "paths": [
+        "dlls/ntdll/unix/signal_arm64.c"
+      ],
+      "status": "revert-of-experiment",
+      "subject": "Revert \"ntdll: Repair a kernel-zeroed x18 on any TEB-relative access and retry.\""
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "temporary-pending-large-page-protection-design",
+      "commit": "24bad684929f61bf1bb37d03ff1bb72febaa23cb",
+      "evidence": [
+        {
+          "heading": "## Kill-chain (in discovery order)",
+          "path": "spikes/WINE-001/results/2026-07-23-06-gate3-wine-side-proven.md"
+        }
+      ],
+      "justification": "Allows the x64 loader to progress when 4 KiB guest protections share a 16 KiB host page and redirects emulator entry pointers. The dropped-execute fallback and bundled diagnostics remain platform-specific compromises.",
+      "parents": [
+        "8870df9d617ab15729a6dd404f1d23288be53b6b"
+      ],
+      "paths": [
+        "dlls/ntdll/signal_arm64ec.c",
+        "dlls/ntdll/unix/signal_arm64.c",
+        "dlls/ntdll/unix/virtual.c"
+      ],
+      "status": "retained",
+      "subject": "macOS arm64ec: make the x64 loader path survive 16K host pages"
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "Alloy-specific",
+      "commit": "36a24a1a1b81daed35e389622a9347e9561e98ee",
+      "evidence": [
+        {
+          "heading": "## 2. What is actually running",
+          "path": "spikes/CPU-001/results/2026-07-24-16-item-24-not-reproducible-toolchain-restored-null-rip-guard.md"
+        }
+      ],
+      "justification": "Publishes Wine’s diagnostic sink through the optional FEXWineLogSink export before emulator initialization. This deliberately couples the selected in-process emulator’s logging contract to Wine diagnostics.",
+      "parents": [
+        "c5785dbc012dbcf2f2aa947b030d863697b4ebaa"
+      ],
+      "paths": [
+        "dlls/ntdll/signal_arm64ec.c"
+      ],
+      "status": "retained",
+      "subject": "ntdll: Install a wine-provided log sink into the ARM64EC emulator"
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-65-scaleform"
+      ],
+      "classification": "temporary-pending-guest-jit-protection-enforcement",
+      "commit": "372f8e60120911d92f0bdbc223f277e1b47fa530",
+      "evidence": [
+        {
+          "heading": "## 3. The limitation, stated plainly",
+          "path": "spikes/WINE-001/results/2026-07-25-12-jit-view-protection.md"
+        }
+      ],
+      "justification": "Records a guest’s narrowed JIT protection and respects that intent in fault paths, while the host mapping still cannot enforce the narrowing. Keep the documented compromise pending real guest-page protection enforcement.",
+      "parents": [
+        "54048cbd2bf69aee8cc7be2beb14c5ab63a17842"
+      ],
+      "paths": [
+        "dlls/ntdll/unix/virtual.c"
+      ],
+      "status": "retained",
+      "subject": "ntdll: Let a guest narrow a Darwin JIT view's protection."
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "temporary-pending-upstream-darwin-jit-design",
+      "commit": "3ffe3247fde31debc20f1a0212b27e4d91666380",
+      "evidence": [
+        {
+          "heading": "## Recovered provenance: the runtime rested on four uncommitted patches",
+          "path": "spikes/CPU-001/results/2026-07-24-05-shear-cost-and-census.md"
+        }
+      ],
+      "justification": "Allocates anonymous executable/writeable code-cache views with MAP_JIT. A necessary Darwin host mechanism, but its protection and signal-transition interactions require the broader tracked JIT fixes before proposing it upstream.",
+      "parents": [
+        "0dfe17e5bac7d5352936b0647383aad53b267b39"
+      ],
+      "paths": [
+        "dlls/ntdll/unix/virtual.c"
+      ],
+      "status": "retained",
+      "subject": "ntdll: Allocate anonymous RWX views with MAP_JIT on Apple arm64."
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-65-scaleform"
+      ],
+      "classification": "upstreamable",
+      "commit": "420c70bdcb7615c3dc0395d162f93645f098fe56",
+      "evidence": [
+        {
+          "heading": "## 4. What landed instead",
+          "path": "spikes/WINE-001/results/2026-07-25-11-arm64ec-variadic-delay-imports.md"
+        }
+      ],
+      "justification": "Carries the ARM64EC lazy delay-import repair on the live branch after the JIT-view protection fix. Preserve its exact commit identity; same-subject side-branch history is counted separately, not presumed patch-equivalent.",
+      "parents": [
+        "372f8e60120911d92f0bdbc223f277e1b47fa530"
+      ],
+      "paths": [
+        "dlls/ntdll/loader.c",
+        "dlls/ntdll/ntdll_misc.h",
+        "dlls/ntdll/signal_arm64ec.c",
+        "include/winnt.h"
+      ],
+      "status": "retained",
+      "subject": "ntdll: Keep the first ARM64EC delay-import call inside ARM64EC."
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "Alloy-specific",
+      "commit": "47e4cdb75d7bf25ce7fecc6301a12bf9aa317b90",
+      "evidence": [
+        {
+          "heading": "## Contract proven",
+          "path": "spikes/WINE-001/results/2026-07-24-08-policy-hook-and-rebase-readiness.md"
+        }
+      ],
+      "justification": "Installs Alloy’s inherited, per-process policy snapshot before normal imports. Provider routing, exact executable identity and fail-closed snapshot semantics are product integration policy.",
+      "parents": [
+        "b93a982387bbfba9478e338fe7d9ce5e45135831"
+      ],
+      "paths": [
+        "dlls/ntdll/Makefile.in",
+        "dlls/ntdll/alloy_policy.h",
+        "dlls/ntdll/loader.c",
+        "dlls/ntdll/unix/alloy_policy.c",
+        "dlls/ntdll/unix/loader.c",
+        "dlls/ntdll/unix/loadorder.c",
+        "dlls/ntdll/unix/unix_private.h",
+        "dlls/ntdll/unixlib.h"
+      ],
+      "status": "retained",
+      "subject": "ntdll: Add inherited per-process policy bootstrap."
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "temporary-pending-history-squash",
+      "commit": "4d5daa40ce81cfd4c6281cca34f23b2cb32dd6ba",
+      "evidence": [
+        {
+          "heading": "## Fork experiment that was reverted, and its lesson (`4d5daa4` → revert `0ef284d`)",
+          "path": "spikes/GFX-001/results/2026-07-24-02-first-light-blockers.md"
+        }
+      ],
+      "justification": "Historical broad x18 repair/retry experiment changed a benign FEX probe into a successful read and hung the baseline. It was reverted; retained here as replay history, never represented as an active fix.",
+      "parents": [
+        "f24425cdd8bbc32a45876bc2e8b64ab3777af801"
+      ],
+      "paths": [
+        "dlls/ntdll/unix/signal_arm64.c"
+      ],
+      "status": "reverted-experiment",
+      "subject": "ntdll: Repair a kernel-zeroed x18 on any TEB-relative access and retry."
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "temporary-pending-telemetry-consolidation",
+      "commit": "54048cbd2bf69aee8cc7be2beb14c5ab63a17842",
+      "evidence": [
+        {
+          "heading": "## 1. Attribution: the sites were never in any image",
+          "path": "spikes/CPU-001/results/2026-07-25-21-x18-absorbs-attributed-and-removed.md"
+        }
+      ],
+      "justification": "Describes absorbed-fault pages and Mach regions to identify FEX’s generated dispatch emitter. Keep as attributable diagnostic burden until consolidated instrumentation replaces it.",
+      "parents": [
+        "8d5974ac877d19696c61dba2a2672cfa18c3ad20"
+      ],
+      "paths": [
+        "dlls/ntdll/unix/signal_arm64.c",
+        "dlls/ntdll/unix/unix_private.h",
+        "dlls/ntdll/unix/virtual.c"
+      ],
+      "status": "retained",
+      "subject": "ntdll: attribute x18 backstop absorbs to their emitter"
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "temporary-pending-telemetry-consolidation",
+      "commit": "5a0d3a375d31d6dde654b62635af6d1d55378b5c",
+      "evidence": [
+        {
+          "heading": "## 2. Fault census — exact totals, and a conservation law",
+          "path": "spikes/CPU-001/results/2026-07-25-19-real-title-execution-census.md"
+        }
+      ],
+      "justification": "Traces x18 backstop absorbs with a sampler for attribution. Exact totals require the later census side branch; sampled log-line counts must never be reported as total fault counts.",
+      "parents": [
+        "87adaaa93346c2c87cbd7c32bdb1cda7f141986d"
+      ],
+      "paths": [
+        "dlls/ntdll/unix/signal_arm64.c"
+      ],
+      "status": "retained",
+      "subject": "ntdll: Trace x18 backstop absorbs, rate-limited."
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "temporary-pending-darwin-crt-rebuild",
+      "commit": "5a0f6d44729c2ff0d70d5d31540a2f55d25af5d9",
+      "evidence": [
+        {
+          "heading": "## What stood between result 02 and green: five blockers, in order",
+          "path": "spikes/GFX-001/results/2026-07-24-03-first-light-green.md"
+        }
+      ],
+      "justification": "Handles the exact prebuilt CRT x18 reads at TEB offsets 0x8 and 0x58 without accepting the failing FEX probe. Replace when a supported Darwin-compatible CRT removes those residual consumers.",
+      "parents": [
+        "0ef284dc28b074760f97decc210c049a22410e81"
+      ],
+      "paths": [
+        "dlls/ntdll/unix/signal_arm64.c"
+      ],
+      "status": "retained",
+      "subject": "ntdll: Absorb prebuilt-CRT TEB loads at NtTib.StackBase and ThreadLocalStoragePointer."
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/task-12-fault-census"
+      ],
+      "classification": "temporary-pending-telemetry-consolidation",
+      "commit": "619c4c0e1ed7b0fb964c0b29388ff227a7dadf72",
+      "evidence": [
+        {
+          "heading": "## 2. Fault census — exact totals, and a conservation law",
+          "path": "spikes/CPU-001/results/2026-07-25-19-real-title-execution-census.md"
+        }
+      ],
+      "justification": "Moves census emission after fault classification so entries equal resolved plus access violations. It corrects the side-branch counter’s one-event accounting gap; retire only with a replacement exact telemetry contract.",
+      "parents": [
+        "a88236486c9652063c66d5f471d6a19d133fea86"
+      ],
+      "paths": [
+        "dlls/ntdll/unix/signal_arm64.c"
+      ],
+      "status": "retained",
+      "subject": "ntdll: tick the fault census after classification, not before"
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "temporary-pending-telemetry-consolidation",
+      "commit": "61bf5698be12c8bb493b99e87752931c553c254a",
+      "evidence": [
+        {
+          "heading": "## Shear census (fork commit `61bf569`)",
+          "path": "spikes/CPU-001/results/2026-07-24-05-shear-cost-and-census.md"
+        }
+      ],
+      "justification": "Adds rate-limited page-shear diagnostics to measure guest/host page conflicts. It is an investigation instrument, not an exact event count or production telemetry interface.",
+      "parents": [
+        "3ffe3247fde31debc20f1a0212b27e4d91666380"
+      ],
+      "paths": [
+        "dlls/ntdll/unix/virtual.c"
+      ],
+      "status": "retained",
+      "subject": "ntdll: Add a rate-limited shear census for large-host-page diagnostics."
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "upstreamable",
+      "commit": "7b1b3be6bc6692ec2d488f3583234ba4e7368309",
+      "evidence": [
+        {
+          "heading": "## Recovered provenance: the runtime rested on four uncommitted patches",
+          "path": "spikes/CPU-001/results/2026-07-24-05-shear-cost-and-census.md"
+        }
+      ],
+      "justification": "Reports native ARM CPU features through Darwin sysctl instead of the empty host stub. This is a general host capability fix; the classification means an upstream candidate, not an accepted or submission-ready change.",
+      "parents": [
+        "47e4cdb75d7bf25ce7fecc6301a12bf9aa317b90"
+      ],
+      "paths": [
+        "dlls/ntdll/unix/system.c"
+      ],
+      "status": "retained",
+      "subject": "ntdll: Report real ARM64 ID registers on macOS."
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "temporary-pending-darwin-dispatch-convergence",
+      "commit": "87adaaa93346c2c87cbd7c32bdb1cda7f141986d",
+      "evidence": [
+        {
+          "heading": "## Cold-boot crash: root-caused in our own fork code, fixed (`87adaaa`)",
+          "path": "spikes/GFX-001/results/2026-07-24-05-measured-scene-and-coldboot-fix.md"
+        }
+      ],
+      "justification": "Extends the narrow x18 backstop to the dispatch wrappers’ TSD-load pattern at offset 0x30, eliminating the measured cold-boot crash. Retain until generated and static dispatch paths no longer need this recovery.",
+      "parents": [
+        "ddad4ac757b9397c4daa6fe5210f388fa6c9b9fa"
+      ],
+      "paths": [
+        "dlls/ntdll/unix/signal_arm64.c"
+      ],
+      "status": "retained",
+      "subject": "ntdll: Absorb the dispatch wrappers' own TSD load when x18 arrives zeroed."
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "temporary-pending-reviewed-darwin-teb-abi",
+      "commit": "8870df9d617ab15729a6dd404f1d23288be53b6b",
+      "evidence": [
+        {
+          "heading": "## EC TEB fixes — applied",
+          "path": "spikes/WINE-001/results/2026-07-23-05-gate3-arm64ec-groundwork.md"
+        }
+      ],
+      "justification": "Extends TSD TEB access to ARM64EC dispatchers and adds protection diagnostics. The TSD convention and bundled investigation logs need separation before general upstream use.",
+      "parents": [
+        "efd41b9e9813216e3e0ab93c059ab1c8e05e4f74"
+      ],
+      "paths": [
+        "dlls/ntdll/signal_arm64ec.c",
+        "dlls/ntdll/unix/virtual.c"
+      ],
+      "status": "retained",
+      "subject": "macOS arm64ec: read TEB from TSD in EC dispatchers; log mprotect errno"
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "temporary-pending-upstream-darwin-jit-design",
+      "commit": "8d5974ac877d19696c61dba2a2672cfa18c3ad20",
+      "evidence": [
+        {
+          "heading": "## 7. Disposition for #30",
+          "path": "spikes/WINE-001/results/2026-07-25-10-translated-writes-across-map-jit-views.md"
+        }
+      ],
+      "justification": "Finishes or rejects translated stores without retry livelocks, reports the first invalid target byte, and shares the actual decoder with tests. It belongs with the Darwin JIT host mechanism, whose limitations remain explicit.",
+      "parents": [
+        "de36e21186d2b991895ea53884b7c2507b94764b"
+      ],
+      "paths": [
+        "dlls/ntdll/unix/arm64_jit_store.h",
+        "dlls/ntdll/unix/signal_arm64.c",
+        "dlls/ntdll/unix/unix_private.h",
+        "dlls/ntdll/unix/virtual.c"
+      ],
+      "status": "retained",
+      "subject": "ntdll: Finish translated JIT stores the ordinary fault path cannot"
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/task-12-fault-census"
+      ],
+      "classification": "temporary-pending-telemetry-consolidation",
+      "commit": "a88236486c9652063c66d5f471d6a19d133fea86",
+      "evidence": [
+        {
+          "heading": "## 2. Fault census — exact totals, and a conservation law",
+          "path": "spikes/CPU-001/results/2026-07-25-19-real-title-execution-census.md"
+        }
+      ],
+      "justification": "Adds exact cumulative fault totals beside the samplers, with known-answer guest controls. This side-branch instrument is required to reproduce the census evidence and must not disappear from a live-tip-only inventory.",
+      "parents": [
+        "8d5974ac877d19696c61dba2a2672cfa18c3ad20"
+      ],
+      "paths": [
+        "dlls/ntdll/unix/alloy_fault_census.h",
+        "dlls/ntdll/unix/signal_arm64.c"
+      ],
+      "status": "retained",
+      "subject": "ntdll: report exact fault totals alongside the rate-limited samplers"
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "temporary-pending-portable-darwin-layout",
+      "commit": "b93a982387bbfba9478e338fe7d9ce5e45135831",
+      "evidence": [
+        {
+          "heading": "## Fix",
+          "path": "spikes/WINE-001/results/2026-07-24-07-wineboot-spin-va-floor-usd.md"
+        }
+      ],
+      "justification": "Repoints the remaining tick-count/shared-data readers to the relocated page, stopping wineboot’s fault storm. Retire with a reviewed portable shared-data mapping rather than treating the hard-coded address as general policy.",
+      "parents": [
+        "24bad684929f61bf1bb37d03ff1bb72febaa23cb"
+      ],
+      "paths": [
+        "dlls/kernel32/process.c",
+        "dlls/kernel32/sync.c",
+        "dlls/kernelbase/sync.c",
+        "dlls/ntdll/unix/signal_arm64.c",
+        "dlls/win32u/message.c"
+      ],
+      "status": "retained",
+      "subject": "macOS arm64: repoint remaining KUSER_SHARED_DATA readers at the relocated page"
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "upstreamable",
+      "commit": "c5785dbc012dbcf2f2aa947b030d863697b4ebaa",
+      "evidence": [
+        {
+          "heading": "## The mitigation (wine, `c5785db`) — amplifier only",
+          "path": "spikes/CPU-001/results/2026-07-24-11-multi-worker-dispatch-defect-characterized.md"
+        }
+      ],
+      "justification": "Refuses syscall-fault recovery when the saved resume PC is zero, converting a known endless re-fault loop into normal exception failure. This defensive invariant is independent of the FEX root cause.",
+      "parents": [
+        "f85bde57d14b411aae58e841650dbfbf8bbe03a5"
+      ],
+      "paths": [
+        "dlls/ntdll/unix/signal_arm64.c"
+      ],
+      "status": "retained",
+      "subject": "ntdll: Refuse syscall-fault claims with a zero resume pc"
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "Alloy-specific",
+      "commit": "ddad4ac757b9397c4daa6fe5210f388fa6c9b9fa",
+      "evidence": [
+        {
+          "heading": "## What stood between result 02 and green: five blockers, in order",
+          "path": "spikes/GFX-001/results/2026-07-24-03-first-light-green.md"
+        }
+      ],
+      "justification": "Exports the DXMT-facing macdrv table with a layout compatibility shim and on-demand client views. It is a specific Wine/DXMT provider ABI bridge, not a general Windows API behavior change.",
+      "parents": [
+        "5a0f6d44729c2ff0d70d5d31540a2f55d25af5d9"
+      ],
+      "paths": [
+        "dlls/winemac.drv/window.c"
+      ],
+      "status": "retained",
+      "subject": "winemac: Export a DXMT interop table with a layout shim and on-demand client views."
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "temporary-pending-upstream-darwin-jit-design",
+      "commit": "de36e21186d2b991895ea53884b7c2507b94764b",
+      "evidence": [
+        {
+          "heading": "## Outcome",
+          "path": "spikes/WINE-001/results/2026-07-25-10-translated-writes-across-map-jit-views.md"
+        }
+      ],
+      "justification": "Introduces translated-store handling between Darwin JIT views. The original rejection behavior needed the following corrective commit; inventory keeps the complete lineage rather than claiming this prototype alone was sufficient.",
+      "parents": [
+        "36a24a1a1b81daed35e389622a9347e9561e98ee"
+      ],
+      "paths": [
+        "dlls/ntdll/unix/signal_arm64.c",
+        "dlls/ntdll/unix/unix_private.h",
+        "dlls/ntdll/unix/virtual.c"
+      ],
+      "status": "retained",
+      "subject": "ntdll: Handle translated stores into Darwin JIT views"
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "temporary-pending-reviewed-darwin-teb-abi",
+      "commit": "efd41b9e9813216e3e0ab93c059ab1c8e05e4f74",
+      "evidence": [
+        {
+          "heading": "### Change set (commit `efd41b9`)",
+          "path": "spikes/WINE-001/results/2026-07-23-04-teb-in-tsd-and-first-pe-execution.md"
+        }
+      ],
+      "justification": "Replaces Darwin-clobbered x18 TEB access with pthread TSD slot 6 across native dispatch paths. Retain until the Darwin TEB storage ABI is reviewed and supported beyond this fork.",
+      "parents": [
+        "0e693a03c13706c1837d6e543d29350d51d80c1c"
+      ],
+      "paths": [
+        "dlls/ntdll/signal_arm64.c",
+        "dlls/ntdll/unix/signal_arm64.c",
+        "dlls/ntdll/unix/virtual.c",
+        "include/winnt.h"
+      ],
+      "status": "retained",
+      "subject": "macOS arm64: source the TEB from TSD instead of x18"
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "upstreamable",
+      "commit": "f24425cdd8bbc32a45876bc2e8b64ab3777af801",
+      "evidence": [
+        {
+          "heading": "## Fork fix that stays: EC entry points are x64 thunks (commit `f24425c`)",
+          "path": "spikes/GFX-001/results/2026-07-24-02-first-light-blockers.md"
+        }
+      ],
+      "justification": "Redirects ARM64EC DLL entry points and TLS callbacks through the module redirection table before native calls. The observed x64-thunk/native-call mismatch is a loader correctness issue independent of Alloy policy.",
+      "parents": [
+        "61bf5698be12c8bb493b99e87752931c553c254a"
+      ],
+      "paths": [
+        "dlls/ntdll/loader.c",
+        "dlls/ntdll/ntdll_misc.h",
+        "dlls/ntdll/signal_arm64ec.c"
+      ],
+      "status": "retained",
+      "subject": "ntdll: Redirect ARM64EC entry points and TLS callbacks to their EC counterparts."
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/lgpl-substitution-proof",
+        "refs/heads/alloy/spike-wine-001",
+        "refs/heads/alloy/task-12-fault-census",
+        "refs/heads/alloy/task-34-jit-view-protect",
+        "refs/heads/alloy/task-59-ec-delayload-thunks",
+        "refs/heads/alloy/task-65-scaleform",
+        "refs/heads/alloy/task-8-absorb-attribution"
+      ],
+      "classification": "temporary-pending-defensive-guard-and-telemetry-split",
+      "commit": "f85bde57d14b411aae58e841650dbfbf8bbe03a5",
+      "evidence": [
+        {
+          "heading": "## The mechanism (wine-side trace, per-thread)",
+          "path": "spikes/CPU-001/results/2026-07-24-11-multi-worker-dispatch-defect-characterized.md"
+        }
+      ],
+      "justification": "Prevents recursive faults while reading an invalid fault PC and adds anomaly sentinels. The defensive guard is a plausible upstream candidate, but this mixed guard/diagnostic commit needs a deliberate split and broader validation.",
+      "parents": [
+        "5a0d3a375d31d6dde654b62635af6d1d55378b5c"
+      ],
+      "paths": [
+        "dlls/ntdll/unix/signal_arm64.c"
+      ],
+      "status": "retained",
+      "subject": "ntdll: Guard the x18 backstop against unreadable fault pcs, add fault sentinels"
+    },
+    {
+      "branches": [
+        "refs/heads/alloy/task-59-ec-delayload-thunks"
+      ],
+      "classification": "upstreamable",
+      "commit": "fbbdf994ccd06598da75133c49c7268fd0d10ee4",
+      "evidence": [
+        {
+          "heading": "## 4. What landed instead",
+          "path": "spikes/WINE-001/results/2026-07-25-11-arm64ec-variadic-delay-imports.md"
+        }
+      ],
+      "justification": "Keeps lazy ARM64EC delay-import first calls in ARM64EC so variadic stack arguments survive. This side-branch commit remains separately identified from the later live-branch commit with the same subject.",
+      "parents": [
+        "54048cbd2bf69aee8cc7be2beb14c5ab63a17842"
+      ],
+      "paths": [
+        "dlls/ntdll/loader.c",
+        "dlls/ntdll/ntdll_misc.h",
+        "dlls/ntdll/signal_arm64ec.c",
+        "include/winnt.h"
+      ],
+      "status": "retained",
+      "subject": "ntdll: Keep the first ARM64EC delay-import call inside ARM64EC."
+    }
+  ],
+  "counting": "distinct commit IDs; retained side branches and reverted history included; supplemental patch and matching isolated commit counted once",
+  "counts": {
+    "shared_commit_ids": 28,
+    "supplemental_patches": 1,
+    "total_maintenance_items": 29
+  },
+  "scope": "committed-Wine-alloy-branches-plus-explicit-isolated-patches",
+  "supplemental": [
+    {
+      "annotation": {
+        "classification": "temporary-pending-upstream-darwin-jit-design",
+        "evidence": [
+          {
+            "heading": "## Exact identities",
+            "path": "spikes/CPU-001/results/2026-10-04-28-macos27-jit-signal-resume.md"
+          },
+          {
+            "heading": "## Applying the fork patch in isolation",
+            "path": "spikes/WINE-001/jit-signal/README.md"
+          }
+        ],
+        "justification": "Restores JIT execute permission outside the original fault signal context on macOS27 and preserves interrupted state through a new signal. This verified #111 repair remains an isolated first-party patch/private commit; shared Wine and build-2 have not been promoted. Count the two representations as one additional maintained change.",
+        "status": "isolated-not-promoted"
+      },
+      "branch": "alloy/task-111-macos27-runtime",
+      "commit": "f0937d595166631dd00eaab31fef4fb5a6f37031",
+      "in_shared_history": false,
+      "parent": "420c70bdcb7615c3dc0395d162f93645f098fe56",
+      "patch": "spikes/WINE-001/jit-signal/wine.patch",
+      "patch_sha256": "da99584650e1c0a9fe38a31608558f0cd9980968bec63adf0b22437080b48c0f",
+      "paths": [
+        "dlls/ntdll/unix/darwin-jit-resume.h",
+        "dlls/ntdll/unix/signal_arm64.c",
+        "dlls/ntdll/unix/virtual.c"
+      ]
+    }
+  ],
+  "upstream": {
+    "commit": "b41409d9be509207c16d814742ceb8273bc201fc",
+    "commit_time": "2026-07-23T22:51:03+02:00",
+    "freshness": "cached-ref; no fetch or rebase performed",
+    "ref": "refs/remotes/origin/master"
+  },
+  "version": 1,
+  "working_tree": "uncommitted changes excluded from all counts and patch contents"
+}
