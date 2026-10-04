@@ -501,6 +501,23 @@ REGISTRY: list[Suite] = [
         description="build-dependent: every ISA family and mutation in a private FEX prefix; current runtime regression is #111",
         environment=isa_environment,
     ),
+    # --- runtime/session-service: private user launchd fixture only -------
+    Suite(
+        id="runtime-service-swift-test", tier="fast",
+        cmd=("swift", "test", "--package-path", "runtime/session-service"),
+        cwd=".", timeout=240,
+        probe=every(need_commands("swift"), need_paths("runtime/session-service/Package.swift")),
+        description="typed local API validation, credentials and private configuration controls",
+    ),
+    Suite(
+        id="runtime-service-xpc-boundary", tier="fast",
+        cmd=("python3", "runtime/session-service/run-boundary-proof.py"),
+        cwd=".", timeout=300,
+        probe=every(need_commands("swift", "python3", "launchctl"),
+                    need_paths("runtime/session-service/run-boundary-proof.py")),
+        description="temporary per-user XPC service, separate-process requests, cleanup and rejection controls",
+        cleanup_grace=15,
+    ),
     # --- runtime/profile-compiler ----------------------------------------
     Suite(
         id="profile-compiler-swift-test",
@@ -800,7 +817,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 42
+REGISTRY_SUITE_COUNT = 44
 
 
 # ---------------------------------------------------------------------------
