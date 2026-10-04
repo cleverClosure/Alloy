@@ -34,8 +34,12 @@ measurement, review, or decision evidence proves the roadmap wording at its full
 
 > **CPU anomaly census correction:** [CPU-001 result 22](CPU-001/results/2026-07-25-22-arm64ec-anomaly-telemetry-calibrated.md)
 > supersedes result 19's telemetry timing diagnosis. Supported split flags fire
-> on ARM64EC and are flags, not frequencies; uncalibrated CAS-tear zeros remain
-> excluded from clean-run claims (issue #37).
+> on ARM64EC and are flags, not frequencies. [CPU-001 result 30](CPU-001/results/2026-10-04-30-cas-tear-coverage-retired.md)
+> settles issue #78 by retiring all four CAS-tear flags from clean-run claims.
+> Exact Wine fault totals and decoder invalid/unimplemented buckets have matching
+> positive and negative controls; they cover observable faults and rejected
+> decodes, **not every silent partial atomic write**. CAS-tear absence is not
+> certified, including when the other calibrated controls pass.
 
 ## Exit criteria
 
