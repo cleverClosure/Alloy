@@ -10,8 +10,12 @@ let package = Package(
         .executable(name: "alloy-runtime-service", targets: ["AlloyRuntimeDaemon"]),
         .executable(name: "alloy-runtime-client", targets: ["AlloyRuntimeCLI"])
     ],
+    dependencies: [.package(path: "../store-catalog"), .package(path: "../content-store")],
     targets: [
-        .target(name: "AlloyRuntimeAPI"),
+        .target(name: "AlloyRuntimeAPI", dependencies: [
+            .product(name: "AlloyStoreCatalog", package: "store-catalog"),
+            .product(name: "AlloyContentStore", package: "content-store")
+        ]),
         .target(name: "AlloyRuntimeService", dependencies: ["AlloyRuntimeAPI"]),
         .executableTarget(name: "AlloyRuntimeDaemon", dependencies: ["AlloyRuntimeService"]),
         .executableTarget(name: "AlloyRuntimeCLI", dependencies: ["AlloyRuntimeAPI"]),

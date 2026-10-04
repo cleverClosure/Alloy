@@ -10,7 +10,7 @@ import Foundation
         do {
             guard CommandLine.arguments.count == 2 else { throw RuntimeFailure.invalidConfiguration }
             let configuration = try ServiceConfiguration.read(CommandLine.arguments[1])
-            let listener = ServiceListener(configuration: configuration)
+            let listener = try ServiceListener(configuration: configuration)
             listener.resume()
             withExtendedLifetime(listener) { dispatchMain() }
         } catch {

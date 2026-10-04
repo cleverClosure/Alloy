@@ -9,12 +9,20 @@ public struct ServiceConfiguration: Codable, Sendable {
     public let credential: String
     public let stateRoot: String
     public let contentRoot: String
+    public let libraryRoots: [String]?
+    public let fixtureMode: Bool?
+    public let testFault: String?
 
-    public init(serviceName: String, credential: String, stateRoot: String, contentRoot: String) {
+    public init(serviceName: String, credential: String, stateRoot: String, contentRoot: String,
+                libraryRoots: [String] = [],
+                fixtureMode: Bool = false, testFault: String? = nil) {
         self.serviceName = serviceName
         self.credential = credential
         self.stateRoot = stateRoot
         self.contentRoot = contentRoot
+        self.libraryRoots = libraryRoots
+        self.fixtureMode = fixtureMode
+        self.testFault = testFault
     }
 
     public static func read(_ path: String) throws -> Self {
@@ -46,6 +54,16 @@ public struct ServiceConfiguration: Codable, Sendable {
         }
         try validateDirectory(result.stateRoot)
         try validateDirectory(result.contentRoot)
+        guard (result.libraryRoots ?? []).count <= 16,
+              result.testFault == nil || result.fixtureMode == true else { throw RuntimeFailure.invalidConfiguration }
+        for library in result.libraryRoots ?? [] {
+            let path = try canonicalPath(library)
+            for owned in [state, content] {
+                guard path != owned, !path.hasPrefix(owned + "/"), !owned.hasPrefix(path + "/") else {
+                    throw RuntimeFailure.invalidConfiguration
+                }
+            }
+        }
         return result
     }
 

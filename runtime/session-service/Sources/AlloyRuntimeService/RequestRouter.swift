@@ -7,7 +7,15 @@ public final class RequestRouter: Sendable {
     public let instanceID = UUID().uuidString
     public let configuration: ServiceConfiguration
 
-    public init(configuration: ServiceConfiguration) { self.configuration = configuration }
+    private let handler: (@Sendable (RuntimeRequest) throws -> Data)?
+    private let methods: [String]
+
+    public init(configuration: ServiceConfiguration, methods: [String] = [],
+                handler: (@Sendable (RuntimeRequest) throws -> Data)? = nil) {
+        self.configuration = configuration
+        self.methods = ["info"] + methods
+        self.handler = handler
+    }
 
     public func exchange(_ bytes: Data, peerUID: UInt32, now: TimeInterval = Date().timeIntervalSince1970) -> Data {
         let response: RuntimeResponse
@@ -35,10 +43,19 @@ public final class RequestRouter: Sendable {
         guard request.apiVersion == 1 else { return failure(.unsupportedVersion) }
         guard !requestID.isEmpty, request.deadline.isFinite, request.deadline >= now,
               request.deadline <= now + RuntimeLimits.requestSeconds + 1 else { return failure(.expired) }
-        guard request.method == "info", request.payload == Data("{}".utf8) else { return failure(.malformed) }
-        let info = ServiceInfo(instanceID: instanceID, processID: getpid(), userID: getuid(), methods: ["info"])
-        guard let payload = try? RuntimeEncoding.encode(info) else { return failure(.failed) }
-        return RuntimeResponse(requestID: requestID, code: .ok, payload: payload)
+        do {
+            let payload: Data
+            if request.method == "info" {
+                guard request.payload == Data("{}".utf8) else { return failure(.malformed) }
+                payload = try RuntimeEncoding.encode(ServiceInfo(
+                    instanceID: instanceID, processID: getpid(), userID: getuid(), methods: methods))
+            } else if methods.contains(request.method), let handler {
+                payload = try handler(request)
+            } else { return failure(.malformed) }
+            return RuntimeResponse(requestID: requestID, code: .ok, payload: payload)
+        } catch let RuntimeFailure.status(code) { return failure(code) } catch is DecodingError {
+            return failure(.malformed)
+        } catch { return failure(.failed) }
     }
 
     private static func constantTimeEqual(_ left: String, _ right: String) -> Bool {
