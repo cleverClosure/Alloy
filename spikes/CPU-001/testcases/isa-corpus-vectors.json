@@ -1,0 +1,533 @@
+{
+  "author": "Timur Isaev",
+  "seed": "a1c0ffee5eed0003",
+  "oracle": "arm64 reference and independent Rosetta parity; measured FEX outcomes are recorded in dated CPU-001 results",
+  "families": {
+    "sse": {
+      "flag": "-msse2",
+      "cases": 17216,
+      "checksum": "1243a236db34df2f",
+      "mutation": "addps",
+      "mutation_checksum": "55cf1a60181340ae",
+      "operations": [
+        {
+          "name": "addps",
+          "cases": 832
+        },
+        {
+          "name": "subps",
+          "cases": 832
+        },
+        {
+          "name": "mulps",
+          "cases": 832
+        },
+        {
+          "name": "divps",
+          "cases": 832
+        },
+        {
+          "name": "sqrtps",
+          "cases": 832
+        },
+        {
+          "name": "minps",
+          "cases": 1088
+        },
+        {
+          "name": "maxps",
+          "cases": 1088
+        },
+        {
+          "name": "andps",
+          "cases": 1088
+        },
+        {
+          "name": "andnps",
+          "cases": 1088
+        },
+        {
+          "name": "orps",
+          "cases": 1088
+        },
+        {
+          "name": "xorps",
+          "cases": 1088
+        },
+        {
+          "name": "cmpeqps",
+          "cases": 1088
+        },
+        {
+          "name": "cmpltps",
+          "cases": 1088
+        },
+        {
+          "name": "cmpunordps",
+          "cases": 1088
+        },
+        {
+          "name": "shufps",
+          "cases": 1088
+        },
+        {
+          "name": "unpcklps",
+          "cases": 1088
+        },
+        {
+          "name": "unpckhps",
+          "cases": 1088
+        }
+      ],
+      "mutation_instruction_failures": 612
+    },
+    "sse3": {
+      "flag": "-msse3",
+      "cases": 8256,
+      "checksum": "a0918c8c7fafcfd9",
+      "mutation": "addsubps",
+      "mutation_checksum": "5305bc4225f49774",
+      "operations": [
+        {
+          "name": "addsubps",
+          "cases": 832
+        },
+        {
+          "name": "haddps",
+          "cases": 832
+        },
+        {
+          "name": "hsubps",
+          "cases": 832
+        },
+        {
+          "name": "movsldup",
+          "cases": 1088
+        },
+        {
+          "name": "movshdup",
+          "cases": 1088
+        },
+        {
+          "name": "movddup",
+          "cases": 1088
+        },
+        {
+          "name": "addsubpd",
+          "cases": 832
+        },
+        {
+          "name": "haddpd",
+          "cases": 832
+        },
+        {
+          "name": "hsubpd",
+          "cases": 832
+        }
+      ],
+      "mutation_instruction_failures": 612
+    },
+    "ssse3": {
+      "flag": "-mssse3",
+      "cases": 24576,
+      "checksum": "ce9645ed60d9d174",
+      "mutation": "pshufb",
+      "mutation_checksum": "89914f4da68752d8",
+      "operations": [
+        {
+          "name": "pshufb",
+          "cases": 1088
+        },
+        {
+          "name": "pabsb",
+          "cases": 1600
+        },
+        {
+          "name": "pabsw",
+          "cases": 1600
+        },
+        {
+          "name": "pabsd",
+          "cases": 1600
+        },
+        {
+          "name": "psignb",
+          "cases": 1600
+        },
+        {
+          "name": "psignw",
+          "cases": 1600
+        },
+        {
+          "name": "psignd",
+          "cases": 1600
+        },
+        {
+          "name": "phaddw",
+          "cases": 1600
+        },
+        {
+          "name": "phaddd",
+          "cases": 1600
+        },
+        {
+          "name": "phsubw",
+          "cases": 1600
+        },
+        {
+          "name": "phsubd",
+          "cases": 1600
+        },
+        {
+          "name": "phaddsw",
+          "cases": 1600
+        },
+        {
+          "name": "phsubsw",
+          "cases": 1600
+        },
+        {
+          "name": "pmaddubsw",
+          "cases": 1600
+        },
+        {
+          "name": "pmulhrsw",
+          "cases": 1600
+        },
+        {
+          "name": "palignr13",
+          "cases": 1088
+        }
+      ],
+      "mutation_instruction_failures": 1089
+    },
+    "sse41": {
+      "flag": "-msse4.1",
+      "cases": 24128,
+      "checksum": "6cfd121cde334cde",
+      "mutation": "pmulld",
+      "mutation_checksum": "6011bfd1cf108682",
+      "operations": [
+        {
+          "name": "pmulld",
+          "cases": 1600
+        },
+        {
+          "name": "pmuldq",
+          "cases": 1600
+        },
+        {
+          "name": "pminsb",
+          "cases": 1600
+        },
+        {
+          "name": "pminsd",
+          "cases": 1600
+        },
+        {
+          "name": "pminuw",
+          "cases": 1600
+        },
+        {
+          "name": "pminud",
+          "cases": 1600
+        },
+        {
+          "name": "pmaxsb",
+          "cases": 1600
+        },
+        {
+          "name": "pmaxsd",
+          "cases": 1600
+        },
+        {
+          "name": "pmaxuw",
+          "cases": 1600
+        },
+        {
+          "name": "pmaxud",
+          "cases": 1600
+        },
+        {
+          "name": "pcmpeqq",
+          "cases": 1600
+        },
+        {
+          "name": "pblendvb",
+          "cases": 1088
+        },
+        {
+          "name": "blendps5",
+          "cases": 1088
+        },
+        {
+          "name": "ptest",
+          "cases": 1088
+        },
+        {
+          "name": "packusdw",
+          "cases": 1600
+        },
+        {
+          "name": "roundps",
+          "cases": 832
+        },
+        {
+          "name": "dpps",
+          "cases": 832
+        }
+      ],
+      "mutation_instruction_failures": 1601
+    },
+    "sse42": {
+      "flag": "-msse4.2",
+      "cases": 10176,
+      "checksum": "49c8cba45643ca58",
+      "mutation": "pcmpgtq",
+      "mutation_checksum": "393ef08fb8605058",
+      "operations": [
+        {
+          "name": "pcmpgtq",
+          "cases": 1600
+        },
+        {
+          "name": "crc32b",
+          "cases": 1600
+        },
+        {
+          "name": "crc32w",
+          "cases": 1600
+        },
+        {
+          "name": "crc32d",
+          "cases": 1600
+        },
+        {
+          "name": "crc32q",
+          "cases": 1600
+        },
+        {
+          "name": "pcmpestrm-any",
+          "cases": 1088
+        },
+        {
+          "name": "pcmpestrm-each",
+          "cases": 1088
+        }
+      ],
+      "mutation_instruction_failures": 1601
+    },
+    "avx": {
+      "flag": "-mavx",
+      "cases": 25728,
+      "checksum": "732fe5b38fa3c408",
+      "mutation": "vaddps",
+      "mutation_checksum": "64943f963264b421",
+      "operations": [
+        {
+          "name": "vaddps",
+          "cases": 832
+        },
+        {
+          "name": "vsubps",
+          "cases": 832
+        },
+        {
+          "name": "vmulps",
+          "cases": 832
+        },
+        {
+          "name": "vdivps",
+          "cases": 832
+        },
+        {
+          "name": "vsqrtps",
+          "cases": 832
+        },
+        {
+          "name": "vminps",
+          "cases": 1088
+        },
+        {
+          "name": "vmaxps",
+          "cases": 1088
+        },
+        {
+          "name": "vandps",
+          "cases": 1088
+        },
+        {
+          "name": "vandnps",
+          "cases": 1088
+        },
+        {
+          "name": "vorps",
+          "cases": 1088
+        },
+        {
+          "name": "vxorps",
+          "cases": 1088
+        },
+        {
+          "name": "vcmpeqps",
+          "cases": 1088
+        },
+        {
+          "name": "vcmpltps",
+          "cases": 1088
+        },
+        {
+          "name": "vcmpunordps",
+          "cases": 1088
+        },
+        {
+          "name": "vshufps",
+          "cases": 1088
+        },
+        {
+          "name": "vunpcklps",
+          "cases": 1088
+        },
+        {
+          "name": "vunpckhps",
+          "cases": 1088
+        },
+        {
+          "name": "vhaddps",
+          "cases": 832
+        },
+        {
+          "name": "vblendvps",
+          "cases": 1088
+        },
+        {
+          "name": "vperm2f128",
+          "cases": 1088
+        },
+        {
+          "name": "vaddpd",
+          "cases": 832
+        },
+        {
+          "name": "vsubpd",
+          "cases": 832
+        },
+        {
+          "name": "vmulpd",
+          "cases": 832
+        },
+        {
+          "name": "vdivpd",
+          "cases": 832
+        },
+        {
+          "name": "vminpd",
+          "cases": 1088
+        },
+        {
+          "name": "vmaxpd",
+          "cases": 1088
+        }
+      ],
+      "mutation_instruction_failures": 612
+    },
+    "avx2": {
+      "flag": "-mavx2",
+      "cases": 33664,
+      "checksum": "589ca5662342c316",
+      "mutation": "vpaddd",
+      "mutation_checksum": "5a9e8298190dc946",
+      "operations": [
+        {
+          "name": "vpaddd",
+          "cases": 1600
+        },
+        {
+          "name": "vpaddb",
+          "cases": 1600
+        },
+        {
+          "name": "vpaddw",
+          "cases": 1600
+        },
+        {
+          "name": "vpaddq",
+          "cases": 1600
+        },
+        {
+          "name": "vpsubb",
+          "cases": 1600
+        },
+        {
+          "name": "vpsubd",
+          "cases": 1600
+        },
+        {
+          "name": "vpsubq",
+          "cases": 1600
+        },
+        {
+          "name": "vpcmpeqb",
+          "cases": 1600
+        },
+        {
+          "name": "vpcmpeqd",
+          "cases": 1600
+        },
+        {
+          "name": "vpcmpeqq",
+          "cases": 1600
+        },
+        {
+          "name": "vpcmpgtd",
+          "cases": 1600
+        },
+        {
+          "name": "vpcmpgtq",
+          "cases": 1600
+        },
+        {
+          "name": "vpmulld",
+          "cases": 1600
+        },
+        {
+          "name": "vpmuldq",
+          "cases": 1600
+        },
+        {
+          "name": "vpshufb",
+          "cases": 1088
+        },
+        {
+          "name": "vpsllvd",
+          "cases": 1600
+        },
+        {
+          "name": "vpsrlvd",
+          "cases": 1600
+        },
+        {
+          "name": "vpsravd",
+          "cases": 1600
+        },
+        {
+          "name": "vpermd",
+          "cases": 1088
+        },
+        {
+          "name": "vpmaddubsw",
+          "cases": 1600
+        },
+        {
+          "name": "vpabsd",
+          "cases": 1600
+        },
+        {
+          "name": "vpblendvb",
+          "cases": 1088
+        }
+      ],
+      "mutation_instruction_failures": 1601
+    }
+  }
+}
