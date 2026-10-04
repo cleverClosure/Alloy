@@ -13,6 +13,10 @@ struct CatalogCLI {
                 throw AlloyStoreCatalog.CatalogError.invalidInput(
                     "usage: alloy-store-catalog list|discover|get|fingerprint LIBRARY [ID]")
             }
+            if EngineCommands.commands.contains(args[0]) {
+                try EngineCommands(args).run()
+                return
+            }
             if args[0] == "install-probe" {
                 try installProbe(args)
                 return
@@ -23,8 +27,8 @@ struct CatalogCLI {
             }
             let catalog = try StoreCatalog(libraryRoots: [URL(fileURLWithPath: args[1])])
             switch args[0] {
-            case "list": try printJSON(catalog.listGames())
-            case "discover": try printJSON(catalog.discoverInstallations())
+            case "list" where args.count == 2: try printJSON(catalog.listGames())
+            case "discover" where args.count == 2: try printJSON(catalog.discoverInstallations())
             case "get" where args.count == 3: try printJSON(catalog.getGame(args[2]))
             case "fingerprint" where args.count == 3: try printJSON(catalog.refreshBuildFingerprint(args[2]))
             default: throw AlloyStoreCatalog.CatalogError.invalidInput("unknown command or wrong argument count")
