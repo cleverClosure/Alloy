@@ -33,7 +33,8 @@ def patch_paths(content):
             require(old not in paths, 'patch:duplicate_file')
             paths.append(old)
             current, headers = old, set()
-        elif current is not None and line.startswith(('--- ', '+++ ')):
+        elif line.startswith(('--- ', '+++ ')):
+            require(current is not None, 'patch:orphan_file_header')
             kind, value = line[:3], line[4:]
             require(kind not in headers, 'patch:duplicate_file_header')
             if value != '/dev/null':
@@ -41,6 +42,8 @@ def patch_paths(content):
                 path = common.safe_path(value[2:])
                 require(path == current and value[:2] == ('a/' if kind == '---' else 'b/'), 'patch:header_mismatch')
             headers.add(kind)
+        elif line.startswith('diff '):
+            raise common.Invalid('patch:unsupported_diff_format')
         elif line.startswith(('rename ', 'copy ', 'Binary files ', 'GIT binary patch')):
             raise common.Invalid('patch:unsupported_metadata')
         elif re.match(r'(new file mode|deleted file mode|old mode|new mode) ', line):
@@ -54,7 +57,7 @@ def patch_paths(content):
 def scratch_git(repo, *args, check=True):
     env = {key: value for key, value in os.environ.items() if not key.startswith('GIT_')}
     env.update(GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL='/dev/null', GIT_TERMINAL_PROMPT='0', GIT_NO_LAZY_FETCH='1', LC_ALL='C')
-    command = ['git', '-c', 'core.hooksPath=/dev/null', '-c', 'submodule.recurse=false', '-c', 'fetch.recurseSubmodules=false', '-C', str(repo), *map(str, args)]
+    command = ['git', '-c', 'protocol.no_fetch.allow=never', '-c', 'core.hooksPath=/dev/null', '-c', 'submodule.recurse=false', '-c', 'fetch.recurseSubmodules=false', '-C', str(repo), *map(str, args)]
     result = subprocess.run(command, env=env, capture_output=True, timeout=90, check=False)
     require(not check or result.returncode == 0, f'scratch_git:{args[0]}:exit_{result.returncode}')
     return result

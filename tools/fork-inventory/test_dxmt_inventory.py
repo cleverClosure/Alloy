@@ -55,6 +55,11 @@ class DXMTInventoryTests(unittest.TestCase):
             with self.subTest(path=path), self.assertRaisesRegex(ValueError, 'excluded_source'):
                 inventory.apply_check(self.root / 'does-not-exist', self.base, [PATCH.replace(PATH.encode(), path.encode())])
 
+    def test_orphan_unified_diff_cannot_hide_before_git_patch(self):
+        patch = b'--- /dev/null\n+++ b/src/d3d12/fake.cpp\n@@ -0,0 +1 @@\n+inert fixture\n' + PATCH
+        with self.assertRaisesRegex(ValueError, 'orphan_file_header'):
+            inventory.patch_paths(patch)
+
     def test_secondary_header_cannot_bypass_guard(self):
         patch = PATCH.replace(('+++ b/' + PATH).encode(), b'+++ b/src/d3d12/fake.cpp')
         with self.assertRaisesRegex(ValueError, 'excluded_source'):

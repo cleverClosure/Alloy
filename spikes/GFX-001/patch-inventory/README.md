@@ -45,9 +45,9 @@ modified. The guard is a concrete path boundary, not a legal certification.
 ## Controls and limits
 
 The two real base apply-checks pass at
-`e520fea415ba4b82b0c346dae77bbb1be4897453`. Ten tests use inert original fixtures:
+`e520fea415ba4b82b0c346dae77bbb1be4897453`. Eleven tests use inert original fixtures:
 valid application with unchanged source, wrong context and malformed hunks,
-excluded paths rejected before repository access, secondary-header bypasses,
+excluded paths rejected before repository access, secondary-header and orphan unified-diff bypasses,
 traversal and ambiguous paths, rename/copy/binary/mode attacks, duplicate/mismatched
 headers, source symlinks, new regular files, and deterministic output drift.
 A seeded `src/d3d12/fake.cpp` path is only a string in a synthetic patch and is
