@@ -1,0 +1,7 @@
+Author: Timur Isaev
+Synthetic launch completed normally.
+runtime_generation=generation-4 error=ALLOY_OK
+frame_count=240 process_count=2 exit_status=0
+reference=https://synthetic.invalid/docs
+unicode=Пример 🎮 synthetic_fixture
+provider=sha256:1111111111111111111111111111111111111111111111111111111111111111
