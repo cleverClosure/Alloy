@@ -35,9 +35,42 @@ See [measurement boundaries and threshold](../PERFORMANCE.md),
 [raw baseline](performance-baseline-v1.json), and
 [raw clean reproduction](2026-10-04-performance-rerun.json).
 
-Hosted CI and the required hosted two-package red/green assertion runs remain
-blocked by GitHub account billing. Local results do not substitute for those
-required hosted observations.
+Hosted validation resumed after the repository became public. The complete
+implementation passed all **30 fast suites**, with no failures or skips, in
+**474 seconds** on the public macOS runner. The run includes all 86 content-store
+tests and all 34 identity tests, real ENOSPC and disabled controls, parser
+mutation and timeout controls, the 21,100-file identity pipeline, and performance
+threshold checks including rejection of the deliberately delayed GC operation.
+
+| Hosted observation | Wall time | Result |
+| --- | --- | --- |
+| [Milestone 1](https://github.com/cleverClosure/Alloy/actions/runs/37187847507) | 211s | 25 suites passed |
+| [Milestone 2](https://github.com/cleverClosure/Alloy/actions/runs/37200147883) | 325s | 26 suites passed |
+| [Milestone 3](https://github.com/cleverClosure/Alloy/actions/runs/37200723864) | 314s | 27 suites passed |
+| [Milestone 4](https://github.com/cleverClosure/Alloy/actions/runs/37201179099) | 446s | 28 suites passed |
+| [Full implementation, assertions inverted](https://github.com/cleverClosure/Alloy/actions/runs/37200217212) | 448s | 28 passed; exactly two intended failures |
+| [Full implementation, assertions restored](https://github.com/cleverClosure/Alloy/actions/runs/37200823968) | 474s | All 30 suites passed |
+
+Every run is below the existing **900-second** job budget. The failing control
+inverted the empty-content digest assertion and the Unicode-path aggregate
+assertion. The passing run differs by exactly those two operators restored from
+`!=` to `==`. Rebasing onto the merged prerequisites did not change its source
+tree. The final milestone's complete implementation matches that successful
+tree byte for byte before these evidence files are added.
+
+The disposable [control PR #156](https://github.com/cleverClosure/Alloy/pull/156)
+was closed **unmerged** and its branch deleted both remotely and locally.
+[Structured hosted evidence](2026-10-04-hosted-proof.json) preserves the commit
+and tree IDs, exact restoration diff, log hashes, suite results, and timestamps.
+The final milestone [PR #152](https://github.com/cleverClosure/Alloy/pull/152)
+also requires its own green CI run before merging; its final wall time is
+recorded on that PR.
+
+Initial hosted attempts exposed APFS detach taking longer than the old
+four-second attempt limit. The repaired bounded cleanup passed both cancellation
+paths and all ten pressure/control cases; one successful hosted detach measured
+10.517 seconds. Those initial failures are retained as diagnostic evidence,
+separate from the accepted two-assertion control pair.
 
 The final local CI-equivalent engine self-test and all **30 fast suites** passed
 in **316.362 seconds** (5m16s), below the existing 900-second job budget. This
@@ -47,4 +80,5 @@ assertions each failed with exactly the intended single failure before source
 restoration and this green run. See the [structured full-gate result](2026-10-04-local-fast-gate.json)
 for source-file hashes, exact suite verdicts and local timing, and the
 [local assertion controls](2026-10-04-local-assertion-controls.json). The hosted
-job's wall time and required hosted red/green pair are still unobserved.
+observations above complete the required CI evidence independently of these
+local results.

@@ -1,0 +1,1163 @@
+{
+  "author": "Timur Isaev",
+  "date": "2026-10-04",
+  "hosted": true,
+  "control_pr": "https://github.com/cleverClosure/Alloy/pull/156",
+  "clean_implementation_tree": "24f65892c7fc05a5435a78c99d4b1035fa131230",
+  "restoration_files": [
+    "runtime/content-store/Tests/AlloyContentStoreTests/IntegrityAttackTests.swift",
+    "runtime/store-identity/Tests/AlloyStoreIdentityTests/UnicodeFilenameTests.swift"
+  ],
+  "restoration_diff": "diff --git a/runtime/content-store/Tests/AlloyContentStoreTests/IntegrityAttackTests.swift b/runtime/content-store/Tests/AlloyContentStoreTests/IntegrityAttackTests.swift\nindex 819cb85..23ee357 100644\n--- a/runtime/content-store/Tests/AlloyContentStoreTests/IntegrityAttackTests.swift\n+++ b/runtime/content-store/Tests/AlloyContentStoreTests/IntegrityAttackTests.swift\n@@ -93 +93 @@ struct IntegrityAttackTests {\n-            #expect(input.descriptor.digest != emptyDigest)\n+            #expect(input.descriptor.digest == emptyDigest)\ndiff --git a/runtime/store-identity/Tests/AlloyStoreIdentityTests/UnicodeFilenameTests.swift b/runtime/store-identity/Tests/AlloyStoreIdentityTests/UnicodeFilenameTests.swift\nindex ba251d6..bbe61e2 100644\n--- a/runtime/store-identity/Tests/AlloyStoreIdentityTests/UnicodeFilenameTests.swift\n+++ b/runtime/store-identity/Tests/AlloyStoreIdentityTests/UnicodeFilenameTests.swift\n@@ -39 +39 @@ struct UnicodeFilenameTests {\n-        #expect(record.aggregateSHA256 != \"73befc77760e2c267e9be1953e5717fbaab489d4bd33919084399f82b88ffcfd\")\n+        #expect(record.aggregateSHA256 == \"73befc77760e2c267e9be1953e5717fbaab489d4bd33919084399f82b88ffcfd\")",
+  "milestone_runs": [
+    {
+      "author": "Timur Isaev",
+      "label": "milestone-1",
+      "hosted": true,
+      "run_id": 37187847507,
+      "url": "https://github.com/cleverClosure/Alloy/actions/runs/37187847507",
+      "head_sha": "4def2bd9d12f16b596c854ce0cccf5a457effa4e",
+      "conclusion": "success",
+      "job_started_at": "2026-10-04T08:06:30Z",
+      "job_completed_at": "2026-10-04T08:10:01Z",
+      "job_elapsed_seconds": 211.0,
+      "budget_seconds": 900,
+      "log_sha256": "a813e7206e3efad7a25697a906a222142b68d4c8a8a4f67cb6b2e3e9ee63cbb8",
+      "counts": {
+        "selected": 25,
+        "reported": 25,
+        "passed": 25,
+        "failed": 0,
+        "skipped": 0
+      },
+      "assertion_issues": [],
+      "suites": [
+        {
+          "id": "profile-compiler-swift-test",
+          "verdict": "PASS",
+          "elapsed_seconds": 50.0,
+          "reason": ""
+        },
+        {
+          "id": "store-catalog-swift-test",
+          "verdict": "PASS",
+          "elapsed_seconds": 14.5,
+          "reason": ""
+        },
+        {
+          "id": "store-catalog-cli-fault-matrix",
+          "verdict": "PASS",
+          "elapsed_seconds": 48.3,
+          "reason": ""
+        },
+        {
+          "id": "content-store-swift-test",
+          "verdict": "PASS",
+          "elapsed_seconds": 28.0,
+          "reason": ""
+        },
+        {
+          "id": "content-store-fault-matrix",
+          "verdict": "PASS",
+          "elapsed_seconds": 5.2,
+          "reason": ""
+        },
+        {
+          "id": "content-store-concurrency-matrix",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.9,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-swift-test",
+          "verdict": "PASS",
+          "elapsed_seconds": 9.0,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-cli-fixture-proof",
+          "verdict": "PASS",
+          "elapsed_seconds": 2.8,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-fault-matrix",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.9,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-fingerprint-parity",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.9,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-metadata-parser-proof",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.7,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-selector-invalidation-proof",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.8,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-update-watcher-proof",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.7,
+          "reason": ""
+        },
+        {
+          "id": "gfx001-analyzer-unittest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.2,
+          "reason": ""
+        },
+        {
+          "id": "gfx001-scene-bench-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.1,
+          "reason": ""
+        },
+        {
+          "id": "gfx001-dxmt-install-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.4,
+          "reason": ""
+        },
+        {
+          "id": "gates-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.4,
+          "reason": ""
+        },
+        {
+          "id": "board-lint-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.1,
+          "reason": ""
+        },
+        {
+          "id": "make-release-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 8.2,
+          "reason": ""
+        },
+        {
+          "id": "title-format-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.0,
+          "reason": ""
+        },
+        {
+          "id": "task-form-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.2,
+          "reason": ""
+        },
+        {
+          "id": "merge-gate-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.1,
+          "reason": ""
+        },
+        {
+          "id": "merge-gate-e2e-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.3,
+          "reason": ""
+        },
+        {
+          "id": "steam-automation-gate",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.1,
+          "reason": ""
+        },
+        {
+          "id": "steam-automation-gate-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 3.5,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "author": "Timur Isaev",
+      "label": "milestone-2",
+      "hosted": true,
+      "run_id": 37200147883,
+      "url": "https://github.com/cleverClosure/Alloy/actions/runs/37200147883",
+      "head_sha": "81de3b62f95f0261e25f443e75994cee958fe2f8",
+      "conclusion": "success",
+      "job_started_at": "2026-10-04T11:51:49Z",
+      "job_completed_at": "2026-10-04T11:57:14Z",
+      "job_elapsed_seconds": 325.0,
+      "budget_seconds": 900,
+      "log_sha256": "ec329b4b725d2cc9c3cc1e7e6fef3e134cb0b8e1e5f118817b94eb058c72e2fc",
+      "counts": {
+        "selected": 26,
+        "reported": 26,
+        "passed": 26,
+        "failed": 0,
+        "skipped": 0
+      },
+      "assertion_issues": [],
+      "suites": [
+        {
+          "id": "profile-compiler-swift-test",
+          "verdict": "PASS",
+          "elapsed_seconds": 74.9,
+          "reason": ""
+        },
+        {
+          "id": "store-catalog-swift-test",
+          "verdict": "PASS",
+          "elapsed_seconds": 22.4,
+          "reason": ""
+        },
+        {
+          "id": "store-catalog-cli-fault-matrix",
+          "verdict": "PASS",
+          "elapsed_seconds": 51.5,
+          "reason": ""
+        },
+        {
+          "id": "content-store-swift-test",
+          "verdict": "PASS",
+          "elapsed_seconds": 41.2,
+          "reason": ""
+        },
+        {
+          "id": "content-store-fault-matrix",
+          "verdict": "PASS",
+          "elapsed_seconds": 6.2,
+          "reason": ""
+        },
+        {
+          "id": "content-store-concurrency-matrix",
+          "verdict": "PASS",
+          "elapsed_seconds": 2.1,
+          "reason": ""
+        },
+        {
+          "id": "content-store-disk-pressure",
+          "verdict": "PASS",
+          "elapsed_seconds": 28.6,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-swift-test",
+          "verdict": "PASS",
+          "elapsed_seconds": 8.0,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-cli-fixture-proof",
+          "verdict": "PASS",
+          "elapsed_seconds": 4.3,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-fault-matrix",
+          "verdict": "PASS",
+          "elapsed_seconds": 3.6,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-fingerprint-parity",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.4,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-metadata-parser-proof",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.1,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-selector-invalidation-proof",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.4,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-update-watcher-proof",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.4,
+          "reason": ""
+        },
+        {
+          "id": "gfx001-analyzer-unittest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.3,
+          "reason": ""
+        },
+        {
+          "id": "gfx001-scene-bench-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.3,
+          "reason": ""
+        },
+        {
+          "id": "gfx001-dxmt-install-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.6,
+          "reason": ""
+        },
+        {
+          "id": "gates-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 2.1,
+          "reason": ""
+        },
+        {
+          "id": "board-lint-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.1,
+          "reason": ""
+        },
+        {
+          "id": "make-release-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 14.5,
+          "reason": ""
+        },
+        {
+          "id": "title-format-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.1,
+          "reason": ""
+        },
+        {
+          "id": "task-form-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.3,
+          "reason": ""
+        },
+        {
+          "id": "merge-gate-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.1,
+          "reason": ""
+        },
+        {
+          "id": "merge-gate-e2e-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.8,
+          "reason": ""
+        },
+        {
+          "id": "steam-automation-gate",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.6,
+          "reason": ""
+        },
+        {
+          "id": "steam-automation-gate-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 6.6,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "author": "Timur Isaev",
+      "label": "milestone-3",
+      "hosted": true,
+      "run_id": 37200723864,
+      "url": "https://github.com/cleverClosure/Alloy/actions/runs/37200723864",
+      "head_sha": "e12436f7f895796fc06c9c9af01f3e35a3c4cbfc",
+      "conclusion": "success",
+      "job_started_at": "2026-10-04T12:02:08Z",
+      "job_completed_at": "2026-10-04T12:07:22Z",
+      "job_elapsed_seconds": 314.0,
+      "budget_seconds": 900,
+      "log_sha256": "cd2a6ab2b32e56c7cbb1addbc989b66189c93b1fb5436085ab4ce9277b2a5e19",
+      "counts": {
+        "selected": 27,
+        "reported": 27,
+        "passed": 27,
+        "failed": 0,
+        "skipped": 0
+      },
+      "assertion_issues": [],
+      "suites": [
+        {
+          "id": "profile-compiler-swift-test",
+          "verdict": "PASS",
+          "elapsed_seconds": 67.5,
+          "reason": ""
+        },
+        {
+          "id": "store-catalog-swift-test",
+          "verdict": "PASS",
+          "elapsed_seconds": 21.6,
+          "reason": ""
+        },
+        {
+          "id": "store-catalog-cli-fault-matrix",
+          "verdict": "PASS",
+          "elapsed_seconds": 54.2,
+          "reason": ""
+        },
+        {
+          "id": "content-store-swift-test",
+          "verdict": "PASS",
+          "elapsed_seconds": 32.8,
+          "reason": ""
+        },
+        {
+          "id": "content-store-fault-matrix",
+          "verdict": "PASS",
+          "elapsed_seconds": 6.9,
+          "reason": ""
+        },
+        {
+          "id": "content-store-concurrency-matrix",
+          "verdict": "PASS",
+          "elapsed_seconds": 2.5,
+          "reason": ""
+        },
+        {
+          "id": "content-store-disk-pressure",
+          "verdict": "PASS",
+          "elapsed_seconds": 27.0,
+          "reason": ""
+        },
+        {
+          "id": "content-store-parser-fuzz",
+          "verdict": "PASS",
+          "elapsed_seconds": 27.3,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-swift-test",
+          "verdict": "PASS",
+          "elapsed_seconds": 2.6,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-cli-fixture-proof",
+          "verdict": "PASS",
+          "elapsed_seconds": 3.7,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-fault-matrix",
+          "verdict": "PASS",
+          "elapsed_seconds": 2.9,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-fingerprint-parity",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.3,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-metadata-parser-proof",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.9,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-selector-invalidation-proof",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.1,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-update-watcher-proof",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.4,
+          "reason": ""
+        },
+        {
+          "id": "gfx001-analyzer-unittest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.4,
+          "reason": ""
+        },
+        {
+          "id": "gfx001-scene-bench-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.1,
+          "reason": ""
+        },
+        {
+          "id": "gfx001-dxmt-install-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.5,
+          "reason": ""
+        },
+        {
+          "id": "gates-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.8,
+          "reason": ""
+        },
+        {
+          "id": "board-lint-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.1,
+          "reason": ""
+        },
+        {
+          "id": "make-release-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 10.5,
+          "reason": ""
+        },
+        {
+          "id": "title-format-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.1,
+          "reason": ""
+        },
+        {
+          "id": "task-form-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.2,
+          "reason": ""
+        },
+        {
+          "id": "merge-gate-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.1,
+          "reason": ""
+        },
+        {
+          "id": "merge-gate-e2e-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.3,
+          "reason": ""
+        },
+        {
+          "id": "steam-automation-gate",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.4,
+          "reason": ""
+        },
+        {
+          "id": "steam-automation-gate-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 4.0,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "author": "Timur Isaev",
+      "label": "milestone-4",
+      "hosted": true,
+      "run_id": 37201179099,
+      "url": "https://github.com/cleverClosure/Alloy/actions/runs/37201179099",
+      "head_sha": "f5f1e0c29ee2038d2679fc96099e3b43965cd47a",
+      "conclusion": "success",
+      "job_started_at": "2026-10-04T12:10:17Z",
+      "job_completed_at": "2026-10-04T12:17:43Z",
+      "job_elapsed_seconds": 446.0,
+      "budget_seconds": 900,
+      "log_sha256": "de86049543db0a1fe77d16b31c6880b509b1b6841f84a01b606a085c6544c726",
+      "counts": {
+        "selected": 28,
+        "reported": 28,
+        "passed": 28,
+        "failed": 0,
+        "skipped": 0
+      },
+      "assertion_issues": [],
+      "suites": [
+        {
+          "id": "profile-compiler-swift-test",
+          "verdict": "PASS",
+          "elapsed_seconds": 106.3,
+          "reason": ""
+        },
+        {
+          "id": "store-catalog-swift-test",
+          "verdict": "PASS",
+          "elapsed_seconds": 30.1,
+          "reason": ""
+        },
+        {
+          "id": "store-catalog-cli-fault-matrix",
+          "verdict": "PASS",
+          "elapsed_seconds": 53.4,
+          "reason": ""
+        },
+        {
+          "id": "content-store-swift-test",
+          "verdict": "PASS",
+          "elapsed_seconds": 45.1,
+          "reason": ""
+        },
+        {
+          "id": "content-store-fault-matrix",
+          "verdict": "PASS",
+          "elapsed_seconds": 7.9,
+          "reason": ""
+        },
+        {
+          "id": "content-store-concurrency-matrix",
+          "verdict": "PASS",
+          "elapsed_seconds": 3.2,
+          "reason": ""
+        },
+        {
+          "id": "content-store-disk-pressure",
+          "verdict": "PASS",
+          "elapsed_seconds": 31.0,
+          "reason": ""
+        },
+        {
+          "id": "content-store-parser-fuzz",
+          "verdict": "PASS",
+          "elapsed_seconds": 25.8,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-breadth",
+          "verdict": "PASS",
+          "elapsed_seconds": 61.2,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-swift-test",
+          "verdict": "PASS",
+          "elapsed_seconds": 2.8,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-cli-fixture-proof",
+          "verdict": "PASS",
+          "elapsed_seconds": 4.2,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-fault-matrix",
+          "verdict": "PASS",
+          "elapsed_seconds": 2.5,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-fingerprint-parity",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.1,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-metadata-parser-proof",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.1,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-selector-invalidation-proof",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.0,
+          "reason": ""
+        },
+        {
+          "id": "store-identity-update-watcher-proof",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.3,
+          "reason": ""
+        },
+        {
+          "id": "gfx001-analyzer-unittest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.3,
+          "reason": ""
+        },
+        {
+          "id": "gfx001-scene-bench-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.2,
+          "reason": ""
+        },
+        {
+          "id": "gfx001-dxmt-install-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.6,
+          "reason": ""
+        },
+        {
+          "id": "gates-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 2.3,
+          "reason": ""
+        },
+        {
+          "id": "board-lint-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.1,
+          "reason": ""
+        },
+        {
+          "id": "make-release-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 13.4,
+          "reason": ""
+        },
+        {
+          "id": "title-format-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.1,
+          "reason": ""
+        },
+        {
+          "id": "task-form-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.3,
+          "reason": ""
+        },
+        {
+          "id": "merge-gate-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 0.2,
+          "reason": ""
+        },
+        {
+          "id": "merge-gate-e2e-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.9,
+          "reason": ""
+        },
+        {
+          "id": "steam-automation-gate",
+          "verdict": "PASS",
+          "elapsed_seconds": 1.6,
+          "reason": ""
+        },
+        {
+          "id": "steam-automation-gate-selftest",
+          "verdict": "PASS",
+          "elapsed_seconds": 5.7,
+          "reason": ""
+        }
+      ]
+    }
+  ],
+  "assertion_red": {
+    "author": "Timur Isaev",
+    "label": "assertion-red",
+    "hosted": true,
+    "run_id": 37200217212,
+    "url": "https://github.com/cleverClosure/Alloy/actions/runs/37200217212",
+    "head_sha": "9ef5d342a743ad1bafdba5c4d58ecf70a1cb6b6f",
+    "conclusion": "failure",
+    "job_started_at": "2026-10-04T11:53:02Z",
+    "job_completed_at": "2026-10-04T12:00:30Z",
+    "job_elapsed_seconds": 448.0,
+    "budget_seconds": 900,
+    "log_sha256": "871ac85165aa73aaca2a778d6a9dc7338698d0747a0fb9f9fd1e4109f792880f",
+    "counts": {
+      "selected": 30,
+      "reported": 30,
+      "passed": 28,
+      "failed": 2,
+      "skipped": 0
+    },
+    "assertion_issues": [
+      "2026-10-04T11:56:41.1213870Z \u2718 Test \"empty verified ingest publishes the known empty digest without scratch bytes\" recorded an issue at IntegrityAttackTests.swift:93:13: Expectation failed: (input.descriptor.digest \u2192 \"sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\") != (emptyDigest \u2192 \"sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\")",
+      "2026-10-04T11:59:52.4165450Z \u2718 Test \"NFC and NFD filenames retain their exact UTF-8 bytes in the aggregate\" recorded an issue at UnicodeFilenameTests.swift:39:9: Expectation failed: (record.aggregateSHA256 \u2192 \"73befc77760e2c267e9be1953e5717fbaab489d4bd33919084399f82b88ffcfd\") != \"73befc77760e2c267e9be1953e5717fbaab489d4bd33919084399f82b88ffcfd\""
+    ],
+    "suites": [
+      {
+        "id": "profile-compiler-swift-test",
+        "verdict": "PASS",
+        "elapsed_seconds": 63.6,
+        "reason": ""
+      },
+      {
+        "id": "store-catalog-swift-test",
+        "verdict": "PASS",
+        "elapsed_seconds": 23.5,
+        "reason": ""
+      },
+      {
+        "id": "store-catalog-cli-fault-matrix",
+        "verdict": "PASS",
+        "elapsed_seconds": 52.9,
+        "reason": ""
+      },
+      {
+        "id": "content-store-swift-test",
+        "verdict": "FAIL",
+        "elapsed_seconds": 39.7,
+        "reason": "exit 1"
+      },
+      {
+        "id": "content-store-fault-matrix",
+        "verdict": "PASS",
+        "elapsed_seconds": 6.6,
+        "reason": ""
+      },
+      {
+        "id": "content-store-concurrency-matrix",
+        "verdict": "PASS",
+        "elapsed_seconds": 2.5,
+        "reason": ""
+      },
+      {
+        "id": "content-store-stress-matrix",
+        "verdict": "PASS",
+        "elapsed_seconds": 27.7,
+        "reason": ""
+      },
+      {
+        "id": "content-store-disk-pressure",
+        "verdict": "PASS",
+        "elapsed_seconds": 28.4,
+        "reason": ""
+      },
+      {
+        "id": "content-store-parser-fuzz",
+        "verdict": "PASS",
+        "elapsed_seconds": 26.1,
+        "reason": ""
+      },
+      {
+        "id": "store-identity-breadth",
+        "verdict": "PASS",
+        "elapsed_seconds": 59.8,
+        "reason": ""
+      },
+      {
+        "id": "content-store-performance",
+        "verdict": "PASS",
+        "elapsed_seconds": 37.8,
+        "reason": ""
+      },
+      {
+        "id": "store-identity-swift-test",
+        "verdict": "FAIL",
+        "elapsed_seconds": 2.3,
+        "reason": "exit 1"
+      },
+      {
+        "id": "store-identity-cli-fixture-proof",
+        "verdict": "PASS",
+        "elapsed_seconds": 3.8,
+        "reason": ""
+      },
+      {
+        "id": "store-identity-fault-matrix",
+        "verdict": "PASS",
+        "elapsed_seconds": 2.3,
+        "reason": ""
+      },
+      {
+        "id": "store-identity-fingerprint-parity",
+        "verdict": "PASS",
+        "elapsed_seconds": 1.0,
+        "reason": ""
+      },
+      {
+        "id": "store-identity-metadata-parser-proof",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.8,
+        "reason": ""
+      },
+      {
+        "id": "store-identity-selector-invalidation-proof",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.9,
+        "reason": ""
+      },
+      {
+        "id": "store-identity-update-watcher-proof",
+        "verdict": "PASS",
+        "elapsed_seconds": 1.5,
+        "reason": ""
+      },
+      {
+        "id": "gfx001-analyzer-unittest",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.4,
+        "reason": ""
+      },
+      {
+        "id": "gfx001-scene-bench-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.2,
+        "reason": ""
+      },
+      {
+        "id": "gfx001-dxmt-install-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.6,
+        "reason": ""
+      },
+      {
+        "id": "gates-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 1.9,
+        "reason": ""
+      },
+      {
+        "id": "board-lint-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.1,
+        "reason": ""
+      },
+      {
+        "id": "make-release-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 12.1,
+        "reason": ""
+      },
+      {
+        "id": "title-format-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.0,
+        "reason": ""
+      },
+      {
+        "id": "task-form-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.2,
+        "reason": ""
+      },
+      {
+        "id": "merge-gate-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.0,
+        "reason": ""
+      },
+      {
+        "id": "merge-gate-e2e-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 1.3,
+        "reason": ""
+      },
+      {
+        "id": "steam-automation-gate",
+        "verdict": "PASS",
+        "elapsed_seconds": 1.4,
+        "reason": ""
+      },
+      {
+        "id": "steam-automation-gate-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 4.4,
+        "reason": ""
+      }
+    ]
+  },
+  "assertion_green": {
+    "author": "Timur Isaev",
+    "label": "assertion-green",
+    "hosted": true,
+    "run_id": 37200823968,
+    "url": "https://github.com/cleverClosure/Alloy/actions/runs/37200823968",
+    "head_sha": "158cf7f1a1d6c5a16f1b92532d77edf02489059c",
+    "conclusion": "success",
+    "job_started_at": "2026-10-04T12:03:55Z",
+    "job_completed_at": "2026-10-04T12:11:49Z",
+    "job_elapsed_seconds": 474.0,
+    "budget_seconds": 900,
+    "log_sha256": "21bb0bdc99b56dbdf54b9c24dfaeba672f0e96a36f54903b2af147fab0e5350d",
+    "counts": {
+      "selected": 30,
+      "reported": 30,
+      "passed": 30,
+      "failed": 0,
+      "skipped": 0
+    },
+    "assertion_issues": [],
+    "suites": [
+      {
+        "id": "profile-compiler-swift-test",
+        "verdict": "PASS",
+        "elapsed_seconds": 77.6,
+        "reason": ""
+      },
+      {
+        "id": "store-catalog-swift-test",
+        "verdict": "PASS",
+        "elapsed_seconds": 28.1,
+        "reason": ""
+      },
+      {
+        "id": "store-catalog-cli-fault-matrix",
+        "verdict": "PASS",
+        "elapsed_seconds": 53.3,
+        "reason": ""
+      },
+      {
+        "id": "content-store-swift-test",
+        "verdict": "PASS",
+        "elapsed_seconds": 49.2,
+        "reason": ""
+      },
+      {
+        "id": "content-store-fault-matrix",
+        "verdict": "PASS",
+        "elapsed_seconds": 6.8,
+        "reason": ""
+      },
+      {
+        "id": "content-store-concurrency-matrix",
+        "verdict": "PASS",
+        "elapsed_seconds": 2.4,
+        "reason": ""
+      },
+      {
+        "id": "content-store-stress-matrix",
+        "verdict": "PASS",
+        "elapsed_seconds": 28.2,
+        "reason": ""
+      },
+      {
+        "id": "content-store-disk-pressure",
+        "verdict": "PASS",
+        "elapsed_seconds": 30.0,
+        "reason": ""
+      },
+      {
+        "id": "content-store-parser-fuzz",
+        "verdict": "PASS",
+        "elapsed_seconds": 23.9,
+        "reason": ""
+      },
+      {
+        "id": "store-identity-breadth",
+        "verdict": "PASS",
+        "elapsed_seconds": 54.6,
+        "reason": ""
+      },
+      {
+        "id": "content-store-performance",
+        "verdict": "PASS",
+        "elapsed_seconds": 40.4,
+        "reason": ""
+      },
+      {
+        "id": "store-identity-swift-test",
+        "verdict": "PASS",
+        "elapsed_seconds": 2.3,
+        "reason": ""
+      },
+      {
+        "id": "store-identity-cli-fixture-proof",
+        "verdict": "PASS",
+        "elapsed_seconds": 3.8,
+        "reason": ""
+      },
+      {
+        "id": "store-identity-fault-matrix",
+        "verdict": "PASS",
+        "elapsed_seconds": 2.3,
+        "reason": ""
+      },
+      {
+        "id": "store-identity-fingerprint-parity",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.9,
+        "reason": ""
+      },
+      {
+        "id": "store-identity-metadata-parser-proof",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.8,
+        "reason": ""
+      },
+      {
+        "id": "store-identity-selector-invalidation-proof",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.9,
+        "reason": ""
+      },
+      {
+        "id": "store-identity-update-watcher-proof",
+        "verdict": "PASS",
+        "elapsed_seconds": 1.0,
+        "reason": ""
+      },
+      {
+        "id": "gfx001-analyzer-unittest",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.4,
+        "reason": ""
+      },
+      {
+        "id": "gfx001-scene-bench-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.2,
+        "reason": ""
+      },
+      {
+        "id": "gfx001-dxmt-install-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.6,
+        "reason": ""
+      },
+      {
+        "id": "gates-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 1.5,
+        "reason": ""
+      },
+      {
+        "id": "board-lint-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.1,
+        "reason": ""
+      },
+      {
+        "id": "make-release-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 9.4,
+        "reason": ""
+      },
+      {
+        "id": "title-format-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.1,
+        "reason": ""
+      },
+      {
+        "id": "task-form-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.2,
+        "reason": ""
+      },
+      {
+        "id": "merge-gate-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 0.1,
+        "reason": ""
+      },
+      {
+        "id": "merge-gate-e2e-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 1.2,
+        "reason": ""
+      },
+      {
+        "id": "steam-automation-gate",
+        "verdict": "PASS",
+        "elapsed_seconds": 1.4,
+        "reason": ""
+      },
+      {
+        "id": "steam-automation-gate-selftest",
+        "verdict": "PASS",
+        "elapsed_seconds": 3.7,
+        "reason": ""
+      }
+    ]
+  },
+  "initial_cleanup_failure_runs": [
+    "https://github.com/cleverClosure/Alloy/actions/runs/37199437324",
+    "https://github.com/cleverClosure/Alloy/actions/runs/37199494801"
+  ],
+  "final_pr": "https://github.com/cleverClosure/Alloy/pull/152",
+  "final_pr_note": "The final PR adds this evidence to the exact green-control implementation tree. Its separate final CI run and wall time are recorded on that PR before task reconciliation."
+}
