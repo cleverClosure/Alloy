@@ -121,3 +121,29 @@ result. Repairs refuse changed manifests rather than inventing new identities.
 No operation edits the installed Steam title. Uninstall leaves saves and live
 leases intact; it retires active/rollback/candidate references and leaves GC to
 reclaim subsequently unrooted content.
+
+## Storage operation results
+
+GetStorageInventory and CollectGarbage enqueue the same durable operation
+records as installation. Inventory returns the production `CatalogInventory`
+fields without relabeling logical object bytes as physical volume usage.
+GC uses the content store's active/rollback/candidate references and live leases.
+A seeded six-generation test counts CAS paths and byte lengths independently,
+then proves the exact removed digest set and unchanged retained bytes. A clean
+second sweep is a zero-removal negative control; releasing a lease makes its
+otherwise-unrooted generation collectable.
+
+GC saves the initial `CatalogDump` in the RUNNING operation's `result` field
+before invoking collection. On success this becomes `GarbageCollectionReport`:
+`before`, `after`, sorted `removedObjectDigests`, `removedObjectBytes`, sorted
+`removedGenerations`, and `lastPass` (the raw final ContentStore invocation's
+counters). A restart preserves the original before/after comparison even if the
+first sweep completed before its operation result was recorded. Fault tests
+interrupt both a completed sweep and the middle of the object sweep.
+
+The removed sets are differences between the original and final snapshots,
+not an attribution log for external writers that may act between a crash and
+recovery. The engine serializes its own operations; content-store locks still
+protect each individual underlying mutation. `removedObjectBytes` counts only
+unique CAS bytes. Neither that field nor inventory includes save volumes,
+metadata, downloads, quarantine or filesystem allocation overhead.

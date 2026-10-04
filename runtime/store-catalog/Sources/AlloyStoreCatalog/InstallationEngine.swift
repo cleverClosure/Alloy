@@ -141,6 +141,8 @@ public final class InstallationEngine: @unchecked Sendable {
         case .install: return try executeInstall(operation)
         case .uninstall: return try executeUninstall(operation)
         case .repair: return try executeRepair(operation)
+        case .inventory: return try executeInventory(operation)
+        case .garbageCollection: return try executeGarbageCollection(operation)
         default: throw InstallationError.unknownKind
         }
     }
