@@ -1,0 +1,244 @@
+{
+  "author": "Timur Isaev",
+  "hosted": false,
+  "source_parent_commit": "8161d60b2576a3b17c0af6acf49e9e995bf27090",
+  "tested_files_sha256": {
+    "runtime/content-store/Tests/AlloyContentStoreTests/PerformanceBaselineTests.swift": "13ed105cd5a495e6679fc3aa60596613e1e75ae2fbb1a5cecc6d29838c131eba",
+    "runtime/content-store/Tests/AlloyContentStoreTests/PerformanceSamples.swift": "7a2375c5ecf92a7867971494442a2a2597180794f597d2f90f863fbd402012f4",
+    "runtime/content-store/Tests/AlloyContentStoreTests/PerformanceTransport.swift": "e9f0d33a3f13c22fe7a4aa2949bea9d645c72e1e889debc0cceff4f9560ea0e4",
+    "runtime/content-store/run-perf-matrix.py": "380c95f8a97bd84dd5e9bbb0f64258946ea09369307e026946200998987be846",
+    "runtime/content-store/run-perf-matrix.sh": "3f0840a1c5af5333991a2e1b70848848c74d150b5e05ea68f7243cfc7921284c",
+    "tools/test-all": "f1c44e95490f0549cdfe5bcbffeb29d945c04f211983feb6ee536dd1ba1405bc"
+  },
+  "commands": [
+    "python3 tools/test-all --selftest",
+    "python3 tools/test-all --tier fast --json /private/tmp/alloy-106-final-fast.json"
+  ],
+  "timing": {
+    "engine_exit": 0,
+    "fast_exit": 0,
+    "elapsed_seconds": 316.362,
+    "hosted": false
+  },
+  "report": {
+    "tier": "fast",
+    "generated_at": "2026-10-04T09:12:05.648807+00:00",
+    "selected_count": 30,
+    "reported_count": 30,
+    "audit_error": null,
+    "suites": [
+      {
+        "id": "profile-compiler-swift-test",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 47.013
+      },
+      {
+        "id": "store-catalog-swift-test",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 13.981
+      },
+      {
+        "id": "store-catalog-cli-fault-matrix",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 18.043
+      },
+      {
+        "id": "content-store-swift-test",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 18.014
+      },
+      {
+        "id": "content-store-fault-matrix",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 7.39
+      },
+      {
+        "id": "content-store-concurrency-matrix",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 3.152
+      },
+      {
+        "id": "content-store-stress-matrix",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 16.355
+      },
+      {
+        "id": "content-store-disk-pressure",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 15.468
+      },
+      {
+        "id": "content-store-parser-fuzz",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 24.159
+      },
+      {
+        "id": "store-identity-breadth",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 63.097
+      },
+      {
+        "id": "content-store-performance",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 42.234
+      },
+      {
+        "id": "store-identity-swift-test",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 3.001
+      },
+      {
+        "id": "store-identity-cli-fixture-proof",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 5.528
+      },
+      {
+        "id": "store-identity-fault-matrix",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 3.055
+      },
+      {
+        "id": "store-identity-fingerprint-parity",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 2.165
+      },
+      {
+        "id": "store-identity-metadata-parser-proof",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 1.633
+      },
+      {
+        "id": "store-identity-selector-invalidation-proof",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 1.546
+      },
+      {
+        "id": "store-identity-update-watcher-proof",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 1.568
+      },
+      {
+        "id": "gfx001-analyzer-unittest",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 0.255
+      },
+      {
+        "id": "gfx001-scene-bench-selftest",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 0.151
+      },
+      {
+        "id": "gfx001-dxmt-install-selftest",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 0.647
+      },
+      {
+        "id": "gates-selftest",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 2.906
+      },
+      {
+        "id": "board-lint-selftest",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 0.083
+      },
+      {
+        "id": "make-release-selftest",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 11.011
+      },
+      {
+        "id": "title-format-selftest",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 0.082
+      },
+      {
+        "id": "task-form-selftest",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 0.444
+      },
+      {
+        "id": "merge-gate-selftest",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 0.087
+      },
+      {
+        "id": "merge-gate-e2e-selftest",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 2.35
+      },
+      {
+        "id": "steam-automation-gate",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 1.398
+      },
+      {
+        "id": "steam-automation-gate-selftest",
+        "tier": "fast",
+        "verdict": "pass",
+        "reason": null,
+        "elapsed_seconds": 4.462
+      }
+    ]
+  },
+  "engine_log_sha256": "0dd2f78351dde0114b270f41f0ed9578de16aa0d4aee78350e6563941b9f299d",
+  "suite_log_sha256": "57e843bf111e1effab28937e8ed5e01491b935690f44ed76585db66a27ec477b"
+}
