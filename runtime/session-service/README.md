@@ -43,3 +43,9 @@ The [session proof](Results/2026-10-04-sessions.md) preserves incomplete compile
 exports, refuses real game launch and exercises bounded native process trees,
 exact-generation leases, stop escalation, death and restart reconciliation.
 It is registered in the fast tier and requires no x64 guest.
+
+The full session proof requires an actual arm64 Mac with at least 8 GiB, matching
+the unchanged launch compiler. The test runner reports a named SKIP otherwise;
+`run-launch-host-proof.py` still runs and verifies truthful host identity and
+refusal. Hosted machines below that minimum do not receive session coverage
+credit. Local full-proof results remain separate from hosted refusal evidence.
