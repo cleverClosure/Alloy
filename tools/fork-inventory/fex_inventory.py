@@ -59,6 +59,8 @@ def generate(repo, root, policy):
         require(len(parents) == 1, 'commit:merge_requires_review')
         if annotation['role'] == 'provenance-record':
             require(paths == ['PROVENANCE-ALLOY.md'], 'provenance:role_path_mismatch')
+        if annotation['role'] == 'fork-policy':
+            require(paths == ['CLAUDE.md', 'PROVENANCE-ALLOY.md'], 'provenance:role_path_mismatch')
         binding = annotation['provenance']
         common.fields(binding, ('ref', 'literal'), 'provenance')
         require(binding['ref'] in before['refs'], 'provenance:unknown_ref')

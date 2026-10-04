@@ -1,0 +1,58 @@
+{
+  "author": "Timur Isaev",
+  "bounds": {
+    "patch_files": 2
+  },
+  "patches": {
+    "spikes/GFX-001/instrumentation/0001-d3d11-title-metrics.patch": {
+      "allowed_paths": [
+        "src/d3d11/d3d11_pipeline.cpp",
+        "src/d3d11/d3d11_pipeline_gs.cpp",
+        "src/d3d11/d3d11_pipeline_ts.cpp",
+        "src/d3d11/d3d11_shader.cpp",
+        "src/d3d11/d3d11_swapchain.cpp",
+        "src/d3d11/d3d11_title_metrics.hpp"
+      ],
+      "annotation": {
+        "classification": "temporary-pending-telemetry-consolidation",
+        "evidence": [
+          {
+            "heading": "## Measurement path",
+            "path": "spikes/GFX-001/results/2026-07-25-06-sir-brante-title-scene.md"
+          }
+        ],
+        "justification": "Adds title presents and shader/pipeline diagnostic events for measured D3D11 scenes. Retain as provisional measurement tooling pending a consolidated diagnostics contract.",
+        "status": "retained"
+      },
+      "base": "e520fea415ba4b82b0c346dae77bbb1be4897453",
+      "base_declaration": {
+        "literal": "| DXMT | `e520fea415ba4b82b0c346dae77bbb1be4897453` plus the tracked D3D11-only instrumentation patch |",
+        "path": "spikes/GFX-001/results/2026-07-25-06-sir-brante-title-scene.md"
+      },
+      "sha256": "15c19a8a8bc4c6899bf35a0d89bb21c1c7a60c2655b911d2136fedab08040ba4"
+    },
+    "spikes/GFX-001/instrumentation/0002-d3d11-msaa-clamp.patch": {
+      "allowed_paths": [
+        "src/d3d11/d3d11_resource_helper.cpp"
+      ],
+      "annotation": {
+        "classification": "temporary-pending-feature-level-alignment",
+        "evidence": [
+          {
+            "heading": "## The change",
+            "path": "spikes/GFX-001/results/2026-07-25-08-deus-ex-msaa-clamp.md"
+          }
+        ],
+        "justification": "Clamps unsupported 8x MSAA to host-supported samples after advertising feature level 11_0. This visible compromise remains until advertised feature-level promises and actual host capability agree.",
+        "status": "retained"
+      },
+      "base": "e520fea415ba4b82b0c346dae77bbb1be4897453",
+      "base_declaration": {
+        "literal": "Applies to: third_party/src/dxmt at e520fea415ba4b82b0c346dae77bbb1be4897453",
+        "path": "spikes/GFX-001/instrumentation/0002-d3d11-msaa-clamp.patch"
+      },
+      "sha256": "575f981a20df30bf0b2f9cee4d381e50308b9b333fb0dc5c560fb0c2812c2c4a"
+    }
+  },
+  "version": 1
+}
