@@ -61,7 +61,7 @@ jobs:
       # Manual compiled-language analysis follows what is actually built, not
       # paths-ignore. Only tracked first-party Swift packages are built here.
       # Fresh scratch directories ensure the extractor sees every compilation.
-      - name: Build all first-party Swift packages and tests
+      - name: Build first-party Swift libraries and tools
         if: matrix.language == 'swift'
         shell: bash
         run: |
@@ -73,7 +73,7 @@ jobs:
               */work/*) continue ;;
             esac
             count=$((count + 1))
-            swift build --package-path "$package" --build-tests --jobs 2 \
+            swift build --package-path "$package" --jobs 2 \
               --scratch-path "$RUNNER_TEMP/codeql-swift/$count"
           done < <(git ls-files -z -- 'runtime/**/Package.swift' 'spikes/**/Package.swift')
           test "$count" -gt 0

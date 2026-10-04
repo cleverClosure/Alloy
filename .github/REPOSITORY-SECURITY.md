@@ -24,9 +24,9 @@ public repository. CodeQL uses standard GitHub-hosted Ubuntu and macOS runners.
 ## Scan coverage
 
 `codeql.yml` scans pull requests, main pushes, and a weekly schedule. Actions,
-Python, and C/C++ use build mode `none`; Swift builds every tracked first-party
-package and its tests in a fresh scratch directory, without running tests.
-Normal CI remains responsible for executing the test suites.
+Python, and C/C++ use build mode `none`; Swift builds the library and executable
+targets of every tracked first-party package in a fresh scratch directory.
+Swift test targets are outside this scan; normal CI builds and executes them.
 
 The configuration includes `.github`, `runtime`, `spikes`, `tools`, and
 `scripts`. It excludes third-party sources, downloaded toolchains, scratch
