@@ -1,0 +1,162 @@
+{
+  "record": "alloy-content-performance",
+  "version": 1,
+  "author": "Timur Isaev",
+  "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "recipe_sha256": "34a5325acd2d1076570eb92b4edef3150f5d8417555aa2c6970dac4fca15d7ac",
+  "measurements": [
+    {
+      "id": "catalog-10",
+      "units": 10,
+      "fixture_sha256": "sha256:e5746e59af715b535f83e5d96d652a820880503126b506f79e5ebe59c7ea2fc8",
+      "median_seconds": 0.006630375,
+      "samples_seconds": [
+        0.006218416,
+        0.006630375,
+        0.006862791
+      ]
+    },
+    {
+      "id": "catalog-100",
+      "units": 100,
+      "fixture_sha256": "sha256:2f43a88fce7bf2034c1be40caea69e267b0005ca2fe772c341feb48d583cb1f9",
+      "median_seconds": 0.013146333,
+      "samples_seconds": [
+        0.013146333,
+        0.012997958,
+        0.013978083
+      ]
+    },
+    {
+      "id": "catalog-1000",
+      "units": 1000,
+      "fixture_sha256": "sha256:404d952d0b79fde2e7857b16e7f6210077967932359d4b004193b2d86db9930d",
+      "median_seconds": 0.053013791,
+      "samples_seconds": [
+        0.053238708,
+        0.05274025,
+        0.053013791
+      ]
+    },
+    {
+      "id": "gc-10",
+      "units": 10,
+      "fixture_sha256": "sha256:330cb466181e5c36192a76d88f280a07828d7625b4cce6627a1c4f73c7864178",
+      "median_seconds": 0.012332333,
+      "samples_seconds": [
+        0.013799666,
+        0.0118735,
+        0.012332333
+      ]
+    },
+    {
+      "id": "gc-100",
+      "units": 100,
+      "fixture_sha256": "sha256:330cb466181e5c36192a76d88f280a07828d7625b4cce6627a1c4f73c7864178",
+      "median_seconds": 0.096525917,
+      "samples_seconds": [
+        0.096139541,
+        0.096525917,
+        0.097595708
+      ]
+    },
+    {
+      "id": "scan-100",
+      "units": 100,
+      "fixture_sha256": "90fd0f445771a1a1f523e6b32e6cdcd16ce1949103928fe5969b7264714dd36e",
+      "median_seconds": 0.030701167008373886,
+      "samples_seconds": [
+        0.03506550000747666,
+        0.030497125000692904,
+        0.030701167008373886
+      ]
+    },
+    {
+      "id": "scan-1000",
+      "units": 1000,
+      "fixture_sha256": "b1d33838f42b61e9c81fff0e55e8c9d423e3f3925683f3302da13db4b5a9737e",
+      "median_seconds": 0.25623133400222287,
+      "samples_seconds": [
+        0.26163362502120435,
+        0.25623133400222287,
+        0.2526200829888694
+      ]
+    },
+    {
+      "id": "scan-20000",
+      "units": 20000,
+      "fixture_sha256": "de29dea6244bc26b35bc46c9e7e1fc3563d3b87c03397a50b0bf6e1faf598edd",
+      "median_seconds": 4.872643209004309,
+      "samples_seconds": [
+        4.765145457990002,
+        4.9026507919770665,
+        4.872643209004309
+      ]
+    },
+    {
+      "id": "transport-fresh",
+      "units": 196865,
+      "fixture_sha256": "sha256:932067f2024ff37f298a78d3d7122268c0620a78bb4a278a0ba1ed6380aa9170",
+      "median_seconds": 0.008952208,
+      "samples_seconds": [
+        0.019029792,
+        0.008952208,
+        0.008559125
+      ]
+    },
+    {
+      "id": "transport-resume",
+      "units": 196865,
+      "fixture_sha256": "sha256:932067f2024ff37f298a78d3d7122268c0620a78bb4a278a0ba1ed6380aa9170",
+      "median_seconds": 0.007186458,
+      "samples_seconds": [
+        0.007295,
+        0.007115208,
+        0.007186458
+      ]
+    }
+  ],
+  "slowdown_control": {
+    "id": "gc-10",
+    "delay_seconds": 0.21273670900000002,
+    "measured_seconds": 0.250722041,
+    "limit_seconds": 0.112736709
+  },
+  "scan_workloads": {
+    "scan-100": {
+      "appid": "910001",
+      "file_count": 100,
+      "total_bytes": 6197,
+      "aggregate_sha256": "90fd0f445771a1a1f523e6b32e6cdcd16ce1949103928fe5969b7264714dd36e"
+    },
+    "scan-1000": {
+      "appid": "910002",
+      "file_count": 1000,
+      "total_bytes": 57503,
+      "aggregate_sha256": "b1d33838f42b61e9c81fff0e55e8c9d423e3f3925683f3302da13db4b5a9737e"
+    },
+    "scan-20000": {
+      "appid": "910003",
+      "file_count": 20000,
+      "total_bytes": 1140508,
+      "aggregate_sha256": "de29dea6244bc26b35bc46c9e7e1fc3563d3b87c03397a50b0bf6e1faf598edd"
+    }
+  },
+  "content_recipe": {
+    "generation_counts": [
+      10,
+      100
+    ],
+    "catalog_counts": [
+      10,
+      100,
+      1000
+    ],
+    "transport_bytes": 196865,
+    "checkpoint_bytes": 65536,
+    "payload_formula": "byte[index] = index % 251"
+  },
+  "resume_completion_over_fresh": 0.8027581575405754,
+  "failures": []
+}
