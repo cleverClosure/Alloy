@@ -274,6 +274,15 @@ def _entry(path, name):
     return {"path": name, "bytes": path.stat().st_size, "sha256": file_hash(path)}
 
 
+def host_identity():
+    """Capabilities of this capture host, also used by local calibration."""
+    if platform.system() == "Darwin":
+        memory = int(subprocess.check_output(["/usr/sbin/sysctl", "-n", "hw.memsize"], text=True))
+    else:
+        memory = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
+    return {"os": platform.system(), "os_release": platform.release(), "os_version": platform.version(), "machine": platform.machine(), "cpu_count": os.cpu_count() or 1, "physical_memory_bytes": memory}
+
+
 def build_record(raw, output, session_id=None):
     """Archive local sources and bind already-published raw artifacts."""
     raw = copy.deepcopy(raw)
@@ -299,11 +308,7 @@ def build_record(raw, output, session_id=None):
     repo = ROOT.parents[1]
     commit = subprocess.check_output(["git", "-C", str(repo), "rev-parse", "HEAD"], text=True).strip()
     dirty = bool(subprocess.check_output(["git", "-C", str(repo), "status", "--porcelain=v1", "--", str(ROOT)], text=True).strip())
-    if platform.system() == "Darwin":
-        memory = int(subprocess.check_output(["/usr/sbin/sysctl", "-n", "hw.memsize"], text=True))
-    else:
-        memory = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
-    host = {"os": platform.system(), "os_release": platform.release(), "os_version": platform.version(), "machine": platform.machine(), "cpu_count": os.cpu_count() or 1, "physical_memory_bytes": memory}
+    host = host_identity()
     interpreter = {"path": raw["argv"][0], "sha256": file_hash(raw["argv"][0]), "implementation": platform.python_implementation(), "version": platform.python_version()}
     subject_hash = raw["inputs_before"].get("subject_sha256", file_hash(ROOT / "subject.py"))
     record = {
