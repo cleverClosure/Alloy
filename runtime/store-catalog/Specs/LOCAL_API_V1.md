@@ -91,3 +91,33 @@ directory-synced boundary for both creation and a state transition. Reopening
 must produce exactly one valid operation and reach a terminal state. The CLI's
 `journal-probe ROOT seed|run` command and `ALLOY_CATALOG_FAULT=STAGE.POINT`
 exist solely to reproduce these synthetic process-death controls.
+
+## Worker and installation semantics
+
+`InstallationEngine` takes separate catalog metadata and Alloy content roots.
+Plans are saved before returning their content-addressed ID. StartInstall and
+StartUninstall enqueue a durable operation; `run(operationID)` drives it. This
+split permits a caller to retain the operation ID before work begins. An exact
+Start replay only reads the frozen plan and journal, including after success.
+
+A separate worker lock serializes side effects across processes. Pause/cancel
+acquire only the journal lock and take effect at cooperative layer boundaries;
+an already-running fetch may finish publishing verified CAS bytes. Controls
+never publish or activate a partial generation. Resume validates/refetches all
+layers, so GC of an unrooted paused download is safe. Publication disables
+controls atomically in the journal before entering content-store. Restart keeps
+those controls disabled and reconciles the same content-store operation ID.
+An error after publication starts leaves RUNNING for explicit recovery rather
+than guessing whether a side effect committed. Terminal success follows exact
+reference validation.
+
+Content-store supplies three narrow missing primitives: stable activation IDs,
+journaled retirement of exactly planned runtime references, and journaled
+repair of CAS objects plus their materialized hard links. Repair opens damaged
+catalog state explicitly, downloads replacements into a separate healthy
+staging store, verifies bytes, applies them through content-store, then validates
+the active reference. A healthy installation yields a successful no-repair
+result. Repairs refuse changed manifests rather than inventing new identities.
+No operation edits the installed Steam title. Uninstall leaves saves and live
+leases intact; it retires active/rollback/candidate references and leaves GC to
+reclaim subsequently unrooted content.

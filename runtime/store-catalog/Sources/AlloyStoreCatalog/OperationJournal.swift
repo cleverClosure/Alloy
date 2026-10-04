@@ -46,6 +46,14 @@ public final class OperationJournal: @unchecked Sendable {
         }
     }
 
+    public func find(kind: OperationKind, idempotencyKey: String) throws -> CatalogOperation? {
+        let identifier = Self.identifier(kind: kind, key: idempotencyKey)
+        return try locked {
+            guard FileManager.default.fileExists(atPath: path(identifier).path) else { return nil }
+            return try read(identifier)
+        }
+    }
+
     public func get(_ identifier: String) throws -> CatalogOperation { try locked { try read(identifier) } }
 
     public func list() throws -> [CatalogOperation] {
@@ -67,6 +75,9 @@ public final class OperationJournal: @unchecked Sendable {
             guard !operation.state.isTerminal else { throw OperationError.immutableTerminal }
             guard operation.state.allows(state) else {
                 throw OperationError.invalidTransition(operation.state, state)
+            }
+            if (state == .paused && !operation.canPause) || (state == .cancelling && !operation.canCancel) {
+                throw OperationError.cannotControl(identifier)
             }
             operation.state = state
             operation.stage = stage

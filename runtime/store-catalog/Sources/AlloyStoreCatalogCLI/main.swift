@@ -1,5 +1,6 @@
 // Author: Timur Isaev
 import AlloyStoreCatalog
+import AlloyContentStore
 import Foundation
 import Darwin
 
@@ -9,7 +10,12 @@ struct CatalogCLI {
         do {
             let args = Array(CommandLine.arguments.dropFirst())
             guard args.count >= 2 else {
-                throw CatalogError.invalidInput("usage: alloy-store-catalog list|discover|get|fingerprint LIBRARY [ID]")
+                throw AlloyStoreCatalog.CatalogError.invalidInput(
+                    "usage: alloy-store-catalog list|discover|get|fingerprint LIBRARY [ID]")
+            }
+            if args[0] == "install-probe" {
+                try installProbe(args)
+                return
             }
             if args[0] == "journal-probe" {
                 try journalProbe(args)
@@ -21,7 +27,7 @@ struct CatalogCLI {
             case "discover": try printJSON(catalog.discoverInstallations())
             case "get" where args.count == 3: try printJSON(catalog.getGame(args[2]))
             case "fingerprint" where args.count == 3: try printJSON(catalog.refreshBuildFingerprint(args[2]))
-            default: throw CatalogError.invalidInput("unknown command or wrong argument count")
+            default: throw AlloyStoreCatalog.CatalogError.invalidInput("unknown command or wrong argument count")
             }
         } catch {
             FileHandle.standardError.write(Data("\(error)\n".utf8))
@@ -29,8 +35,29 @@ struct CatalogCLI {
         }
     }
 
+    static func installProbe(_ args: [String]) throws {
+        guard args.count == 3, let baseURL = URL(string: args[2]) else {
+            throw AlloyStoreCatalog.CatalogError.invalidInput("install-probe ROOT BASE_URL")
+        }
+        let root = URL(fileURLWithPath: args[1])
+        let point = ProcessInfo.processInfo.environment["ALLOY_CATALOG_FAULT"]
+        let engine = try InstallationEngine(root: root.appendingPathComponent("catalog"),
+                                             contentRoot: root.appendingPathComponent("content")) { observed in
+            if observed == point { kill(getpid(), SIGKILL) }
+        }
+        let bytes = Data("catalog synthetic runtime layer\n".utf8)
+        let descriptor = LayerDescriptor(name: "fixture", version: "1", digest: ContentStore.digest(bytes),
+                                         mediaType: "application/octet-stream", size: bytes.count, role: .hostRuntime)
+        let plan = try engine.planInstall(gameID: "fixture", installationID: "fixture-install",
+                                          generationID: "fixture-generation", layers: [descriptor], baseURLs: [baseURL])
+        let operation = try engine.startInstall(planID: plan.planID, idempotencyKey: "fixture-install")
+        let result = try engine.run(operation.operationID)
+        try printJSON(result)
+        if result.state != .succeeded { throw OperationError.cannotControl(result.operationID) }
+    }
+
     static func journalProbe(_ args: [String]) throws {
-        guard args.count == 3 else { throw CatalogError.invalidInput("journal-probe ROOT seed|run") }
+        guard args.count == 3 else { throw AlloyStoreCatalog.CatalogError.invalidInput("journal-probe ROOT seed|run") }
         let point = ProcessInfo.processInfo.environment["ALLOY_CATALOG_FAULT"]
         let journal = try OperationJournal(root: URL(fileURLWithPath: args[1])) { observed in
             if observed == point { kill(getpid(), SIGKILL) }
@@ -40,7 +67,7 @@ struct CatalogCLI {
             try printJSON(journal.transition(operation.operationID, to: .running, stage: "RUNNING"))
         } else if args[2] == "seed" {
             try printJSON(operation)
-        } else { throw CatalogError.invalidInput("unknown journal probe") }
+        } else { throw AlloyStoreCatalog.CatalogError.invalidInput("unknown journal probe") }
     }
 
     static func printJSON<T: Encodable>(_ value: T) throws {

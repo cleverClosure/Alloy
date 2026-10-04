@@ -460,6 +460,7 @@ private func verifyGeneration(_ arguments: [String]) throws {
 
 private func run() throws {
     let arguments = Array(CommandLine.arguments.dropFirst())
+    if try runLifecycleCommand(arguments) { return }
     let commands: [String: ([String]) throws -> Void] = [
         "bootstrap": bootstrap,
         "update": update,

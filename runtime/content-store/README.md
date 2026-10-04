@@ -124,3 +124,7 @@ are complete:
 
 The layer format specifies those trust boundaries now so later components can
 implement them without silently changing persisted v1 semantics.
+
+The [lifecycle hooks](Specs/LIFECYCLE_V1.md) provide stable activation replay,
+expected-reference uninstall, and explicitly authorized corruption repair for
+callers that own a separate installation operation journal.
