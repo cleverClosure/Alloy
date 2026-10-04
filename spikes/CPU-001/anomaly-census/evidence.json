@@ -1,0 +1,400 @@
+{
+  "author": "Timur Isaev",
+  "started_at": "2026-10-04T17:27:19.633232+00:00",
+  "runs": {
+    "wineboot": {
+      "exit": 0,
+      "failure": null,
+      "log": "/private/tmp/alloy-78/spikes/CPU-001/work/anomaly-census-runs/run-6bhzwgrt/wineboot.log",
+      "log_sha256": "aef106a62983c6e06fee24d98347a049f2ffbe0f7981466bce50355f98b7938f"
+    },
+    "register": {
+      "exit": 0,
+      "failure": null,
+      "log": "/private/tmp/alloy-78/spikes/CPU-001/work/anomaly-census-runs/run-6bhzwgrt/register.log",
+      "log_sha256": "581924dbfa80dcdb3527f3b972e9ebaf9451b03e7e6c66a9d14ef2eebd5394e4"
+    },
+    "fault-clean": {
+      "exit": 0,
+      "failure": null,
+      "log": "/private/tmp/alloy-78/spikes/CPU-001/work/anomaly-census-runs/run-6bhzwgrt/fault-clean.log",
+      "log_sha256": "2f1bb1e84f80e9deb1d5e34805f93d603c40dcdd9fbb49279dd3fcd0b2313ffb"
+    },
+    "fault-positive": {
+      "exit": 0,
+      "failure": null,
+      "log": "/private/tmp/alloy-78/spikes/CPU-001/work/anomaly-census-runs/run-6bhzwgrt/fault-positive.log",
+      "log_sha256": "62504eb4259464b5b883b823acf22db51e9ee95a6adeab55bdd9662880622730"
+    },
+    "decoder-clean": {
+      "exit": 0,
+      "failure": null,
+      "log": "/private/tmp/alloy-78/spikes/CPU-001/work/anomaly-census-runs/run-6bhzwgrt/decoder-clean.log",
+      "log_sha256": "ac01d30752aed707080d3498bca1f2179e1e214bf6099bc41fd1c2afe03ecf1b"
+    },
+    "decoder-invalid": {
+      "exit": 0,
+      "failure": null,
+      "log": "/private/tmp/alloy-78/spikes/CPU-001/work/anomaly-census-runs/run-6bhzwgrt/decoder-invalid.log",
+      "log_sha256": "607ee255fb7fdef33702290843ec79034d1bebf658c8ab90d36cb44d838b58ed"
+    },
+    "decoder-unimplemented": {
+      "exit": 0,
+      "failure": null,
+      "log": "/private/tmp/alloy-78/spikes/CPU-001/work/anomaly-census-runs/run-6bhzwgrt/decoder-unimplemented.log",
+      "log_sha256": "da754faf71f613a5cc4543fd51226aa280a3623531452cba920d09b4b03a9c58"
+    },
+    "clean": {
+      "exit": 0,
+      "failure": null,
+      "log": "/private/tmp/alloy-78/spikes/CPU-001/work/anomaly-census-runs/run-6bhzwgrt/clean.log",
+      "log_sha256": "f0bc1db98056b8a65fc38ff50de1f5a4c8f2b5284642c5d27a7a1a2dd9c98419"
+    },
+    "splitlock": {
+      "exit": 0,
+      "failure": null,
+      "log": "/private/tmp/alloy-78/spikes/CPU-001/work/anomaly-census-runs/run-6bhzwgrt/splitlock.log",
+      "log_sha256": "16b5f8c16f2488a1ef17f647aa5b212974f72e0d2353ded88fc958bae4d7eab8"
+    },
+    "splitcas32": {
+      "exit": 0,
+      "failure": null,
+      "log": "/private/tmp/alloy-78/spikes/CPU-001/work/anomaly-census-runs/run-6bhzwgrt/splitcas32.log",
+      "log_sha256": "01d43864b29e154bb5f26803e11b646cc10c588e3c7f86e19209dd0a37313fe4"
+    },
+    "splitcas64": {
+      "exit": 0,
+      "failure": null,
+      "log": "/private/tmp/alloy-78/spikes/CPU-001/work/anomaly-census-runs/run-6bhzwgrt/splitcas64.log",
+      "log_sha256": "aa1887410b7006dc0e472e9e100d1c0019e3132d14ceb7265d0ccdcbda7c640d"
+    }
+  },
+  "coverage": {
+    "calibrated": [
+      "handled alignment faults",
+      "guest access violations",
+      "supported split-operation flags",
+      "invalid decoder outcomes",
+      "unimplemented decoder outcomes"
+    ],
+    "cas_tearing": {
+      "status": "retired-from-clean-run-claims",
+      "flags": [
+        "16bit CAS Tear",
+        "32bit CAS Tear",
+        "64bit CAS Tear",
+        "128bit CAS Tear"
+      ],
+      "absence_proven": false,
+      "reason": "No deterministic guest control for the partial-commit race.",
+      "gap": "Fault and decoder controls cannot detect every silent partial atomic write."
+    }
+  },
+  "calibration_verdict": "PASS",
+  "host": {
+    "architecture": "arm64",
+    "macos": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0.1\nBuildVersion:\t\t26A434"
+  },
+  "inputs": {
+    "anomaly-census/run.py": "8f459c5378c0fdf4d2f16e130b25681ce83b15c4097ad288dfc3399742bdc229",
+    "anomaly-census/check.py": "712d232b641389c2b3815e9f8a399853b2bd472ae15d4dbfade526061a05c6d0",
+    "anomaly-census/fault-probe.c": "c3f09fa03eda832904f81c17a901ff53ed26db635f8d12e319ab7c46f3656892",
+    "anomaly-census/decoder-probe.c": "4df5db3b15f7223c62c76fd2d9d0507bf7371e1f37fdcb02aa2219d104e8317c",
+    "anomaly-census/wine-census-resume.patch": "776be1aef6d864d1416a6c0cd81d3125eeeb453469efc39c1509a3a5bb42bc0f",
+    "isa-corpus-runner.py": "d369994063a38a01863395dda2cf8deaf7dd4df6d0e1ff1bb5d5a5bff4cf3e3a",
+    "testcases/telemetry_probe.c": "f1840f7bdf699fd5db66048d1a063e95644645d4b8971d0ca0069cca135f0363"
+  },
+  "sources": {
+    "wine": {
+      "path": "/private/tmp/alloy-78/spikes/CPU-001/work/telemetry-78/wine-source",
+      "head": "619c4c0e1ed7b0fb964c0b29388ff227a7dadf72",
+      "branch": "alloy/task-78-census-verification",
+      "dirty_paths": [
+        "A  dlls/ntdll/unix/darwin-jit-resume.h",
+        "M  dlls/ntdll/unix/signal_arm64.c",
+        "M  dlls/ntdll/unix/virtual.c"
+      ],
+      "diff_sha256": "776be1aef6d864d1416a6c0cd81d3125eeeb453469efc39c1509a3a5bb42bc0f"
+    },
+    "fex": {
+      "path": "/private/tmp/alloy-78/spikes/CPU-001/work/telemetry-78/fex-source",
+      "head": "77f9ae5d8307fb127cc175725fdbbebbeef10641",
+      "branch": "alloy/task-78-census-verification",
+      "dirty_paths": [],
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "compiler": {
+    "path": "/Users/cleverclosure/Developer/Alloy/tools/toolchains/llvm-mingw-20260616-ucrt-macos-universal/bin/x86_64-w64-mingw32-clang",
+    "sha256": "c9b86311ade81d53235c93fafabdf98328d094de344ea9a9038e0dab6695ee9f"
+  },
+  "guest_binaries": {
+    "fault-clean.exe": "ad04f65f012f9d8b5f2eb062acc998f29ad4f7aa5fad8a9f0bcff3dda3ecddbd",
+    "fault-positive.exe": "15b418abce5f54562ad14b5f929134cd76fefa61c8ae8ed701184625c14134cc",
+    "decoder-clean.exe": "c191c2dfd53721c548e9afb2e73898c52224439c22900fa574812027e0ab10e1",
+    "decoder-invalid.exe": "b40e842325552b970e1b61c3ba5107621e5cfd6dd5be9a76578b11d48ca40772",
+    "decoder-unimplemented.exe": "051f0725b6291ef6c13cf9af1f60db6154030be26abc7bd7f883b3ead254b0de",
+    "telemetry.exe": "ba0e05678944173181681c94e73a442650247ed749c75d0949cfa06a451b0cfc"
+  },
+  "runtime": {
+    "build": "/private/tmp/alloy-78/spikes/CPU-001/work/telemetry-78/wine-build",
+    "prefix": "/private/tmp/alloy-78/spikes/CPU-001/work/anomaly-census-runs/run-6bhzwgrt/prefix",
+    "before_sha256": "090efb95efe8c1d6b4ac67593716d51e561ed8417fb00f1119741871a8e8ba42",
+    "artifacts": {
+      "loader/wine": "d77a3f35bc0941b43226cb0f761f811051b33a057b79ab1f4324e4a29404a0dd",
+      "server/wineserver": "7cf50a002813624d7a7cbbdd13f0fc1205844b4603a81b77c919503e159bb728",
+      "dlls/ntdll/ntdll.so": "6d31fe650134833ebe6fadee554e7d7a4e9fd34244cbf77fa5f95237aa1e58e7",
+      "dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll": "ab3dcc0412b122272a631e0471e991a335f9536a9f87d69221174e05cc3ebd14"
+    },
+    "after_sha256": "090efb95efe8c1d6b4ac67593716d51e561ed8417fb00f1119741871a8e8ba42",
+    "unchanged": true
+  },
+  "controls": {
+    "fault-clean": {
+      "fault_totals": {
+        "segv-entries": 159,
+        "resolved": 158,
+        "access-violations": 1,
+        "align-faults": 0,
+        "low-pc-faults": 0,
+        "x18-absorbs": 233,
+        "jit-store-emulated": 0,
+        "jit-store-unmatched": 0,
+        "jit-store-mismatched": 0,
+        "jit-store-unwritable": 0
+      },
+      "decoder_outcomes": {},
+      "observed_flags": {},
+      "cas_absence_proven": false,
+      "controlled_access_violations": 0
+    },
+    "fault-positive": {
+      "fault_totals": {
+        "segv-entries": 229,
+        "resolved": 164,
+        "access-violations": 65,
+        "align-faults": 0,
+        "low-pc-faults": 0,
+        "x18-absorbs": 245,
+        "jit-store-emulated": 0,
+        "jit-store-unmatched": 0,
+        "jit-store-mismatched": 0,
+        "jit-store-unwritable": 0
+      },
+      "decoder_outcomes": {},
+      "observed_flags": {},
+      "cas_absence_proven": false,
+      "controlled_access_violations": 64
+    },
+    "decoder-clean": {
+      "fault_totals": {
+        "segv-entries": 167,
+        "resolved": 166,
+        "access-violations": 1,
+        "align-faults": 0,
+        "low-pc-faults": 0,
+        "x18-absorbs": 250,
+        "jit-store-emulated": 0,
+        "jit-store-unmatched": 0,
+        "jit-store-mismatched": 0,
+        "jit-store-unwritable": 0
+      },
+      "decoder_outcomes": {},
+      "observed_flags": {},
+      "cas_absence_proven": false
+    },
+    "decoder-invalid": {
+      "fault_totals": {
+        "segv-entries": 173,
+        "resolved": 172,
+        "access-violations": 1,
+        "align-faults": 0,
+        "low-pc-faults": 0,
+        "x18-absorbs": 258,
+        "jit-store-emulated": 0,
+        "jit-store-unmatched": 0,
+        "jit-store-mismatched": 0,
+        "jit-store-unwritable": 0
+      },
+      "decoder_outcomes": {
+        "invalid-no-dispatcher": 1
+      },
+      "observed_flags": {},
+      "cas_absence_proven": false
+    },
+    "decoder-unimplemented": {
+      "fault_totals": {
+        "segv-entries": 173,
+        "resolved": 172,
+        "access-violations": 1,
+        "align-faults": 0,
+        "low-pc-faults": 0,
+        "x18-absorbs": 260,
+        "jit-store-emulated": 0,
+        "jit-store-unmatched": 0,
+        "jit-store-mismatched": 0,
+        "jit-store-unwritable": 0
+      },
+      "decoder_outcomes": {
+        "unimplemented": 1
+      },
+      "observed_flags": {},
+      "cas_absence_proven": false
+    },
+    "clean": {
+      "fault_totals": {
+        "segv-entries": 165,
+        "resolved": 164,
+        "access-violations": 1,
+        "align-faults": 0,
+        "low-pc-faults": 0,
+        "x18-absorbs": 241,
+        "jit-store-emulated": 0,
+        "jit-store-unmatched": 0,
+        "jit-store-mismatched": 0,
+        "jit-store-unwritable": 0
+      },
+      "decoder_outcomes": {},
+      "observed_flags": {},
+      "cas_absence_proven": false
+    },
+    "splitlock": {
+      "fault_totals": {
+        "segv-entries": 155,
+        "resolved": 154,
+        "access-violations": 1,
+        "align-faults": 2000,
+        "low-pc-faults": 0,
+        "x18-absorbs": 229,
+        "jit-store-emulated": 0,
+        "jit-store-unmatched": 0,
+        "jit-store-mismatched": 0,
+        "jit-store-unwritable": 0
+      },
+      "decoder_outcomes": {},
+      "observed_flags": {
+        "64byte Split Locks": 1,
+        "16byte Split atomics": 1
+      },
+      "cas_absence_proven": false
+    },
+    "splitcas32": {
+      "fault_totals": {
+        "segv-entries": 157,
+        "resolved": 156,
+        "access-violations": 1,
+        "align-faults": 2000,
+        "low-pc-faults": 0,
+        "x18-absorbs": 231,
+        "jit-store-emulated": 0,
+        "jit-store-unmatched": 0,
+        "jit-store-mismatched": 0,
+        "jit-store-unwritable": 0
+      },
+      "decoder_outcomes": {},
+      "observed_flags": {
+        "64byte Split Locks": 1,
+        "16byte Split atomics": 1
+      },
+      "cas_absence_proven": false
+    },
+    "splitcas64": {
+      "fault_totals": {
+        "segv-entries": 161,
+        "resolved": 160,
+        "access-violations": 1,
+        "align-faults": 2000,
+        "low-pc-faults": 0,
+        "x18-absorbs": 235,
+        "jit-store-emulated": 0,
+        "jit-store-unmatched": 0,
+        "jit-store-mismatched": 0,
+        "jit-store-unwritable": 0
+      },
+      "decoder_outcomes": {},
+      "observed_flags": {
+        "64byte Split Locks": 1,
+        "16byte Split atomics": 1
+      },
+      "cas_absence_proven": false
+    }
+  },
+  "reader_mutations_rejected": [
+    "missing-census",
+    "truncated-census",
+    "no-builtin-load",
+    "wrong-fault-count",
+    "missing-split-flag",
+    "lost-invalid-outcome",
+    "lost-unimplemented-outcome",
+    "missing-baseline",
+    "stale-decoder-sample",
+    "wrong-process-census",
+    "timeout",
+    "nonzero-exit"
+  ],
+  "finished_at": "2026-10-04T17:28:04.704101+00:00",
+  "raw_report_sha256": "2a8cc41e3494099a91800504d03c04579f4a9307eb7d3cb4a266fc7d17803ff1",
+  "shared_preservation": {
+    "runtimes": {
+      "shared": {
+        "path": "/Users/cleverclosure/Developer/Alloy/spikes/WINE-001/work/build-2",
+        "sha256": "00640da69a959497db45a5da2ee1086392b2e9faa7337448f835e3313ce7ce0d",
+        "entries": 21652
+      },
+      "census": {
+        "path": "/Users/cleverclosure/Developer/Alloy/spikes/CPU-001/work/census/wine2",
+        "sha256": "26d20236e13ef2a2c4632dd897afdfd8b756df553d053a6a9fd1b8eeac81ebc6",
+        "entries": 7523
+      }
+    },
+    "sources": {
+      "wine": {
+        "path": "/Users/cleverclosure/Developer/Alloy/third_party/src/wine",
+        "head": "420c70bdcb7615c3dc0395d162f93645f098fe56",
+        "branch": "alloy/spike-wine-001",
+        "dirty_paths": [
+          "M dlls/ntdll/unix/signal_arm64.c",
+          " M dlls/rpcrt4/ndr_stubless.c"
+        ],
+        "diff_sha256": "3cf78f47e3e734bc473363b1add23fdaf272c1eaf6efccb2b088fc433ddff526"
+      },
+      "fex": {
+        "path": "/Users/cleverclosure/Developer/Alloy/third_party/src/fex",
+        "head": "ad942313dca79d32133cceaaf617016821e3b952",
+        "branch": "alloy/task-8-dispatcher-teb",
+        "dirty_paths": [],
+        "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "verified_equal_before_after": true
+  },
+  "build_inputs": {
+    "wine_patch_sha256": "776be1aef6d864d1416a6c0cd81d3125eeeb453469efc39c1509a3a5bb42bc0f",
+    "fex_cmake_cache_sha256": "25b14c2149b9a243f2c1a444d43dd6cf799ba8dd0c8c62330daa85753e2642e2",
+    "darwin_overlay": {
+      "fex_unixlib_darwin.cpp": "042d44aa9fc4230e22bee24527ea9f16070994f26e84d2d6f24e9c14f883ee4d",
+      "probe.cpp": "dfd814dc1e50aa4f96989f60d8c232f3f5a479a44128d03986ad7f38b95e833b",
+      "probe.obj": "8b2fee6f056f63a8b45e153bb72dd2156422028820aebe20d8bf15248445da8d",
+      "winnt.h": "810e9011f817fce9230e5edd3fd2feb223504fb3190d7fe4faba047dbbfd6d25"
+    },
+    "fex_lto": false,
+    "fex_telemetry": true,
+    "fex_fixed_x18": true,
+    "host_guard_page_bytes": 16384
+  },
+  "startup_timeout": {
+    "run": "run-yokdtqcp",
+    "verdict": "FAIL",
+    "runs": {
+      "wineboot": {
+        "exit": -15,
+        "failure": "timeout",
+        "log": "/private/tmp/alloy-78/spikes/CPU-001/work/anomaly-census-runs/run-yokdtqcp/wineboot.log",
+        "log_sha256": "025fc76d2a50b2141be523db12a087077ecdbefbad0dd15667279cfcb8bada7f"
+      }
+    },
+    "runtime_unchanged": true,
+    "note": "Private wineboot exceeded 120 seconds; no controls ran. Not counted as passing. A new-prefix run then completed."
+  }
+}

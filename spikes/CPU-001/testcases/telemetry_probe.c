@@ -21,7 +21,10 @@
  *   split16    current unsupported unaligned cmpxchg16b path (failure guard)
  *   clean      the same operations, all naturally aligned (negative control)
  *
- * "clean" must leave every flag at zero. splitlock/splitcas32/splitcas64 must
+ * "clean" must leave the calibrated split flags at zero. A zero CAS-tear flag
+ * does not certify atomicity: issue #78 retires all four tear flags from
+ * clean-run claims. See ../anomaly-census/ for executable replacement controls
+ * and the remaining silent-partial-write gap. splitlock/splitcas32/splitcas64 must
  * raise the split-lock and split-16-byte flags, whose values are
  * happened-at-least-once flags rather than frequencies. split16 currently
  * exits through FEX's unhandled CASPAL path; it is retained so support cannot
