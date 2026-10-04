@@ -129,7 +129,9 @@ public final class InstallationEngine: @unchecked Sendable {
                 }
                 // An error after publication begins can be ambiguous. Keep a recoverable
                 // running operation until the content store reconciles its stable ID.
-                if !current.canCancel && !Self.isPermanentRefusal(error) { throw error }
+                let publicationKinds: Set<OperationKind> = [.install, .uninstall, .repair, .garbageCollection]
+                if !current.canCancel && publicationKinds.contains(current.kind)
+                    && !Self.isPermanentRefusal(error) { throw error }
                 return try journal.transition(
                     identifier, to: .failed, stage: "FAILED", error: String(describing: error))
             }
@@ -143,7 +145,8 @@ public final class InstallationEngine: @unchecked Sendable {
         case .repair: return try executeRepair(operation)
         case .inventory: return try executeInventory(operation)
         case .garbageCollection: return try executeGarbageCollection(operation)
-        default: throw InstallationError.unknownKind
+        case .discover: return try executeDiscovery(operation)
+        case .fingerprint: return try executeFingerprint(operation)
         }
     }
 
