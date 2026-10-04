@@ -272,3 +272,41 @@ AI-assistant context for this spike. Entries are dated and never rewritten.
     records. No excluded implementation source, diff, history, code
     discussion, or quoted material was opened, searched, fetched, or supplied
     to an agent.
+
+- **2026-10-04 — #91 integration and merge authorization.**
+  - The user asked to merge remaining work, then explicitly authorized best
+    judgment for issue #76 and PR #91 without further questions, including a
+    2-hour Estimate if no original estimate was available. Issue #76 remains
+    subsumed by #84; its existing Actual of zero avoids double-counting.
+  - This integration uses an isolated worktree from the pushed PR head
+    `26d54c0669d0274b8f014968fa785116f39e498b`. Current main is merged without
+    rewriting the signed task history or the `m12-84-evidence` tag. The sole
+    conflict is the root append-only provenance log; both parents' entries
+    are preserved. No Metal12 implementation source is changed.
+  - Observable inputs are the user's merge instructions, repository authoring
+    rules, ADR-0012, GitHub issues #76/#84 and PR #91 metadata, these two
+    provenance logs, first-party Metal12 build/proof scripts and tests,
+    M12-006 evidence results, and the current-main integration diff. No user
+    attachment or external implementation material was supplied.
+  - The AI/tool surface is this Codex session and bounded read-only parallel
+    reviews, using collaboration messages, shell/search/read/patch execution,
+    Git and GitHub CLI, native build tools, and first-party test runners.
+    Outputs comprise merge/board metadata, the resolved append-only log,
+    this session record, independent merge-readiness findings, and integration
+    check logs. The current session retains the prompts and tool outputs;
+    no claim is made that the July private snapshot covers this later session.
+  - The read-only audit inspected the runtime README, build and model-proof
+    entry points, shader/reference runner boundaries, lowering API tests, and
+    results 01/06/07. It found the existing presentation evidence sufficient
+    for #76 and recommended native build/model/lowering checks plus current
+    CI for this metadata-only integration. Fresh shader, residency-pressure,
+    presentation and Wine/FEX runs are not new acceptance claims here.
+  - No excluded D3D12 implementation source, diff, history or quoted code was
+    opened, searched, fetched or supplied to either review. No web search,
+    external implementation retrieval or shared-runtime modification is part
+    of the integration. The existing limitation about unauditable provider
+    corpora and retrieval indexes remains unchanged.
+  - The signed tag authenticates the original task head and its historical
+    evidence only. New integration commits and measured check identities are
+    reported separately; the historical pressure, shader and presentation
+    results are not relabeled as measurements on the current host or head.

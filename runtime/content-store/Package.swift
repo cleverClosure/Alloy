@@ -16,14 +16,25 @@ let package = Package(
         .executable(
             name: "alloy-content-store-fault-probe",
             targets: ["AlloyContentStoreFaultProbe"]
+        ),
+        .executable(
+            name: "alloy-content-store-stress-harness",
+            targets: ["AlloyContentStoreStressHarness"]
         )
     ],
     targets: [
         .target(
-            name: "AlloyContentStore"
+            name: "AlloyContentStore",
+            linkerSettings: [
+                .linkedLibrary("sqlite3")
+            ]
         ),
         .executableTarget(
             name: "AlloyContentStoreFaultProbe",
+            dependencies: ["AlloyContentStore"]
+        ),
+        .executableTarget(
+            name: "AlloyContentStoreStressHarness",
             dependencies: ["AlloyContentStore"]
         ),
         .testTarget(

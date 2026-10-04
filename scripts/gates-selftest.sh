@@ -65,7 +65,8 @@ case "$sub" in
   "project item-list") emit "$FIXTURE/items.json" ;;
   "pr list") emit "$FIXTURE/prs.json" ;;
   "issue view") emit "$FIXTURE/issue.json" ;;
-  "issue edit" | "issue comment" | "issue close" | "pr ready")
+  "run list") emit "$FIXTURE/runs.json" ;;
+  "issue edit" | "issue comment" | "issue close" | "pr ready" | "run rerun")
     printf '%s\n' "$*" >>"$FIXTURE/mutations.log"
     ;;
   *)
@@ -197,8 +198,10 @@ make_finish() { # dir issue-state pr-state pr-body card-status
 EOF
   cat >"$dir/prs.json" <<EOF
 [{"number":900,"state":"$3","isDraft":false,"body":$4,"title":"a title",
-  "headRefName":"task/100-x","url":"u","closingIssuesReferences":[{"number":100}]}]
+  "headRefName":"task/100-x","headRefOid":"abc1234def","url":"u",
+  "closingIssuesReferences":[{"number":100}]}]
 EOF
+  echo '[]' >"$dir/runs.json"
   printf '{"state":"%s"}\n' "$2" >"$dir/issue.json"
   printf '{"items":[{"content":{"number":100},"status":"%s"}]}\n' "$5" >"$dir/items.json"
 }
@@ -228,11 +231,16 @@ fi
 # 7. Keyword in the title only is not enough — GitHub reads the body.
 make_finish "$work/f2" OPEN OPEN '"body without it"' "In Progress"
 sed -i '' 's/"title":"a title"/"title":"work (closes #100)"/' "$work/f2/prs.json"
+echo '[{"databaseId":776,"status":"completed"}]' >"$work/f2/runs.json"
 run_finish "$work/f2" 100 2
 if ((status == 0)); then
   fold "keyword-title-only: accepted a title-only closing keyword" "$out"
 elif ! grep -q 'title but not the body' <<<"$out"; then
   fold "keyword-title-only: wrong failure" "$out"
+elif grep -q 'run rerun' "$work/f2/mutations.log"; then
+  # With no closing reference the board gate sees "not a task PR" and merges it
+  # unchecked, so re-running CI here would wave it straight through.
+  fold "keyword-title-only: re-ran CI for a PR that closes nothing" "$(cat "$work/f2/mutations.log")"
 else
   pass keyword-title-only
 fi
@@ -272,6 +280,46 @@ elif ! grep -q 'not merged yet' <<<"$out"; then
   fold "premature: did not say why closure was skipped" "$out"
 else
   pass premature
+fi
+
+# 11. A ready PR the board gate may be holding: recording Actual re-runs its CI,
+# because a board edit fires no event and auto-merge only wakes on CI.
+make_finish "$work/f6" OPEN OPEN '"Fixes #100"' "In Progress"
+echo '[{"databaseId":777,"status":"completed"}]' >"$work/f6/runs.json"
+run_finish "$work/f6" 100 2
+if ((status != 0)); then
+  fold "rerun: failed on a well-formed finish" "$out"
+elif ! grep -q 'run rerun 777' "$work/f6/mutations.log"; then
+  fold "rerun: Actual recorded but the held PR was never re-evaluated" "$(cat "$work/f6/mutations.log")"
+else
+  pass rerun
+fi
+
+# 12. CI still running: it will wake auto-merge itself, so no re-run is queued.
+make_finish "$work/f7" OPEN OPEN '"Fixes #100"' "In Progress"
+echo '[{"databaseId":778,"status":"in_progress"}]' >"$work/f7/runs.json"
+run_finish "$work/f7" 100 2
+if ((status != 0)); then
+  fold "rerun-in-flight: failed on a well-formed finish" "$out"
+elif grep -q 'run rerun' "$work/f7/mutations.log"; then
+  fold "rerun-in-flight: re-ran CI that had not finished" "$(cat "$work/f7/mutations.log")"
+else
+  pass rerun-in-flight
+fi
+
+# 13. A draft marked ready: ready_for_review starts CI, so no re-run either.
+make_finish "$work/f8" OPEN OPEN '"Fixes #100"' "In Progress"
+sed -i '' 's/"isDraft":false/"isDraft":true/' "$work/f8/prs.json"
+echo '[{"databaseId":779,"status":"completed"}]' >"$work/f8/runs.json"
+run_finish "$work/f8" 100 2 --ready
+if ((status != 0)); then
+  fold "ready-no-rerun: failed on a well-formed finish" "$out"
+elif ! grep -q 'pr ready 900' "$work/f8/mutations.log"; then
+  fold "ready-no-rerun: draft was not marked ready" "$(cat "$work/f8/mutations.log")"
+elif grep -q 'run rerun' "$work/f8/mutations.log"; then
+  fold "ready-no-rerun: re-ran CI on top of the ready_for_review run" "$(cat "$work/f8/mutations.log")"
+else
+  pass ready-no-rerun
 fi
 
 echo

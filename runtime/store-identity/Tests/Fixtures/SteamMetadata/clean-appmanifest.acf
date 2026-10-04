@@ -1,0 +1,25 @@
+"AppState"
+{
+    "appid"        "900000"
+    "Universe"     "1"
+    "name"         "Synthetic Game"
+    "StateFlags"   "4"
+    "installdir"   "Synthetic Game"
+    "LastUpdated"  "1785000000"
+    "SizeOnDisk"   "346"
+    "buildid"      "90000042"
+    "UpdateResult" "0"
+    "InstalledDepots"
+    {
+        "900001"
+        {
+            "manifest" "1111111111111111111"
+            "size"     "282"
+        }
+        "900002"
+        {
+            "manifest" "2222222222222222222"
+            "size"     "64"
+        }
+    }
+}

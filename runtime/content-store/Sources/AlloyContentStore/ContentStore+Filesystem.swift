@@ -232,8 +232,15 @@ extension ContentStore {
         index: Int,
         operation: ActivationOperation
     ) throws -> URL {
-        downloadDirectory(operation).appendingPathComponent(
-            String(format: "%03d-%@.part", index, try rawSHA256(descriptor.digest))
+        let canonicalIndex = operation.layers.firstIndex {
+            $0.digest == descriptor.digest
+        } ?? index
+        return downloadDirectory(operation).appendingPathComponent(
+            String(
+                format: "%03d-%@.part",
+                canonicalIndex,
+                try rawSHA256(descriptor.digest)
+            )
         )
     }
 

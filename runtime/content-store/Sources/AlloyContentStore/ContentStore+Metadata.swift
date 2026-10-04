@@ -2,7 +2,7 @@
 
 import Foundation
 
-enum ReferenceKind: String {
+enum ReferenceKind: String, CaseIterable {
     case active
     case rollback
     case candidate

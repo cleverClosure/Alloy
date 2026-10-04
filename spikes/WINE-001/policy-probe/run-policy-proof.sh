@@ -8,11 +8,23 @@ spike_root=$(cd "$(dirname "$0")/.." && pwd)
 repo_root=$(cd "$spike_root/../.." && pwd)
 probe_root="$spike_root/policy-probe"
 probe_work="$spike_root/work/policy-probe"
-wine_build="$spike_root/work/build-2"
-wine_binary="$wine_build/wine"
+# ALLOY_WINE_BUILD overrides the build tree location, same convention as the
+# rest of the repo (dxmt-install.sh, make-release.sh, the STORE-001 launchers).
+# The default stays the single-checkout layout so this is a no-op there; it
+# only matters when run-policy-proof.sh executes from a worktree, which has
+# no build-2 of its own and must be pointed at the primary checkout's.
+wine_build=${ALLOY_WINE_BUILD:-"$spike_root/work/build-2"}
+wine_binary="$wine_build/loader/wine"
 wine_server="$wine_build/server/wineserver"
-toolchain="$repo_root/tools/toolchains/llvm-mingw-20260616-ucrt-macos-universal/bin"
-cross_cc="$toolchain/aarch64-w64-mingw32-clang"
+# Prefer PATH, same as build-corpus.sh/testcases' build.sh, and fall back to
+# the pinned single-checkout path so existing direct invocations keep working
+# unchanged. A worktree has no tools/toolchains/ of its own (gitignored), so
+# PATH is the only way this ever resolves there.
+cross_cc=$(command -v aarch64-w64-mingw32-clang || true)
+if [[ -z "$cross_cc" ]]; then
+  cross_cc="$repo_root/tools/toolchains/llvm-mingw-20260616-ucrt-macos-universal/bin/aarch64-w64-mingw32-clang"
+fi
+toolchain=$(dirname "$cross_cc")
 swift_cache=/tmp/alloy-policy-swift-cache
 clang_cache=/tmp/alloy-policy-clang-cache
 
@@ -140,11 +152,19 @@ done
 
 prefix="$probe_work/prefix"
 mkdir -p "$prefix"
+export DYLD_FALLBACK_LIBRARY_PATH=${DYLD_FALLBACK_LIBRARY_PATH:-/opt/homebrew/lib}
+stop_server() {
+  env WINEPREFIX="$prefix" "$wine_server" -k >/dev/null 2>&1 || true
+}
+trap stop_server EXIT
+trap 'exit 143' TERM
+trap 'exit 130' INT
 env \
   PATH="$toolchain:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
   WINEPREFIX="$prefix" \
   WINEDEBUG=-all \
-  "$wine_binary" wineboot -u >"$probe_work/wineboot.log" 2>&1
+  WINEDLLOVERRIDES="mscoree,mshtml=" \
+  perl -e 'alarm shift; exec @ARGV' 60 "$wine_binary" wineboot -u >"$probe_work/wineboot.log" 2>&1
 env WINEPREFIX="$prefix" "$wine_server" -k >/dev/null 2>&1 || true
 
 run_log="$probe_work/policy-run.log"
@@ -157,7 +177,7 @@ run_log="$probe_work/policy-run.log"
     PATH="$toolchain:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
     WINEPREFIX="$prefix" \
     WINEDEBUG=+alloy,+loaddll \
-    "$wine_binary" launcher.exe
+    perl -e 'alarm shift; exec @ARGV' 60 "$wine_binary" launcher.exe
 ) 2>&1 | tee "$run_log"
 
 grep -Fq 'selected policy launcher graphics dxmt default 0' "$run_log"
@@ -198,7 +218,7 @@ expect_bootstrap_failure() {
       PATH="$toolchain:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
       WINEPREFIX="$prefix" \
       WINEDEBUG=-all \
-      "$wine_binary" unknown.exe
+      perl -e 'alarm shift; exec @ARGV' 30 "$wine_binary" unknown.exe
   ) >"$failure_log" 2>&1; then
     printf '%s unexpectedly succeeded\n' "$label" >&2
     return 1

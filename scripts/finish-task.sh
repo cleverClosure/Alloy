@@ -19,11 +19,10 @@
 #
 # Why closure is reconciled rather than trusted: on 25 July 2026 two PRs merged
 # with a correct "Fixes #25" in the body and the issue stayed open both times.
-# The likely cause is that .github/workflows/auto-merge.yml grants the Actions
-# token contents:write and pull-requests:write but not issues:write, so the
-# merge cannot close the linked issue. That file is area:ci and out of scope
-# here; this script makes the end state correct either way and reports what it
-# had to fix, so the underlying bug stays visible instead of being papered over.
+# A merge made with the Actions token does not close linked issues - granting
+# issues:write did not change that (#93) - so auto-merge now closes them itself
+# after merging. This script still makes the end state correct either way and
+# reports what it had to fix, so a merge that slips past stays visible.
 set -euo pipefail
 
 OWNER="cleverClosure"
@@ -161,7 +160,7 @@ fi
 # ── 2. the pull request and its closing keyword ───────────────────────────────
 echo "== 2. pull request"
 prs=$(gh pr list --repo "$OWNER/$REPO" --state all --limit 100 \
-  --json number,state,isDraft,body,title,headRefName,url,closingIssuesReferences \
+  --json number,state,isDraft,body,title,headRefName,headRefOid,url,closingIssuesReferences \
   --jq "map(select((.closingIssuesReferences | map(.number) | index($issue)) != null
         or (.headRefName | startswith(\"task/$issue-\"))))")
 pr_count=$(jq -r 'length' <<<"$prs")
@@ -198,6 +197,26 @@ else
       note "PR #$pr_num marked ready — auto-merge will squash it once CI is green"
     fi
   fi
+
+  # Setting a board field fires no repository event, and auto-merge only looks
+  # at a PR when its CI run completes. A PR that was already ready - one the
+  # board gate may be holding for this very field - is re-evaluated by
+  # re-running its latest CI run. A draft marked ready above needs nothing:
+  # ci.yml runs on ready_for_review.
+  if ((reconcile_only == 0 && fail == 0)) && [[ $pr_state == OPEN && $pr_draft != true ]]; then
+    head_sha=$(jq -r '.headRefOid' <<<"$pr")
+    ci_run=$(gh run list --repo "$OWNER/$REPO" --workflow ci.yml --event pull_request \
+      --commit "$head_sha" --limit 1 --json databaseId,status \
+      --jq '.[0] // empty | "\(.databaseId) \(.status)"')
+    if [[ -z $ci_run ]]; then
+      note "no CI run found for ${head_sha:0:7} — push or re-run CI so auto-merge re-evaluates"
+    elif [[ ${ci_run#* } == completed ]]; then
+      gh run rerun "${ci_run%% *}" --repo "$OWNER/$REPO" >/dev/null
+      note "re-ran CI run ${ci_run%% *} so auto-merge re-evaluates PR #$pr_num"
+    else
+      note "CI run ${ci_run%% *} is ${ci_run#* } — auto-merge evaluates PR #$pr_num when it completes"
+    fi
+  fi
 fi
 
 # ── 3. closure reconciliation ─────────────────────────────────────────────────
@@ -215,7 +234,7 @@ else
   else
     gh issue close "$issue" --repo "$OWNER/$REPO" --reason completed \
       --comment "Closed by #$(jq -r '.number' <<<"$pr"). The merge did not close it automatically; \`scripts/finish-task.sh\` reconciled it." >/dev/null
-    note "issue #$issue was still OPEN after merge — closed it (see the header note on auto-merge permissions)"
+    note "issue #$issue was still OPEN after merge — closed it (see the header note on auto-merge)"
   fi
 
   status_now=$(gh project item-list "$PROJECT" --owner "$OWNER" --format json --limit 200 |

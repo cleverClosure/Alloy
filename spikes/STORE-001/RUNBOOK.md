@@ -1,10 +1,175 @@
 # STORE-001 entitled install + fingerprint runbook (founder execution)
 
 **Author:** Timur Isaev
-**Status:** Entitled build fingerprinted and booted under the Alloy runtime.
-**Context:** D-019 chose Steam; the open Phase-0 row is "entitled install, exact build
-fingerprint, rerun evidence." The fingerprint tool is `tools/steam-fingerprint.py`
-(no credentials touched; works on any existing library).
+
+**Status:** Historical anchor and Lane C boot complete; Gate 6 live observation
+passed against the exact anchor.
+
+**Context:** D-019 chose Steam. The committed exact-build anchor is now consumed
+by the read-only `AlloyStoreIdentityCLI` observer. The Python fingerprint tool
+is retained as a historical fingerprint and parity reference.
+
+The recorded 26 July 2026 Gate 6 observation took Branch A: the entitled
+CrossOver installation matched build `24280929` and emitted no invalidation.
+See `results/2026-07-26-10-live-readonly-and-closing.md`.
+
+## Gate 6 — live read-only identity observation
+
+This is the authoritative closing procedure for issue 89. It performs one
+bounded observation of the existing, user-installed Sir Brante title. It does
+not start or control the Steam client, launch the title, use account or session
+material, access the network, or write beneath a Steam library.
+
+Run every command from the repository root. Select the Steam library that
+contains `steamapps/appmanifest_1272160.acf` and a state root outside every
+Steam library:
+
+```sh
+export LIBRARY_ROOT="/absolute/path/to/Steam"
+export STATE_ROOT="/absolute/path/outside/Steam/alloy-store-identity-state"
+```
+
+Do not record an account-bearing library path in the result. The committed
+inputs are:
+
+```text
+app id:       1272160
+anchor:       spikes/STORE-001/results/fingerprint-1272160-first.json
+registry:     runtime/store-identity/Registry/selectors.v1.json
+```
+
+### 1. Establish an idle host
+
+Before the long file scan, check that no earlier bounded runtime workload is
+still active:
+
+```sh
+ps aux | rg '[r]un-slice|[m]etal12'
+```
+
+No matching line is the required result. If one appears, do not start the live
+scan until that workload has ended.
+
+### 2. Run the pre-observation gates
+
+The negative self-test proves that every prohibited posture is rejected and
+that a clean repository can still pass. The strict gate then proves that
+discovery remains read-only:
+
+```sh
+spikes/STORE-001/steam-readonly/gate-selftest.sh
+spikes/STORE-001/steam-readonly/steam-automation-gate.sh
+swift test --disable-sandbox --package-path runtime/store-identity
+runtime/store-identity/run-fingerprint-parity.sh
+runtime/store-identity/run-metadata-parser-proof.sh
+runtime/store-identity/run-update-watcher-proof.sh
+runtime/store-identity/run-selector-invalidation-proof.sh
+runtime/store-identity/run-fault-matrix.sh
+runtime/store-identity/run-cli-fixture-proof.sh
+tools/lint.sh
+```
+
+Required Steam summaries are:
+
+```text
+GATE-SELFTEST: pass — every check rejects its violation and the gate can still go green
+STEAM-AUTOMATION: pass - discovery is read-only, no account interaction
+```
+
+The required CLI fixture summary is:
+
+```text
+SUMMARY cli-fixture unchanged=PASS changed=PASS idempotence=PASS self-test=PASS argument-refusals=4 canonical-refusals=1 traversal-refusals=1 symlink-refusals=2 state-boundary-refusals=2 inputs=UNCHANGED invalidations=1 status=PASS
+```
+
+Do not continue if any command fails.
+
+### 3. Observe the installed title once
+
+The direct executable contract is:
+
+```sh
+AlloyStoreIdentityCLI observe \
+  --library-root "$LIBRARY_ROOT" \
+  --app-id 1272160 \
+  --anchor spikes/STORE-001/results/fingerprint-1272160-first.json \
+  --registry runtime/store-identity/Registry/selectors.v1.json \
+  --state-root "$STATE_ROOT"
+```
+
+From the repository, Swift Package Manager can run that same executable:
+
+```sh
+swift run --package-path runtime/store-identity \
+  AlloyStoreIdentityCLI observe \
+  --library-root "$LIBRARY_ROOT" \
+  --app-id 1272160 \
+  --anchor spikes/STORE-001/results/fingerprint-1272160-first.json \
+  --registry runtime/store-identity/Registry/selectors.v1.json \
+  --state-root "$STATE_ROOT"
+```
+
+The command must emit exactly one of these deterministic standard-output lines:
+
+```text
+STATUS appid=1272160 update=unchanged self_test=PASS invalidation=none
+STATUS appid=1272160 update=changed self_test=PASS created=<true|false> id=<sha256:...> superseded=24280929 observed=<buildid>
+```
+
+For `update=unchanged`, verify that no invalidation JSON was created. The
+committed anchor remains current for the exact installed build.
+
+For `update=changed`, preserve the historical anchor without editing it. Verify
+that the one record beneath `STATE_ROOT` names superseded build `24280929` and
+all three exact selectors:
+
+```text
+gfx-001.result-06.1272160.24280929
+store-001.fingerprint.1272160.24280929
+store-001.launch-policy.sir-brante-24280929
+```
+
+Do not repeat the live scan merely to prove idempotence. The CLI fixture proof
+already requires an identical synthetic retry to report `created=false`, reuse
+the same invalidation identifier, preserve canonical bytes, and leave exactly
+one record. The one live run may report `created=false` when the exact record
+already exists in the selected state root.
+
+### 4. Re-run the posture gates and record the outcome
+
+```sh
+spikes/STORE-001/steam-readonly/gate-selftest.sh
+spikes/STORE-001/steam-readonly/steam-automation-gate.sh
+tools/lint.sh
+```
+
+Copy the process precheck, both pre- and post-observation Steam summaries,
+every cumulative proof summary, full test total, CLI fixture proof, lint
+result, exact live `STATUS` line, and branch-specific checks into
+`spikes/STORE-001/results/2026-07-26-10-live-readonly-and-closing.md`.
+Only then may its disposition change from Pending.
+
+### Identity and write guarantees
+
+- The observer reads only the selected library, appmanifest, installed title,
+  trusted anchor, and selector registry.
+- The exact identity includes app, build, depot manifest, every regular-file
+  digest and size, aggregate digest, and executable-image digest.
+- The detector self-test passes before the real observation; a dead detector
+  or unstable mixed scan refuses the run.
+- Selectors match only their exact app, build, depot manifest, aggregate, and
+  image identity.
+- Changed observations have deterministic invalidation identifiers and
+  canonical bytes; repeated and crash-recovery runs converge idempotently.
+- Runtime state is written only beneath the caller-selected state root. The
+  Steam tree, anchor, registry, and historical results remain unchanged.
+- The observer has no Steam launch, client-control, account, session,
+  credential, or network behavior.
+
+This closes only the single-title, one-live-installation Sir Brante evidence
+leg. Hosting the Steam client inside the Alloy runtime (Lane B), validating
+multiple titles, and adding a long-running watcher, daemon, or scheduler remain
+deferred.
 
 ## Three lanes
 
@@ -22,7 +187,10 @@ fingerprint, rerun evidence." The fingerprint tool is `tools/steam-fingerprint.p
   This proves the commercial title runtime independently of hosting the Steam client
   itself. The title's `SteamAPI_Init()` warning is expected in this lane.
 
-## Lane A steps (~20 minutes + download time)
+## Historical Lane A steps (~20 minutes + download time)
+
+These steps document how the committed anchor was originally produced. Use the
+Gate 6 observer above for current production observation.
 
 1. Sign in to the entitled lab account in the Steam client (CrossOver bottle).
 2. Install the pipeline smoke title (D-020: *The Life and Suffering of Sir Brante* —

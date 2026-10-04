@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alloy.runtime/specs/store-identity/fingerprint.v1.schema.json",
+  "$comment": "Author: Timur Isaev",
+  "title": "Alloy store fingerprint record v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record",
+    "version",
+    "appid",
+    "name",
+    "buildid",
+    "depots",
+    "file_count",
+    "total_bytes",
+    "aggregate_sha256",
+    "files"
+  ],
+  "properties": {
+    "record": {
+      "const": "alloy-store-001-fingerprint"
+    },
+    "version": {
+      "const": 1
+    },
+    "appid": {
+      "$ref": "#/$defs/decimalString"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "buildid": {
+      "$ref": "#/$defs/decimalString"
+    },
+    "depots": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "#/$defs/decimalString"
+      },
+      "patternProperties": {
+        "^[0-9]+$": {
+          "$ref": "#/$defs/depot"
+        }
+      },
+      "additionalProperties": false
+    },
+    "file_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "total_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "aggregate_sha256": {
+      "$ref": "#/$defs/lowercaseSha256"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/file"
+      },
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "decimalString": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "lowercaseSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "depot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest",
+        "size"
+      ],
+      "properties": {
+        "manifest": {
+          "$ref": "#/$defs/decimalString"
+        },
+        "size": {
+          "$ref": "#/$defs/decimalString"
+        }
+      }
+    },
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "size",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "allOf": [
+            {
+              "not": {
+                "pattern": "^/"
+              }
+            },
+            {
+              "not": {
+                "pattern": "/$"
+              }
+            },
+            {
+              "not": {
+                "pattern": "//"
+              }
+            },
+            {
+              "not": {
+                "pattern": "(^|/)\\.\\.?(\\/|$)"
+              }
+            },
+            {
+              "not": {
+                "pattern": "\\u0000"
+              }
+            }
+          ]
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sha256": {
+          "$ref": "#/$defs/lowercaseSha256"
+        }
+      }
+    }
+  }
+}

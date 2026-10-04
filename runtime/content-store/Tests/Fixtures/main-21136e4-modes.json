@@ -1,0 +1,82 @@
+{
+  "author": "Timur Isaev",
+  "schemaVersion": "1.0",
+  "entries": [
+    {
+      "path": "generations/fixture-game/generation-a/layers/000-301ce5b1642d441cae33b6161b6e7ee1b1debd70a4b2ee9ff541ebb375bdefbd",
+      "mode": "0444"
+    },
+    {
+      "path": "generations/fixture-game/generation-a/layers/001-ecf8e51145715caf1cf9467f4e54603ea036dac7970620016fd618d0e82fe8cf",
+      "mode": "0444"
+    },
+    {
+      "path": "generations/fixture-game/generation-a/manifest.json",
+      "mode": "0444"
+    },
+    {
+      "path": "generations/fixture-game/generation-b/layers/000-301ce5b1642d441cae33b6161b6e7ee1b1debd70a4b2ee9ff541ebb375bdefbd",
+      "mode": "0444"
+    },
+    {
+      "path": "generations/fixture-game/generation-b/layers/001-bf1a50cd26f9520733748074dfe711d161e86da66cf5787b3124a2ef8b351435",
+      "mode": "0444"
+    },
+    {
+      "path": "generations/fixture-game/generation-b/manifest.json",
+      "mode": "0444"
+    },
+    {
+      "path": "objects/sha256/30/1ce5b1642d441cae33b6161b6e7ee1b1debd70a4b2ee9ff541ebb375bdefbd",
+      "mode": "0444"
+    },
+    {
+      "path": "objects/sha256/bf/1a50cd26f9520733748074dfe711d161e86da66cf5787b3124a2ef8b351435",
+      "mode": "0444"
+    },
+    {
+      "path": "objects/sha256/ec/f8e51145715caf1cf9467f4e54603ea036dac7970620016fd618d0e82fe8cf",
+      "mode": "0444"
+    },
+    {
+      "path": "metadata/content-store.lock",
+      "mode": "0600"
+    },
+    {
+      "path": "metadata/journal/fixture-game-generation-a-435124f8-bad3-4dac-8f84-36cdb538cafb.json",
+      "mode": "0600"
+    },
+    {
+      "path": "metadata/journal/fixture-game-generation-b-a2b3bbb6-41aa-4ee8-9ff0-cf5ade5b3c2f.json",
+      "mode": "0600"
+    },
+    {
+      "path": "references/fixture-game/active.json",
+      "mode": "0600"
+    },
+    {
+      "path": "references/fixture-game/rollback.json",
+      "mode": "0600"
+    },
+    {
+      "path": "volumes/fixture-game/saves/compatibility.sav",
+      "mode": "0600"
+    },
+    {
+      "path": "generations/fixture-game/generation-a/layers",
+      "mode": "0555"
+    },
+    {
+      "path": "generations/fixture-game/generation-a",
+      "mode": "0555"
+    },
+    {
+      "path": "generations/fixture-game/generation-b/layers",
+      "mode": "0555"
+    },
+    {
+      "path": "generations/fixture-game/generation-b",
+      "mode": "0555"
+    }
+  ]
+}

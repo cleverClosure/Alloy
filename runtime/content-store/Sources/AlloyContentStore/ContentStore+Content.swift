@@ -6,15 +6,26 @@ import Foundation
 extension ContentStore {
     func writeDownloads(_ layers: [LayerInput], operation: ActivationOperation) throws {
         let directory = downloadDirectory(operation)
-        try createDirectory(directory)
+        var wroteDownload = false
+        var stagedDigests = Set<String>()
         for (index, layer) in layers.enumerated() {
+            guard stagedDigests.insert(layer.descriptor.digest).inserted,
+                  (try? validateObject(layer.descriptor)) == nil else {
+                continue
+            }
+            if !wroteDownload {
+                try createDirectory(directory)
+                wroteDownload = true
+            }
             try writeDurable(
                 layer.contents,
                 to: downloadURL(layer.descriptor, index: index, operation: operation),
                 exclusive: true
             )
         }
-        try syncDirectory(directory)
+        if wroteDownload {
+            try syncDirectory(directory)
+        }
     }
 
     func verifyDownloads(_ operation: ActivationOperation) throws {
@@ -224,19 +235,19 @@ extension ContentStore {
             options: [.skipsHiddenFiles]
         )
         while let url = enumerator?.nextObject() as? URL {
-            let mode: mode_t
             if isDirectory(url) {
-                mode = S_IRWXU
+                if chmod(url.path, S_IRWXU) != 0 {
+                    throw ContentStoreError.systemCall(
+                        operation: "unseal staging directory",
+                        code: errno
+                    )
+                }
             } else if isRegularFile(url) {
-                mode = S_IRUSR | S_IWUSR
+                // Unlink permission belongs to the parent directory. These
+                // files may be hard links to CAS and reachable generations;
+                // chmod would mutate every link to the shared inode.
             } else {
-                continue
-            }
-            if chmod(url.path, mode) != 0 {
-                throw ContentStoreError.systemCall(
-                    operation: "unseal staging item",
-                    code: errno
-                )
+                throw ContentStoreError.unsafeStoreEntry(url.path)
             }
         }
         if chmod(directory.path, S_IRWXU) != 0 {

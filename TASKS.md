@@ -20,7 +20,9 @@ per-agent swimlanes.
 
 ## Shaping a task
 
-Use the **Task** issue template. Every task must have, before it leaves Backlog:
+Use the **Task** issue form. It refuses an issue with an empty PM summary,
+Goal, Touches, Done when, Area or Priority, and turns the Area and Priority
+choices into the matching labels. Every task must have, before it leaves Backlog:
 
 - A title in `[<domain>-<issue#>]: <summary>` form; the Title format workflow
   normalizes legacy `DOMAIN: summary` titles and uses the first `area:*` label
@@ -108,8 +110,14 @@ In Progress, and comments the agent name. WIP limit: **four In Progress tasks
 shared across all agents** — the script refuses a claim when all four slots
 are occupied.
 
-Optional planning fields on the board: **Iteration** (weekly cycle, starts
-Mondays) and **Estimate** (hours; column headers can sum it).
+Effort is tracked in hours with two separate numeric fields:
+
+- **Estimate** — set during shaping, before the task leaves Backlog.
+- **Actual** — set when the task is finished, before it moves to Done. Preserve
+  the original Estimate so estimated and actual effort remain comparable.
+
+The optional **Iteration** field assigns a task to a weekly cycle starting on
+Monday. Column headers can sum Estimate and Actual.
 
 ## Finishing
 
@@ -132,6 +140,11 @@ ready PR is the decision to merge it.**
 - Merges are squashes, so one commit lands on `main` per PR. A single-commit PR
   keeps its original message verbatim; a multi-commit PR gets all of its
   messages concatenated under the PR title. Shape the branch accordingly.
+- A PR that closes a task is held until the card of every issue it closes has
+  both **Estimate** and **Actual**. `scripts/finish-task.sh <issue> <hours>`
+  records Actual and re-runs CI so the PR is looked at again; Estimate is set
+  on the board. The hold is explained in one comment on the PR. A PR with no
+  closing reference is not a task and is not gated.
 - Nothing merges on a red or still-running check: the workflow requires
   GitHub's `CLEAN` merge state, which means mergeable *and* every check passed.
   Conflicts (`DIRTY`) and failing checks (`UNSTABLE`) are left alone.

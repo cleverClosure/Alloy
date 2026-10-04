@@ -9,9 +9,14 @@
 # the exception unhandled. This cost result 08 its dispatch-defect attribution.
 #
 # Usage: build-corpus.sh <output-dir>   (toolchain must be on PATH)
+#        build-corpus.sh --isa-corpus [--native-only] [--rosetta] [--selftest]
 set -e
-OUT=${1:?output dir required}
 SRC=$(cd "$(dirname "$0")" && pwd)
+if [[ ${1:-} == --isa-corpus ]]; then
+  shift
+  exec bash "$SRC/../run-isa-corpus.sh" "$@"
+fi
+OUT=${1:?output dir required (or --isa-corpus to build and run the ISA corpus)}
 CC=x86_64-w64-mingw32-clang
 
 SEH_FLAGS="-fms-extensions -Xclang -fasync-exceptions"
@@ -33,6 +38,26 @@ build fault_cost ""
 build noaccess_inventory ""
 build jit_pages "-mavx2"
 build isa_smoke "-msse4.2 -mavx2 -mbmi -mbmi2"
+# Issue #104 systematic ISA corpus. SSE2 is the x86-64 baseline, so no -m flag
+# is needed; the mutation-control variant is built by run-isa-corpus.sh and by
+# build-isa-corpus-native.sh directly (not here), since it is a deliberately
+# broken build that must never be the one shipped as "the corpus".
+build isa_corpus_sse2 ""
+# Vector breadth (issue #104, M3). Each clean binary has a separate native
+# reference proof and deliberately corrupted build in verify-isa-vectors.py.
+build isa_corpus_sse "-msse2 -ffp-contract=off -fno-fast-math"
+build isa_corpus_sse3 "-msse3 -ffp-contract=off -fno-fast-math"
+build isa_corpus_ssse3 "-mssse3 -ffp-contract=off -fno-fast-math"
+build isa_corpus_sse41 "-msse4.1 -ffp-contract=off -fno-fast-math"
+build isa_corpus_sse42 "-msse4.2 -ffp-contract=off -fno-fast-math"
+build isa_corpus_avx "-mavx -ffp-contract=off -fno-fast-math"
+build isa_corpus_avx2 "-mavx2 -ffp-contract=off -fno-fast-math"
+build isa_corpus_bmi1 "-mbmi"
+build isa_corpus_bmi2 "-mbmi2"
+build isa_corpus_flags ""
+build isa_corpus_atomics ""
+# x87 is guest-side self-checked: never compiled as an arm64 FP oracle.
+build isa_corpus_x87 "-ffp-contract=off -fno-fast-math"
 build x87_fp_edge "-ffp-contract=off -fno-math-errno"
 build cpu_throughput "-ffp-contract=off"
 build cpu_scaling ""
