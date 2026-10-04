@@ -1,0 +1,14 @@
+# Author: Timur Isaev
+name: Alloy first-party security analysis
+paths:
+  - .github
+  - runtime
+  - spikes
+  - tools
+  - scripts
+paths-ignore:
+  - third_party
+  - tools/toolchains
+  - "**/work/**"
+  - "**/.build/**"
+  - "**/node_modules/**"
