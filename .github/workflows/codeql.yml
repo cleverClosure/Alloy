@@ -6,7 +6,9 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-    types: [opened, synchronize, reopened, ready_for_review]
+    # Drafts are scanned on opening and pushes. CI's ready_for_review run
+    # reevaluates merging without repeating an unchanged security analysis.
+    types: [opened, synchronize, reopened]
   schedule:
     - cron: "23 5 * * 1"
   workflow_dispatch:

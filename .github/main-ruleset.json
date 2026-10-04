@@ -32,7 +32,8 @@
           {"context": "CodeQL (actions)", "integration_id": 15368},
           {"context": "CodeQL (python)", "integration_id": 15368},
           {"context": "CodeQL (c-cpp)", "integration_id": 15368},
-          {"context": "CodeQL (swift)", "integration_id": 15368}
+          {"context": "CodeQL (swift)", "integration_id": 15368},
+          {"context": "CodeQL", "integration_id": 57789}
         ]
       }
     }

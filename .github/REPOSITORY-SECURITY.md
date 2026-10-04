@@ -12,7 +12,8 @@ public repository. CodeQL uses standard GitHub-hosted Ubuntu and macOS runners.
   updates in `dependabot.yml` maintain GitHub Actions references, including SHA
   pins. The runtime forks remain managed by their dedicated inventory tooling.
 - The main branch ruleset requires pull requests, passing `Lint and test` and
-  all four `CodeQL (...)` checks, and disallows force pushes and deletion.
+  all four `CodeQL (...)` checks plus the `CodeQL` findings check, and disallows
+  force pushes and deletion.
   It requires no human approvals. There are no bypass actors.
 - The existing automatic squash merge still checks Estimate and Actual before
   merging. It reevaluates after either CI or CodeQL completes, so the slower
@@ -45,14 +46,16 @@ and agentic autofix are separate paid features and are outside this setup.
 
 ## Operations
 
-CodeQL job success means extraction, analysis, and upload completed. Review
-security findings in the repository's Security and quality tab separately;
+CodeQL job success means extraction, analysis, and upload completed. The
+separate required `CodeQL` findings check enforces GitHub's pull-request alert
+threshold. Review remaining findings in the Security and quality tab;
 an analysis job succeeding is not a claim that no vulnerabilities exist.
 
 The branch ruleset is recorded in `main-ruleset.json` and applied through
 GitHub's repository settings/API. Verify
 its required check names after renaming jobs. Keep the source of required
-checks bound to the GitHub Actions app. A new required check must run on the
+analysis checks bound to the GitHub Actions app and the findings check to the
+GitHub Code Scanning app. A new required check must run on the
 pull request before adding it to the ruleset.
 
 Dependabot does not maintain our custom fork inventory or reproduce the
