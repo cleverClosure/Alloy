@@ -11,9 +11,9 @@ struct HostTests {
         #expect(host.memoryGiB == Int(ProcessInfo.processInfo.physicalMemory / (1 << 30)))
         #expect(!host.macOSBuild.isEmpty)
         var selector: [String: Any] = [
-            "architecture": "arm64", "macos": ["min": host.macOS, "allowedBuilds": [host.macOSBuild]],
-            "memoryClassesGiB": [host.memoryGiB]
+            "architecture": "arm64", "macos": ["min": host.macOS, "allowedBuilds": [host.macOSBuild]]
         ]
+        // CI can report less than the schema's 8 GiB minimum. Test memory matching with fixed hosts below.
         // Headless CI can have no Metal device; do not invent a GPU family.
         if !host.gpuFamilies.isEmpty { selector["gpuFamilies"] = host.gpuFamilies }
         let matching = try JSONDecoder().decode(
@@ -27,6 +27,22 @@ struct HostTests {
         #expect(try !host.matches(impossible))
         print("Real host selector oracle: \(host.macOS) (\(host.macOSBuild)), "
             + "\(host.gpuFamilies), \(host.memoryGiB) GiB")
+    }
+
+    @Test(arguments: [7, 8, 32])
+    func memoryClassesMatchExactly(memoryGiB: Int) throws {
+        let host = HostCapabilities(
+            architecture: "arm64", macOS: "15.1", macOSBuild: "24B1", gpuFamilies: [], memoryGiB: memoryGiB
+        )
+        for requiredMemory in [8, 32] {
+            let selector = try JSONDecoder().decode(
+                HostSelector.self,
+                from: Data("""
+                {"architecture":"arm64","macos":{},"memoryClassesGiB":[\(requiredMemory)]}
+                """.utf8)
+            )
+            #expect(try host.matches(selector) == (memoryGiB == requiredMemory))
+        }
     }
 
     @Test func normalizedIdentityAndVersionBoundaries() throws {
