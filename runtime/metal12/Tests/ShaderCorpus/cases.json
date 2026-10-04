@@ -1,0 +1,94 @@
+{
+  "author": "Timur Isaev",
+  "version": 1,
+  "threads": 64,
+  "texture": {
+    "width": 4,
+    "height": 4,
+    "channels": 4,
+    "mip_levels": 2,
+    "value_formula": "mip * 100 + y * 10 + x + channel * 0.25"
+  },
+  "cases": [
+    {
+      "name": "add_cs",
+      "expect": "pass",
+      "kind": "buffer",
+      "value_type": "float"
+    },
+    {
+      "name": "clamp_cs",
+      "expect": "pass",
+      "kind": "buffer",
+      "value_type": "float"
+    },
+    {
+      "name": "intops_cs",
+      "expect": "pass",
+      "kind": "buffer",
+      "value_type": "uint"
+    },
+    {
+      "name": "select_cs",
+      "expect": "pass",
+      "kind": "buffer",
+      "value_type": "float"
+    },
+    {
+      "name": "twobuf_cs",
+      "expect": "pass",
+      "kind": "buffer",
+      "value_type": "float"
+    },
+    {
+      "name": "texture_point_cs",
+      "expect": "pass",
+      "kind": "texture",
+      "value_type": "float",
+      "sampler": "point",
+      "lod": 0.0,
+      "uv": [
+        0.375,
+        0.625
+      ]
+    },
+    {
+      "name": "texture_bilinear_cs",
+      "expect": "pass",
+      "kind": "texture",
+      "value_type": "float",
+      "sampler": "linear",
+      "lod": 1.0,
+      "uv": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "name": "wave_cs",
+      "expect": "pass",
+      "kind": "wave",
+      "value_type": "float",
+      "operation": "active_sum"
+    },
+    {
+      "name": "wave_lane_index_cs",
+      "expect": "pass",
+      "kind": "wave",
+      "value_type": "uint",
+      "operation": "lane_index"
+    },
+    {
+      "name": "wave_prefix_sum_cs",
+      "expect": "pass",
+      "kind": "wave",
+      "value_type": "uint",
+      "operation": "prefix_sum"
+    },
+    {
+      "name": "wave_read_lane_unsupported_cs",
+      "expect": "reject",
+      "diagnostic": "M12003-unsupported: dx.op.waveReadLaneAt"
+    }
+  ]
+}

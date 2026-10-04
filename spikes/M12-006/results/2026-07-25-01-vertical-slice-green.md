@@ -1,6 +1,6 @@
 # M12-006 result 01 — the four prototypes compose: the reference scene renders on Metal, 99.38% byte-identical to the GPTK baseline
 
-**Author:** Tim Isaev
+**Author:** Timur Isaev
 **Date:** 25 July 2026
 **Hardware:** MacBook Pro (Mac14,10), M2 Pro 12-core, 16 GB · **OS:** macOS 26.5.2 (`25F84`)
 **Provenance:** ADR-0012 discipline model, inputs in [PROVENANCE.md](../PROVENANCE.md) — no excluded source consulted.
@@ -78,9 +78,9 @@ at one build flag.
 | M12-003 shader path | Both shaders are MSL lowered from the scene's DXIL by the extended lowering | Vertex and fragment stages, 15 and 99 ops |
 | M12-004 residency | The render target is a placement allocation from a reserved private heap behind a model that reports a D3D12-shaped budget | Budget 12,124 MB, 976 KB placed, 1 placement |
 
-## Timings, and why only one column is comparable
+## Timings: offscreen attribution and measured presented comparison
 
-Three consecutive runs, all producing the same image:
+The original three offscreen runs all produced the same image:
 
 | Measurement | Run 1 | Run 2 | Run 3 | GPTK cache-warm anchor |
 | --- | ---: | ---: | ---: | ---: |
@@ -90,23 +90,35 @@ Three consecutive runs, all producing the same image:
 | Warm p50 | 0.259 ms | 0.272 ms | 0.280 ms | 3.711 ms |
 | Warm p95 | 0.627 ms | 0.369 ms | 1.006 ms | 15.894 ms |
 
-**Do not read the warm rows as a speedup.** The baseline renders into a
-windowed flip-model swap chain and calls `Present` every frame; this slice
-renders offscreen and never presents, so its frame time excludes window,
-present and compositor work entirely. The honest reading is that the Metal12
-path's *own* per-frame cost is around 0.3 ms for this scene and therefore is
-not where a frame budget would go — not that it is twenty times faster than
-D3DMetal at the same job. A like-for-like frame comparison needs a swap-chain
-equivalent and is not claimed here.
+Those rows remain useful only to attribute the runtime's offscreen cost. Phase
+1 now supplies the missing presented boundary: a recorded three-run series
+through a visible 640 × 360 `CAMetalLayer`, with the final drawable as pixel
+authority. Invocation 3 is compared with GPTK's third-run cache-warm anchor:
 
-Setup is closer to comparable and still favourable, but it too omits swap-chain
-creation. These are single-machine engineering measurements, not product
-performance claims.
+| Measurement | Metal12 CAMetalLayer | GPTK run 3 cache-warm anchor | Metal12 minus GPTK |
+| --- | ---: | ---: | ---: |
+| Setup | 75.481 ms | 187.617 ms | -112.136 ms |
+| First submitted frame | 4.922 ms | 26.788 ms | -21.866 ms |
+| Warm mean | 8.243 ms | 6.165 ms | +2.078 ms |
+| Warm p50 | 8.370 ms | 3.711 ms | +4.659 ms |
+| Warm p95 | 11.207 ms | 15.894 ms | -4.687 ms |
+
+The presented path has the same digest, `44709706809f28e9`, and a
+byte-identical BMP. Presentation changed pacing, not pixels. On this measured
+boundary Metal12's warm mean is **1.34× the GPTK frame time**, not twenty times
+faster. Metal12 still renders offscreen and blits into its drawable while GPTK
+renders directly into its backbuffer, so these single-host figures remain
+engineering evidence rather than a general product-performance claim. Exact
+method, all three historical runs, the separate final-acceptance reproduction
+that measured a 1.33× warm-mean ratio, and the claim boundary are recorded in
+[result 06](2026-07-26-06-cametallayer-presentation.md).
 
 ## Deviations, stated rather than buried
 
-1. **No swap chain and no present.** Offscreen render target, single capture.
-   This is what makes the warm-frame column non-comparable.
+1. **The original run had no swap chain or present.** Its offscreen target and
+   single capture explain the historical warm-frame attribution above. Phase 1
+   closes that measurement gap with the separately recorded `CAMetalLayer`
+   path; it does not rewrite what this original invocation executed.
 2. **The CBV is bound directly, not through an argument-buffer page.** The
    virtual heap holds the record and gates the binding on its generation, which
    is the model's correctness core, but the lowering emits
@@ -125,8 +137,20 @@ performance claims.
 
 ## Implications for pending decision 3 — Metal12 GA feature subset
 
-The shader path now covers, with everything outside it failing on a named
-diagnostic rather than degrading silently:
+**Phase-1 update:** presentation is now measured rather than inferred. The
+presented mean does not support the original apparent speedup, and it leaves
+the feature decision dependent on breadth rather than this tiny scene's
+pacing. The promoted runtime now measures explicit-LOD point/bilinear textures,
+three wave patterns, capture/replay, and a real presentation boundary; control
+flow, broader resources and descriptors, real-title traces, and a multi-host
+residency-capacity matrix remain outside the evidenced subset. The authorized
+full residency proof now passes on the measured 16 GB host. The current
+decision statement is recorded in
+[result 07](2026-07-26-07-phase1-decision-feed.md).
+
+At the time of result 01, the original slice's shader path covered the
+following, with everything outside it failing on a named diagnostic rather
+than degrading silently:
 
 - **Stages**: compute, vertex, fragment.
 - **Arithmetic**: `fmul`/`fadd`/`fsub`/`fdiv`, integer `mul`/`add`/`sub`,
@@ -138,26 +162,26 @@ diagnostic rather than degrading silently:
   `cbufferLoadLegacy`, signature-driven stage inputs and outputs, constant
   arrays hoisted by dxc.
 
-What a GA subset still has to answer, in rough order of how much of a real
-title each one gates:
+What the original result left unanswered, in rough order of how much of a real
+title each item gated:
 
 1. **Control flow.** Neither stage in this scene branches, so the normalized IR
-   is still straight-line by construction. Loops and branches are the single
-   largest gap and change the IR's shape rather than extending it.
-2. **Textures and samplers.** Nothing in this slice samples anything. A scene
-   that does exercises descriptor tables properly, and would put M12-001's page
-   encoding on the critical path where it belongs.
+   was straight-line by construction. Loops and branches were the single
+   largest shape-changing gap.
+2. **Textures and samplers.** Nothing in the original slice sampled anything.
+   A sampling scene was needed to exercise that shader class.
 3. **Structured/typed UAVs and atomics** beyond the raw-buffer form.
-4. **Wave intrinsics**, currently rejected by name — `wave_cs` remains the
+4. **Wave intrinsics**, then rejected by name — `wave_cs` was the historical
    corpus's rejected case.
 5. **Geometry, hull, domain, mesh and amplification stages**, none of which are
-   touched.
+   touched by this scene.
 
-The evidence this result adds to the decision is narrow but real: for a
-straight-line shader over constants and raw buffers, the translation is
-faithful to within 1 LSB, and the descriptor, barrier and residency models
-survive contact with each other. It says nothing yet about a subset that
-includes control flow or texturing.
+The evidence this original result added to the decision was narrow but real:
+for a straight-line shader over constants and raw buffers, the translation
+is faithful to within 1 LSB, and the descriptor, barrier and residency models
+survived contact with each other. Result 01 alone said nothing about control
+flow or texturing; [result 05](2026-07-26-05-shader-subset.md) later added
+explicit-LOD texture and wave evidence while leaving control flow open.
 
 ## Reproduce
 
@@ -167,6 +191,8 @@ spikes/M12-006/prototype/run-slice.sh
 
 Compiles the scene HLSL to DXIL with the pinned `dxc` under Alloy's own
 Wine/FEX stack, lowers both stages to MSL, links a metallib, builds and runs
-the slice, and compares the result against the committed baseline image. The
-M12-003 compute corpus is the lowering's regression gate and still passes
-5/1/0 with byte-identical MSL hashes.
+the slice, and compares the result against the committed baseline image. At
+the time of this result, the historical M12-003 compute corpus passed 5/1/0
+with byte-identical MSL hashes. The canonical runtime corpus now records
+10 GPU-exact passes, one named rejection, and zero failures in
+[result 05](2026-07-26-05-shader-subset.md).

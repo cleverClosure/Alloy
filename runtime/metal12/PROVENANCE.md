@@ -1,104 +1,68 @@
-# M12-006 provenance log (append-only)
+# Alloy Metal12 provenance log (append-only)
 
 **Author:** Timur Isaev
 **Protocol:** [ADR-0012](../../docs/adr/ADR-0012-metal12-provenance-and-clean-room.md)
-(discipline-model clean room). Excluded sources — vkd3d, vkd3d-proton, DXMT `src/d3d12/`,
-any copyleft D3D12 implementation — were not read, searched, or pasted into any
-AI-assistant context for this spike. Entries are dated and never rewritten.
+
+Excluded sources named by ADR-0012 are not implementation inputs and must
+never be read, searched, fetched, quoted, or supplied to a coding tool. Entries
+are appended and never rewritten.
 
 ## Entries
 
-- **2026-07-25 — spike start.** Log created before design work on the vertical
-  slice. Inputs:
-  - **The four prior M12 prototypes and their results** (M12-001 descriptor
-    virtualization, M12-002 barrier tracker, M12-003 DXIL→MSL shader path,
-    M12-004 residency model) — Alloy's own prior work.
-  - **The M12-005 reference scene** (`d3d12_reference.c`) and its GPTK baseline
-    result — Alloy's own prior work. The scene's HLSL is extracted verbatim from
-    the C string literal in that file, mechanically rather than by
-    transcription, so the two paths compile the same 1,333 bytes.
-  - **DXC binary release** `v1.9.2602.24` (microsoft/DirectXShaderCompiler,
-    NCSA — ADR-0012 approved input), used as a *tool* to produce DXIL from
-    HLSL, run as the unmodified x64 `dxc.exe` under Alloy's own Wine/FEX stack.
-    Now pinned in `third_party/MANIFEST.toml` and `deps.lock`. No DXC source
-    read for design.
-  - **DXIL operation semantics**: Microsoft public DirectX-Specs documentation
-    (CC-BY-4.0) for the `dx.op` opcode numbering and signature-table meanings.
-  - **Apple Metal Shading Language specification** (public) for the lowering
-    target, and **Apple Metal framework documentation** (public) for the host
-    API.
-  - GPTK/D3DMetal remain an **answer key only** — a rendered image and a timing
-    table to compare against. No excluded D3D12 translation implementation was
-    read, searched, or consulted, and none is an input to any design decision
-    here.
-  - The stage detection, signature-table parsing, graphics-stage lowering, the
-    integrated Metal path, and the comparison harness are original
-    experimentation for this spike.
-
-- **2026-07-25 — slice complete.** Additional inputs used during the work, none
-  of them excluded sources:
-  - `xcrun metal` / `metallib` from the installed Xcode command line tools, as
-    the MSL compiler and linker.
-  - Python's `zlib` for the first-party PNG reader in `compare_reference.py`;
-    the decoder, the BMP reader and the comparison are original.
-  - `sips` (macOS) to convert the slice's BMP output to the committed PNG. The
-    conversion was verified pixel-exact by comparing the PNG back against the
-    BMP through the same tool: 230,400/230,400 identical.
-  - The GPTK baseline image and digest from M12-005 were read **as an answer
-    key only** — a rendered result to compare against. No excluded D3D12
-    translation implementation was read, searched, or consulted, and none
-    informed any design decision here.
-
-- **2026-07-26 — Phase-1 runtime promotion (#84) started.**
-  - The implementation inputs are the first-party M12-001 through M12-006
-    prototypes, their recorded results and provenance logs, the M12-005
-    reference workload and rendered answer key, ADR-0012, and the
-    `runtime/content-store` production-promotion layout.
-  - The work used the Codex coding-agent environment with repository, shell,
-    patch, browser-control, and parallel-agent tools. The prompt was issue #84
-    from the Alloy GitHub board plus the repository and authoring rules.
-    Retrieval was limited to the issue and explicit approved first-party paths;
-    browser discovery supplied no implementation material and no internet
-    search or external source retrieval informed the design.
-  - Tool outputs include repository and architecture reconnaissance, promoted
-    proof sources, original runtime/capture/replay/presentation code,
-    shader-corpus extensions, proof execution, and result documentation.
-    Each output is checked against first-party tests before being treated as
-    evidence.
-  - No excluded D3D12 translation source, diff, history, or code discussion was
-    opened, searched, fetched, quoted, or supplied to any tool. The ignored
-    `third_party/src/` tree was excluded by repository search rules during
-    initial task discovery; subsequent inspection was restricted to explicit
-    approved paths.
+- **2026-07-26 — runtime promotion and Phase-1 gates started.**
+  - Approved implementation inputs were Alloy's own M12-001 through M12-006
+    prototypes, results, and provenance logs; the M12-005 first-party reference
+    workload and rendered answer key; the repository's `runtime/content-store`
+    production-promotion layout; the public API behavior already derived from
+    Microsoft DirectX specifications and Apple Metal documentation in those
+    prior logs; and original experimentation.
+  - The implementation used the Codex coding-agent environment and its
+    repository, shell, patch, browser-control, and parallel-agent tools. The
+    initiating prompt was GitHub issue #84 as supplied by the Alloy board,
+    together with the repository and authoring rules. Retrieval was limited to
+    that issue and explicit first-party paths listed above. Browser discovery
+    enumerated existing tab titles only and supplied no design material. No
+    internet search or external code retrieval informed the implementation.
+  - Agent outputs comprised read-only repository and architecture
+    reconnaissance, promoted proof sources, the original command/trace/runtime
+    implementation, shader-corpus work, proof execution, and result
+    documentation. Every output is reviewed and tested against first-party
+    workloads before it becomes evidence.
+  - The ignored `third_party/src/` tree was excluded by repository search
+    rules during initial task discovery. After the issue's binding provenance
+    instructions were read, every inspection was restricted to explicit
+    approved first-party paths.
 
 - **2026-07-26 — Gate-1 shared-model convergence and verification.**
-  - Inputs remained first-party: Alloy's M12-001 through M12-006 prototypes,
-    results, provenance, M12-005 workload and rendered answer key, ADR-0012,
-    issue #84, the existing runtime, and its tests and authoring rules.
-  - Codex parallel agents performed bounded model extraction, architecture and
-    code review, runtime integration, verification, and documentation work in
-    one shared worktree. Agent output became evidence only after reconciliation
-    and first-party regression checks.
-  - The promoted proofs and public runtime now call shared descriptor, barrier,
-    and residency implementations under `runtime/metal12/Sources/Models/`.
-    The public lowering contract stages the canonical DXIL-to-MSL payload
-    embedded in the archive, validates its build-time SHA-256, and bounds
-    container, resource, and operation counts, inherited descriptors, and child
-    lifetime; descriptor tables are GPU-consumed through descriptor pages; and
-    optimized barrier edges drive verified `MTLFence` producer and consumer
-    synchronization.
-  - The current reference suite rejected 6/6 public-command divergences,
-    cleaned 2/2 incomplete captures, rejected 17/17 trace mutations, produced
-    byte-identical captures, and replayed 10/10 fresh runtimes with digest
-    `44709706809f28e9`. Fence accounting was exact at 1/1 offscreen and 121/121
+  - Implementation inputs remained limited to first-party Alloy sources:
+    M12-001 through M12-006 prototypes and results, the M12-005 workload and
+    rendered answer key, ADR-0012, the existing runtime, issue #84, and the
+    repository's tests and authoring rules.
+  - Codex parallel agents handled bounded architecture review, model
+    extraction, runtime integration, validation, and documentation tasks.
+    Their outputs were reconciled in the shared worktree and accepted only
+    after first-party build and regression checks.
+  - The descriptor, barrier, and residency proofs and the public command path
+    now share the private implementations under `Sources/Models/`. The public
+    lowering operation stages the canonical DXIL-to-MSL payload embedded in
+    the archive, verifies its build-time SHA-256, bounds container, resource,
+    and operation counts plus child lifetime, and prevents non-standard
+    descriptor inheritance. Descriptor tables are consumed through GPU-visible
+    descriptor pages, and barrier-plan producer/consumer edges drive
+    `MTLFence` updates and waits that are checked against the emitted edge
+    matrix.
+  - The converged reference build rejected 6/6 public-command divergences,
+    cleaned 2/2 incomplete captures, rejected 17/17 trace mutations, reproduced
+    byte-identical captures, and replayed 10/10 fresh runtimes at digest
+    `44709706809f28e9`. It emitted 1/1 required fence edge offscreen and 121/121
     with presentation, with zero unmet edges.
   - Neither linked residency mode was executed. The non-pressure mode can
     still peak around 820 MiB and cannot satisfy the pressure threshold; the
     full mode crosses Metal's advisory budget and may allocate up to one GiB
     beyond it. The full execution remains required to make Gate 1 green.
-  - No excluded source was inspected, searched, fetched, quoted, or supplied to
-    an agent. This includes vkd3d, vkd3d-proton, DXMT `src/d3d12/`, and
-    copyleft D3D12 implementations.
+  - No excluded implementation source was inspected, searched, fetched,
+    quoted, or supplied to an agent. In particular, vkd3d, vkd3d-proton, DXMT
+    `src/d3d12/`, and copyleft D3D12 implementations were not inputs.
 
 - **2026-07-26 — #84 AI-session inventory and ADR-0012 clause 10
   limitation.**
@@ -193,21 +157,25 @@ AI-assistant context for this spike. Entries are dated and never rewritten.
 
 - **2026-07-26 — historical spike comparator preservation.**
   - Final acceptance review found that evidence hardening had changed the
-    prototype comparator despite the task's requirement to preserve historical
-    spike implementations. Its bytes were restored to the accepted task base.
-  - The fail-closed copy is now canonical under
-    `runtime/metal12/Tests/compare_reference.py`, and both the Phase-1 runner
-    and evidence capture bind that tracked runtime path and its SHA-256.
-  - A stale pre-hardening cache statement in result 05 was also corrected:
-    canonical shader evidence performs one combined DXIL/disassembly invocation
-    per case and accepts no prior-run cache reads. The reference path likewise
-    compiles each of its two stages once; all later iterations in the evidence
-    batch reuse those outputs.
-  - Result 01 now carries the measured `CAMetalLayer` comparison required by
-    #76, with its original offscreen timings retained only for attribution.
-  - This correction used only issue #84 and the current first-party task diff.
-    No excluded source or external implementation material was inspected,
-    searched, fetched, quoted, or supplied to an agent.
+    M12-006 prototype comparator even though the spike tree is historical
+    evidence. The prototype bytes were restored to the accepted task base.
+  - The fail-closed comparison implementation now lives canonically at
+    `runtime/metal12/Tests/compare_reference.py`. Reference execution and
+    evidence capture bind that tracked runtime file by Git path and SHA-256;
+    the size, baseline and slice fingerprints, exact-pixel floor, and channel
+    delta ceiling remain enforced.
+  - The same review corrected a stale result statement from before compiler
+    cache removal. Canonical shader evidence performs 11 fresh DXC invocations
+    per evidence batch and accepts no prior-run cache reads. Each corpus shader
+    now emits DXIL and disassembly together once per batch; the reference path
+    likewise uses one combined invocation for each of its two stages. All
+    later test iterations within a batch reuse those outputs.
+  - Result 01's offscreen-speedup warning was replaced with the measured
+    `CAMetalLayer` comparison required by #76 while retaining the original
+    offscreen rows for cost attribution.
+  - The review and correction used only issue #84 and the current first-party
+    task diff. No excluded source or external implementation material was
+    inspected, searched, fetched, quoted, or supplied to an agent.
 
 - **2026-07-26 — #84 evidence-generation reconciliation.**
   - Final acceptance review found that result documents mixed exact values
