@@ -109,7 +109,16 @@ extension ContentStore {
         guard isRegularFile(source) else {
             throw ContentStoreError.missingDownload(destination.lastPathComponent)
         }
-        if link(source.path, destination.path) != 0 {
+        // The ingest path is untrusted even after the earlier verification
+        // checkpoint. Publish a private copy of freshly verified bytes, never
+        // a hard link to the caller-mutable download inode.
+        let contents = try verifiedIngestSnapshot(descriptor, source: source)
+        let publication = source.deletingLastPathComponent().appendingPathComponent(
+            ".ingest-\(UUID().uuidString.lowercased()).tmp"
+        )
+        defer { try? fileManager.removeItem(at: publication) }
+        try writeDurable(contents, to: publication, exclusive: true)
+        if link(publication.path, destination.path) != 0 {
             guard errno == EEXIST else {
                 throw ContentStoreError.systemCall(operation: "link CAS object", code: errno)
             }
