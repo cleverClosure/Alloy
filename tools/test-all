@@ -577,7 +577,7 @@ REGISTRY: list[Suite] = [
     Suite(
         id="content-store-disk-pressure", tier="fast",
         cmd=("bash", "runtime/content-store/run-disk-pressure-matrix.sh"),
-        cwd=".", timeout=300, cleanup_grace=15,
+        cwd=".", timeout=300, cleanup_grace=50,
         probe=every(need_commands("swift", "python3", "hdiutil", "diskutil"),
                     need_paths("runtime/content-store/run-disk-pressure-matrix.py")),
         description="five real ENOSPC points and five disabled controls in a private 128 MiB APFS image",

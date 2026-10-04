@@ -9,11 +9,18 @@ It writes real bytes until the kernel reports ENOSPC, including progressively
 smaller writes to consume the final allocation space. It never fills the host
 volume. Every subprocess is bounded; the image is detached and deleted in
 cleanup. A cancellation control runs through the actual test-all supervisor
-(TERM, registered 15-second grace, group KILL) and verifies both mount and scratch
+(TERM, registered 50-second grace, group KILL) and verifies both mount and scratch
 image disappear for direct mount lookup and exact-image inventory lookup (the
 partial-attach cleanup path). Server termination, lookup and detach share one
-monotonic 12-second deadline, below the supervisor grace. The shell execs its Python owner so cleanup gets that grace. Hosted macOS detach exceeded the initial local-only subsecond budgets; the suite now
-has an explicit cleanup allowance while all other suites retain three seconds.
+monotonic 45-second deadline, below the supervisor grace. Each normal or forced
+detach attempt has at most 20 seconds within that shared deadline. The shell
+execs its Python owner so cleanup gets that grace. Public-runner runs
+[37199437324](https://github.com/cleverClosure/Alloy/actions/runs/37199437324) and
+[37199494801](https://github.com/cleverClosure/Alloy/actions/runs/37199494801)
+both exceeded the earlier four-second detach attempts, leaving the private mount
+busy. The bounded allowance now accommodates hosted Disk Arbitration latency,
+and each real detach reports its elapsed time. Other suites retain their own
+registered cleanup allowance and the default remains three seconds.
 No sudo, guest runtime, external server or real Steam payload is used.
 
 The [injected results](2026-10-04-disk-pressure-injected.json) contain **5 PASS,

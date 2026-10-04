@@ -21,6 +21,7 @@ IDENTITY = PACKAGE.parent / "store-identity"
 CONTENT_PROBE = PACKAGE / ".build/debug/alloy-content-store-fault-probe"
 IDENTITY_PROBE = IDENTITY / ".build/debug/AlloyStoreIdentityFaultProbe"
 NO_SPACE = re.compile(r"errno 28|SQLite error 13:|No space left on device|NSPOSIXErrorDomain Code=28")
+CLEANUP_SECONDS = 45
 
 
 def run(args, **kwargs):
@@ -246,7 +247,7 @@ def main(arguments=None):
             for mode in ("scan", "cache"):
                 rows.append(identity_case(mode, mount, signals, not args.negative_control))
         finally:
-            cleanup_deadline = time.monotonic() + 12
+            cleanup_deadline = time.monotonic() + CLEANUP_SECONDS
             try:
                 if server is not None:
                     stop_process(server, cleanup_deadline)
@@ -263,7 +264,7 @@ def main(arguments=None):
 def remaining_cleanup(deadline, maximum):
     remaining = deadline - time.monotonic()
     if remaining <= 0:
-        raise TimeoutError("private image cleanup exceeded its 12-second deadline")
+        raise TimeoutError(f"private image cleanup exceeded its {CLEANUP_SECONDS}-second deadline")
     return min(maximum, remaining)
 
 
@@ -278,8 +279,8 @@ def stop_process(process, deadline):
 
 
 def detach_image(mount, image_path=None, deadline=None, via_inventory=False):
-    deadline = deadline if deadline is not None else time.monotonic() + 12
-    # Fit this suite's fifteen-second TERM cleanup window. Detach only the exact
+    deadline = deadline if deadline is not None else time.monotonic() + CLEANUP_SECONDS
+    # Fit this suite's fifty-second TERM cleanup window. Detach only the exact
     # private mount or a device reported for this process's own image file.
     target = mount if mount.is_mount() and not via_inventory else None
     if target is None and image_path is not None:
@@ -292,15 +293,18 @@ def detach_image(mount, image_path=None, deadline=None, via_inventory=False):
     if target is None:
         return
     try:
-        run(["hdiutil", "detach", target], timeout=remaining_cleanup(deadline, 4))
+        started = time.monotonic()
+        run(["hdiutil", "detach", target], timeout=remaining_cleanup(deadline, 20))
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
-        run(["hdiutil", "detach", "-force", target], timeout=remaining_cleanup(deadline, 4))
+        run(["hdiutil", "detach", "-force", target], timeout=remaining_cleanup(deadline, 20))
+    assert not mount.is_mount(), "detach returned with the private image still mounted"
+    print(f"PASS private-image-detach elapsed={time.monotonic() - started:.3f}s", flush=True)
 
 
 def cleanup_control():
     for via_inventory in (False, True):
         cleanup_variant(via_inventory)
-    print("PASS cleanup-control test-all supervisor detached mount and inventory paths within registered 15-second grace", flush=True)
+    print("PASS cleanup-control test-all supervisor detached mount and inventory paths within registered 50-second grace", flush=True)
 
 
 def cleanup_variant(via_inventory):
@@ -321,12 +325,15 @@ def cleanup_variant(via_inventory):
             import runpy
             supervisor = runpy.run_path(str(PACKAGE.parents[1] / "tools/test-all"))
             suite = next(row for row in supervisor["REGISTRY"] if row.id == "content-store-disk-pressure")
-            assert suite.cleanup_grace == 15
+            assert suite.cleanup_grace == 50
             supervisor["_kill_process_group"](process, suite.cleanup_grace)
             output, error = process.communicate(timeout=1)
             assert process.returncode == 1 and "cancelled by SIGTERM" in output, (output, error)
             assert not mount.is_mount(), "cancellation leaked a mounted image"
             assert not mount.parent.exists(), "cancellation left its scratch image behind"
+            for line in output.splitlines():
+                if line.startswith("PASS private-image-detach"):
+                    print(line, flush=True)
         finally:
             if process.poll() is None:
                 os.killpg(process.pid, signal.SIGKILL)
