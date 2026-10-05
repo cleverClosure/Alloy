@@ -41,8 +41,11 @@ applicable evidence is **Untested**, never certified. `--appearance light` or
 The app uses the `AlloyRuntimeAPI` XPC client from #161; it embeds no service
 engine. All requests run off the main thread. Refresh (Command-R) reads current
 catalog/build identities, operation snapshots/cursors, and development sessions.
-A one-second pull loop reconciles service snapshots without depending on push
-notifications. Activity controls follow service pause/cancel and worker flags;
+A one-second pull loop reconciles operation/session snapshots without depending
+on push notifications. Catalog discovery runs on connection, explicit refresh and
+reconnection; idle polling does not repeatedly fingerprint game files. Each
+observation has a 20-second overall request budget. Unchanged cached state is
+not rewritten every second. Activity controls follow service pause/cancel and worker flags;
 stop remains available until a session is terminal with no live process nodes.
 
 Normal connections can browse, inspect activity, and request a storage check.
@@ -55,7 +58,8 @@ See `run-service-proof.py` for the synthetic recipe schema and generator.
 
 ```bash
 python3 apps/Alloy/run-service-proof.py
-tools/test-all --only client-swift-test --only client-service-proof
+tools/test-all --only client-swift-test --only client-service-proof \
+  --only client-bundle-build
 ```
 
 The proof creates temporary owner-only service/content/client roots, registers a
@@ -64,7 +68,9 @@ server. It first rejects an incorrect build, then verifies the clean plan,
 install/pause/resume/cancel, client restart and service restart, and whole-tree
 native session stop/replay. The native session rows explicitly SKIP on hosts
 below the compiler's 8 GiB minimum or non-Apple-Silicon hosts; other rows run.
-It never uses Wine/FEX, real game data, or shared runtime roots.
+It never uses Wine/FEX, real game data, or shared runtime roots. All 17 proof
+rows are pinned and summarized; `--negative-control` deliberately inverts the
+catalog oracle and must exit 1. Run the clean proof afterwards.
 
 `requests.json` stores service-scoped idempotency keys and operation cursors,
 with owner-only permissions. A corrupt request journal disables actions rather
@@ -76,14 +82,18 @@ used for a new development run. Endpoint credentials are not copied to disk.
 Milestones 1–2 provide the shell and actual service flows. Milestone 3 adds
 monotonic operation reconciliation, private last-known state, stable background
 polling, actionable errors, keyboard navigation and native accessibility controls.
-Its actual VoiceOver reachability pass remains **NOT VERIFIED**; see
-[the evidence and limitation](Proofs/MILESTONE_3.md). The integrated GUI proof
-follows separately. Diagnostics here
+Its actual VoiceOver reachability pass remains **NOT VERIFIED**. The owner waived
+that completion gate for #162 on 5 October 2026; see
+[the evidence and limitation](Proofs/MILESTONE_3.md). The [integrated GUI guide](Proofs/GUI_SMOKE.md) provides a bounded
+`gui-demo.py` entry point, named lifecycle commands, expected results and cleanup
+checks. See [milestone 4](Proofs/MILESTONE_4.md) for observed results and remaining
+verification. Diagnostics here
 is local status only; the bundled diagnostics flow belongs to #163.
 
 ## Verification boundaries
 
-The fast test registry compiles the app and runs deterministic non-GUI tests.
+The fast test registry compiles the app, runs deterministic and real-service
+non-GUI tests, and validates its ad-hoc bundle signature and property list.
 Native GUI and actual VoiceOver observations require a logged-in lab Mac; a unit
 test or accessibility tree is not a substitute for that evidence. The existing
 Swift CodeQL workflow selects packages under `runtime/` and `spikes/`; its green

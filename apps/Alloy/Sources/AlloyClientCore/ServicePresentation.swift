@@ -102,6 +102,7 @@ extension ClientProblem {
 
 extension RuntimeController {
     public func runtimeActivity(for gameID: String) -> String {
+        guard store.snapshot.connected else { return "Reconnect to verify activity" }
         for item in operations {
             let operation = item.update.snapshot
             if let plan = try? JSONDecoder().decode(InstallPlan.self, from: operation.payload), plan.gameID == gameID {

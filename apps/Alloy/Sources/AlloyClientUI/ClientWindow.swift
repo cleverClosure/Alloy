@@ -113,7 +113,7 @@ struct ProblemBanner: View {
                 Text(problem.supportCode).font(.caption.monospaced()).textSelection(.enabled)
             }
             Spacer()
-        }.fixedSize(horizontal: false, vertical: true).padding(16)
+        }.padding(16)
             .frame(maxWidth: .infinity, alignment: .leading).background(.quaternary)
     }
 }
