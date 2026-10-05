@@ -32,7 +32,9 @@ jobs:
   quality:
     name: Lint and test
     runs-on: macos-26
-    timeout-minutes: 15
+    # The complete fast tier approaches 15 minutes on standard hosted runners.
+    # Leave room for normal variance and cleanup; each suite keeps its own bounds.
+    timeout-minutes: 20
 
     steps:
       - name: Check out repository

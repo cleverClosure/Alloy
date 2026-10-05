@@ -2,6 +2,9 @@
 
 Author: Timur Isaev
 
+Historical contract retained for the frozen oracle. New exports use
+[version 2](SNAPSHOT_V2.md); the Wine v2 reader rejects v1.
+
 The compiler uses a local SPM dependency on the existing first-party
 `spikes/WINE-001/policy-probe` library, without editing that spike. There are
 no external package dependencies. `PolicySnapshotExporter` lowers resolved
