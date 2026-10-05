@@ -1,0 +1,324 @@
+{
+  "author": "Timur Isaev",
+  "dxmtArguments": [
+    "--buildtype=release",
+    "-Dwine_builtin_dll=false",
+    "-Denable_d3d12=false",
+    "-Denable_nvapi=false",
+    "-Denable_nvngx=false",
+    "-Denable_tests=false"
+  ],
+  "fexArguments": [
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DMINGW_TRIPLE=arm64ec-w64-mingw32",
+    "-DBUILD_TESTS=False",
+    "-DTUNE_CPU=none",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_fmt=TRUE",
+    "-DENABLE_CCACHE=OFF",
+    "-DENABLE_LTO=OFF",
+    "-DENABLE_ASSERTIONS=OFF"
+  ],
+  "files": {
+    "spikes/GFX-001/instrumentation/0001-d3d11-title-metrics.patch": "15c19a8a8bc4c6899bf35a0d89bb21c1c7a60c2655b911d2136fedab08040ba4",
+    "spikes/GFX-001/instrumentation/0002-d3d11-msaa-clamp.patch": "575f981a20df30bf0b2f9cee4d381e50308b9b333fb0dc5c560fb0c2812c2c4a",
+    "spikes/WINE-001/jit-signal/wine.patch": "da99584650e1c0a9fe38a31608558f0cd9980968bec63adf0b22437080b48c0f",
+    "tools/runtime-build/build.py": "d8f27dd37731e734a8a581b7bebb8ba62986772a3b8a04a768f1fd20b8475c3b",
+    "tools/runtime-build/inputs.py": "9055cb4a67883c0952be9e58a26bc28060838ca7b8459a4edcdc0b6c9083b6eb",
+    "tools/runtime-build/overlays/fex_unixlib_darwin.cpp": "bf1b497a8563e50a95485032f3d31c4b11492ec920c2583c3b4b9072af062cf4",
+    "tools/runtime-build/overlays/wine-excluded-build.patch": "01158ecdabba1a864cc4a40e71534cd5de9242a07eccb245200914d20a77416e",
+    "tools/runtime-build/overlays/wine-loaded-image.patch": "d04099b2ba68f00977b1d4d465fe2878d736109258256bd109a8560be4ba15fc",
+    "tools/runtime-build/overlays/wine-winedump-metadata.patch": "d4bc931a987fac168ca1e1fe3cd28872cd21349c0fe0699cfa43e774ba72f310",
+    "tools/runtime-build/overlays/winnt.patch": "408deadf84f4672553cfe68e3f4eb7bfb3dd083ac30ac981a8361abb2704d454"
+  },
+  "host": {
+    "commands": [
+      {
+        "argv": [
+          "sw_vers",
+          "-buildVersion"
+        ],
+        "output": "26A434"
+      },
+      {
+        "argv": [
+          "uname",
+          "-m"
+        ],
+        "output": "arm64"
+      },
+      {
+        "argv": [
+          "/usr/bin/clang",
+          "--version"
+        ],
+        "output": "Apple clang version 21.0.0 (clang-2100.3.34.2)\nTarget: arm64-apple-darwin27.0.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin"
+      },
+      {
+        "argv": [
+          "xcrun",
+          "--show-sdk-version"
+        ],
+        "output": "27.0"
+      },
+      {
+        "argv": [
+          "/opt/homebrew/opt/llvm@15/bin/llvm-config",
+          "--version"
+        ],
+        "output": "15.0.7"
+      }
+    ],
+    "developerDirectory": "/Applications/Xcode.app/Contents/Developer",
+    "files": [
+      {
+        "path": "/opt/homebrew/bin/cmake",
+        "sha256": "2fb3d19ecda5c45dd35f826af5f241a81c699dccf010f877948b37ca2addb290"
+      },
+      {
+        "path": "/opt/homebrew/bin/ninja",
+        "sha256": "a75ab11ced61c31783228dff8303975d62eb7e7761cbd12c537a95792a4fbc3f"
+      },
+      {
+        "path": "/opt/homebrew/bin/meson",
+        "sha256": "0a0a2edc05d1a8ae7c84885f00dc5746ee1a57cc2c746e2b05a3b7dfbca2ed7d"
+      },
+      {
+        "path": "/opt/homebrew/bin/autoconf",
+        "sha256": "ca9bf2fa7182e1944fc42a2501c66e04221590e9c73f49d5ba80154494f68fec"
+      },
+      {
+        "path": "/opt/homebrew/bin/autoreconf",
+        "sha256": "24c5631043c5a67a27d7df25aff0267fd396a264dc1f5eacfeb815ec00ae0b14"
+      },
+      {
+        "path": "/opt/homebrew/bin/autom4te",
+        "sha256": "df08c7d5938f4d3cd10bc5731c717a415c869174cdef4a6afc5b0219b1aa7d43"
+      },
+      {
+        "path": "/opt/homebrew/bin/aclocal",
+        "sha256": "d2a148515d6661255fb5f410071bfba4c39351b490a487db082718f3b9d6898c"
+      },
+      {
+        "path": "/opt/homebrew/bin/automake",
+        "sha256": "ac00c45e4b5f34dd452a1dd0a1f31e9e0967dc244cc4008b25aab491c779a937"
+      },
+      {
+        "path": "/opt/homebrew/bin/pkg-config",
+        "sha256": "1f3beefb56b473037af764da65297c3527e50533294891a07dfe91f0279150fd"
+      },
+      {
+        "path": "/opt/homebrew/bin/python3",
+        "sha256": "4f00ea2ad53d62437a6a3946b73c73614a97e8accdc5b96dc095ea1a0d9c6a56"
+      },
+      {
+        "path": "/opt/homebrew/bin/nasm",
+        "sha256": "4a35962ae78b3051bf568da70e3de7ecb8e99cb7925741eefb08d7f17cd1822b"
+      },
+      {
+        "path": "/opt/homebrew/bin/git",
+        "sha256": "5e5a622e407fb7deb74173cab9e47ff214952cc6bfcd036449cf9edbaa305537"
+      },
+      {
+        "path": "/opt/homebrew/opt/bison/bin/bison",
+        "sha256": "980fa0b3554e44f6e4ceb755a37cee9ae9435e6a59d130a3819f0a9413eae25a"
+      },
+      {
+        "path": "/opt/homebrew/opt/m4/bin/m4",
+        "sha256": "0d65e91c9c01ec2d4f8ede3d97d470049c958400b1936f0c8254c4fcfa48cafe"
+      },
+      {
+        "path": "/usr/bin/clang",
+        "sha256": "34129c71a01a74f7f3b2443521519b2e5447553fa187f5fcafaaf8c42cc192e2"
+      },
+      {
+        "path": "/usr/bin/make",
+        "sha256": "34129c71a01a74f7f3b2443521519b2e5447553fa187f5fcafaaf8c42cc192e2"
+      },
+      {
+        "path": "/usr/bin/flex",
+        "sha256": "34129c71a01a74f7f3b2443521519b2e5447553fa187f5fcafaaf8c42cc192e2"
+      },
+      {
+        "path": "/usr/bin/ld",
+        "sha256": "34129c71a01a74f7f3b2443521519b2e5447553fa187f5fcafaaf8c42cc192e2"
+      },
+      {
+        "path": "/usr/bin/codesign",
+        "sha256": "d517c9be608ffd266ec106c685e880cda71abc94001450e36d2476016406dd1e"
+      },
+      {
+        "path": "/usr/bin/patch",
+        "sha256": "c5da188cbbcd58d7533fcd63a0626756d44751c0cd6da902859fca1cc81ef071"
+      },
+      {
+        "path": "/usr/bin/xcrun",
+        "sha256": "bbe7671518a3905f9d3fce54312fbc77c2876b0d62aca74a0688fa869d31a8a9"
+      },
+      {
+        "path": "/usr/bin/xxd",
+        "sha256": "f7ac1ac162de4af8ab3b865bb30c44b1abd16f2fa81e2bf9f29c5485e3c72781"
+      },
+      {
+        "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/SDKSettings.json",
+        "sha256": "7b93ad7e534cc4b31c6a4e39d19b5e0288acf2168c2649479a796d1cb51939fb"
+      }
+    ],
+    "metal": {
+      "archiveSHA256": "a65917c1ca025fba268ceddc3f99028386d87b8c190ccd420cdad28d7f519ff8",
+      "buildVersion": "27A266a",
+      "downloadCommand": "xcodebuild -downloadComponent MetalToolchain -buildVersion 27A266a",
+      "toolchainIdentifier": "com.apple.dt.toolchain.Metal.32023.921.5",
+      "treeSHA256": "6c2b08b15a4aa5ee7fb700aadf43173309084cf520e4e12dafe34b1d67cc183f"
+    },
+    "nativeLLVM": "/opt/homebrew/opt/llvm@15",
+    "sdk": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk",
+    "tools": {
+      "aclocal": "/opt/homebrew/bin/aclocal",
+      "autoconf": "/opt/homebrew/bin/autoconf",
+      "autom4te": "/opt/homebrew/bin/autom4te",
+      "automake": "/opt/homebrew/bin/automake",
+      "autoreconf": "/opt/homebrew/bin/autoreconf",
+      "bison": "/opt/homebrew/opt/bison/bin/bison",
+      "cmake": "/opt/homebrew/bin/cmake",
+      "git": "/opt/homebrew/bin/git",
+      "m4": "/opt/homebrew/opt/m4/bin/m4",
+      "meson": "/opt/homebrew/bin/meson",
+      "nasm": "/opt/homebrew/bin/nasm",
+      "ninja": "/opt/homebrew/bin/ninja",
+      "pkg-config": "/opt/homebrew/bin/pkg-config",
+      "python3": "/opt/homebrew/bin/python3"
+    },
+    "trees": [
+      {
+        "path": "/opt/homebrew/opt/llvm@15",
+        "sha256": "d3fe65bc688685a7bdca43f7a583456fa86e856d961915cd8786428f46d176bd"
+      },
+      {
+        "path": "/opt/homebrew/opt/cmake",
+        "sha256": "d7f51da8315cbbdb1962634e64857260df467fde4894389bfcdf6376983fec2c"
+      },
+      {
+        "path": "/opt/homebrew/opt/meson",
+        "sha256": "9f33f40240217a21092830419b9e86649200d9258246e413e496af58e5644490"
+      },
+      {
+        "path": "/opt/homebrew/opt/autoconf",
+        "sha256": "99b01bb2975af990e990a0bb99de1a5064d25da56202a18e1c62606aa0a74602"
+      },
+      {
+        "path": "/opt/homebrew/opt/automake",
+        "sha256": "396c021c3f9293020cceefd6d0360f36a0a431d981787c2a9705cf5ebecc67cd"
+      },
+      {
+        "path": "/opt/homebrew/opt/bison",
+        "sha256": "96b4d902b6ae98bafa117537cdda87981d5ad8257fd21b7212915d3769414295"
+      },
+      {
+        "path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain",
+        "sha256": "bb442b7592ef802ab8b5cc2adc020e1bcf4545fc7c1ed96451c87c96a845996f"
+      },
+      {
+        "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk",
+        "sha256": "9e90eb3523990eed5c5b8b593661eea8b85d35c4cde0c826ef759607e874acf5"
+      }
+    ]
+  },
+  "schemaVersion": 1,
+  "sourceDateEpoch": 1784764800,
+  "sources": {
+    "dxmt": {
+      "patches": [
+        "spikes/GFX-001/instrumentation/0001-d3d11-title-metrics.patch",
+        "spikes/GFX-001/instrumentation/0002-d3d11-msaa-clamp.patch"
+      ],
+      "revision": "e520fea415ba4b82b0c346dae77bbb1be4897453",
+      "submodules": {
+        "include/native/directx": "9df86f2341616ef1888ae59919feaa6d4fad693d"
+      },
+      "upstreamBase": "e520fea415ba4b82b0c346dae77bbb1be4897453"
+    },
+    "fex": {
+      "patches": [],
+      "revision": "ad942313dca79d32133cceaaf617016821e3b952",
+      "submodules": {
+        "External/Catch2": "b3fb4b9feafcd8d91c5cb510a4775143fdbef02f",
+        "External/fmt": "1be298e1bd68957e4cd352e1f676f00e07dcfb57",
+        "External/range-v3": "ca1388fb9da8e69314dda222dc7b139ca84e092f",
+        "External/rpmalloc": "1d85c246cd827ead6865f4f880d4fef53f2b1864",
+        "External/unordered_dense": "3234af2c03549bc85656bfd3a86993bf1cd8aef1",
+        "External/vixl": "5f418449c48f6ca3ad37c47ec632f17a561c0580",
+        "External/xxhash": "e626a72bc2321cd320e953a0ccf1584cad60f363",
+        "Source/Common/cpp-optparse": "9f94388a339fcbb0bc95c17768eb786c85988f6e"
+      },
+      "upstreamBase": "0589d9b872861970b9085f114a261a0885b6ccb6"
+    },
+    "wine": {
+      "patches": [
+        "spikes/WINE-001/jit-signal/wine.patch",
+        "tools/runtime-build/overlays/wine-excluded-build.patch",
+        "tools/runtime-build/overlays/wine-winedump-metadata.patch",
+        "tools/runtime-build/overlays/wine-loaded-image.patch"
+      ],
+      "revision": "420c70bdcb7615c3dc0395d162f93645f098fe56",
+      "submodules": {},
+      "upstreamBase": "5bb70f23d1278088d9ea55d44efe7d51f87d35bd"
+    }
+  },
+  "toolchain": {
+    "directory": "llvm-mingw-20260616-ucrt-macos-universal",
+    "sha256": "2cab02a2e964bd4aae981150a45985d07c657cfa8d244959eb9e2dcc5eedd7b1",
+    "url": "https://github.com/mstorsjo/llvm-mingw/releases/download/20260616/llvm-mingw-20260616-ucrt-macos-universal.tar.xz"
+  },
+  "wineArguments": [
+    "--with-mingw",
+    "--without-x",
+    "--enable-archs=arm64ec,aarch64",
+    "--disable-tests",
+    "--without-ffmpeg",
+    "--without-gstreamer",
+    "--without-vulkan",
+    "--without-gnutls",
+    "--without-freetype",
+    "--without-fontconfig",
+    "--without-gettext",
+    "--without-cups",
+    "--without-gphoto",
+    "--without-sane",
+    "--without-pcap",
+    "--without-usb",
+    "--without-sdl",
+    "--without-inotify",
+    "--without-dbus",
+    "--without-udev",
+    "--without-pulse",
+    "--without-alsa",
+    "--without-oss",
+    "--without-wayland",
+    "--without-opencl",
+    "--without-opengl",
+    "--disable-vkd3d",
+    "--disable-d3d12",
+    "--disable-d3d12core",
+    "--disable-d3dcompiler_47",
+    "--disable-wined3d",
+    "--disable-d3dcompiler_33",
+    "--disable-d3dcompiler_34",
+    "--disable-d3dcompiler_35",
+    "--disable-d3dcompiler_36",
+    "--disable-d3dcompiler_37",
+    "--disable-d3dcompiler_38",
+    "--disable-d3dcompiler_39",
+    "--disable-d3dcompiler_40",
+    "--disable-d3dcompiler_41",
+    "--disable-d3dcompiler_42",
+    "--disable-d3dcompiler_43",
+    "--disable-d3dcompiler_44",
+    "--disable-d3dcompiler_45",
+    "--disable-d3dcompiler_46",
+    "--disable-d3d10",
+    "--disable-d3d10_1",
+    "--disable-d3d10core",
+    "--disable-d3d11",
+    "--disable-dxgi"
+  ]
+}

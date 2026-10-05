@@ -1,0 +1,16 @@
+--- a/winnt.h
++++ b/winnt.h
+@@ -10408,10 +10408,11 @@
+     PVOID GetFiberData(VOID);
+ 
+ #if defined (__aarch64__) || defined(__arm64ec__)
+-    register struct _TEB *__mingw_current_teb __asm__("x18");
+     FORCEINLINE struct _TEB *NtCurrentTeb(VOID)
+     {
+-        return __mingw_current_teb;
++        struct _TEB *teb;
++        __asm__ volatile ("mrs %0, tpidrro_el0\n\tldr %0, [%0, #0x30]" : "=r" (teb));
++        return teb;
+     }
+     FORCEINLINE PVOID GetCurrentFiber(VOID)
+     {
