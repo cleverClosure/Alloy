@@ -12,7 +12,8 @@ struct AdapterTests {
         let events = stages.map { ["state": $0, "stage": $0] }
         let snapshot: [String: Any] = [
             "version": 1, "operationID": "op-observed", "kind": "STORAGE_INVENTORY", "idempotencyKey": "test",
-            "payload": "e30=", "payloadDigest": "sha256:test", "createdAt": "2026-10-05", "updatedAt": "2026-10-05",
+            "payload": "e30=", "payloadDigest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+            "createdAt": "2026-10-05", "updatedAt": "2026-10-05",
             "state": state, "stage": state, "progress": ["completedUnits": 0, "totalUnits": 0,
                 "bytesCompleted": 0, "bytesTotal": 0], "events": events,
             "canPause": false, "canCancel": false, "cancellationPolicy": "test"
@@ -71,6 +72,21 @@ struct AdapterTests {
             try DiagnosticIdentity.event("runtime.test",
                 DiagnosticIdentity.correlation(requestID: "password=planted-secret"), [])
         }
+    }
+
+    @Test func typedRuntimeDigestsAndUUIDsPreserveNumericRuns() throws {
+        let hex = String(repeating: "1", count: 64)
+        let identity = try DiagnosticIdentity.correlation(requestID: "read", operationID: "op-" + hex,
+                                                          sessionID: "ses-" + hex, hostID: "local-unregistered:" + hex)
+        let event = try DiagnosticIdentity.event("runtime.test", identity, [
+            DiagnosticIdentity.field("service_instances", "12345678-1234-4123-8123-123456789012"),
+            DiagnosticIdentity.field("fixture_digest", "sha256:" + hex, .componentVersions),
+            DiagnosticIdentity.field("detail", "password=planted-secret", .errorCode)
+        ])
+        #expect(event.correlation == identity)
+        #expect(event.fields[0].value == "12345678-1234-4123-8123-123456789012")
+        #expect(event.fields[1].value == "sha256:" + hex)
+        #expect(event.fields[2].value == "[REDACTED]")
     }
 
     @Test func unclassifiedWireFieldsAreRefused() throws {

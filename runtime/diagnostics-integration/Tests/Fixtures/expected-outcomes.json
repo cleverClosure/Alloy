@@ -1,0 +1,9 @@
+{
+  "operation:clean": {"outcome": "clean", "complete": true, "kind": "STORAGE_INVENTORY", "game": "unavailable", "generation": "unavailable"},
+  "operation:failed": {"outcome": "operation-failed", "complete": true, "kind": "INSTALL_RUNTIME", "game": "fixture", "generation": "bad-runtime"},
+  "session:clean": {"outcome": "clean", "complete": true},
+  "session:abort": {"outcome": "native-fixture-signal-abort", "complete": true},
+  "session:hang": {"outcome": "native-fixture-watchdog-hang", "complete": true},
+  "session:interrupted": {"outcome": "service-interruption", "complete": false},
+  "sessionIdentity": {"game_id": "fixture", "build_id": "service-fixture-build", "runtime_generation_id": "rtg_service_fixture_001", "profile_id": "min.game.a", "profile_revision": "1", "operation_id": "unavailable"}
+}

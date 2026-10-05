@@ -4,7 +4,7 @@ import Foundation
 
 public enum PrivateStore {
     public static func directory(_ path: URL) throws {
-        guard path.isFileURL, path.path.hasPrefix("/"),
+        guard path.isFileURL, path.path.hasPrefix("/"), !path.path.contains("\0"),
               path.standardizedFileURL.path == path.resolvingSymlinksInPath().path else {
             throw IntegrationError.unsafeDestination
         }

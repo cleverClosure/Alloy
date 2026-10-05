@@ -20,7 +20,7 @@ public enum EventRedactor {
     for (name, value) in metadata {
       // A canonical UUID request identity can contain a long digit run. It is
       // structurally bounded protocol metadata, not a free-form card number.
-      if name == "request_id", value.count == 36, UUID(uuidString: value) != nil { continue }
+      if protocolIdentity(name, value) { continue }
       let result = try RedactionScanner.scan(value, maxUTF8Bytes: maxUTF8Bytes)
       guard result.findings.isEmpty else { throw RedactionError.unsafeMetadata(field: name) }
     }
@@ -30,6 +30,10 @@ public enum EventRedactor {
     for field in event.fields {
       if RedactionSupport.sensitiveClasses.contains(field.dataClass) {
         removed.insert(field.dataClass)
+        continue
+      }
+      if protocolField(field) {
+        fields.append(field)
         continue
       }
       let result = try RedactionScanner.scan(field.value, maxUTF8Bytes: maxUTF8Bytes)
@@ -47,6 +51,41 @@ public enum EventRedactor {
       throw RedactionError.outputTooLarge(limit: maxUTF8Bytes)
     }
     return EventRedactionResult(event: result, removedClasses: removed, findings: RedactionSupport.findings(counts))
+  }
+
+  private static func matches(_ value: String, _ pattern: String) -> Bool {
+    value.range(of: pattern, options: .regularExpression) != nil
+  }
+
+  private static func protocolIdentity(_ name: String, _ value: String) -> Bool {
+    switch name {
+    case "request_id": value.count == 36 && UUID(uuidString: value) != nil
+    case "operation_id": matches(value, "^op-[a-f0-9]{64}$")
+    case "session_id": matches(value, "^ses-[a-f0-9]{64}$")
+    case "host_class_id": matches(value, "^local-unregistered:[a-f0-9]{64}$")
+    default: false
+    }
+  }
+
+  private static func protocolField(_ field: EventField) -> Bool {
+    if field.name == "service_instances", field.dataClass == .runtimeOutcome {
+      let values = field.value.split(separator: ",", omittingEmptySubsequences: false)
+      return !values.isEmpty && values.count <= 32
+        && values.allSatisfy { $0.count == 36 && UUID(uuidString: String($0)) != nil }
+    }
+    if field.name == "target_id", field.dataClass == .runtimeOutcome {
+      return matches(field.value, "^(op|ses)-[a-f0-9]{64}$")
+    }
+    guard field.dataClass == .componentVersions else { return false }
+    if field.name == "fixture_digest" { return matches(field.value, "^sha256:[a-f0-9]{64}$") }
+    if field.name == "declared_component_digests",
+       let data = field.value.data(using: .utf8),
+       let values = try? JSONDecoder().decode([String: String].self, from: data) {
+      return !values.isEmpty && values.count <= 64 && values.allSatisfy {
+        matches($0.key, "^[a-zA-Z0-9_-]{1,64}$") && matches($0.value, "^sha256:[a-f0-9]{64}$")
+      }
+    }
+    return false
   }
 
   private static func metadataValues(_ event: StructuredEvent) -> [(String, String)] {

@@ -26,7 +26,7 @@ public enum CaptureBundle {
             DiagnosticIdentity.field("target_id", last.targetID),
             DiagnosticIdentity.field("source", last.source),
             DiagnosticIdentity.field("event_count", String(events.count)),
-            DiagnosticIdentity.field("elapsed_seconds", String(capture.elapsedSeconds)),
+            DiagnosticIdentity.field("elapsed_seconds", String(format: "%.6f", capture.elapsedSeconds)),
             DiagnosticIdentity.field("service_instances",
                                      capture.observations.map(\.serviceInstanceID).joined(separator: ","))
         ])
@@ -68,9 +68,41 @@ public enum CaptureBundle {
                   identity.hostClassID == other.hostClassID, identity.profileID == other.profileID,
                   identity.profileRevision == other.profileRevision else { throw IntegrationError.identityMismatch }
         }
+        try validateAudit(Array(events.dropFirst()))
         try validateOutcome(outcome, complete: complete == "true", events: Array(events.dropFirst()))
         return FailureSummary(bundleID: bundleID, outcome: outcome, complete: complete == "true",
                               targetID: target, eventCount: events.count, localOnly: true)
+    }
+
+    private static func validateAudit(_ events: [StructuredEvent]) throws {
+        var pending: [StructuredEvent] = []
+        for event in events {
+            let fields = Dictionary(uniqueKeysWithValues: event.fields.map { ($0.name, $0.value) })
+            switch event.eventCode {
+            case "runtime.operation.event": pending.append(event)
+            case "runtime.operation.snapshot":
+                try validatePending(pending, fields: fields)
+                pending.removeAll()
+            case "runtime.session.snapshot", "runtime.native.sample", "runtime.native.exit":
+                guard pending.isEmpty else { throw IntegrationError.incompleteCapture }
+            default: throw IntegrationError.invalidBundle
+            }
+        }
+        guard pending.isEmpty else { throw IntegrationError.incompleteCapture }
+    }
+
+    private static func validatePending(_ pending: [StructuredEvent], fields: [String: String]) throws {
+        guard Int(fields["revision"] ?? "") == pending.count, !pending.isEmpty else {
+            throw IntegrationError.incompleteCapture
+        }
+        for (index, audit) in pending.enumerated() {
+            guard audit.fields.first(where: { $0.name == "event_index" })?.value == String(index) else {
+                throw IntegrationError.incompleteCapture
+            }
+        }
+        guard pending.last?.fields.first(where: { $0.name == "state" })?.value == fields["state"] else {
+            throw IntegrationError.incompleteCapture
+        }
     }
 
     private static func validateOutcome(_ outcome: String, complete: Bool, events: [StructuredEvent]) throws {

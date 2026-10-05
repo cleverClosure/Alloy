@@ -5,6 +5,7 @@ import Foundation
 public struct DiagnosticConnection {
     public let client: RuntimeClient
     public init(endpoint: String) throws {
+        guard endpoint.hasPrefix("/"), !endpoint.contains("\0") else { throw IntegrationError.invalidInput }
         client = RuntimeClient(configuration: try ServiceConfiguration.read(endpoint))
     }
 

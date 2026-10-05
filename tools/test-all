@@ -538,6 +538,23 @@ REGISTRY: list[Suite] = [
         probe=every(need_commands("swift", "codesign", "plutil"), need_paths("apps/Alloy/build-app.sh")),
         description="bounded native app bundle build, local ad-hoc signature verification and Info.plist check; no GUI",
     ),
+    # --- runtime/diagnostics-integration: local service and offline bundles ---
+    Suite(
+        id="diagnostics-integration-swift", tier="fast",
+        cmd=("swift", "test", "--package-path", "runtime/diagnostics-integration", "--jobs", "2"),
+        cwd=".", timeout=300,
+        probe=every(need_commands("swift"), need_paths("runtime/diagnostics-integration/Package.swift")),
+        description="diagnostic adapter identity/history controls and private bundle lifecycle; no GUI",
+    ),
+    Suite(
+        id="diagnostics-integration-proof", tier="fast",
+        cmd=("python3", "runtime/diagnostics-integration/run-integration-proof.py"),
+        cwd=".", timeout=420,
+        probe=every(need_commands("swift", "python3", "launchctl", "sample"),
+                    need_paths("runtime/diagnostics-integration/run-integration-proof.py")),
+        description="actual XPC failure bundles, independent identities, redaction, mutation controls and offline lifecycle",
+        cleanup_grace=30,
+    ),
     # --- runtime/session-service: private user launchd fixture only -------
     Suite(
         id="runtime-service-swift-test", tier="fast",
@@ -890,7 +907,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 51
+REGISTRY_SUITE_COUNT = 53
 
 
 # ---------------------------------------------------------------------------

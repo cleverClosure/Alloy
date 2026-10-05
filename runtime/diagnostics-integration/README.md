@@ -28,3 +28,17 @@ python3 runtime/diagnostics-integration/run-capture-proof.py
 The capture proof owns all injected failures and native processes. Full session
 coverage requires actual arm64 hardware with at least 8 GiB, matching the
 unchanged compiler; smaller hosts explicitly skip those six session rows.
+
+Create and inspect a local bundle (all paths are explicit):
+
+```sh
+alloy-diagnostics init-store /private/diagnostics/store
+alloy-diagnostics create /private/runtime/endpoint.json operation op-identifier terminal 30 /private/diagnostics/store
+alloy-diagnostics preview /private/diagnostics/store BUNDLE_UUID
+alloy-diagnostics export /private/diagnostics/store BUNDLE_UUID /private/diagnostics/new-export
+alloy-diagnostics delete /private/diagnostics/store BUNDLE_UUID
+```
+
+The parent directory must already exist with owner-only permissions. See the
+[client handoff](Specs/CLIENT_HANDOFF.md) for library use, exact outcomes,
+privacy limits and the registered end-to-end proof.
