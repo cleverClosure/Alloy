@@ -1,0 +1,11 @@
+--- a/dlls/ntdll/unix/loader.c
++++ b/dlls/ntdll/unix/loader.c
+@@ -1112,6 +1112,8 @@
+         status = virtual_map_builtin_module( mapping, module, size, image_info,
+                                              limit_low, limit_high, machine, prefer_native, offset );
+         NtClose( mapping );
++        if (!status)
++            TRACE( "alloy_builtin_image path=%s base=%p size=%zu\n", debugstr_a(name), *module, *size );
+     }
+     return status;
+ }
