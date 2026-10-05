@@ -1,5 +1,6 @@
 // Author: Timur Isaev
 import AlloyClientCore
+import AppKit
 import SwiftUI
 
 struct ActivityView: View {
@@ -36,6 +37,14 @@ struct DiagnosticsView: View {
             }
             if let problem = controller.problem ?? controller.connectionProblem ?? store.persistenceProblem {
                 Section("Attention needed") { ProblemBanner(problem: problem) }
+            }
+            Section("Support") {
+                Button("Copy status summary") {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(controller.supportSummary, forType: .string)
+                }
+                Text("Copies status and support codes only; no local paths, credentials, or title names.")
+                    .font(.caption).foregroundStyle(.secondary)
             }
             Section("Privacy") {
                 Text("Status stays on this Mac. Alloy does not upload diagnostic data.")

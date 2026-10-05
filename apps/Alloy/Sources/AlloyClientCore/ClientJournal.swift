@@ -13,6 +13,7 @@ public struct ClientIntent: Codable, Equatable, Sendable {
 public struct ClientJournal: Codable, Sendable {
     public var intents: [ClientIntent] = []
     public var cursors: [String: [String: Int]] = [:]
+    public var cached: [String: CachedServiceSnapshot]?
     public init() {}
 
     public func intent(namespace: String, slot: String) -> ClientIntent? {

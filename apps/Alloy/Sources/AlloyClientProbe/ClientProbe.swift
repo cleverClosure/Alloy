@@ -15,7 +15,7 @@ import Foundation
         let report = ProbeReport(connected: store.snapshot.connected, games: store.snapshot.games,
                                  problem: (controller.problem ?? controller.connectionProblem)?.supportCode,
                                  instanceID: controller.instanceID,
-                                 planned: controller.plan != nil,
+                                 planned: controller.plan != nil, cachedActivities: store.snapshot.activities.count,
                                  operations: controller.operations.map {
                                      ProbeOperation(id: $0.id, state: $0.state, revision: $0.update.revision,
                                                     workerActive: $0.update.workerActive,
@@ -56,6 +56,7 @@ private struct ProbeReport: Encodable {
     let problem: String?
     let instanceID: String?
     let planned: Bool
+    let cachedActivities: Int
     let operations: [ProbeOperation]
     let sessions: [ProbeSession]
 }

@@ -28,7 +28,10 @@ public struct ServiceGateway: Sendable {
             var cursor: String?
             var snapshotID: String?
             var seen = Set<String>()
+            var pageCount = 0
             repeat {
+                pageCount += 1
+                guard pageCount <= 100 else { throw ClientServiceError.invalidResponse }
                 let page = try client.listGames(PageQuery(cursor: cursor))
                 guard snapshotID == nil || snapshotID == page.snapshotID else { throw ClientServiceError.changedBuild }
                 snapshotID = page.snapshotID
@@ -47,8 +50,12 @@ public struct ServiceGateway: Sendable {
             let operations = try client.call("operation.list").decode([CatalogOperation].self)
             guard operations.count <= 1_000 else { throw ClientServiceError.invalidResponse }
             let updates = try operations.map { operation in
-                try client.updates(OperationCursor(operationID: operation.operationID,
-                                                   nextIndex: cursors[operation.operationID] ?? 0))
+                let cursor = OperationCursor(operationID: operation.operationID,
+                                             nextIndex: cursors[operation.operationID] ?? 0)
+                do { return try client.updates(cursor) } catch RuntimeFailure.status(.conflict) {
+                    // A stale local cursor can be rebuilt from the authoritative snapshot and audit tail.
+                    return try client.updates(OperationCursor(operationID: operation.operationID))
+                }
             }
             return ServiceObservation(info: info, games: games, updates: updates, sessions: try client.sessions())
         }.value

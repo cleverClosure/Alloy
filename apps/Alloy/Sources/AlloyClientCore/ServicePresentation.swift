@@ -39,7 +39,12 @@ public struct SessionPresentation: Identifiable, Sendable {
     public var finished: Bool {
         ["STOPPED", "SUCCEEDED", "FAILED", "INTERRUPTED"].contains(snapshot.state) && snapshot.liveNodes.isEmpty
     }
-    public var state: String { snapshot.state.capitalized }
+    public var state: String {
+        if ["STOPPED", "SUCCEEDED", "FAILED", "INTERRUPTED"].contains(snapshot.state), !snapshot.liveNodes.isEmpty {
+            return "Cleaning up"
+        }
+        return snapshot.state.capitalized
+    }
     public init(_ snapshot: SessionSnapshot) { self.snapshot = snapshot }
 }
 
@@ -57,6 +62,22 @@ extension ClientProblem {
             code = "CLIENT-DEVELOPMENT-ONLY"
             explanation = "This action requires an explicit local development fixture and a fixture-enabled service."
             next = "Use the documented local fixture workflow. Game launch remains unavailable."
+        case ClientServiceError.invalidResponse, is DecodingError:
+            code = "CLIENT-CONTRACT"
+            explanation = "The service returned an inconsistent or unsupported response."
+            next = "Reconnect to a compatible local service. No new request is needed to recover existing activity."
+        case RuntimeFailure.status(.unauthorized):
+            code = "RT-UNAUTHORIZED"
+            explanation = "The local service did not accept this endpoint's credentials."
+            next = "Choose the current private endpoint file from the local service."
+        case RuntimeFailure.status(.notFound):
+            code = "RT-NOT_FOUND"
+            explanation = "The selected runtime or installation is no longer available."
+            next = "Refresh the library and review its current runtime activity before retrying."
+        case RuntimeFailure.status(.notReady):
+            code = "RT-LAUNCH_NOT_RUNTIME_READY"
+            explanation = "This service cannot execute the selected game."
+            next = "Use only the explicitly labeled development fixture workflow."
         case RuntimeFailure.status(let status):
             code = "RT-" + status.rawValue
             explanation = status == .conflict ? "The service rejected an outdated or conflicting request." :

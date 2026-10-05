@@ -4,6 +4,7 @@ import AppKit
 import SwiftUI
 
 public struct ClientWindow: View {
+    @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
     @Bindable private var store: ClientStore
     @Bindable private var controller: RuntimeController
     public init(store: ClientStore, controller: RuntimeController) {
@@ -41,12 +42,23 @@ public struct ClientWindow: View {
                         .background(.quaternary)
                 }
                 if let problem = controller.problem ?? controller.connectionProblem ?? store.persistenceProblem {
-                    ProblemBanner(problem: problem)
+                    HStack(alignment: .top, spacing: 0) {
+                        ProblemBanner(problem: problem)
+                        if controller.problem != nil {
+                            Button("Dismiss", systemImage: "xmark") { controller.dismissProblem() }
+                                .labelStyle(.iconOnly).help("Dismiss this action message").padding(12)
+                        }
+                    }
                 }
                 if controller.developmentEnabled {
                     Label("Development fixture · Native test process only", systemImage: "hammer")
                         .font(.caption).frame(maxWidth: .infinity).padding(8).background(.quaternary)
                 }
+                if !store.snapshot.connected && !store.snapshot.games.isEmpty && !store.snapshot.preview {
+                    Label("Last known library · Reconnect to verify current state", systemImage: "clock")
+                        .font(.caption).frame(maxWidth: .infinity).padding(8).background(.quaternary)
+                }
+                if !controller.activeSessions.isEmpty { SessionStatusBar(controller: controller) }
                 switch store.preferences.section {
                 case .library: LibraryView(store: store, controller: controller)
                 case .activity: RuntimeActivityView(controller: controller)
@@ -59,7 +71,9 @@ public struct ClientWindow: View {
                 if !store.snapshot.preview {
                     ToolbarItemGroup {
                         if controller.busy || controller.refreshing { ProgressView().controlSize(.small) }
-                        Button("Refresh", systemImage: "arrow.clockwise") { Task { await controller.refresh() } }
+                        Button("Refresh", systemImage: "arrow.clockwise") {
+                            Task { await controller.refresh(showProgress: true) }
+                        }
                             .keyboardShortcut("r", modifiers: .command)
                             .disabled(!controller.hasEndpoint || controller.busy || controller.refreshing)
                         Button("Connect", systemImage: "bolt.horizontal.circle") { chooseEndpoint() }
@@ -71,6 +85,9 @@ public struct ClientWindow: View {
         .frame(minWidth: 920, minHeight: 620)
         .preferredColorScheme(store.preferences.appearance == .system ? nil :
                                 (store.preferences.appearance == .dark ? .dark : .light))
+        .transaction { transaction in
+            if systemReduceMotion || store.preferences.reduceMotion { transaction.disablesAnimations = true }
+        }
         .onChange(of: store.preferences) { _, _ in store.savePreferences() }
     }
     private func chooseEndpoint() {
@@ -90,13 +107,14 @@ struct ProblemBanner: View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: "exclamationmark.triangle").foregroundStyle(.orange)
             VStack(alignment: .leading, spacing: 4) {
-                Text(problem.title).font(.headline)
+                Text(problem.title).font(.headline).accessibilityAddTraits(.isHeader)
                 Text(problem.explanation)
                 Text(problem.nextStep).foregroundStyle(.secondary)
                 Text(problem.supportCode).font(.caption.monospaced()).textSelection(.enabled)
             }
             Spacer()
-        }.padding(16).frame(maxWidth: .infinity, alignment: .leading).background(.quaternary)
+        }.fixedSize(horizontal: false, vertical: true).padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading).background(.quaternary)
     }
 }
 
