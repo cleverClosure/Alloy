@@ -4,6 +4,7 @@ import SwiftUI
 
 struct LibraryView: View {
     @Bindable var store: ClientStore
+    let controller: RuntimeController
     var body: some View {
         Group {
             switch store.snapshot.phase {
@@ -24,7 +25,7 @@ struct LibraryView: View {
             case .available, .unsupported:
                 HSplitView {
                     gameList.frame(minWidth: 230, idealWidth: 270, maxWidth: 360)
-                    if let game = store.selectedGame { GameDetailView(game: game) } else {
+                    if let game = store.selectedGame { GameDetailView(game: game, controller: controller) } else {
                         EmptyPanel(title: "Choose a title",
                                    detail: "Select a title to see its installed build and runtime status.",
                                    symbol: "square.stack")
@@ -64,6 +65,7 @@ struct LibraryView: View {
 
 struct GameDetailView: View {
     let game: LibraryGame
+    let controller: RuntimeController
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
@@ -96,12 +98,21 @@ struct GameDetailView: View {
                         Text(game.builds.joined(separator: ", "))
                     }
                     GridRow { Text("Installations").foregroundStyle(.secondary); Text("\(game.installationIDs.count)") }
-                    GridRow { Text("Runtime").foregroundStyle(.secondary); Text("Not checked") }
+                    GridRow {
+                        Text("Runtime activity").foregroundStyle(.secondary)
+                        Text(controller.runtimeActivity(for: game.id))
+                    }
                 }
+                if controller.developmentEnabled { DevelopmentActions(controller: controller) }
                 DisclosureGroup("Technical details") {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Title ID: \(game.id)")
                         ForEach(game.installationIDs, id: \.self) { Text("Installation: \($0)") }
+                        if let detail = controller.details, detail.summary.gameID == game.id {
+                            ForEach(detail.installations, id: \.installationID) { installation in
+                                Text("Build fingerprint: \(installation.fingerprint.aggregateSHA256)")
+                            }
+                        }
                     }.font(.caption.monospaced()).textSelection(.enabled)
                         .frame(maxWidth: .infinity, alignment: .leading).padding(.top, 8)
                 }

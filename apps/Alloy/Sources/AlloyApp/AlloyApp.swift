@@ -15,6 +15,9 @@ import SwiftUI
 @main struct AlloyApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @State private var store: ClientStore
+    @State private var controller: RuntimeController
+    private let endpoint: String?
+    private let developmentFixture: String?
 
     init() {
         let arguments = CommandLine.arguments
@@ -32,10 +35,20 @@ import SwiftUI
             value.preferences.appearance = appearance
         }
         _store = State(initialValue: value)
+        _controller = State(initialValue: RuntimeController(store: value,
+                                                            storage: PreferencesStore(directory: directory)))
+        endpoint = option("--endpoint")
+        developmentFixture = option("--development-fixture")
     }
 
     var body: some Scene {
-        Window("Alloy", id: "main") { ClientWindow(store: store) }
+        Window("Alloy", id: "main") {
+            ClientWindow(store: store, controller: controller)
+                .task {
+                    if let endpoint { await controller.connect(endpoint: endpoint, fixture: developmentFixture) }
+                    if !store.snapshot.preview { await controller.monitor() }
+                }
+        }
             .defaultSize(width: 1120, height: 760)
             .commands {
                 CommandGroup(replacing: .newItem) {}
