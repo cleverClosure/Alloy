@@ -1,0 +1,2576 @@
+{
+  "author": "Timur Isaev",
+  "runtime": {
+    "generationId": "rtg_76def2c40743993cff2ce99c7a1f5fd93a2b9bc246977e050a2184b340943c00",
+    "manifestDigest": "sha256:b68338d104298338bc6bb1d379fb1f004233c0d049bad86d8fdbe5fa0001d54d",
+    "path": "/tmp/alloy-177-store-b/runtime-trees/b68338d104298338bc6bb1d379fb1f004233c0d049bad86d8fdbe5fa0001d54d",
+    "treeDigest": "sha256:6fbeb915a7bb987b060d14ef6060a510ce9632a817c123799547d4bae9fd6610"
+  },
+  "runs": [
+    {
+      "label": "stock-native",
+      "exit": 0,
+      "seconds": 0.461,
+      "log": "/private/tmp/alloy-177-tree-b1/stock-native.log",
+      "expectedFailure": null,
+      "mappedFEX": [],
+      "policyFailureReasons": [],
+      "guestObservations": [
+        "IMPORT id=stock LANG=stock cwd=Z:\\private\\tmp\\alloy-177-tree-b1\\native fex=0",
+        "GUEST id=single LANG=stock cwd=Z:\\private\\tmp\\alloy-177-tree-b1\\native fex=0",
+        "PROVIDER role=single name=stock path=Z:\\private\\tmp\\alloy-177-tree-b1\\native\\alloygraphics.dll"
+      ]
+    },
+    {
+      "label": "all-fields",
+      "exit": 0,
+      "seconds": 0.447,
+      "log": "/private/tmp/alloy-177-tree-b1/all-fields.log",
+      "expectedFailure": null,
+      "mappedFEX": [],
+      "policyFailureReasons": [],
+      "guestObservations": [
+        "IMPORT id=configured LANG=configured cwd=Z:\\private\\tmp\\alloy-177-tree-b1\\working fex=0",
+        "GUEST id=single LANG=configured cwd=Z:\\private\\tmp\\alloy-177-tree-b1\\working fex=0",
+        "PROVIDER role=single name=configured path=Z:\\private\\tmp\\alloy-177-tree-b1\\native\\configured\\alloygraphics.dll"
+      ]
+    },
+    {
+      "label": "absent-fields",
+      "exit": 0,
+      "seconds": 0.514,
+      "log": "/private/tmp/alloy-177-tree-b1/absent-fields.log",
+      "expectedFailure": null,
+      "mappedFEX": [],
+      "policyFailureReasons": [],
+      "guestObservations": [
+        "IMPORT id=stock LANG=stock cwd=Z:\\private\\tmp\\alloy-177-tree-b1\\native fex=0",
+        "GUEST id=single LANG=stock cwd=Z:\\private\\tmp\\alloy-177-tree-b1\\native fex=0",
+        "PROVIDER role=single name=stock path=Z:\\private\\tmp\\alloy-177-tree-b1\\native\\alloygraphics.dll"
+      ]
+    },
+    {
+      "label": "disabled-import",
+      "exit": 53,
+      "seconds": 0.454,
+      "log": "/private/tmp/alloy-177-tree-b1/disabled-import.log",
+      "expectedFailure": "Importing dlls",
+      "mappedFEX": [],
+      "policyFailureReasons": [],
+      "guestObservations": []
+    },
+    {
+      "label": "absent-cpu-refusal",
+      "exit": 1,
+      "seconds": 0.454,
+      "log": "/private/tmp/alloy-177-tree-b1/absent-cpu-refusal.log",
+      "expectedFailure": "x64 emulation not implemented",
+      "mappedFEX": [],
+      "policyFailureReasons": [],
+      "guestObservations": []
+    },
+    {
+      "label": "fex-selection",
+      "exit": 0,
+      "seconds": 0.477,
+      "log": "/private/tmp/alloy-177-tree-b1/fex-selection.log",
+      "expectedFailure": null,
+      "mappedFEX": [
+        "/private/tmp/alloy-177-store-b/runtime-trees/b68338d104298338bc6bb1d379fb1f004233c0d049bad86d8fdbe5fa0001d54d/dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
+      ],
+      "policyFailureReasons": [],
+      "guestObservations": [
+        "IMPORT id=configured LANG=translated cwd=Z:\\private\\tmp\\alloy-177-tree-b1\\x64 fex=1",
+        "GUEST id=single LANG=translated cwd=Z:\\private\\tmp\\alloy-177-tree-b1\\x64 fex=1",
+        "PROVIDER role=single name=configured path=Z:\\private\\tmp\\alloy-177-tree-b1\\x64\\configured\\alloygraphics.dll"
+      ]
+    },
+    {
+      "label": "native-rejects-x64",
+      "exit": 187,
+      "seconds": 0.469,
+      "log": "/private/tmp/alloy-177-tree-b1/native-rejects-x64.log",
+      "expectedFailure": "policy-cpu-incompatible",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-cpu-incompatible"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "corrupt",
+      "exit": 13,
+      "seconds": 0.355,
+      "log": "/private/tmp/alloy-177-tree-b1/corrupt.log",
+      "expectedFailure": "policy-expected-digest",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-expected-digest"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "mismatch",
+      "exit": 13,
+      "seconds": 0.352,
+      "log": "/private/tmp/alloy-177-tree-b1/mismatch.log",
+      "expectedFailure": "policy-expected-digest",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-expected-digest"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "missing",
+      "exit": 13,
+      "seconds": 0.353,
+      "log": "/private/tmp/alloy-177-tree-b1/missing.log",
+      "expectedFailure": "policy-descriptor-missing",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-descriptor-missing"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "internal-corrupt",
+      "exit": 13,
+      "seconds": 0.357,
+      "log": "/private/tmp/alloy-177-tree-b1/internal-corrupt.log",
+      "expectedFailure": "policy-integrity",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "unknown-stock-control",
+      "exit": 0,
+      "seconds": 0.473,
+      "log": "/private/tmp/alloy-177-tree-b1/unknown-stock-control.log",
+      "expectedFailure": null,
+      "mappedFEX": [],
+      "policyFailureReasons": [],
+      "guestObservations": [
+        "IMPORT id=stock LANG=stock cwd=Z:\\private\\tmp\\alloy-177-tree-b1\\native fex=0",
+        "GUEST id=unknown LANG=stock cwd=Z:\\private\\tmp\\alloy-177-tree-b1\\native fex=0",
+        "PROVIDER role=unknown name=stock path=Z:\\private\\tmp\\alloy-177-tree-b1\\native\\alloygraphics.dll",
+        "IMPORT id=stock LANG=stock cwd=Z:\\private\\tmp\\alloy-177-tree-b1\\native fex=0",
+        "RESTRICTION allowed=1"
+      ]
+    },
+    {
+      "label": "compiler-process-tree",
+      "exit": 0,
+      "seconds": 0.522,
+      "log": "/private/tmp/alloy-177-tree-b1/compiler-process-tree.log",
+      "expectedFailure": null,
+      "mappedFEX": [
+        "/private/tmp/alloy-177-store-b/runtime-trees/b68338d104298338bc6bb1d379fb1f004233c0d049bad86d8fdbe5fa0001d54d/dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
+      ],
+      "policyFailureReasons": [],
+      "guestObservations": [
+        "IMPORT id=dxmt LANG=launcher cwd=Z:\\private\\tmp\\alloy-177-tree-b1\\cwd-launcher fex=0",
+        "GUEST id=launcher LANG=launcher cwd=Z:\\private\\tmp\\alloy-177-tree-b1\\cwd-launcher fex=0",
+        "PROVIDER role=launcher name=dxmt path=Z:\\private\\tmp\\alloy-177-tree-b1\\native\\dxmt\\alloygraphics.dll",
+        "IMPORT id=metal12 LANG=game cwd=Z:\\private\\tmp\\alloy-177-tree-b1\\cwd-game fex=1",
+        "GUEST id=game LANG=game cwd=Z:\\private\\tmp\\alloy-177-tree-b1\\cwd-game fex=1",
+        "PROVIDER role=game name=metal12 path=Z:\\private\\tmp\\alloy-177-tree-b1\\x64\\metal12\\alloygraphics.dll",
+        "IMPORT id=restricted LANG=unknown cwd=Z:\\private\\tmp\\alloy-177-tree-b1\\cwd-unknown fex=0",
+        "GUEST id=unknown LANG=unknown cwd=Z:\\private\\tmp\\alloy-177-tree-b1\\cwd-unknown fex=0",
+        "PROVIDER role=unknown name=restricted path=Z:\\private\\tmp\\alloy-177-tree-b1\\native\\restricted\\alloygraphics.dll",
+        "RESTRICTION allowed=0",
+        "SESSION children=0"
+      ]
+    },
+    {
+      "label": "unknown-x64-default-refusal",
+      "exit": 187,
+      "seconds": 0.473,
+      "log": "/private/tmp/alloy-177-tree-b1/unknown-x64-default-refusal.log",
+      "expectedFailure": "policy-cpu-incompatible",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-cpu-incompatible"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-legacy",
+      "exit": 13,
+      "seconds": 0.357,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-legacy.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-legacy-version"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-truncated-0",
+      "exit": 13,
+      "seconds": 0.339,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-truncated-0.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-layout"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-truncated-1",
+      "exit": 13,
+      "seconds": 0.347,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-truncated-1.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-layout"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-truncated-7",
+      "exit": 13,
+      "seconds": 0.35,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-truncated-7.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-layout"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-truncated-8",
+      "exit": 13,
+      "seconds": 0.358,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-truncated-8.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-layout"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-truncated-63",
+      "exit": 13,
+      "seconds": 0.346,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-truncated-63.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-layout"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-truncated-64",
+      "exit": 13,
+      "seconds": 0.335,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-truncated-64.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-layout"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-truncated-95",
+      "exit": 13,
+      "seconds": 0.353,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-truncated-95.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-layout"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-truncated-96",
+      "exit": 13,
+      "seconds": 0.355,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-truncated-96.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-truncated-7567",
+      "exit": 13,
+      "seconds": 0.395,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-truncated-7567.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-trailing",
+      "exit": 13,
+      "seconds": 0.332,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-trailing.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-resealed-8",
+      "exit": 13,
+      "seconds": 0.362,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-resealed-8.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-layout"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-resealed-12",
+      "exit": 13,
+      "seconds": 0.357,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-resealed-12.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-layout"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-resealed-16",
+      "exit": 13,
+      "seconds": 0.349,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-resealed-16.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-layout"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-resealed-20",
+      "exit": 13,
+      "seconds": 0.351,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-resealed-20.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-layout"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-resealed-24",
+      "exit": 13,
+      "seconds": 0.351,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-resealed-24.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-layout"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-resealed-28",
+      "exit": 13,
+      "seconds": 0.339,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-resealed-28.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-layout"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-resealed-96",
+      "exit": 13,
+      "seconds": 0.334,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-resealed-96.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-noncanonical"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-resealed-129",
+      "exit": 13,
+      "seconds": 0.356,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-resealed-129.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-invalid-field"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-resealed-191",
+      "exit": 13,
+      "seconds": 0.354,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-resealed-191.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-invalid-field"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-resealed-768",
+      "exit": 13,
+      "seconds": 0.338,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-resealed-768.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-invalid-field"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-resealed-772",
+      "exit": 13,
+      "seconds": 0.347,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-resealed-772.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-invalid-field"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-resealed-776",
+      "exit": 13,
+      "seconds": 0.355,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-resealed-776.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-invalid-field"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-resealed-780",
+      "exit": 13,
+      "seconds": 0.35,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-resealed-780.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-invalid-field"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-resealed-783",
+      "exit": 13,
+      "seconds": 0.348,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-resealed-783.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-invalid-field"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-resealed-1368",
+      "exit": 13,
+      "seconds": 0.347,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-resealed-1368.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-noncanonical"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-resealed-3088",
+      "exit": 13,
+      "seconds": 0.355,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-resealed-3088.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-noncanonical"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-field-256-433a5c2e2e5c65736361706500",
+      "exit": 13,
+      "seconds": 0.336,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-field-256-433a5c2e2e5c65736361706500.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-invalid-field"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-field-784-72656c617469766500",
+      "exit": 13,
+      "seconds": 0.394,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-field-784-72656c617469766500.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-invalid-field"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-field-2448-5041544800",
+      "exit": 13,
+      "seconds": 0.347,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-field-2448-5041544800.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-invalid-field"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-field-2448-57494e45444542554700",
+      "exit": 13,
+      "seconds": 0.355,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-field-2448-57494e45444542554700.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-invalid-field"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-field-1296-6e74646c6c00",
+      "exit": 13,
+      "seconds": 0.351,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-field-1296-6e74646c6c00.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-invalid-field"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-field-1296-5a45544100",
+      "exit": 13,
+      "seconds": 0.342,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-field-1296-5a45544100.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-noncanonical"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-field-1296-7a65746100",
+      "exit": 13,
+      "seconds": 0.356,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-field-1296-7a65746100.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-noncanonical"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-duplicate-route",
+      "exit": 13,
+      "seconds": 0.348,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-duplicate-route.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-noncanonical"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-duplicate-environment",
+      "exit": 13,
+      "seconds": 0.336,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-duplicate-environment.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-noncanonical"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-0",
+      "exit": 13,
+      "seconds": 0.349,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-0.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-1",
+      "exit": 13,
+      "seconds": 0.36,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-1.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-2",
+      "exit": 13,
+      "seconds": 0.35,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-2.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-3",
+      "exit": 13,
+      "seconds": 0.349,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-3.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-4",
+      "exit": 13,
+      "seconds": 0.344,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-4.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-5",
+      "exit": 13,
+      "seconds": 0.333,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-5.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-6",
+      "exit": 13,
+      "seconds": 0.343,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-6.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-7",
+      "exit": 13,
+      "seconds": 0.351,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-7.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-8",
+      "exit": 13,
+      "seconds": 0.335,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-8.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-9",
+      "exit": 13,
+      "seconds": 0.342,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-9.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-10",
+      "exit": 13,
+      "seconds": 0.294,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-10.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-11",
+      "exit": 13,
+      "seconds": 0.302,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-11.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-12",
+      "exit": 13,
+      "seconds": 0.302,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-12.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-13",
+      "exit": 13,
+      "seconds": 0.414,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-13.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-14",
+      "exit": 13,
+      "seconds": 0.331,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-14.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-15",
+      "exit": 13,
+      "seconds": 0.347,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-15.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-16",
+      "exit": 13,
+      "seconds": 0.355,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-16.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-17",
+      "exit": 13,
+      "seconds": 0.353,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-17.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-18",
+      "exit": 13,
+      "seconds": 0.336,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-18.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-19",
+      "exit": 13,
+      "seconds": 0.299,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-19.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-20",
+      "exit": 13,
+      "seconds": 0.341,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-20.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-21",
+      "exit": 13,
+      "seconds": 0.299,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-21.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-22",
+      "exit": 13,
+      "seconds": 0.342,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-22.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-23",
+      "exit": 13,
+      "seconds": 0.345,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-23.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-24",
+      "exit": 13,
+      "seconds": 0.352,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-24.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-25",
+      "exit": 13,
+      "seconds": 0.345,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-25.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-26",
+      "exit": 13,
+      "seconds": 0.351,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-26.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-27",
+      "exit": 13,
+      "seconds": 0.299,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-27.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-28",
+      "exit": 13,
+      "seconds": 0.296,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-28.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-29",
+      "exit": 13,
+      "seconds": 0.349,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-29.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-30",
+      "exit": 13,
+      "seconds": 0.347,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-30.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-31",
+      "exit": 13,
+      "seconds": 0.348,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-31.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-32",
+      "exit": 13,
+      "seconds": 0.346,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-32.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-33",
+      "exit": 13,
+      "seconds": 0.298,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-33.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-34",
+      "exit": 13,
+      "seconds": 0.346,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-34.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-35",
+      "exit": 13,
+      "seconds": 0.353,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-35.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-36",
+      "exit": 13,
+      "seconds": 0.289,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-36.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-37",
+      "exit": 13,
+      "seconds": 0.301,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-37.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-38",
+      "exit": 13,
+      "seconds": 0.289,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-38.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-39",
+      "exit": 13,
+      "seconds": 0.348,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-39.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-40",
+      "exit": 13,
+      "seconds": 0.3,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-40.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-41",
+      "exit": 13,
+      "seconds": 0.302,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-41.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-42",
+      "exit": 13,
+      "seconds": 0.362,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-42.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-43",
+      "exit": 13,
+      "seconds": 0.296,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-43.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-44",
+      "exit": 13,
+      "seconds": 0.342,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-44.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-45",
+      "exit": 13,
+      "seconds": 0.296,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-45.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-46",
+      "exit": 13,
+      "seconds": 0.346,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-46.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-47",
+      "exit": 13,
+      "seconds": 0.356,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-47.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-48",
+      "exit": 13,
+      "seconds": 0.344,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-48.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-49",
+      "exit": 13,
+      "seconds": 0.351,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-49.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-50",
+      "exit": 13,
+      "seconds": 0.354,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-50.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-51",
+      "exit": 13,
+      "seconds": 0.348,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-51.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-52",
+      "exit": 13,
+      "seconds": 0.337,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-52.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-53",
+      "exit": 13,
+      "seconds": 0.351,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-53.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-54",
+      "exit": 13,
+      "seconds": 0.35,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-54.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-55",
+      "exit": 13,
+      "seconds": 0.339,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-55.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-56",
+      "exit": 13,
+      "seconds": 0.344,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-56.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-57",
+      "exit": 13,
+      "seconds": 0.344,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-57.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-58",
+      "exit": 13,
+      "seconds": 0.339,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-58.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-59",
+      "exit": 13,
+      "seconds": 0.362,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-59.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-60",
+      "exit": 13,
+      "seconds": 0.295,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-60.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-61",
+      "exit": 13,
+      "seconds": 0.348,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-61.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-62",
+      "exit": 13,
+      "seconds": 0.361,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-62.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-63",
+      "exit": 13,
+      "seconds": 0.341,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-63.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-64",
+      "exit": 13,
+      "seconds": 0.352,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-64.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-65",
+      "exit": 13,
+      "seconds": 0.354,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-65.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-66",
+      "exit": 13,
+      "seconds": 0.293,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-66.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-67",
+      "exit": 13,
+      "seconds": 0.351,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-67.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-68",
+      "exit": 13,
+      "seconds": 0.299,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-68.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-69",
+      "exit": 13,
+      "seconds": 0.352,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-69.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-70",
+      "exit": 13,
+      "seconds": 0.345,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-70.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-71",
+      "exit": 13,
+      "seconds": 0.353,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-71.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-72",
+      "exit": 13,
+      "seconds": 0.356,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-72.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-73",
+      "exit": 13,
+      "seconds": 0.294,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-73.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-74",
+      "exit": 13,
+      "seconds": 0.297,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-74.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-75",
+      "exit": 13,
+      "seconds": 0.364,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-75.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-76",
+      "exit": 13,
+      "seconds": 0.344,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-76.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-77",
+      "exit": 13,
+      "seconds": 0.35,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-77.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-78",
+      "exit": 13,
+      "seconds": 0.342,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-78.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-79",
+      "exit": 13,
+      "seconds": 0.361,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-79.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-80",
+      "exit": 13,
+      "seconds": 0.412,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-80.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-81",
+      "exit": 13,
+      "seconds": 0.355,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-81.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-82",
+      "exit": 13,
+      "seconds": 0.362,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-82.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-83",
+      "exit": 13,
+      "seconds": 0.357,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-83.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-84",
+      "exit": 13,
+      "seconds": 0.357,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-84.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-85",
+      "exit": 13,
+      "seconds": 0.362,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-85.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-86",
+      "exit": 13,
+      "seconds": 0.349,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-86.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-87",
+      "exit": 13,
+      "seconds": 0.352,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-87.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-88",
+      "exit": 13,
+      "seconds": 0.365,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-88.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-89",
+      "exit": 13,
+      "seconds": 0.36,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-89.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-90",
+      "exit": 13,
+      "seconds": 0.341,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-90.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-91",
+      "exit": 13,
+      "seconds": 0.355,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-91.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-92",
+      "exit": 13,
+      "seconds": 0.36,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-92.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-93",
+      "exit": 13,
+      "seconds": 0.342,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-93.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-94",
+      "exit": 13,
+      "seconds": 0.402,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-94.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-95",
+      "exit": 13,
+      "seconds": 0.349,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-95.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-96",
+      "exit": 13,
+      "seconds": 0.347,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-96.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-97",
+      "exit": 13,
+      "seconds": 0.351,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-97.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-98",
+      "exit": 13,
+      "seconds": 0.397,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-98.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-99",
+      "exit": 13,
+      "seconds": 0.358,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-99.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-100",
+      "exit": 13,
+      "seconds": 0.389,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-100.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-101",
+      "exit": 13,
+      "seconds": 0.337,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-101.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-102",
+      "exit": 13,
+      "seconds": 0.352,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-102.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-103",
+      "exit": 13,
+      "seconds": 0.353,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-103.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-104",
+      "exit": 13,
+      "seconds": 0.338,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-104.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-105",
+      "exit": 13,
+      "seconds": 0.347,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-105.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-106",
+      "exit": 13,
+      "seconds": 0.352,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-106.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-107",
+      "exit": 13,
+      "seconds": 0.347,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-107.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-108",
+      "exit": 13,
+      "seconds": 0.347,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-108.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-109",
+      "exit": 13,
+      "seconds": 0.393,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-109.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-110",
+      "exit": 13,
+      "seconds": 0.356,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-110.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-111",
+      "exit": 13,
+      "seconds": 0.348,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-111.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-112",
+      "exit": 13,
+      "seconds": 0.356,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-112.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-113",
+      "exit": 13,
+      "seconds": 0.356,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-113.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-114",
+      "exit": 13,
+      "seconds": 0.353,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-114.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-115",
+      "exit": 13,
+      "seconds": 0.346,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-115.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-116",
+      "exit": 13,
+      "seconds": 0.338,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-116.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-117",
+      "exit": 13,
+      "seconds": 0.404,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-117.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-118",
+      "exit": 13,
+      "seconds": 0.347,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-118.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-119",
+      "exit": 13,
+      "seconds": 0.345,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-119.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-120",
+      "exit": 13,
+      "seconds": 0.343,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-120.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-121",
+      "exit": 13,
+      "seconds": 0.344,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-121.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-122",
+      "exit": 13,
+      "seconds": 0.405,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-122.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-123",
+      "exit": 13,
+      "seconds": 0.333,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-123.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-124",
+      "exit": 13,
+      "seconds": 0.346,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-124.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-125",
+      "exit": 13,
+      "seconds": 0.349,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-125.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-126",
+      "exit": 13,
+      "seconds": 0.344,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-126.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-bit-127",
+      "exit": 13,
+      "seconds": 0.345,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-bit-127.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-0",
+      "exit": 13,
+      "seconds": 0.359,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-0.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-1",
+      "exit": 13,
+      "seconds": 0.338,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-1.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-2",
+      "exit": 13,
+      "seconds": 0.332,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-2.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-3",
+      "exit": 13,
+      "seconds": 0.351,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-3.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-4",
+      "exit": 13,
+      "seconds": 0.356,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-4.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-5",
+      "exit": 13,
+      "seconds": 0.344,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-5.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-6",
+      "exit": 13,
+      "seconds": 0.35,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-6.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-7",
+      "exit": 13,
+      "seconds": 0.343,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-7.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-8",
+      "exit": 13,
+      "seconds": 0.348,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-8.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-9",
+      "exit": 13,
+      "seconds": 0.356,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-9.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-10",
+      "exit": 13,
+      "seconds": 0.349,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-10.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-11",
+      "exit": 13,
+      "seconds": 0.348,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-11.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-12",
+      "exit": 13,
+      "seconds": 0.352,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-12.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-13",
+      "exit": 13,
+      "seconds": 0.35,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-13.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-14",
+      "exit": 13,
+      "seconds": 0.352,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-14.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-15",
+      "exit": 13,
+      "seconds": 0.342,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-15.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-16",
+      "exit": 13,
+      "seconds": 0.352,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-16.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-17",
+      "exit": 13,
+      "seconds": 0.354,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-17.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-18",
+      "exit": 13,
+      "seconds": 0.416,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-18.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-19",
+      "exit": 13,
+      "seconds": 0.359,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-19.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-20",
+      "exit": 13,
+      "seconds": 0.352,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-20.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-21",
+      "exit": 13,
+      "seconds": 0.341,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-21.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-22",
+      "exit": 13,
+      "seconds": 0.349,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-22.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-23",
+      "exit": 13,
+      "seconds": 0.336,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-23.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-24",
+      "exit": 13,
+      "seconds": 0.36,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-24.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-25",
+      "exit": 13,
+      "seconds": 0.353,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-25.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-26",
+      "exit": 13,
+      "seconds": 0.341,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-26.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-27",
+      "exit": 13,
+      "seconds": 0.354,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-27.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-28",
+      "exit": 13,
+      "seconds": 0.351,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-28.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-29",
+      "exit": 13,
+      "seconds": 0.351,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-29.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-30",
+      "exit": 13,
+      "seconds": 0.35,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-30.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    },
+    {
+      "label": "malformed-seeded-random-31",
+      "exit": 13,
+      "seconds": 0.351,
+      "log": "/private/tmp/alloy-177-tree-b1/malformed-seeded-random-31.log",
+      "expectedFailure": "policy-",
+      "mappedFEX": [],
+      "policyFailureReasons": [
+        "policy-integrity"
+      ],
+      "guestObservations": []
+    }
+  ],
+  "status": "pass",
+  "winePatchSHA256": "1402e2ceee7a4565ad449281d3a4102f9af202d1807fad034329b833dcb01b18",
+  "guestSHA256": {
+    "native/game.exe": "b1d555a0a81099c58f913d47c1fd5c870d47270e18cba5f3fba53649364c09b9",
+    "native/launcher.exe": "db81c03c79593299766a20755380eb46b36eaf3e324d5ca1b62222719fcd892f",
+    "native/single.exe": "f98fa32dacb813aca39fa501d31dc8637efc161abf3738810e9bdc4bcbadc9d3",
+    "native/unknown.exe": "b1a61dd5a7f1a4e833b5b7497070ea6d725e7f6bf6c6dd50dcfaee5b97d540b5",
+    "x64/game.exe": "b1d555a0a81099c58f913d47c1fd5c870d47270e18cba5f3fba53649364c09b9",
+    "x64/launcher.exe": "6ae2b5850f05432710e1686a4268ac10588091403ba0281a72032480fb4848d1",
+    "x64/single.exe": "25f665427e44e44c808d89b8a2c7c1a62ece1616d855b2a9594c39df3fd317ea",
+    "x64/unknown.exe": "25af40d0f2ef11704d7b1e8d23b65f16ebd56e3d1b9cedb570bc796d7ae0bb47"
+  },
+  "compilerExport": {
+    "author": "Timur Isaev",
+    "digest": "sha256:8ff543bdfc8b5d0d9b3d8f7b8e3329deb3103211b910dcb5535a171f91db38c2",
+    "format": "alloy-development-policy-export-v2",
+    "notYetLowered": [],
+    "productionEligible": false,
+    "runtimeReady": true
+  },
+  "compilerExecutableSHA256": "69f8bc300c60caa0bab6b6de2f1e0cee102e7ac3100824a1e9bf59c710dd338e",
+  "malformedWineProcesses": 196,
+  "runtimeUnchanged": true
+}
