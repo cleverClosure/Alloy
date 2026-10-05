@@ -18,6 +18,9 @@ public enum EventRedactor {
     try checkRawSize(event, metadata: metadata, limit: maxUTF8Bytes)
     try RedactionSupport.checkSize(try DiagnosticsJSON.encode(event).count, limit: maxUTF8Bytes)
     for (name, value) in metadata {
+      // A canonical UUID request identity can contain a long digit run. It is
+      // structurally bounded protocol metadata, not a free-form card number.
+      if name == "request_id", value.count == 36, UUID(uuidString: value) != nil { continue }
       let result = try RedactionScanner.scan(value, maxUTF8Bytes: maxUTF8Bytes)
       guard result.findings.isEmpty else { throw RedactionError.unsafeMetadata(field: name) }
     }
