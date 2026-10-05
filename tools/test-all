@@ -514,6 +514,14 @@ REGISTRY: list[Suite] = [
         description="build-dependent: every ISA family and mutation in a private FEX prefix; current runtime regression is #111",
         environment=isa_environment,
     ),
+    # --- apps/Alloy: native client, deterministic state only ----------------
+    Suite(
+        id="client-swift-test", tier="fast",
+        cmd=("swift", "test", "--package-path", "apps/Alloy", "--jobs", "2"),
+        cwd=".", timeout=300,
+        probe=every(need_commands("swift"), need_paths("apps/Alloy/Package.swift")),
+        description="native client build and deterministic selection, state and private preferences checks; no GUI",
+    ),
     # --- runtime/session-service: private user launchd fixture only -------
     Suite(
         id="runtime-service-swift-test", tier="fast",
@@ -866,7 +874,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 48
+REGISTRY_SUITE_COUNT = 49
 
 
 # ---------------------------------------------------------------------------
