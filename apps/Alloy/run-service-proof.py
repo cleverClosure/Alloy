@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Exercise the app's real controller across private XPC processes. Author: Timur Isaev."""
 import hashlib
+import argparse
 import http.server
 import json
 import subprocess
@@ -12,7 +13,8 @@ from pathlib import Path
 PACKAGE = Path(__file__).resolve().parent
 SERVICE = PACKAGE.parents[1] / "runtime/session-service"
 sys.path.insert(0, str(SERVICE))
-from proof_support import ServiceFixture, build  # noqa: E402
+from proof_support import build  # noqa: E402
+from client_fixture import ServiceFixture  # noqa: E402
 from launch_fixture import launch_input  # noqa: E402
 
 LIBRARY = SERVICE.parent / "store-catalog/Tests/Fixtures/MultiGameLibrary"
@@ -21,6 +23,8 @@ DIGEST = "sha256:" + hashlib.sha256(PAYLOAD).hexdigest()
 
 
 class Mirror(http.server.BaseHTTPRequestHandler):
+    chunk_delay = 0.035
+
     def do_GET(self):
         self.send_response(200)
         self.send_header("Content-Length", str(len(PAYLOAD)))
@@ -29,7 +33,7 @@ class Mirror(http.server.BaseHTTPRequestHandler):
             for offset in range(0, len(PAYLOAD), 8192):
                 self.wfile.write(PAYLOAD[offset:offset + 8192])
                 self.wfile.flush()
-                time.sleep(0.035)
+                time.sleep(self.chunk_delay)
         except (BrokenPipeError, ConnectionResetError):
             pass
 
@@ -122,8 +126,7 @@ def run_flow(service, client, mirror, check, with_session):
         repaired = json.loads(state_path.read_text())["cursors"][fixture.name][identifier]
         check("stale-cursor-reconciled", recovered["operations"][0]["state"] == "Succeeded"
               and repaired == recovered["operations"][0]["revision"])
-        subprocess.run(["launchctl", "bootout", fixture.target], check=True, timeout=15)
-        fixture.loaded = False
+        fixture.stop_service()
         disconnected = probe(client, fixture, recipe)
         check("seeded-disconnect-detected", not disconnected["connected"]
               and disconnected.get("problem") == "RT-SERVICE_UNAVAILABLE")
@@ -152,11 +155,26 @@ def run_flow(service, client, mirror, check, with_session):
 
 
 def main():
-    rows = []
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--negative-control", action="store_true")
+    arguments = parser.parse_args()
+    rows = {}
+    expected = {"incorrect-build-refused-before-clean-control", "actual-catalog-builds",
+                "service-revalidated-runtime-plan", "client-restart-reuses-request", "pause-reaches-service",
+                "resume-completes-exact-operation", "service-restart-keeps-operation", "stale-cursor-reconciled",
+                "seeded-disconnect-detected", "offline-client-restores-last-known-state",
+                "clean-reconnect-after-disconnect-control", "native-session-tree-observed",
+                "native-session-whole-tree-stopped", "session-retry-does-not-relaunch",
+                "runtime-cancellation-is-terminal", "cancelled-retry-does-not-create-operation",
+                "storefront-payload-unchanged"}
 
     def check(name, okay):
-        rows.append(bool(okay))
-        print(("PASS " if okay else "FAIL ") + name, flush=True)
+        if name in rows:
+            raise RuntimeError("duplicate proof row: " + name)
+        if arguments.negative_control and name == "actual-catalog-builds":
+            okay = not okay  # Deliberately inverted oracle must make the proof exit nonzero.
+        rows[name] = "PASS" if okay else "FAIL"
+        print(rows[name] + " " + name, flush=True)
 
     service, client = build(), build_client()
     host = subprocess.check_output(["sysctl", "-n", "hw.memsize"], text=True, timeout=5)
@@ -184,8 +202,14 @@ def main():
     after = {str(p.relative_to(LIBRARY)): hashlib.sha256(p.read_bytes()).hexdigest()
              for p in LIBRARY.rglob("*") if p.is_file()}
     check("storefront-payload-unchanged", before == after)
-    print(f"SUMMARY pass={sum(rows)} fail={len(rows) - sum(rows)} total={len(rows)}")
-    return int(not all(rows))
+    if not with_session:
+        for name in ("native-session-tree-observed", "native-session-whole-tree-stopped", "session-retry-does-not-relaunch"):
+            rows[name] = "SKIP"
+    if set(rows) != expected:
+        raise RuntimeError("proof coverage mismatch: " + str(set(rows) ^ expected))
+    counts = {verdict: list(rows.values()).count(verdict) for verdict in ("PASS", "FAIL", "SKIP")}
+    print(f"SUMMARY pass={counts['PASS']} fail={counts['FAIL']} skip={counts['SKIP']} total={len(rows)}")
+    return int(counts["FAIL"] != 0)
 
 
 if __name__ == "__main__":

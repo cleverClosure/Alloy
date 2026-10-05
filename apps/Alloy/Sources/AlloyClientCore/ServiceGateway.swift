@@ -21,44 +21,65 @@ public struct ServiceGateway: Sendable {
         try await Task.detached { try client.call(method).decode(type) }.value
     }
 
-    public func observe(cursors: [String: Int]) async throws -> ServiceObservation {
+    public func observe(cursors: [String: Int], includeCatalog: Bool = true) async throws -> ServiceObservation {
         try await Task.detached {
-            let info = try client.info()
-            var games: [LibraryGame] = []
-            var cursor: String?
-            var snapshotID: String?
-            var seen = Set<String>()
-            var pageCount = 0
-            repeat {
-                pageCount += 1
-                guard pageCount <= 100 else { throw ClientServiceError.invalidResponse }
-                let page = try client.listGames(PageQuery(cursor: cursor))
-                guard snapshotID == nil || snapshotID == page.snapshotID else { throw ClientServiceError.changedBuild }
-                snapshotID = page.snapshotID
-                for game in page.games {
-                    guard seen.insert(game.gameID).inserted, games.count < 10_000 else {
-                        throw ClientServiceError.invalidResponse
-                    }
-                    games.append(LibraryGame(id: game.gameID, name: game.name, builds: game.buildIDs,
-                                             installationIDs: game.installationIDs))
-                }
-                guard page.nextPageToken == nil || page.nextPageToken != cursor else {
-                    throw ClientServiceError.invalidResponse
-                }
-                cursor = page.nextPageToken
-            } while cursor != nil
-            let operations = try client.call("operation.list").decode([CatalogOperation].self)
+            let deadline = ProcessInfo.processInfo.systemUptime + 20
+            let info = try observeCall("info", as: ServiceInfo.self, deadline: deadline)
+            let games = includeCatalog ? try readCatalog(deadline: deadline) : nil
+            let operations = try observeCall("operation.list", as: [CatalogOperation].self, deadline: deadline)
             guard operations.count <= 1_000 else { throw ClientServiceError.invalidResponse }
             let updates = try operations.map { operation in
                 let cursor = OperationCursor(operationID: operation.operationID,
                                              nextIndex: cursors[operation.operationID] ?? 0)
-                do { return try client.updates(cursor) } catch RuntimeFailure.status(.conflict) {
+                do {
+                    return try observeCall("operation.updates", payload: RuntimeEncoding.encode(cursor),
+                                           as: OperationUpdate.self, deadline: deadline)
+                } catch RuntimeFailure.status(.conflict) {
                     // A stale local cursor can be rebuilt from the authoritative snapshot and audit tail.
-                    return try client.updates(OperationCursor(operationID: operation.operationID))
+                    return try observeCall("operation.updates",
+                        payload: RuntimeEncoding.encode(OperationCursor(operationID: operation.operationID)),
+                        as: OperationUpdate.self, deadline: deadline)
                 }
             }
-            return ServiceObservation(info: info, games: games, updates: updates, sessions: try client.sessions())
+            let sessions = try observeCall("session.list", as: [SessionSnapshot].self, deadline: deadline)
+            return ServiceObservation(info: info, games: games, updates: updates, sessions: sessions)
         }.value
+    }
+
+    private func observeCall<Output: Decodable>(
+        _ method: String, payload: Data = Data("{}".utf8), as type: Output.Type, deadline: TimeInterval
+    ) throws -> Output {
+        let remaining = deadline - ProcessInfo.processInfo.systemUptime
+        guard remaining > 0 else { throw RuntimeFailure.transport }
+        return try client.call(method, payload: payload, timeout: min(10, remaining)).decode(type)
+    }
+
+    private func readCatalog(deadline: TimeInterval) throws -> [LibraryGame] {
+        var games: [LibraryGame] = []
+        var cursor: String?
+        var snapshotID: String?
+        var seen = Set<String>()
+        var pageCount = 0
+        repeat {
+            pageCount += 1
+            guard pageCount <= 100 else { throw ClientServiceError.invalidResponse }
+            let page = try observeCall("catalog.list", payload: RuntimeEncoding.encode(PageQuery(cursor: cursor)),
+                                       as: CatalogPage.self, deadline: deadline)
+            guard snapshotID == nil || snapshotID == page.snapshotID else { throw ClientServiceError.changedBuild }
+            snapshotID = page.snapshotID
+            for game in page.games {
+                guard seen.insert(game.gameID).inserted, games.count < 10_000 else {
+                    throw ClientServiceError.invalidResponse
+                }
+                games.append(LibraryGame(id: game.gameID, name: game.name, builds: game.buildIDs,
+                                         installationIDs: game.installationIDs))
+            }
+            guard page.nextPageToken == nil || page.nextPageToken != cursor else {
+                throw ClientServiceError.invalidResponse
+            }
+            cursor = page.nextPageToken
+        } while cursor != nil
+        return games
     }
 
     public func validate(_ recipe: DevelopmentRecipe) async throws -> GameDetails {
@@ -85,7 +106,7 @@ public struct ServiceGateway: Sendable {
 
 public struct ServiceObservation: Sendable {
     public let info: ServiceInfo
-    public let games: [LibraryGame]
+    public let games: [LibraryGame]?
     public let updates: [OperationUpdate]
     public let sessions: [SessionSnapshot]
 }

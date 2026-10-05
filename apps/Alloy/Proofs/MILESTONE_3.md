@@ -40,10 +40,10 @@ computer-use actions and window screenshots established:
 
 Screenshots captured from the actual app, without compositing:
 
-- [Keyboard selection, dark](screenshots/keyboard-library-dark.png)
-- [Settings, light and reduced motion](screenshots/settings-light-reduced-motion.png)
-- [Accessible operation details](screenshots/operation-details-light.png)
-- [Actual three-process native session](screenshots/session-running-light.png)
+- [Keyboard selection, dark](screenshots/keyboard-library-dark.jpg)
+- [Settings, light and reduced motion](screenshots/settings-light-reduced-motion.jpg)
+- [Accessible operation details](screenshots/operation-details-light.jpg)
+- [Actual three-process native session](screenshots/session-running-light.jpg)
 
 ## VoiceOver: NOT VERIFIED
 
@@ -61,9 +61,11 @@ and accessibility-tree observations above cannot substitute for spoken-output
 verification. VoiceOver was restored to **off**, as confirmed in System Settings;
 the utility and settings windows and temporary test service were closed.
 
-Before #162 is marked Done, run the manual VoiceOver pass in the integrated
-verification guide: navigate titles, build/status details, operation controls,
-session stop, diagnostics and settings, and observe actual spoken/caption output.
+On 5 October 2026 the owner waived this manual VoiceOver pass as a completion
+gate for #162 and instructed us to move on. VoiceOver remains NOT VERIFIED.
+The integrated guide retains the procedure for future verification: navigate
+titles, build/status details, operation controls, session stop, diagnostics and
+settings, and observe actual spoken/caption output.
 The commands used were checked against Apple's [VoiceOver navigation commands](https://support.apple.com/en-kw/guide/voiceover/cpvokys04/mac)
 and [last spoken phrase guide](https://support.apple.com/en-euro/guide/voiceover/vo2725/mac).
-This milestone remains a draft while that required evidence is outstanding.
+The waived check does not block this milestone from merging.

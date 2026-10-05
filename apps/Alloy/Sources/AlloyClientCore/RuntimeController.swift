@@ -65,19 +65,22 @@ public final class RuntimeController {
         } catch { problem = .service(error) }
     }
 
-    public func refresh(showProgress: Bool = false) async {
+    public func refresh(showProgress: Bool = false, includeCatalog: Bool = true) async {
         guard let gateway, !busy, !snapshotRequestActive else { return }
         snapshotRequestActive = true
         refreshing = showProgress
         let ticket = epoch
         defer { refreshing = false; snapshotRequestActive = false }
         do {
-            let observation = try await gateway.observe(cursors: journal.cursors[gateway.namespace] ?? [:])
+            let needsCatalog = includeCatalog || !store.snapshot.connected
+            let observation = try await gateway.observe(cursors: journal.cursors[gateway.namespace] ?? [:],
+                                                        includeCatalog: needsCatalog)
             guard ticket == epoch else { return }
             try accept(observation, gateway: gateway)
-            if let identifier = store.preferences.selectedGameID {
+            if let identifier = store.preferences.selectedGameID,
+               needsCatalog || details?.summary.gameID != identifier {
                 details = try await gateway.request("catalog.get", IdentifierRequest(identifier), as: GameDetails.self)
-            } else { details = nil }
+            } else if store.preferences.selectedGameID == nil { details = nil }
         } catch {
             guard ticket == epoch else { return }
             connectionProblem = .service(error)
@@ -95,21 +98,23 @@ public final class RuntimeController {
             .map(OperationPresentation.init)
             .sorted { $0.update.snapshot.updatedAt > $1.update.snapshot.updatedAt }
         sessions = observation.sessions.map(SessionPresentation.init)
+        var changedJournal = false
         for operation in operations {
             let update = operation.update
             let prior = journal.cursors[gateway.namespace]?[operation.id] ?? 0
-            journal.cursors[gateway.namespace, default: [:]][operation.id] =
-                max(min(prior, update.revision), update.next.nextIndex)
+            let next = max(min(prior, update.revision), update.next.nextIndex)
+            changedJournal = changedJournal || next != prior
+            journal.cursors[gateway.namespace, default: [:]][operation.id] = next
         }
         instanceID = observation.info.instanceID
         var snapshot = ClientSnapshot()
         snapshot.connected = true
-        snapshot.phase = observation.games.isEmpty ? .empty : .available
-        snapshot.games = observation.games
+        snapshot.games = observation.games ?? store.snapshot.games
+        snapshot.phase = snapshot.games.isEmpty ? .empty : .available
         snapshot.serviceDescription = "Connected · Local development service"
         snapshot.activities = cachedActivities()
         let changed = store.snapshot.games.contains { old in
-            observation.games.contains { $0.id == old.id && $0.builds != old.builds }
+            snapshot.games.contains { $0.id == old.id && $0.builds != old.builds }
         }
         if store.snapshot != snapshot { store.update(snapshot) }
         if changed {
@@ -120,16 +125,20 @@ public final class RuntimeController {
                             supportCode: "CLIENT-BUILD-CHANGED")
             plan = nil
         }
-        if journal.cached == nil { journal.cached = [:] }
-        journal.cached?[gateway.namespace] = CachedServiceSnapshot(games: snapshot.games,
-            activities: snapshot.activities, observedAt: Date())
-        if journalUsable { try persistJournal() }
+        let cached = journal.cached?[gateway.namespace]
+        if cached?.games != snapshot.games || cached?.activities != snapshot.activities {
+            if journal.cached == nil { journal.cached = [:] }
+            journal.cached?[gateway.namespace] = CachedServiceSnapshot(games: snapshot.games,
+                activities: snapshot.activities, observedAt: Date())
+            changedJournal = true
+        }
+        if journalUsable && changedJournal { try persistJournal() }
         connectionProblem = nil
     }
 
     public func monitor() async {
         while !Task.isCancelled {
-            await refresh()
+            await refresh(includeCatalog: false)
             do { try await Task.sleep(for: .seconds(1)) } catch { return }
         }
     }
@@ -230,6 +239,8 @@ public final class RuntimeController {
     }
 
     func persistJournal() throws {
-        try storage.writeData(JSONEncoder().encode(journal), name: "requests.json")
+        let bytes = try JSONEncoder().encode(journal)
+        guard bytes.count <= 4 * 1024 * 1024 else { throw PreferencesError.unsafeStorage }
+        try storage.writeData(bytes, name: "requests.json")
     }
 }
