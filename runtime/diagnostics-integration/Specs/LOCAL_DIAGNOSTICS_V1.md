@@ -54,3 +54,37 @@ Existing redaction rejects secret-like metadata and removes supported secret
 patterns from classified fields. Its documented grammar and limitations still
 apply. Exact identities that contain supported secrets fail closed; they are
 never silently changed into a different identity.
+
+## Observed failure capture
+
+`capture ENDPOINT operation|session ID terminal|hang SECONDS` observes a target
+within a 0.1–35s monotonic budget. Each RPC gets only the remaining allowance,
+up to 5s; the native sampler uses 2–5s of the same budget and up to 0.5s additional
+tool cleanup. Host scheduling/syscall latency can add overhead; these are checked
+software budgets, not hard real-time guarantees. Caller deadlines should include
+that cleanup allowance. Ending observation does not cancel the service's work.
+
+A failed operation requires a real FAILED snapshot. The native abort case uses
+a service-recorded exit status 6, a fixed native fixture, and the proof's exact
+PID/start-time/executable-digest checked SIGABRT injection. It records native
+exit evidence, **not a symbolicated crash stack or an arbitrary-crash classifier**.
+A hang requires an actual macOS sample at `FixtureMain.run:poll` in an owned
+agent, followed by the fixture's existing 20s watchdog exit 43 and no live nodes.
+The sample primitive rechecks kernel start time before and after sampling and
+never signals the borrowed process. The runtime service retains process ownership.
+
+Capture reports `complete: false` for budget exhaustion, interruption or missing
+native evidence. Session history remains snapshot-only independently of capture
+completeness. An instance change between RPCs or after reconnect cannot be called
+a clean capture. The test pairs failed work with a successful operation and a
+normally exiting native fixture. It uses no Wine guest or real user content.
+
+The sampler's raw output is in private scratch (0700 directory/0600 file), at
+most 1 MiB of accepted data, removed on every return. Only a typed site/ownership
+summary survives; the raw module/path inventory is excluded. The sample tool's
+temporary disk output is checked after execution, not a physical disk quota.
+The proof stops/reaps all service-owned nodes before removing temporary stores.
+
+A narrow redactor extension recognizes a canonical UUID only in `request_id`:
+random protocol UUID digits must not be mistaken for a payment-card number.
+Free-text values and non-UUID identities still use the complete secret scanner.

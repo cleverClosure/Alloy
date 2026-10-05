@@ -33,6 +33,17 @@ class ServiceFixture(runtime.ServiceFixture):
         self.loaded = False
 
     def __exit__(self, *_):
+        # Ask the owning service to stop and reap every session before removing its stores.
+        if self.loaded:
+            sessions = self.request("session.list")
+            for session in sessions:
+                if session["liveNodes"]:
+                    self.request("session.stop", {"identifier": session["record"]["sessionID"]})
+            deadline = time.monotonic() + 10
+            while any(session["liveNodes"] for session in self.request("session.list")):
+                if time.monotonic() >= deadline:
+                    raise RuntimeError("owned fixture cleanup deadline")
+                time.sleep(0.05)
         self.stop_service()
         self.temporary.cleanup()
 

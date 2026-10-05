@@ -60,6 +60,19 @@ struct AdapterTests {
         }
     }
 
+    @Test func numericUUIDIsIdentityButFreeTextSecretIsNot() throws {
+        let identity = try DiagnosticIdentity.correlation(requestID: "12345678-1234-4123-8123-123456789012")
+        let event = try DiagnosticIdentity.event("runtime.test", identity, [
+            DiagnosticIdentity.field("detail", "password=planted-secret", .errorCode)
+        ])
+        #expect(event.correlation == identity)
+        #expect(event.fields.first?.value == "[REDACTED]")
+        #expect(throws: RedactionError.self) {
+            try DiagnosticIdentity.event("runtime.test",
+                DiagnosticIdentity.correlation(requestID: "password=planted-secret"), [])
+        }
+    }
+
     @Test func unclassifiedWireFieldsAreRefused() throws {
         let info = ServiceInfo(instanceID: "observed", processID: 123, userID: 501, methods: [])
         var object = try #require(JSONSerialization.jsonObject(with: RuntimeEncoding.encode(info)) as? [String: Any])
