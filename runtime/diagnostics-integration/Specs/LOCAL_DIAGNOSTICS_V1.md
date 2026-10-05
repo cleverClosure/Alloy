@@ -88,3 +88,43 @@ The proof stops/reaps all service-owned nodes before removing temporary stores.
 A narrow redactor extension recognizes a canonical UUID only in `request_id`:
 random protocol UUID digits must not be mistaken for a payment-card number.
 Free-text values and non-UUID identities still use the complete secret scanner.
+
+## Private bundle lifecycle
+
+Initialize a new store under an existing private directory with `init-store
+STORE`. `create ENDPOINT operation|session ID terminal|hang SECONDS STORE`
+performs actual capture, then seals it with the existing bundle builder. No raw
+capture JSON is written to disk. The store must be separate from the configured
+service state/content/library roots and endpoint. A bounded summary event plus
+classified observations and native artifacts comprise `events.json` in the
+unchanged offline bundle format. A complete marker cannot turn an interrupted,
+missing-artifact or contradictory capture into a clean result.
+
+Offline commands (no endpoint, service or network needed):
+
+- `summary STORE BUNDLE_UUID`: failure outcome, completeness and target ID.
+- `preview STORE BUNDLE_UUID`: verified manifest, summary and exact redacted events.
+- `export STORE BUNDLE_UUID NEW_DESTINATION`: byte-identical local bundle copy.
+- `delete STORE BUNDLE_UUID`: remove only that verified owned bundle.
+
+Stores/directories require owner-only permissions; files are 0600. Reads reject
+symlinks, hard-linked files, wrong ownership and permissive modes. Destinations
+must be new canonical paths beneath an existing private directory. Existing
+files, directories and dangling links are refused. Exports use a private sibling
+staging directory, verify the existing seal, and never silently overwrite a
+prior export. Deletion accepts a canonical UUID and validates its seal and
+identity before removing that directory; unrelated paths and service records
+are not deletion inputs. An export remains after its stored source is deleted.
+
+The existing limits remain 1 MiB per payload/manifest, 8 MiB total payload,
+30 documents and 1,024 events; this adapter additionally limits capture to 32
+observations and 1,000 body events. Lifecycle calls check a 10s monotonic work
+budget and clean their staging directories on failure. This is a checked
+software budget around bounded operations, not preemption of filesystem calls.
+Hash seals detect corruption, not malicious rewriting. Concurrent malicious
+same-UID filesystem mutation is outside this local development boundary.
+
+Only explicit test-local retention is implemented: raw sampler scratch is
+removed on return; local redacted bundles remain until explicitly deleted;
+proof fixture stores/exports are removed at test teardown. No production
+retention default, upload or consent selection is introduced.
