@@ -26,7 +26,7 @@
           "src/d3d11/d3d11_swapchain.cpp",
           "src/d3d11/d3d11_title_metrics.hpp"
         ],
-        "base": "fb4515681daefb789a4d0f403c4bdbca88f3b3de",
+        "base": "68af85e96196e1cf9f50de9fe24c70f03a1db4a7",
         "exit_code": 0,
         "materialized_paths": [
           "src/d3d11/d3d11_pipeline.cpp",
@@ -41,10 +41,10 @@
       "patch_count": 2,
       "upstream": {
         "branch": "main",
-        "commit": "fb4515681daefb789a4d0f403c4bdbca88f3b3de",
-        "commit_time": "2026-10-01T12:47:39+08:00",
+        "commit": "68af85e96196e1cf9f50de9fe24c70f03a1db4a7",
+        "commit_time": "2026-10-05T17:26:37+08:00",
         "freshness": "fresh anonymous ls-remote and filtered fetch",
-        "observed_at_utc": "2026-10-04T10:48:07Z",
+        "observed_at_utc": "2026-10-05T16:50:01Z",
         "url": "https://github.com/3Shain/dxmt.git"
       }
     },
@@ -161,7 +161,7 @@
         "commit": "3648ee97e8354bb2e6757da8bdb00c48439a561d",
         "commit_time": "2026-10-02T23:22:02-04:00",
         "freshness": "fresh anonymous ls-remote and filtered fetch",
-        "observed_at_utc": "2026-10-04T10:47:58Z",
+        "observed_at_utc": "2026-10-05T16:49:54Z",
         "url": "https://github.com/FEX-Emu/FEX.git"
       }
     },
@@ -269,6 +269,12 @@
           "parent": "420c70bdcb7615c3dc0395d162f93645f098fe56",
           "patch_sha256": "da99584650e1c0a9fe38a31608558f0cd9980968bec63adf0b22437080b48c0f",
           "status": "blocked-by-shared-stack-conflict"
+        },
+        {
+          "commit": "764f1244594748745a46a2b630bd6886d1cb75b8",
+          "parent": "420c70bdcb7615c3dc0395d162f93645f098fe56",
+          "patch_sha256": "1402e2ceee7a4565ad449281d3a4102f9af202d1807fad034329b833dcb01b18",
+          "status": "blocked-by-shared-stack-conflict"
         }
       ],
       "upstream": {
@@ -276,7 +282,7 @@
         "commit": "455e3509b98a6919fd4ad1def4803e08c41c03b2",
         "commit_time": "2026-10-02T23:15:08+02:00",
         "freshness": "fresh anonymous ls-remote and filtered fetch",
-        "observed_at_utc": "2026-10-04T10:47:30Z",
+        "observed_at_utc": "2026-10-05T16:49:43Z",
         "url": "https://gitlab.winehq.org/wine/wine.git"
       }
     }
@@ -284,7 +290,7 @@
   "input_inventory_sha256": {
     "dxmt": "7ef94f6cd166aa1fc69749dd9541ce8152de235462f3c6e9b67217c8bbf0602c",
     "fex": "5218d9492173b4868c25029fe58dcd241a58fca097ed2452c2b38501c1d7654f",
-    "wine": "9b2177ede6ab48248da62c2e52fdc338d8c2c3a7c32892672abb239c2075e09f"
+    "wine": "780e63ff9afb1bdf9f587e3f57e0cc336b277cadfc2eea2216b9bf6d545d0f88"
   },
   "scope": "first stopping conflict per branch; not total conflicts or runtime compatibility",
   "source_preservation": {

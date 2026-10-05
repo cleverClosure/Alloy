@@ -1,0 +1,106 @@
+{
+  "author": "Timur Isaev",
+  "runtime": {
+    "generationId": "rtg_76def2c40743993cff2ce99c7a1f5fd93a2b9bc246977e050a2184b340943c00",
+    "manifestDigest": "sha256:b68338d104298338bc6bb1d379fb1f004233c0d049bad86d8fdbe5fa0001d54d",
+    "path": "/tmp/alloy-177-store-b/runtime-trees/b68338d104298338bc6bb1d379fb1f004233c0d049bad86d8fdbe5fa0001d54d",
+    "treeDigest": "sha256:6fbeb915a7bb987b060d14ef6060a510ce9632a817c123799547d4bae9fd6610"
+  },
+  "runs": [
+    {
+      "label": "stock-native",
+      "exit": 0,
+      "seconds": 0.395,
+      "log": "/private/tmp/alloy-177-proof-b3/stock-native.log",
+      "expectedFailure": null,
+      "mappedFEX": []
+    },
+    {
+      "label": "all-fields",
+      "exit": 0,
+      "seconds": 0.463,
+      "log": "/private/tmp/alloy-177-proof-b3/all-fields.log",
+      "expectedFailure": null,
+      "mappedFEX": []
+    },
+    {
+      "label": "absent-fields",
+      "exit": 0,
+      "seconds": 0.405,
+      "log": "/private/tmp/alloy-177-proof-b3/absent-fields.log",
+      "expectedFailure": null,
+      "mappedFEX": []
+    },
+    {
+      "label": "disabled-import",
+      "exit": 53,
+      "seconds": 0.403,
+      "log": "/private/tmp/alloy-177-proof-b3/disabled-import.log",
+      "expectedFailure": "Importing dlls",
+      "mappedFEX": []
+    },
+    {
+      "label": "absent-cpu-refusal",
+      "exit": 1,
+      "seconds": 0.398,
+      "log": "/private/tmp/alloy-177-proof-b3/absent-cpu-refusal.log",
+      "expectedFailure": "x64 emulation not implemented",
+      "mappedFEX": []
+    },
+    {
+      "label": "fex-selection",
+      "exit": 0,
+      "seconds": 0.689,
+      "log": "/private/tmp/alloy-177-proof-b3/fex-selection.log",
+      "expectedFailure": null,
+      "mappedFEX": [
+        "/private/tmp/alloy-177-store-b/runtime-trees/b68338d104298338bc6bb1d379fb1f004233c0d049bad86d8fdbe5fa0001d54d/dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
+      ]
+    },
+    {
+      "label": "native-rejects-x64",
+      "exit": 187,
+      "seconds": 0.362,
+      "log": "/private/tmp/alloy-177-proof-b3/native-rejects-x64.log",
+      "expectedFailure": "policy-cpu-incompatible",
+      "mappedFEX": []
+    },
+    {
+      "label": "corrupt",
+      "exit": 13,
+      "seconds": 0.344,
+      "log": "/private/tmp/alloy-177-proof-b3/corrupt.log",
+      "expectedFailure": "policy-expected-digest",
+      "mappedFEX": []
+    },
+    {
+      "label": "mismatch",
+      "exit": 13,
+      "seconds": 0.344,
+      "log": "/private/tmp/alloy-177-proof-b3/mismatch.log",
+      "expectedFailure": "policy-expected-digest",
+      "mappedFEX": []
+    },
+    {
+      "label": "missing",
+      "exit": 13,
+      "seconds": 0.293,
+      "log": "/private/tmp/alloy-177-proof-b3/missing.log",
+      "expectedFailure": "policy-descriptor-missing",
+      "mappedFEX": []
+    }
+  ],
+  "status": "pass",
+  "winePatchSHA256": "1402e2ceee7a4565ad449281d3a4102f9af202d1807fad034329b833dcb01b18",
+  "guestSHA256": {
+    "native/game.exe": "e3456e5092e13158ebc1fe1859d110a6c5fa2bd3fe11d0ba1e65171477f84efe",
+    "native/launcher.exe": "6fd8734561c9738e3d7f2663ceb3383a31a4c1238343ba332dd1340ebd561c07",
+    "native/single.exe": "49fff5b5e04a68b6b90e177b0319ce80521a2e44f3aee82b596da79a40e2c975",
+    "native/unknown.exe": "26ce273026cab7bae9550f2e0f828f96b8a44cc79235220ff9ae72b1181c7e32",
+    "x64/game.exe": "e3456e5092e13158ebc1fe1859d110a6c5fa2bd3fe11d0ba1e65171477f84efe",
+    "x64/launcher.exe": "58dc27612b8e0f1cee8046d93658311d2539e1aa6d3db4aed24131daab1b783b",
+    "x64/single.exe": "b4ec318cb1a8885b2846b257c3fb730874afa83fb9c77a2dcad7710ecece3c54",
+    "x64/unknown.exe": "2a2d39c686eca0f777c9e865ff0fcb2e4800b8aae7e25d1ddf77ee49ef258f08"
+  },
+  "runtimeUnchanged": true
+}

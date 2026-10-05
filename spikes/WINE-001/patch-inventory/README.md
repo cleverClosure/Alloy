@@ -7,7 +7,7 @@ Wine maintenance burden explicit. [INVENTORY.md](INVENTORY.md) is the readable
 generated report; [inventory.json](inventory.json) is the equivalent data for
 later drift tooling. [annotations.json](annotations.json) is the reviewed input.
 
-The current ceiling is **28 shared commit IDs, one supplemental patch, and 29
+The current ceiling is **28 shared commit IDs, two supplemental patches, and 30
 total maintenance entries**. All three limits are enforced independently.
 The full-drill trigger in [result 09](../results/2026-07-24-09-first-rebase-drill.md)
 references this ceiling. [Result 13](../results/2026-10-04-13-wine-patch-inventory.md)
@@ -43,6 +43,12 @@ ceases to count as an extra supplement; branch/output changes still require a
 reviewed regeneration. A cherry-picked equivalent with a new ID requires a
 manual annotation/supplement update. This report does not install #111 or claim
 that the shared runtime includes it.
+
+Issue #177 adds `policy-probe/wine-v2.patch` as the second explicit supplement.
+It pins the v2 loader integration without rewriting the shared live policy
+commit or disturbing unrelated dirty files. The one-item increase and eventual
+folding plan are documented in the [v2 contract](../policy-probe/SNAPSHOT_V2.md).
+Both supplements are included in the combined inventory and replay evidence.
 
 ## Regenerate and check
 

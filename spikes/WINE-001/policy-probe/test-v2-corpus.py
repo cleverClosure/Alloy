@@ -72,12 +72,24 @@ def corpus(valid):
     return cases
 
 
+def verify_embedded_parser():
+    patch = (ROOT / "wine-v2.patch").read_text()
+    section = patch.split("diff --git a/dlls/ntdll/alloy_snapshot_v2.h b/dlls/ntdll/alloy_snapshot_v2.h\n", 1)[1]
+    section = section.split("diff --git ", 1)[0]
+    embedded = "\n".join(line[1:] for line in section.splitlines()
+                         if line.startswith("+") and not line.startswith("+++")) + "\n"
+    if embedded != (ROOT / "native/snapshot-v2.h").read_text():
+        raise RuntimeError("Wine patch parser differs from the sanitizer-tested native header")
+
+
 def main():
+    verify_embedded_parser()
     compiler = Path(os.environ.get("ALLOY_POLICY_COMPILER", ROOT / ".build/debug/alloy-policy-compile"))
     with tempfile.TemporaryDirectory(prefix="alloy-policy-v2-") as directory:
         scratch = Path(directory)
         parser = scratch / "validate"
-        run(["clang", "-Wall", "-Wextra", "-Werror", "-Wno-deprecated-declarations", "-fsanitize=undefined,address",
+        run(["xcrun", "--sdk", "macosx", "clang", "-Wall", "-Wextra", "-Werror",
+             "-Wno-deprecated-declarations", "-fsanitize=undefined,address",
              "-g", ROOT / "native/validate.c", "-o", parser])
         policy = {"id": "default", "graphicsProvider": "dxmt", "providerDirectory": "C:\\providers",
                   "cpuProvider": "fex-arm64ec", "workingDirectory": "C:\\game",

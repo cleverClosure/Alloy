@@ -24,10 +24,10 @@
     "fex_live_commit_ids": 18,
     "fex_retained_commit_ids": 20,
     "wine_shared_commit_ids": 28,
-    "wine_supplemental_patches": 1,
-    "wine_total_maintenance_items": 29
+    "wine_supplemental_patches": 2,
+    "wine_total_maintenance_items": 30
   },
-  "drill_sha256": "418c2990c528cab2a6865681bf5283d91100226cb8ae3c7a59059f001e454721",
+  "drill_sha256": "047598a92b5f2757e4246d562aacd483668bf54144db346d843f06cec24f9503",
   "dxmt_apply": "clean",
   "meaning": "inventory and recorded first-stop compatibility evidence reproduced; conflicts are findings, not runtime approval",
   "preservation_snapshot_sha256": "f0a1aeb18ca4d76cc8bc05626b6c8c6e9c59321a34e48ed8594c9868662f4d9d",
@@ -36,10 +36,10 @@
   "upstreams": {
     "dxmt": {
       "branch": "main",
-      "commit": "fb4515681daefb789a4d0f403c4bdbca88f3b3de",
-      "commit_time": "2026-10-01T12:47:39+08:00",
+      "commit": "68af85e96196e1cf9f50de9fe24c70f03a1db4a7",
+      "commit_time": "2026-10-05T17:26:37+08:00",
       "freshness": "fresh anonymous ls-remote and filtered fetch",
-      "observed_at_utc": "2026-10-04T10:48:07Z",
+      "observed_at_utc": "2026-10-05T16:50:01Z",
       "url": "https://github.com/3Shain/dxmt.git"
     },
     "fex": {
@@ -47,7 +47,7 @@
       "commit": "3648ee97e8354bb2e6757da8bdb00c48439a561d",
       "commit_time": "2026-10-02T23:22:02-04:00",
       "freshness": "fresh anonymous ls-remote and filtered fetch",
-      "observed_at_utc": "2026-10-04T10:47:58Z",
+      "observed_at_utc": "2026-10-05T16:49:54Z",
       "url": "https://github.com/FEX-Emu/FEX.git"
     },
     "wine": {
@@ -55,7 +55,7 @@
       "commit": "455e3509b98a6919fd4ad1def4803e08c41c03b2",
       "commit_time": "2026-10-02T23:15:08+02:00",
       "freshness": "fresh anonymous ls-remote and filtered fetch",
-      "observed_at_utc": "2026-10-04T10:47:30Z",
+      "observed_at_utc": "2026-10-05T16:49:43Z",
       "url": "https://gitlab.winehq.org/wine/wine.git"
     }
   },

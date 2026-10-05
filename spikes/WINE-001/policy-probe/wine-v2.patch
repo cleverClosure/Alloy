@@ -1,0 +1,758 @@
+diff --git a/dlls/ntdll/alloy_policy.h b/dlls/ntdll/alloy_policy.h
+index 25b1de3..a00e617 100644
+--- a/dlls/ntdll/alloy_policy.h
++++ b/dlls/ntdll/alloy_policy.h
+@@ -21,59 +21,19 @@
+ #ifndef __NTDLL_ALLOY_POLICY_H
+ #define __NTDLL_ALLOY_POLICY_H
+ 
+-#define ALLOY_POLICY_SHA256_SIZE       32
+-#define ALLOY_POLICY_ID_MAX            64
+-#define ALLOY_POLICY_PROVIDER_MAX      64
+-#define ALLOY_POLICY_PROVIDER_PATH_MAX 512
+-#define ALLOY_POLICY_MODULE_MAX        32
+-#define ALLOY_POLICY_ROUTE_MAX         8
++#define AP2_TYPES_ONLY
++#include "alloy_snapshot_v2.h"
++#undef AP2_TYPES_ONLY
+ 
+-enum alloy_policy_load_order
+-{
+-    ALLOY_POLICY_LOAD_DISABLED = 1,
+-    ALLOY_POLICY_LOAD_NATIVE,
+-    ALLOY_POLICY_LOAD_BUILTIN,
+-    ALLOY_POLICY_LOAD_NATIVE_BUILTIN,
+-    ALLOY_POLICY_LOAD_BUILTIN_NATIVE,
+-};
++#define ALLOY_POLICY_SHA256_SIZE 32
+ 
+ struct alloy_policy_bootstrap_params
+ {
+-    BYTE  image_sha256[ALLOY_POLICY_SHA256_SIZE];
+-    WCHAR provider_path[ALLOY_POLICY_PROVIDER_PATH_MAX];
+-    char  policy_id[ALLOY_POLICY_ID_MAX];
+-    char  graphics_provider[ALLOY_POLICY_PROVIDER_MAX];
++    BYTE image_sha256[32];
+     ULONG query_only;
+     ULONG default_policy;
++    struct ap2_entry entry;
++    char reason[64];
+ };
+ 
+-struct alloy_policy_snapshot_header
+-{
+-    BYTE  magic[8];
+-    ULONG version;
+-    ULONG byte_order;
+-    ULONG header_size;
+-    ULONG entry_size;
+-    ULONG entry_count;
+-    ULONG default_index;
+-    BYTE  source_digest[ALLOY_POLICY_SHA256_SIZE];
+-};
+-
+-struct alloy_policy_snapshot_route
+-{
+-    char  module[ALLOY_POLICY_MODULE_MAX];
+-    ULONG load_order;
+-};
+-
+-struct alloy_policy_snapshot_entry
+-{
+-    BYTE  image_sha256[ALLOY_POLICY_SHA256_SIZE];
+-    char  policy_id[ALLOY_POLICY_ID_MAX];
+-    char  graphics_provider[ALLOY_POLICY_PROVIDER_MAX];
+-    char  provider_path[ALLOY_POLICY_PROVIDER_PATH_MAX];
+-    ULONG route_count;
+-    ULONG reserved;
+-    struct alloy_policy_snapshot_route routes[ALLOY_POLICY_ROUTE_MAX];
+-};
+-
+-#endif /* __NTDLL_ALLOY_POLICY_H */
++#endif
+diff --git a/dlls/ntdll/alloy_snapshot_v2.h b/dlls/ntdll/alloy_snapshot_v2.h
+new file mode 100644
+index 0000000..2d6e67f
+--- /dev/null
++++ b/dlls/ntdll/alloy_snapshot_v2.h
+@@ -0,0 +1,210 @@
++/* Author: Timur Isaev
++ * Bounded, allocation-free ALLOYP02 validator shared by the Wine policy patch
++ * and the host malformed-input control. Only little-endian hosts are supported.
++ */
++#ifndef ALLOY_SNAPSHOT_V2_H
++#define ALLOY_SNAPSHOT_V2_H
++
++#include <stddef.h>
++#include <stdint.h>
++#include <string.h>
++
++#define AP2_HEADER 96
++#define AP2_ENTRY 7472
++#define AP2_COUNT 1024
++#define AP2_ROUTES 32
++#define AP2_ENV 16
++#define AP2_MAX (AP2_HEADER + AP2_ENTRY * AP2_COUNT)
++
++struct ap2_route
++{
++    char module[32];
++    uint32_t order;
++};
++struct ap2_environment
++{
++    char key[64];
++    char value[256];
++};
++struct ap2_entry
++{
++    unsigned char image[32];
++    char id[64];
++    char graphics[64];
++    char directory[512];
++    uint32_t presence;
++    uint32_t cpu;
++    uint32_t routes_count;
++    uint32_t environment_count;
++    char working[512];
++    struct ap2_route routes[AP2_ROUTES];
++    struct ap2_environment environment[AP2_ENV];
++};
++struct ap2_header
++{
++    unsigned char magic[8];
++    uint32_t version, endian, header_size, entry_size, count, default_index;
++    unsigned char source_digest[32], content_digest[32];
++};
++
++#ifndef AP2_TYPES_ONLY
++
++/* NULL means valid; errors are stable public reason names. Integrity is checked
++ * by the caller on its private immutable copy before invoking this parser. */
++static int ap2_zero(const void *value, size_t size)
++{
++    const unsigned char *bytes = value;
++    while (size--)
++        if (*bytes++)
++            return 0;
++    return 1;
++}
++
++static int ap2_text(const char *text, size_t size)
++{
++    size_t index;
++    for (index = 0; index < size; index++)
++    {
++        if (!text[index])
++            return ap2_zero(text + index, size - index);
++        if ((unsigned char)text[index] < 32 || (unsigned char)text[index] > 126)
++            return 0;
++    }
++    return 0;
++}
++
++static int ap2_identifier(const char *text)
++{
++    if (!*text)
++        return 0;
++    for (; *text; text++)
++        if (!((*text >= 'a' && *text <= 'z') || (*text >= 'A' && *text <= 'Z') ||
++              (*text >= '0' && *text <= '9') || *text == '_' || *text == '-' || *text == '.'))
++            return 0;
++    return 1;
++}
++
++static int ap2_path(const char *text)
++{
++    const char *start, *end;
++    if (!((*text >= 'a' && *text <= 'z') || (*text >= 'A' && *text <= 'Z')) || text[1] != ':' ||
++        (text[2] != '\\' && text[2] != '/'))
++        return 0;
++    if (strpbrk(text + 2, ":;*?\"<>|"))
++        return 0;
++    start = text + 3;
++    for (;;)
++    {
++        end = start + strcspn(start, "\\/");
++        if (end > start && (end[-1] == '.' || end[-1] == ' '))
++            return 0;
++        if (!*end)
++            break;
++        start = end + 1;
++    }
++    return 1;
++}
++
++static int ap2_environment_key(const char *key)
++{
++    if (!*key)
++        return 0;
++    if (!strncmp(key, "ALLOY_", 6) || !strncmp(key, "WINE", 4) || !strncmp(key, "DYLD_", 5) ||
++        !strncmp(key, "LD_", 3) || !strncmp(key, "FEX", 3) || !strcmp(key, "PATH") ||
++        !strcmp(key, "HOME") || !strcmp(key, "TMPDIR") || !strcmp(key, "SYSTEMROOT") ||
++        !strcmp(key, "SYSTEMDRIVE") || !strcmp(key, "COMSPEC"))
++        return 0;
++    for (; *key; key++)
++        if (!((*key >= 'A' && *key <= 'Z') || (*key >= '0' && *key <= '9') || *key == '_'))
++            return 0;
++    return 1;
++}
++
++static const char *ap2_policy(const struct ap2_entry *entry)
++{
++    uint32_t index;
++    if (!ap2_text(entry->id, sizeof(entry->id)) || !ap2_identifier(entry->id) ||
++        !ap2_text(entry->graphics, sizeof(entry->graphics)) ||
++        !ap2_text(entry->directory, sizeof(entry->directory)) ||
++        !ap2_text(entry->working, sizeof(entry->working)) || (entry->presence & ~31u) ||
++        entry->cpu > 2 || entry->routes_count > AP2_ROUTES || entry->environment_count > AP2_ENV)
++        return "policy-invalid-field";
++    if (entry->presence & 1)
++    {
++        if (!ap2_identifier(entry->graphics) || !ap2_path(entry->directory))
++            return "policy-invalid-field";
++    }
++    else if (*entry->graphics || *entry->directory)
++        return "policy-noncanonical";
++    if (!!(entry->presence & 2) != !!entry->cpu)
++        return "policy-noncanonical";
++    if ((entry->presence & 8) ? !ap2_path(entry->working) : !!*entry->working)
++        return "policy-invalid-field";
++    if ((!(entry->presence & 4) && entry->environment_count) ||
++        (!(entry->presence & 16) && entry->routes_count))
++        return "policy-noncanonical";
++    for (index = 0; index < AP2_ROUTES; index++)
++    {
++        const struct ap2_route *route = &entry->routes[index];
++        const char *name = route->module;
++        if (index >= entry->routes_count)
++        {
++            if (!ap2_zero(route, sizeof(*route)))
++                return "policy-noncanonical";
++            continue;
++        }
++        if (!ap2_text(name, sizeof(route->module)) || !ap2_identifier(name) || route->order < 1 ||
++            route->order > 5 || !strcmp(name, "ntdll") || !strcmp(name, "kernel32") ||
++            !strcmp(name, "kernelbase") || !strcmp(name, "libarm64ecfex"))
++            return "policy-invalid-field";
++        if (strpbrk(name, "ABCDEFGHIJKLMNOPQRSTUVWXYZ") ||
++            (strlen(name) >= 4 && !strcmp(name + strlen(name) - 4, ".dll")) ||
++            (index && strcmp(entry->routes[index - 1].module, name) >= 0))
++            return "policy-noncanonical";
++    }
++    for (index = 0; index < AP2_ENV; index++)
++    {
++        const struct ap2_environment *env = &entry->environment[index];
++        if (index >= entry->environment_count)
++        {
++            if (!ap2_zero(env, sizeof(*env)))
++                return "policy-noncanonical";
++            continue;
++        }
++        if (!ap2_text(env->key, sizeof(env->key)) || !ap2_environment_key(env->key) ||
++            !ap2_text(env->value, sizeof(env->value)))
++            return "policy-invalid-field";
++        if (index && strcmp(entry->environment[index - 1].key, env->key) >= 0)
++            return "policy-noncanonical";
++    }
++    return NULL;
++}
++
++static const char *ap2_validate(const void *bytes, size_t size)
++{
++    const struct ap2_header *header = bytes;
++    const struct ap2_entry *entries;
++    uint32_t index;
++    const char *reason;
++    if (size >= 8 && !memcmp(bytes, "ALLOYP01", 8))
++        return "policy-legacy-version";
++    if (size < AP2_HEADER || size > AP2_MAX || sizeof(*header) != AP2_HEADER ||
++        sizeof(struct ap2_entry) != AP2_ENTRY || memcmp(header->magic, "ALLOYP02", 8) ||
++        header->version != 2 || header->endian != 0x01020304 || header->header_size != AP2_HEADER ||
++        header->entry_size != AP2_ENTRY || !header->count || header->count > AP2_COUNT ||
++        header->default_index || size != AP2_HEADER + (size_t)header->count * AP2_ENTRY)
++        return "policy-layout";
++    entries = (const struct ap2_entry *)(header + 1);
++    for (index = 0; index < header->count; index++)
++    {
++        if ((index == 0) != !!ap2_zero(entries[index].image, 32) ||
++            (index > 1 && memcmp(entries[index - 1].image, entries[index].image, 32) >= 0))
++            return "policy-noncanonical";
++        reason = ap2_policy(&entries[index]);
++        if (reason)
++            return reason;
++    }
++    return NULL;
++}
++#endif /* AP2_TYPES_ONLY */
++#endif
+diff --git a/dlls/ntdll/loader.c b/dlls/ntdll/loader.c
+index aca6ba8..3fde7db 100644
+--- a/dlls/ntdll/loader.c
++++ b/dlls/ntdll/loader.c
+@@ -4289,6 +4289,8 @@ static void open_known_dll_ntdir(void)
+     NtOpenDirectoryObject( &known_dlls_ntdir, DIRECTORY_ALL_ACCESS, &attr );
+ }
+ 
++static ULONG alloy_cpu_provider;
++
+ #ifdef __arm64ec__
+ 
+ static void load_arm64ec_module(void)
+@@ -4317,6 +4319,8 @@ static void load_arm64ec_module(void)
+         NtClose( key );
+     }
+ 
++    if (alloy_cpu_provider == 2) wcscpy( module, L"C:\\windows\\system32\\libarm64ecfex.dll" );
++
+     if ((status = load_dll( NULL, module, 0, &wm, FALSE )) ||
+         (status = arm64ec_process_init( wm->ldr.DllBase )))
+     {
+@@ -4500,11 +4504,61 @@ static NTSTATUS prepend_alloy_provider_path( const WCHAR *provider_path )
+     return STATUS_SUCCESS;
+ }
+ 
++static void alloy_ascii_to_wide( const char *source, WCHAR *dest )
++{
++    while ((*dest++ = (unsigned char)*source++));
++}
++
++static NTSTATUS alloy_apply_process_fields( const struct ap2_entry *policy, const char **reason )
++{
++    WCHAR name[64], value[512];
++    UNICODE_STRING nameW, valueW;
++    NTSTATUS status;
++    unsigned int i;
++    const IMAGE_NT_HEADERS *nt = RtlImageNtHeader( NtCurrentTeb()->Peb->ImageBaseAddress );
++
++    *reason = "policy-cpu-incompatible";
++    if (!nt) return STATUS_INVALID_IMAGE_FORMAT;
++    alloy_cpu_provider = policy->cpu;
++    /* Native-only is fail-closed for translated or hybrid x64 images. The
++     * ARM64EC loader itself needs translator callbacks; do not promise otherwise. */
++    if (policy->cpu == 1 && nt->FileHeader.Machine != IMAGE_FILE_MACHINE_ARM64)
++        return STATUS_NOT_SUPPORTED;
++    if (policy->cpu == 2 && nt->FileHeader.Machine != IMAGE_FILE_MACHINE_ARM64 &&
++        nt->FileHeader.Machine != IMAGE_FILE_MACHINE_AMD64 &&
++        nt->FileHeader.Machine != IMAGE_FILE_MACHINE_ARM64EC)
++        return STATUS_NOT_SUPPORTED;
++    *reason = "policy-environment-apply";
++    for (i = 0; i < policy->environment_count; i++)
++    {
++        alloy_ascii_to_wide( policy->environment[i].key, name );
++        alloy_ascii_to_wide( policy->environment[i].value, value );
++        RtlInitUnicodeString( &nameW, name );
++        RtlInitUnicodeString( &valueW, value );
++        if ((status = RtlSetEnvironmentVariable( NULL, &nameW, &valueW ))) return status;
++    }
++    if (policy->presence & 8)
++    {
++        *reason = "policy-working-directory-apply";
++        alloy_ascii_to_wide( policy->working, value );
++        RtlInitUnicodeString( &valueW, value );
++        if ((status = RtlSetCurrentDirectory_U( &valueW ))) return status;
++    }
++    if (policy->presence & 1)
++    {
++        *reason = "policy-provider-path-apply";
++        alloy_ascii_to_wide( policy->directory, value );
++        if ((status = prepend_alloy_provider_path( value ))) return status;
++    }
++    return STATUS_SUCCESS;
++}
++
+ static void alloy_policy_bootstrap(void)
+ {
+     static const char hex[] = "0123456789abcdef";
+     struct alloy_policy_bootstrap_params params = {0};
+     char digest[ALLOY_POLICY_SHA256_SIZE * 2 + 1];
++    const char *reason = "policy-image-hash";
+     NTSTATUS status;
+     unsigned int i;
+ 
+@@ -4515,7 +4569,7 @@ static void alloy_policy_bootstrap(void)
+     params.query_only = FALSE;
+     if ((status = hash_process_image( params.image_sha256 ))) goto failed;
+     if ((status = WINE_UNIX_CALL( unix_alloy_policy_bootstrap, &params ))) goto failed;
+-    if ((status = prepend_alloy_provider_path( params.provider_path ))) goto failed;
++    if ((status = alloy_apply_process_fields( &params.entry, &reason ))) goto failed;
+ 
+     for (i = 0; i < ALLOY_POLICY_SHA256_SIZE; i++)
+     {
+@@ -4523,12 +4577,13 @@ static void alloy_policy_bootstrap(void)
+         digest[i * 2 + 1] = hex[params.image_sha256[i] & 0x0f];
+     }
+     digest[sizeof(digest) - 1] = 0;
+-    TRACE_(alloy)( "selected policy %s graphics %s default %lu image %s before imports\n",
+-                   params.policy_id, params.graphics_provider, params.default_policy, digest );
++    TRACE_(alloy)( "selected policy %s graphics %s cpu %u default %lu image %s before imports\n",
++                   params.entry.id, params.entry.graphics, params.entry.cpu, params.default_policy, digest );
+     return;
+ 
+ failed:
+-    MESSAGE( "wine: Alloy policy bootstrap failed for %s, status %lx\n",
++    MESSAGE( "wine: Alloy policy failure %s for %s, status %lx\n",
++             params.reason[0] ? params.reason : reason,
+              debugstr_w(NtCurrentTeb()->Peb->ProcessParameters->ImagePathName.Buffer), status );
+     NtTerminateProcess( GetCurrentProcess(), status );
+ }
+diff --git a/dlls/ntdll/unix/alloy_policy.c b/dlls/ntdll/unix/alloy_policy.c
+index 8128d52..ff4f4ff 100644
+--- a/dlls/ntdll/unix/alloy_policy.c
++++ b/dlls/ntdll/unix/alloy_policy.c
+@@ -23,252 +23,161 @@
+ #endif
+ 
+ #include "config.h"
+-
+ #include <errno.h>
+ #include <fcntl.h>
+ #include <limits.h>
+ #include <stdlib.h>
+ #include <string.h>
+-#include <strings.h>
+-#include <sys/mman.h>
+ #include <sys/stat.h>
+ #include <unistd.h>
++#ifdef __APPLE__
++#include <CommonCrypto/CommonDigest.h>
++#endif
+ 
+ #include "ntstatus.h"
+ #define WIN32_NO_STATUS
+ #include "windef.h"
+ #include "winternl.h"
++/* unix_private.h includes the types-only interface, so load the parser first. */
++#include "alloy_snapshot_v2.h"
+ #include "unix_private.h"
+ #include "alloy_policy.h"
+ 
+-static const BYTE snapshot_magic[8] = {'A','L','L','O','Y','P','0','1'};
+-
+-C_ASSERT( sizeof(struct alloy_policy_snapshot_header) == 64 );
+-C_ASSERT( sizeof(struct alloy_policy_snapshot_route) == 36 );
+-C_ASSERT( sizeof(struct alloy_policy_snapshot_entry) == 968 );
+-
+-static BOOL valid_string( const char *str, size_t size )
+-{
+-    const char *end = memchr( str, 0, size );
+-
+-    if (!end) return FALSE;
+-    while (++end < str + size) if (*end) return FALSE;
+-    return TRUE;
+-}
+-
+-static BOOL valid_identifier( const char *value )
+-{
+-    const unsigned char *ptr = (const unsigned char *)value;
+-
+-    if (!*ptr) return FALSE;
+-    for (; *ptr; ptr++)
+-        if (!((*ptr >= '0' && *ptr <= '9') || (*ptr >= 'A' && *ptr <= 'Z') ||
+-              (*ptr >= 'a' && *ptr <= 'z') || *ptr == '-' || *ptr == '.' || *ptr == '_'))
+-            return FALSE;
+-    return TRUE;
+-}
+-
+-static BOOL valid_provider_path( const char *path )
++static NTSTATUS policy_failure( struct alloy_policy_bootstrap_params *params, const char *reason )
+ {
+-    const unsigned char *ptr = (const unsigned char *)path;
+-
+-    if (!((ptr[0] >= 'A' && ptr[0] <= 'Z') || (ptr[0] >= 'a' && ptr[0] <= 'z')) ||
+-        ptr[1] != ':' || (ptr[2] != '\\' && ptr[2] != '/'))
+-        return FALSE;
+-    for (; *ptr; ptr++)
+-        if (*ptr < 0x20 || *ptr >= 0x7f || *ptr == ';') return FALSE;
+-    return TRUE;
++    strcpy( params->reason, reason );
++    return STATUS_INVALID_PARAMETER;
+ }
+ 
+-static BOOL valid_module( const char *module )
++static BOOL parse_digest( const char *text, BYTE digest[32] )
+ {
+-    return valid_identifier( module );
+-}
+-
+-static BOOL zero_digest( const BYTE digest[ALLOY_POLICY_SHA256_SIZE] )
+-{
+-    unsigned int i;
+-
+-    for (i = 0; i < ALLOY_POLICY_SHA256_SIZE; i++) if (digest[i]) return FALSE;
+-    return TRUE;
+-}
+-
+-static enum loadorder map_load_order( ULONG order )
+-{
+-    switch (order)
++    unsigned int i, value;
++    if (!text || strlen(text) != 64) return FALSE;
++    for (i = 0; i < 64; i++)
+     {
+-    case ALLOY_POLICY_LOAD_DISABLED:       return LO_DISABLED;
+-    case ALLOY_POLICY_LOAD_NATIVE:         return LO_NATIVE;
+-    case ALLOY_POLICY_LOAD_BUILTIN:        return LO_BUILTIN;
+-    case ALLOY_POLICY_LOAD_NATIVE_BUILTIN: return LO_NATIVE_BUILTIN;
+-    case ALLOY_POLICY_LOAD_BUILTIN_NATIVE: return LO_BUILTIN_NATIVE;
+-    default:                               return LO_INVALID;
++        if (text[i] >= '0' && text[i] <= '9') value = text[i] - '0';
++        else if (text[i] >= 'a' && text[i] <= 'f') value = text[i] - 'a' + 10;
++        else return FALSE;
++        if (!(i & 1)) digest[i / 2] = value << 4;
++        else digest[i / 2] |= value;
+     }
++    return TRUE;
+ }
+ 
+-static BOOL valid_entry( const struct alloy_policy_snapshot_entry *entry )
++static BOOL hash_bytes( const void *bytes, size_t size, BYTE result[32] )
+ {
+-    unsigned int i, j;
+-
+-    if (!valid_string( entry->policy_id, sizeof(entry->policy_id) ) ||
+-        !valid_identifier( entry->policy_id ))
+-        return FALSE;
+-    if (!valid_string( entry->graphics_provider, sizeof(entry->graphics_provider) ) ||
+-        !valid_identifier( entry->graphics_provider ))
+-        return FALSE;
+-    if (!valid_string( entry->provider_path, sizeof(entry->provider_path) ) ||
+-        !valid_provider_path( entry->provider_path ))
+-        return FALSE;
+-    if (entry->reserved || !entry->route_count || entry->route_count > ALLOY_POLICY_ROUTE_MAX)
+-        return FALSE;
+-
+-    for (i = 0; i < entry->route_count; i++)
+-    {
+-        const struct alloy_policy_snapshot_route *route = &entry->routes[i];
+-
+-        if (!valid_string( route->module, sizeof(route->module) ) ||
+-            !valid_module( route->module ) || map_load_order( route->load_order ) == LO_INVALID)
+-            return FALSE;
+-        for (j = 0; j < i; j++)
+-            if (!strcasecmp( route->module, entry->routes[j].module )) return FALSE;
+-    }
+-    for (; i < ALLOY_POLICY_ROUTE_MAX; i++)
+-        if (entry->routes[i].module[0] || entry->routes[i].load_order) return FALSE;
++#ifdef __APPLE__
++    CC_SHA256( bytes, size, result );
+     return TRUE;
++#else
++    return FALSE;
++#endif
+ }
+ 
+-static NTSTATUS validate_snapshot( const struct alloy_policy_snapshot_header *header, size_t size )
++static NTSTATUS verify_snapshot( struct alloy_policy_bootstrap_params *params, BYTE *bytes,
++                                  size_t size, const BYTE expected[32] )
+ {
+-    const struct alloy_policy_snapshot_entry *entries;
+-    size_t expected_size;
+-    unsigned int i;
+-
+-    if (size < sizeof(*header) || memcmp( header->magic, snapshot_magic, sizeof(snapshot_magic) ))
+-        return STATUS_FILE_CORRUPT_ERROR;
+-    if (header->version != 1 || header->byte_order != 0x01020304)
+-        return STATUS_REVISION_MISMATCH;
+-    if (header->header_size != sizeof(*header) ||
+-        header->entry_size != sizeof(struct alloy_policy_snapshot_entry) ||
+-        !header->entry_count || header->entry_count > 4096 || header->default_index)
+-        return STATUS_FILE_CORRUPT_ERROR;
+-    if (header->entry_count > (SIZE_MAX - sizeof(*header)) / header->entry_size)
+-        return STATUS_FILE_CORRUPT_ERROR;
+-    expected_size = sizeof(*header) + header->entry_count * header->entry_size;
+-    if (size != expected_size) return STATUS_FILE_CORRUPT_ERROR;
+-
+-    entries = (const struct alloy_policy_snapshot_entry *)(header + 1);
+-    if (!zero_digest( entries[0].image_sha256 ) || !valid_entry( &entries[0] ))
+-        return STATUS_FILE_CORRUPT_ERROR;
+-    for (i = 1; i < header->entry_count; i++)
+-    {
+-        if (zero_digest( entries[i].image_sha256 ) || !valid_entry( &entries[i] ))
+-            return STATUS_FILE_CORRUPT_ERROR;
+-        if (i > 1 && memcmp( entries[i - 1].image_sha256, entries[i].image_sha256,
+-                            ALLOY_POLICY_SHA256_SIZE ) >= 0)
+-            return STATUS_FILE_CORRUPT_ERROR;
+-    }
++    BYTE actual[32], content[32];
++    const char *reason;
++    if (!hash_bytes( bytes, size, actual )) return policy_failure( params, "policy-unsupported-host" );
++    if (memcmp( expected, actual, 32 )) return policy_failure( params, "policy-expected-digest" );
++    if (size >= 8 && !memcmp( bytes, "ALLOYP01", 8 ))
++        return policy_failure( params, "policy-legacy-version" );
++    if (size < AP2_HEADER) return policy_failure( params, "policy-layout" );
++    memcpy( content, bytes + 64, 32 );
++    memset( bytes + 64, 0, 32 );
++    hash_bytes( bytes, size, actual );
++    memcpy( bytes + 64, content, 32 );
++    if (memcmp( content, actual, 32 )) return policy_failure( params, "policy-integrity" );
++    hash_bytes( bytes + AP2_HEADER, size - AP2_HEADER, actual );
++    if (memcmp( bytes + 32, actual, 32 )) return policy_failure( params, "policy-integrity" );
++    if ((reason = ap2_validate( bytes, size ))) return policy_failure( params, reason );
+     return STATUS_SUCCESS;
+ }
+ 
+-static const struct alloy_policy_snapshot_entry *find_entry(
+-    const struct alloy_policy_snapshot_header *header,
+-    const BYTE digest[ALLOY_POLICY_SHA256_SIZE], BOOL *used_default )
++static NTSTATUS select_entry( struct alloy_policy_bootstrap_params *params,
++                              const struct ap2_header *header )
+ {
+-    const struct alloy_policy_snapshot_entry *entries =
+-        (const struct alloy_policy_snapshot_entry *)(header + 1);
+-    unsigned int low = 1, high = header->entry_count;
+-
++    const struct ap2_entry *entries = (const struct ap2_entry *)(header + 1);
++    unsigned int low = 1, high = header->count, index = 0, i, j;
++    params->default_policy = TRUE;
+     while (low < high)
+     {
+         unsigned int mid = low + (high - low) / 2;
+-        int ret = memcmp( digest, entries[mid].image_sha256, ALLOY_POLICY_SHA256_SIZE );
+-
+-        if (ret < 0) high = mid;
+-        else if (ret > 0) low = mid + 1;
++        int order = memcmp( params->image_sha256, entries[mid].image, 32 );
++        if (order < 0) high = mid;
++        else if (order > 0) low = mid + 1;
+         else
+         {
+-            *used_default = FALSE;
+-            return &entries[mid];
++            index = mid;
++            params->default_policy = FALSE;
++            break;
+         }
+     }
+-    *used_default = TRUE;
+-    return &entries[0];
+-}
+-
+-static NTSTATUS parse_snapshot_fd( int *fd )
+-{
+-    const char *value = getenv( "ALLOY_POLICY_SNAPSHOT_FD" );
+-    char *end;
+-    long number;
+-
+-    if (!value) return STATUS_NOT_FOUND;
+-    errno = 0;
+-    number = strtol( value, &end, 10 );
+-    if (errno || end == value || *end || number < 3 || number > INT_MAX)
+-        return STATUS_INVALID_PARAMETER;
+-    *fd = number;
+-    return STATUS_SUCCESS;
+-}
+-
+-static NTSTATUS apply_entry( const struct alloy_policy_snapshot_entry *entry,
+-                             struct alloy_policy_bootstrap_params *params, BOOL used_default )
+-{
+-    unsigned int i, len;
+-
+-    len = ntdll_umbstowcs( entry->provider_path, strlen(entry->provider_path) + 1,
+-                           params->provider_path, ARRAY_SIZE(params->provider_path) );
+-    if (!len || params->provider_path[len - 1]) return STATUS_NAME_TOO_LONG;
+-
+-    for (i = 0; i < entry->route_count; i++)
++    memcpy( &params->entry, &entries[index], sizeof(params->entry) );
++    for (i = 0; i < params->entry.routes_count; i++)
+     {
+-        WCHAR module[ALLOY_POLICY_MODULE_MAX];
+-        enum loadorder order = map_load_order( entry->routes[i].load_order );
+-
+-        len = ntdll_umbstowcs( entry->routes[i].module, strlen(entry->routes[i].module) + 1,
+-                               module, ARRAY_SIZE(module) );
+-        if (!len || module[len - 1] || !set_process_load_order( module, order ))
+-            return STATUS_NO_MEMORY;
++        WCHAR module[32];
++        enum loadorder order;
++        const struct ap2_route *route = &params->entry.routes[i];
++        for (j = 0; j < 32; j++) module[j] = (unsigned char)route->module[j];
++        switch (route->order)
++        {
++        case 1: order = LO_DISABLED; break;
++        case 2: order = LO_NATIVE; break;
++        case 3: order = LO_BUILTIN; break;
++        case 4: order = LO_NATIVE_BUILTIN; break;
++        case 5: order = LO_BUILTIN_NATIVE; break;
++        default: return policy_failure( params, "policy-invalid-field" );
++        }
++        if (!set_process_load_order( module, order )) return policy_failure( params, "policy-route-apply" );
+     }
+-
+-    memcpy( params->policy_id, entry->policy_id, sizeof(params->policy_id) );
+-    memcpy( params->graphics_provider, entry->graphics_provider,
+-            sizeof(params->graphics_provider) );
+-    params->default_policy = used_default;
+     return STATUS_SUCCESS;
+ }
+ 
+ NTSTATUS unixcall_alloy_policy_bootstrap( void *args )
+ {
+     struct alloy_policy_bootstrap_params *params = args;
+-    const struct alloy_policy_snapshot_header *header;
+-    const struct alloy_policy_snapshot_entry *entry;
++    const char *descriptor = getenv( "ALLOY_POLICY_SNAPSHOT_FD" );
++    const char *digest = getenv( "ALLOY_POLICY_SNAPSHOT_SHA256" );
++    const char *required = getenv( "ALLOY_POLICY_REQUIRED" );
++    BYTE expected[32], *bytes;
++    char *end;
+     struct stat stat;
+-    NTSTATUS status;
+-    BOOL used_default;
+-    void *mapping;
++    long number;
+     int fd, flags;
++    size_t offset;
++    ssize_t count;
++    NTSTATUS status;
+ 
+-    memset( params->provider_path, 0, sizeof(params->provider_path) );
+-    memset( params->policy_id, 0, sizeof(params->policy_id) );
+-    memset( params->graphics_provider, 0, sizeof(params->graphics_provider) );
+-    if ((status = parse_snapshot_fd( &fd ))) return status;
++    params->reason[0] = 0;
++    if (!descriptor && !digest && !required) return STATUS_NOT_FOUND;
++    if (required && strcmp( required, "1" )) return policy_failure( params, "policy-required-invalid" );
++    if (!descriptor) return policy_failure( params, "policy-descriptor-missing" );
++    if (!parse_digest( digest, expected )) return policy_failure( params, "policy-digest-missing-or-invalid" );
++    errno = 0;
++    number = strtol( descriptor, &end, 10 );
++    if (errno || end == descriptor || *end || number < 3 || number > INT_MAX)
++        return policy_failure( params, "policy-descriptor-invalid" );
++    fd = number;
++    if ((flags = fcntl( fd, F_GETFL )) == -1) return policy_failure( params, "policy-descriptor-missing" );
++    if ((flags & O_ACCMODE) != O_RDONLY) return policy_failure( params, "policy-descriptor-writable" );
+     if (params->query_only) return STATUS_SUCCESS;
+-    params->default_policy = FALSE;
+-    if ((flags = fcntl( fd, F_GETFL )) == -1) return errno_to_status( errno );
+-    if ((flags & O_ACCMODE) != O_RDONLY) return STATUS_ACCESS_DENIED;
+-    if (fstat( fd, &stat ) == -1) return errno_to_status( errno );
+-    if (!S_ISREG( stat.st_mode ) || stat.st_size <= 0 || stat.st_size > 16 * 1024 * 1024)
+-        return STATUS_FILE_CORRUPT_ERROR;
+-    if ((mapping = mmap( NULL, stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0 )) == MAP_FAILED)
+-        return errno_to_status( errno );
+-
+-    header = mapping;
+-    status = validate_snapshot( header, stat.st_size );
+-    if (!status)
++    if (fstat( fd, &stat ) == -1 || !S_ISREG( stat.st_mode ) || stat.st_size < 0 || stat.st_size > AP2_MAX)
++        return policy_failure( params, "policy-layout" );
++    if (!(bytes = malloc( max(stat.st_size, 1) ))) return policy_failure( params, "policy-memory" );
++    for (offset = 0; offset < stat.st_size; offset += count)
+     {
+-        entry = find_entry( header, params->image_sha256, &used_default );
+-        status = apply_entry( entry, params, used_default );
++        count = pread( fd, bytes + offset, stat.st_size - offset, offset );
++        if (count == -1 && errno == EINTR) { count = 0; continue; }
++        if (count <= 0)
++        {
++            free( bytes );
++            return policy_failure( params, "policy-read" );
++        }
+     }
+-    munmap( mapping, stat.st_size );
++    status = verify_snapshot( params, bytes, stat.st_size, expected );
++    if (!status) status = select_entry( params, (const struct ap2_header *)bytes );
++    free( bytes );
+     return status;
+ }
