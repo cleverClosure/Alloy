@@ -45,13 +45,16 @@ public struct BundleLifecycle {
         let prepared = try CaptureBundle.prepare(capture)
         try checkTime(start)
         let destination = try path(prepared.manifest.bundleID)
+        try PrivateStore.newDestination(destination)
+        var published = false
         do {
             try prepared.export(to: destination)
+            published = true
             let bundle = try inspect(prepared.manifest.bundleID)
             try checkTime(start)
             return try CaptureBundle.summary(bundle)
         } catch {
-            try? FileManager.default.removeItem(at: destination)
+            if published { try? FileManager.default.removeItem(at: destination) }
             throw error
         }
     }

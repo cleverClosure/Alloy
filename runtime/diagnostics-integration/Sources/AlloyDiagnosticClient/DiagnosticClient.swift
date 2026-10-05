@@ -21,7 +21,7 @@ import Foundation
     private static func run(_ args: [String]) throws -> Data {
         guard let command = args.first else { throw IntegrationError.invalidInput }
         if command == "init-store", args.count == 2 {
-            try BundleLifecycle.initialize(URL(fileURLWithPath: args[1]))
+            try BundleLifecycle.initialize(absoluteURL(args[1]))
             return try DiagnosticsJSON.encode(["initialized": true])
         }
         if ["summary", "preview", "export", "delete"].contains(command) {
@@ -38,7 +38,7 @@ import Foundation
         }
         let observer = try CaptureSession(connection: connection, budgetSeconds: seconds)
         if command == "create" {
-            let store = try BundleLifecycle(root: URL(fileURLWithPath: args[6]))
+            let store = try BundleLifecycle(root: absoluteURL(args[6]))
             let configuration = connection.client.configuration
             try store.requireSeparate(from: [configuration.stateRoot, configuration.contentRoot, args[1]]
                 + (configuration.libraryRoots ?? []))
@@ -51,13 +51,13 @@ import Foundation
 
     private static func lifecycle(_ args: [String]) throws -> Data {
         guard args.count == (args[0] == "export" ? 4 : 3) else { throw IntegrationError.invalidInput }
-        let store = try BundleLifecycle(root: URL(fileURLWithPath: args[1]))
+        let store = try BundleLifecycle(root: absoluteURL(args[1]))
         switch args[0] {
         case "delete":
             try store.delete(args[2])
             return try DiagnosticsJSON.encode(["deleted": args[2]])
         case "export":
-            try store.export(args[2], to: URL(fileURLWithPath: args[3]))
+            try store.export(args[2], to: absoluteURL(args[3]))
             return try DiagnosticsJSON.encode(CaptureBundle.summary(store.inspect(args[2])))
         case "summary": return try DiagnosticsJSON.encode(CaptureBundle.summary(store.inspect(args[2])))
         default:
@@ -71,6 +71,11 @@ import Foundation
         let manifest: BundleManifest
         let summary: FailureSummary
         let events: [StructuredEvent]
+    }
+
+    private static func absoluteURL(_ path: String) throws -> URL {
+        guard path.hasPrefix("/"), !path.contains("\0") else { throw IntegrationError.unsafeDestination }
+        return URL(fileURLWithPath: path)
     }
 
     private static func failureCode(_ error: Error) -> String {

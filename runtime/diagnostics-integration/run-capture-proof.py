@@ -55,14 +55,14 @@ def capture(client, service, kind, identifier, mode="terminal", seconds=30):
     return call(client, "capture", service.endpoint, kind, identifier, mode, seconds, timeout=45)
 
 
-def scenarios(service, client, mirror, check):
+def scenarios(service, client, mirror, check, capture_fn=capture):
     clean_op = operations.execute(service, "inventory.start", {"key": "clean"})
-    clean = capture(client, service, "operation", clean_op["operationID"])
+    clean = capture_fn(client, service, "operation", clean_op["operationID"])
     check("successful-operation-control", clean["outcome"] == "clean" and clean["complete"])
     failed_plan = operations.plan(service, mirror + "/bad", "bad-runtime")
     failed = service.request("install.start", {"identifier": failed_plan["planID"], "key": "failed"})
     service.request("operation.run", {"identifier": failed["operationID"]})
-    failure = capture(client, service, "operation", failed["operationID"])
+    failure = capture_fn(client, service, "operation", failed["operationID"])
     check("actual-operation-failure", failure["outcome"] == "operation-failed" and failure["complete"])
     prepared = operations.plan(service, mirror, "rtg_service_fixture_001")
     operations.execute(service, "install.start", {"identifier": prepared["planID"], "key": "install"})
@@ -79,25 +79,24 @@ def scenarios(service, client, mirror, check):
         return value["record"]["sessionID"]
 
     identifier = start("clean", "normal")
-    normal = capture(client, service, "session", identifier)
+    normal = capture_fn(client, service, "session", identifier)
     check("native-clean-control", normal["outcome"] == "clean" and normal["complete"])
     identifier = start("abort", "hang")
     wait_session(service, identifier, lambda value: len(value["liveNodes"]) == 3)
     abort_owned_fixture(service, identifier)
-    crashed = capture(client, service, "session", identifier)
+    crashed = capture_fn(client, service, "session", identifier)
     stopped = wait_session(service, identifier, finished)
     check("owned-native-abort", crashed["outcome"] == "native-fixture-signal-abort" and crashed["complete"]
           and stopped["exitCode"] == 6 and not stopped["liveNodes"])
     identifier = start("hang", "hang")
     wait_session(service, identifier, lambda value: len(value["liveNodes"]) == 3)
-    hung = capture(client, service, "session", identifier, "hang")
+    hung = capture_fn(client, service, "session", identifier, "hang")
     stopped = wait_session(service, identifier, finished, seconds=25)
-    print("HANG_CAPTURE " + hung["outcome"], flush=True)
     check("owned-native-hang", hung["outcome"] == "native-fixture-watchdog-hang" and hung["complete"]
           and len(hung["artifacts"]) == 1 and stopped["exitCode"] == 43 and not stopped["liveNodes"])
     identifier = start("budget", "hang")
     wait_session(service, identifier, lambda value: len(value["liveNodes"]) == 3)
-    bounded = capture(client, service, "session", identifier, seconds=0.1)
+    bounded = capture_fn(client, service, "session", identifier, seconds=0.1)
     check("capture-budget-incomplete", not bounded["complete"] and bounded["outcome"] == "budget-exceeded"
           and bounded["elapsedSeconds"] < 1)
     service.request("session.stop", {"identifier": identifier})
@@ -119,7 +118,7 @@ def scenarios(service, client, mirror, check):
             process.wait(timeout=5)
     check("service-interruption-incomplete", not interruption["complete"]
           and interruption["outcome"] == "service-interruption")
-    recovered = capture(client, service, "session", identifier)
+    recovered = capture_fn(client, service, "session", identifier)
     stopped = wait_session(service, identifier, finished)
     check("reconnected-interrupted-session", recovered["outcome"] == "service-interruption"
           and not recovered["complete"] and stopped["state"] == "INTERRUPTED" and not stopped["liveNodes"])

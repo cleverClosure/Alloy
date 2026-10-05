@@ -2,6 +2,7 @@
 """Isolated diagnostics proof helpers. Author: Timur Isaev."""
 import importlib.util
 import json
+import signal
 import subprocess
 import sys
 import time
@@ -48,7 +49,12 @@ class ServiceFixture(runtime.ServiceFixture):
         self.temporary.cleanup()
 
 
+def interrupted(*_):
+    raise SystemExit(124)
+
+
 def build():
+    signal.signal(signal.SIGTERM, interrupted)
     binaries = runtime.build()
     subprocess.run(["swift", "build", "--package-path", PACKAGE], check=True, timeout=300,
                    stdout=subprocess.DEVNULL)

@@ -1,4 +1,5 @@
 // Author: Timur Isaev
+import AlloyContentStore
 import AlloyDiagnostics
 import AlloyRuntimeAPI
 import AlloyStoreCatalog
@@ -16,6 +17,9 @@ public struct OperationAdapter {
         let history = snapshot.events
         guard snapshot.operationID == requested.operationID,
               update.next.operationID == requested.operationID else { throw IntegrationError.identityMismatch }
+        guard snapshot.payloadDigest == ContentStore.sha256Hex(snapshot.payload) else {
+            throw IntegrationError.identityMismatch
+        }
         guard snapshot.version == 1, history.first?.state == .queued, history.count <= 512,
               update.revision == history.count, requested.nextIndex >= 0,
               requested.nextIndex <= update.revision else { throw IntegrationError.inconsistentHistory }
@@ -27,7 +31,11 @@ public struct OperationAdapter {
             throw IntegrationError.inconsistentHistory
         }
         if let last {
-            guard last.snapshot.operationID == snapshot.operationID else { throw IntegrationError.identityMismatch }
+            guard last.snapshot.operationID == snapshot.operationID,
+                  last.snapshot.payloadDigest == snapshot.payloadDigest, last.snapshot.kind == snapshot.kind,
+                  last.snapshot.idempotencyKey == snapshot.idempotencyKey else {
+                throw IntegrationError.identityMismatch
+            }
             let common = min(last.revision, update.revision)
             guard Array(last.snapshot.events.prefix(common)) == Array(history.prefix(common)) else {
                 throw IntegrationError.inconsistentHistory
@@ -39,13 +47,7 @@ public struct OperationAdapter {
             if snapshot == last.snapshot { return nil }
         }
         let identity = try identity(snapshot, requestID: requestID)
-        var events = try history.enumerated().map { index, event in
-            try DiagnosticIdentity.event("runtime.operation.event", identity, [
-                DiagnosticIdentity.field("event_index", String(index)),
-                DiagnosticIdentity.field("state", event.state.rawValue),
-                DiagnosticIdentity.field("stage", event.stage)
-            ])
-        }
+        var events = try auditEvents(history, identity: identity)
         events.append(try DiagnosticIdentity.event("runtime.operation.snapshot", identity, [
             DiagnosticIdentity.field("state", snapshot.state.rawValue),
             DiagnosticIdentity.field("revision", String(update.revision)),
@@ -57,6 +59,16 @@ public struct OperationAdapter {
         return Observation(source: "runtime.operation", serviceInstanceID: instanceID,
                            targetID: snapshot.operationID, state: snapshot.state.rawValue,
                            historyComplete: true, events: events)
+    }
+
+    private func auditEvents(_ history: [OperationEvent], identity: CorrelationID) throws -> [StructuredEvent] {
+        try history.enumerated().map { index, event in
+            try DiagnosticIdentity.event("runtime.operation.event", identity, [
+                DiagnosticIdentity.field("event_index", String(index)),
+                DiagnosticIdentity.field("state", event.state.rawValue),
+                DiagnosticIdentity.field("stage", event.stage)
+            ])
+        }
     }
 
     private func identity(_ operation: CatalogOperation, requestID: String) throws -> CorrelationID {

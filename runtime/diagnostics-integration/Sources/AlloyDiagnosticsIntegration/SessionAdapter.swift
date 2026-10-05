@@ -24,6 +24,13 @@ public enum SessionAdapter {
                   && $0.lease.manifestDigest == preview.generation.manifestDigest }) else {
             throw IntegrationError.identityMismatch
         }
+        guard Set(session.liveNodes).count == session.liveNodes.count,
+              Set(session.nodes.map { $0.lease.holder.processID }).count == session.nodes.count,
+              session.nodes.allSatisfy({
+                  ["RUNNING", "EXITED", "EXITED_ESCALATED", "EXITED_WATCHDOG"].contains($0.state)
+              }),
+              !["FAILED", "SUCCEEDED", "STOPPED", "INTERRUPTED"].contains(session.state)
+                || session.liveNodes.isEmpty else { throw IntegrationError.inconsistentHistory }
         let identity = try DiagnosticIdentity.correlation(
             requestID: requestID, sessionID: record.sessionID, gameID: spec.gameId,
             buildID: spec.gameBuildId, hostID: spec.hostClassId, generationID: spec.runtimeGenerationId,
