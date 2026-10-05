@@ -1,10 +1,15 @@
 // Author: Timur Isaev
 import AlloyClientCore
+import AppKit
 import SwiftUI
 
 public struct ClientWindow: View {
     @Bindable private var store: ClientStore
-    public init(store: ClientStore) { self.store = store }
+    @Bindable private var controller: RuntimeController
+    public init(store: ClientStore, controller: RuntimeController) {
+        self.store = store
+        self.controller = controller
+    }
 
     public var body: some View {
         NavigationSplitView {
@@ -35,20 +40,47 @@ public struct ClientWindow: View {
                         .font(.caption).frame(maxWidth: .infinity).padding(8)
                         .background(.quaternary)
                 }
-                if let problem = store.persistenceProblem { ProblemBanner(problem: problem) }
+                if let problem = controller.problem ?? controller.connectionProblem ?? store.persistenceProblem {
+                    ProblemBanner(problem: problem)
+                }
+                if controller.developmentEnabled {
+                    Label("Development fixture · Native test process only", systemImage: "hammer")
+                        .font(.caption).frame(maxWidth: .infinity).padding(8).background(.quaternary)
+                }
                 switch store.preferences.section {
-                case .library: LibraryView(store: store)
-                case .activity: ActivityView(store: store)
-                case .diagnostics: DiagnosticsView(store: store)
+                case .library: LibraryView(store: store, controller: controller)
+                case .activity: RuntimeActivityView(controller: controller)
+                case .diagnostics: DiagnosticsView(store: store, controller: controller)
                 case .settings: ClientSettingsView(store: store)
                 }
             }
             .navigationTitle(store.preferences.section.title)
+            .toolbar {
+                if !store.snapshot.preview {
+                    ToolbarItemGroup {
+                        if controller.busy || controller.refreshing { ProgressView().controlSize(.small) }
+                        Button("Refresh", systemImage: "arrow.clockwise") { Task { await controller.refresh() } }
+                            .keyboardShortcut("r", modifiers: .command)
+                            .disabled(!controller.hasEndpoint || controller.busy || controller.refreshing)
+                        Button("Connect", systemImage: "bolt.horizontal.circle") { chooseEndpoint() }
+                            .disabled(controller.busy || controller.refreshing)
+                    }
+                }
+            }
         }
         .frame(minWidth: 920, minHeight: 620)
         .preferredColorScheme(store.preferences.appearance == .system ? nil :
                                 (store.preferences.appearance == .dark ? .dark : .light))
         .onChange(of: store.preferences) { _, _ in store.savePreferences() }
+    }
+    private func chooseEndpoint() {
+        let panel = NSOpenPanel()
+        panel.title = "Connect to local service"
+        panel.message = "Choose the private endpoint JSON file created by the local runtime service."
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = false
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        Task { await controller.connect(endpoint: url.path) }
     }
 }
 

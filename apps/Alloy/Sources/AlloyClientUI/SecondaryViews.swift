@@ -26,6 +26,7 @@ struct ActivityView: View {
 
 struct DiagnosticsView: View {
     let store: ClientStore
+    let controller: RuntimeController
     var body: some View {
         Form {
             Section("Local status") {
@@ -33,7 +34,7 @@ struct DiagnosticsView: View {
                 LabeledContent("Library", value: store.snapshot.phase.rawValue.capitalized)
                 LabeledContent("Game launch", value: "Unavailable")
             }
-            if let problem = store.snapshot.problem ?? store.persistenceProblem {
+            if let problem = controller.problem ?? controller.connectionProblem ?? store.persistenceProblem {
                 Section("Attention needed") { ProblemBanner(problem: problem) }
             }
             Section("Privacy") {

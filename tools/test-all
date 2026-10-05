@@ -522,6 +522,15 @@ REGISTRY: list[Suite] = [
         probe=every(need_commands("swift"), need_paths("apps/Alloy/Package.swift")),
         description="native client build and deterministic selection, state and private preferences checks; no GUI",
     ),
+    Suite(
+        id="client-service-proof", tier="fast",
+        cmd=("python3", "apps/Alloy/run-service-proof.py"),
+        cwd=".", timeout=420,
+        probe=every(need_commands("swift", "python3", "launchctl"),
+                    need_paths("apps/Alloy/run-service-proof.py")),
+        description="real client controller through private XPC: exact build, install, control, reconnect and fixture session",
+        cleanup_grace=15,
+    ),
     # --- runtime/session-service: private user launchd fixture only -------
     Suite(
         id="runtime-service-swift-test", tier="fast",
@@ -874,7 +883,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 49
+REGISTRY_SUITE_COUNT = 50
 
 
 # ---------------------------------------------------------------------------

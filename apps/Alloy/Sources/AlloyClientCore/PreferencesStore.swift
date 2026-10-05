@@ -8,24 +8,37 @@ public struct PreferencesStore: Sendable {
     public init(directory: URL) { self.directory = directory }
 
     public func read() throws -> ClientPreferences {
+        guard let bytes = try readData(name: "preferences.json", maximum: 65_536) else {
+            return ClientPreferences()
+        }
+        return try JSONDecoder().decode(ClientPreferences.self, from: bytes)
+    }
+
+    public func write(_ preferences: ClientPreferences) throws {
+        try writeData(JSONEncoder().encode(preferences), name: "preferences.json")
+    }
+
+    func readData(name: String, maximum: Int) throws -> Data? {
+        guard name == URL(fileURLWithPath: name).lastPathComponent else { throw PreferencesError.unsafeStorage }
         try prepareDirectory()
-        let path = directory.appendingPathComponent("preferences.json").path
+        let path = directory.appendingPathComponent(name).path
         let descriptor = open(path, O_RDONLY | O_NOFOLLOW | O_CLOEXEC)
-        if descriptor < 0, errno == ENOENT { return ClientPreferences() }
+        if descriptor < 0, errno == ENOENT { return nil }
         guard descriptor >= 0 else { throw PreferencesError.unsafeStorage }
         defer { close(descriptor) }
         var metadata = stat()
         guard fstat(descriptor, &metadata) == 0, metadata.st_uid == getuid(),
               metadata.st_mode & S_IFMT == S_IFREG, metadata.st_mode & 0o077 == 0,
-              metadata.st_size <= 65_536 else { throw PreferencesError.unsafeStorage }
+              metadata.st_size <= maximum else { throw PreferencesError.unsafeStorage }
         let handle = FileHandle(fileDescriptor: descriptor, closeOnDealloc: false)
-        let bytes = try handle.readToEnd() ?? Data()
-        return try JSONDecoder().decode(ClientPreferences.self, from: bytes)
+        let bytes = try handle.read(upToCount: maximum + 1) ?? Data()
+        guard bytes.count <= maximum else { throw PreferencesError.unsafeStorage }
+        return bytes
     }
 
-    public func write(_ preferences: ClientPreferences) throws {
+    func writeData(_ bytes: Data, name: String) throws {
+        guard name == URL(fileURLWithPath: name).lastPathComponent else { throw PreferencesError.unsafeStorage }
         try prepareDirectory()
-        let bytes = try JSONEncoder().encode(preferences)
         let temporary = directory.appendingPathComponent(".preferences-" + UUID().uuidString)
         let descriptor = open(temporary.path, O_WRONLY | O_CREAT | O_EXCL | O_NOFOLLOW | O_CLOEXEC, 0o600)
         guard descriptor >= 0 else { throw PreferencesError.unsafeStorage }
@@ -33,7 +46,7 @@ public struct PreferencesStore: Sendable {
         let handle = FileHandle(fileDescriptor: descriptor, closeOnDealloc: false)
         try handle.write(contentsOf: bytes)
         try handle.synchronize()
-        guard rename(temporary.path, directory.appendingPathComponent("preferences.json").path) == 0 else {
+        guard rename(temporary.path, directory.appendingPathComponent(name).path) == 0 else {
             throw PreferencesError.unsafeStorage
         }
     }
