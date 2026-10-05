@@ -109,3 +109,28 @@ The native header is the source to embed verbatim in the Wine policy patch.
 Its caller performs the SHA-256 checks first; it validates layout and semantic
 canonicality without allocation. Swift additionally re-encodes decoded data and
 compares every byte. The legacy v1 oracle remains unchanged.
+
+## Wine patch and maintenance bound
+
+`wine-v2.patch` is a single isolated delta against the pinned live fork commit
+`420c70bdcb7615c3dc0395d162f93645f098fe56`. It updates only the existing Alloy
+policy interface, Unix policy reader and loader hook, and embeds the native
+validator. It applies alongside the existing macOS 27 signal repair. The runtime
+recipe pins both patches; the shared Wine checkout and build-2 are unchanged.
+
+The maintenance ceiling increases from 28 shared commits + 1 supplemental patch
+to **28 + 2 = 30** maintained items. Folding v2 into historical policy commit
+`47e4cdb` would rewrite the shared stack and its retained branch histories; the
+live checkout also contains unrelated edits. A single explicit supplemental
+policy delta preserves that work and gives the new runtime an immutable input.
+It is counted and replay-checked, rather than hidden inside the unrelated signal
+repair or an untracked source edit. Future deliberate fork promotion can fold
+this delta into the policy patch and retire the supplement.
+
+`native-arm64ec` is a native-only admission policy in this development runtime:
+it admits pure ARM64 guests, and refuses x64 and hybrid ARM64EC executables with
+`policy-cpu-incompatible`. The current ARM64EC loader requires translator
+callbacks even for hybrid modules, so claiming a translator-free hybrid mode
+would be false. `fex-arm64ec` explicitly selects FEX for translated processes;
+its absence preserves the stock registry-selected behavior. The same v2 policy
+can describe native processes without causing an unnecessary translator load.

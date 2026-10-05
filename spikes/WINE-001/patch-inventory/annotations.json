@@ -19,14 +19,14 @@
           "path": "spikes/WINE-001/results/2026-07-23-03-macos26-exec-policy-and-va-floor.md"
         }
       ],
-      "justification": "Drops the loader low-pagezero flags and relocates shared data/TEBs above Darwin’s low-address floor. This bundled spike workaround needs a portable host-layout design before upstreaming.",
+      "justification": "Drops the loader low-pagezero flags and relocates shared data/TEBs above Darwin\u2019s low-address floor. This bundled spike workaround needs a portable host-layout design before upstreaming.",
       "status": "retained"
     },
     "0ef284dc28b074760f97decc210c049a22410e81": {
       "classification": "temporary-pending-history-squash",
       "evidence": [
         {
-          "heading": "## Fork experiment that was reverted, and its lesson (`4d5daa4` → revert `0ef284d`)",
+          "heading": "## Fork experiment that was reverted, and its lesson (`4d5daa4` \u2192 revert `0ef284d`)",
           "path": "spikes/GFX-001/results/2026-07-24-02-first-light-blockers.md"
         }
       ],
@@ -52,7 +52,7 @@
           "path": "spikes/CPU-001/results/2026-07-24-16-item-24-not-reproducible-toolchain-restored-null-rip-guard.md"
         }
       ],
-      "justification": "Publishes Wine’s diagnostic sink through the optional FEXWineLogSink export before emulator initialization. This deliberately couples the selected in-process emulator’s logging contract to Wine diagnostics.",
+      "justification": "Publishes Wine\u2019s diagnostic sink through the optional FEXWineLogSink export before emulator initialization. This deliberately couples the selected in-process emulator\u2019s logging contract to Wine diagnostics.",
       "status": "retained"
     },
     "372f8e60120911d92f0bdbc223f277e1b47fa530": {
@@ -63,7 +63,7 @@
           "path": "spikes/WINE-001/results/2026-07-25-12-jit-view-protection.md"
         }
       ],
-      "justification": "Records a guest’s narrowed JIT protection and respects that intent in fault paths, while the host mapping still cannot enforce the narrowing. Keep the documented compromise pending real guest-page protection enforcement.",
+      "justification": "Records a guest\u2019s narrowed JIT protection and respects that intent in fault paths, while the host mapping still cannot enforce the narrowing. Keep the documented compromise pending real guest-page protection enforcement.",
       "status": "retained"
     },
     "3ffe3247fde31debc20f1a0212b27e4d91666380": {
@@ -96,14 +96,14 @@
           "path": "spikes/WINE-001/results/2026-07-24-08-policy-hook-and-rebase-readiness.md"
         }
       ],
-      "justification": "Installs Alloy’s inherited, per-process policy snapshot before normal imports. Provider routing, exact executable identity and fail-closed snapshot semantics are product integration policy.",
+      "justification": "Installs Alloy\u2019s inherited, per-process policy snapshot before normal imports. Provider routing, exact executable identity and fail-closed snapshot semantics are product integration policy.",
       "status": "retained"
     },
     "4d5daa40ce81cfd4c6281cca34f23b2cb32dd6ba": {
       "classification": "temporary-pending-history-squash",
       "evidence": [
         {
-          "heading": "## Fork experiment that was reverted, and its lesson (`4d5daa4` → revert `0ef284d`)",
+          "heading": "## Fork experiment that was reverted, and its lesson (`4d5daa4` \u2192 revert `0ef284d`)",
           "path": "spikes/GFX-001/results/2026-07-24-02-first-light-blockers.md"
         }
       ],
@@ -118,14 +118,14 @@
           "path": "spikes/CPU-001/results/2026-07-25-21-x18-absorbs-attributed-and-removed.md"
         }
       ],
-      "justification": "Describes absorbed-fault pages and Mach regions to identify FEX’s generated dispatch emitter. Keep as attributable diagnostic burden until consolidated instrumentation replaces it.",
+      "justification": "Describes absorbed-fault pages and Mach regions to identify FEX\u2019s generated dispatch emitter. Keep as attributable diagnostic burden until consolidated instrumentation replaces it.",
       "status": "retained"
     },
     "5a0d3a375d31d6dde654b62635af6d1d55378b5c": {
       "classification": "temporary-pending-telemetry-consolidation",
       "evidence": [
         {
-          "heading": "## 2. Fault census — exact totals, and a conservation law",
+          "heading": "## 2. Fault census \u2014 exact totals, and a conservation law",
           "path": "spikes/CPU-001/results/2026-07-25-19-real-title-execution-census.md"
         }
       ],
@@ -147,11 +147,11 @@
       "classification": "temporary-pending-telemetry-consolidation",
       "evidence": [
         {
-          "heading": "## 2. Fault census — exact totals, and a conservation law",
+          "heading": "## 2. Fault census \u2014 exact totals, and a conservation law",
           "path": "spikes/CPU-001/results/2026-07-25-19-real-title-execution-census.md"
         }
       ],
-      "justification": "Moves census emission after fault classification so entries equal resolved plus access violations. It corrects the side-branch counter’s one-event accounting gap; retire only with a replacement exact telemetry contract.",
+      "justification": "Moves census emission after fault classification so entries equal resolved plus access violations. It corrects the side-branch counter\u2019s one-event accounting gap; retire only with a replacement exact telemetry contract.",
       "status": "retained"
     },
     "61bf5698be12c8bb493b99e87752931c553c254a": {
@@ -184,14 +184,14 @@
           "path": "spikes/GFX-001/results/2026-07-24-05-measured-scene-and-coldboot-fix.md"
         }
       ],
-      "justification": "Extends the narrow x18 backstop to the dispatch wrappers’ TSD-load pattern at offset 0x30, eliminating the measured cold-boot crash. Retain until generated and static dispatch paths no longer need this recovery.",
+      "justification": "Extends the narrow x18 backstop to the dispatch wrappers\u2019 TSD-load pattern at offset 0x30, eliminating the measured cold-boot crash. Retain until generated and static dispatch paths no longer need this recovery.",
       "status": "retained"
     },
     "8870df9d617ab15729a6dd404f1d23288be53b6b": {
       "classification": "temporary-pending-reviewed-darwin-teb-abi",
       "evidence": [
         {
-          "heading": "## EC TEB fixes — applied",
+          "heading": "## EC TEB fixes \u2014 applied",
           "path": "spikes/WINE-001/results/2026-07-23-05-gate3-arm64ec-groundwork.md"
         }
       ],
@@ -213,7 +213,7 @@
       "classification": "temporary-pending-telemetry-consolidation",
       "evidence": [
         {
-          "heading": "## 2. Fault census — exact totals, and a conservation law",
+          "heading": "## 2. Fault census \u2014 exact totals, and a conservation law",
           "path": "spikes/CPU-001/results/2026-07-25-19-real-title-execution-census.md"
         }
       ],
@@ -228,14 +228,14 @@
           "path": "spikes/WINE-001/results/2026-07-24-07-wineboot-spin-va-floor-usd.md"
         }
       ],
-      "justification": "Repoints the remaining tick-count/shared-data readers to the relocated page, stopping wineboot’s fault storm. Retire with a reviewed portable shared-data mapping rather than treating the hard-coded address as general policy.",
+      "justification": "Repoints the remaining tick-count/shared-data readers to the relocated page, stopping wineboot\u2019s fault storm. Retire with a reviewed portable shared-data mapping rather than treating the hard-coded address as general policy.",
       "status": "retained"
     },
     "c5785dbc012dbcf2f2aa947b030d863697b4ebaa": {
       "classification": "upstreamable",
       "evidence": [
         {
-          "heading": "## The mitigation (wine, `c5785db`) — amplifier only",
+          "heading": "## The mitigation (wine, `c5785db`) \u2014 amplifier only",
           "path": "spikes/CPU-001/results/2026-07-24-11-multi-worker-dispatch-defect-characterized.md"
         }
       ],
@@ -312,8 +312,8 @@
   "author": "Timur Isaev",
   "bounds": {
     "shared_commit_ids": 28,
-    "supplemental_patches": 1,
-    "total_maintenance_items": 29
+    "supplemental_patches": 2,
+    "total_maintenance_items": 30
   },
   "expected_checkout": "alloy/spike-wine-001",
   "supplemental": [
@@ -338,6 +338,24 @@
       "parent": "420c70bdcb7615c3dc0395d162f93645f098fe56",
       "patch": "spikes/WINE-001/jit-signal/wine.patch",
       "patch_sha256": "da99584650e1c0a9fe38a31608558f0cd9980968bec63adf0b22437080b48c0f"
+    },
+    {
+      "annotation": {
+        "classification": "Alloy-specific",
+        "evidence": [
+          {
+            "heading": "## Wine patch and maintenance bound",
+            "path": "spikes/WINE-001/policy-probe/SNAPSHOT_V2.md"
+          }
+        ],
+        "justification": "Versioned process-policy verification and pre-import CPU, environment, working-directory and DLL enforcement. One additional maintained policy delta avoids rewriting the retained shared fork history and disturbing existing uncommitted edits; the base policy patch remains in its historical commit.",
+        "status": "isolated-not-promoted"
+      },
+      "branch": "alloy/task-177-policy-v2",
+      "commit": "764f1244594748745a46a2b630bd6886d1cb75b8",
+      "parent": "420c70bdcb7615c3dc0395d162f93645f098fe56",
+      "patch": "spikes/WINE-001/policy-probe/wine-v2.patch",
+      "patch_sha256": "1402e2ceee7a4565ad449281d3a4102f9af202d1807fad034329b833dcb01b18"
     }
   ],
   "upstream_ref": "refs/remotes/origin/master",

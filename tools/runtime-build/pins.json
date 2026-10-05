@@ -24,6 +24,7 @@
     "spikes/GFX-001/instrumentation/0001-d3d11-title-metrics.patch": "15c19a8a8bc4c6899bf35a0d89bb21c1c7a60c2655b911d2136fedab08040ba4",
     "spikes/GFX-001/instrumentation/0002-d3d11-msaa-clamp.patch": "575f981a20df30bf0b2f9cee4d381e50308b9b333fb0dc5c560fb0c2812c2c4a",
     "spikes/WINE-001/jit-signal/wine.patch": "da99584650e1c0a9fe38a31608558f0cd9980968bec63adf0b22437080b48c0f",
+    "spikes/WINE-001/policy-probe/wine-v2.patch": "1402e2ceee7a4565ad449281d3a4102f9af202d1807fad034329b833dcb01b18",
     "tools/runtime-build/build.py": "1e9860a8b117eda76afb1bff6f47e5c7351ce639f56b1c674106b820560b6d36",
     "tools/runtime-build/inputs.py": "9055cb4a67883c0952be9e58a26bc28060838ca7b8459a4edcdc0b6c9083b6eb",
     "tools/runtime-build/overlays/fex_unixlib_darwin.cpp": "bf1b497a8563e50a95485032f3d31c4b11492ec920c2583c3b4b9072af062cf4",
@@ -263,7 +264,8 @@
         "spikes/WINE-001/jit-signal/wine.patch",
         "tools/runtime-build/overlays/wine-excluded-build.patch",
         "tools/runtime-build/overlays/wine-winedump-metadata.patch",
-        "tools/runtime-build/overlays/wine-loaded-image.patch"
+        "tools/runtime-build/overlays/wine-loaded-image.patch",
+        "spikes/WINE-001/policy-probe/wine-v2.patch"
       ],
       "revision": "420c70bdcb7615c3dc0395d162f93645f098fe56",
       "submodules": {},

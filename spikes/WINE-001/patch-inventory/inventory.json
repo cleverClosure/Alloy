@@ -2,8 +2,8 @@
   "author": "Timur Isaev",
   "bounds": {
     "shared_commit_ids": 28,
-    "supplemental_patches": 1,
-    "total_maintenance_items": 29
+    "supplemental_patches": 2,
+    "total_maintenance_items": 30
   },
   "branches": [
     {
@@ -1030,8 +1030,8 @@
   "counting": "distinct commit IDs; retained side branches and reverted history included; supplemental patch and matching isolated commit counted once",
   "counts": {
     "shared_commit_ids": 28,
-    "supplemental_patches": 1,
-    "total_maintenance_items": 29
+    "supplemental_patches": 2,
+    "total_maintenance_items": 30
   },
   "scope": "committed-Wine-alloy-branches-plus-explicit-isolated-patches",
   "supplemental": [
@@ -1061,6 +1061,31 @@
         "dlls/ntdll/unix/darwin-jit-resume.h",
         "dlls/ntdll/unix/signal_arm64.c",
         "dlls/ntdll/unix/virtual.c"
+      ]
+    },
+    {
+      "annotation": {
+        "classification": "Alloy-specific",
+        "evidence": [
+          {
+            "heading": "## Wine patch and maintenance bound",
+            "path": "spikes/WINE-001/policy-probe/SNAPSHOT_V2.md"
+          }
+        ],
+        "justification": "Versioned process-policy verification and pre-import CPU, environment, working-directory and DLL enforcement. One additional maintained policy delta avoids rewriting the retained shared fork history and disturbing existing uncommitted edits; the base policy patch remains in its historical commit.",
+        "status": "isolated-not-promoted"
+      },
+      "branch": "alloy/task-177-policy-v2",
+      "commit": "764f1244594748745a46a2b630bd6886d1cb75b8",
+      "in_shared_history": false,
+      "parent": "420c70bdcb7615c3dc0395d162f93645f098fe56",
+      "patch": "spikes/WINE-001/policy-probe/wine-v2.patch",
+      "patch_sha256": "1402e2ceee7a4565ad449281d3a4102f9af202d1807fad034329b833dcb01b18",
+      "paths": [
+        "dlls/ntdll/alloy_policy.h",
+        "dlls/ntdll/alloy_snapshot_v2.h",
+        "dlls/ntdll/loader.c",
+        "dlls/ntdll/unix/alloy_policy.c"
       ]
     }
   ],
