@@ -1,0 +1,9 @@
+{
+  "name": "wine-runtime",
+  "version": "development-1",
+  "digest": "sha256:29661837f6ccb286588daa402fec77b64e133badafa4b6481841c31c5dbfbf22",
+  "mediaType": "application/vnd.alloy.layer.v1+tar+zstd",
+  "size": 10252,
+  "sourceRevision": "1111111111111111111111111111111111111111",
+  "role": "wine-runtime"
+}

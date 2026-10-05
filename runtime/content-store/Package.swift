@@ -20,6 +20,10 @@ let package = Package(
         .executable(
             name: "alloy-content-store-stress-harness",
             targets: ["AlloyContentStoreStressHarness"]
+        ),
+        .executable(
+            name: "alloy-runtime-materialize",
+            targets: ["AlloyRuntimeMaterialize"]
         )
     ],
     targets: [
@@ -39,6 +43,11 @@ let package = Package(
         ),
         .testTarget(
             name: "AlloyContentStoreTests",
+            dependencies: ["AlloyContentStore"],
+            resources: [.copy("LayerFixtures")]
+        ),
+        .executableTarget(
+            name: "AlloyRuntimeMaterialize",
             dependencies: ["AlloyContentStore"]
         )
     ]
