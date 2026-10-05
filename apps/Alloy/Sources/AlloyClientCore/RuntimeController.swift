@@ -15,7 +15,7 @@ public final class RuntimeController {
     public private(set) var refreshing = false
     public private(set) var hasEndpoint = false
     public private(set) var developmentEnabled = false
-    public private(set) var problem: ClientProblem?
+    public internal(set) var problem: ClientProblem?
     public private(set) var connectionProblem: ClientProblem?
     public private(set) var instanceID: String?
     @ObservationIgnored var gateway: ServiceGateway?
@@ -23,7 +23,9 @@ public final class RuntimeController {
     @ObservationIgnored var journal = ClientJournal()
     @ObservationIgnored var journalUsable = true
     @ObservationIgnored var recipe: DevelopmentRecipe?
+    @ObservationIgnored var snapshotRequestActive = false
     @ObservationIgnored var epoch = UUID()
+    @ObservationIgnored var reconciler = OperationReconciler()
 
     public init(store: ClientStore, storage: PreferencesStore) {
         self.store = store
@@ -32,11 +34,14 @@ public final class RuntimeController {
             if let bytes = try storage.readData(name: "requests.json", maximum: 4 * 1024 * 1024) {
                 journal = try JSONDecoder().decode(ClientJournal.self, from: bytes)
             }
-        } catch { problem = .service(error); journalUsable = false }
+        } catch { problem = .service(PreferencesError.unsafeStorage); journalUsable = false }
     }
 
     public func connect(endpoint: String, fixture: String? = nil) async {
         guard !store.snapshot.preview, !busy, !refreshing else { return }
+        busy = true
+        while snapshotRequestActive { try? await Task.sleep(for: .milliseconds(20)) }
+        busy = false
         do {
             let configuration = try ServiceConfiguration.read(endpoint)
             let newRecipe = try fixture.map(DevelopmentRecipe.read)
@@ -47,33 +52,29 @@ public final class RuntimeController {
             hasEndpoint = true
             epoch = UUID()
             operations = []; sessions = []; plan = nil; details = nil
-            store.snapshot.phase = .loading
+            reconciler = OperationReconciler()
+            var snapshot = ClientSnapshot()
+            if let cached = journal.cached?[configuration.serviceName] {
+                snapshot.games = cached.games
+                snapshot.activities = cached.activities
+                snapshot.phase = cached.games.isEmpty ? .empty : .available
+                snapshot.serviceDescription = "Disconnected · Last known state"
+            } else { snapshot.phase = .loading }
+            store.update(snapshot)
             await refresh()
         } catch { problem = .service(error) }
     }
 
-    public func refresh() async {
-        guard let gateway, !busy, !refreshing else { return }
-        refreshing = true
+    public func refresh(showProgress: Bool = false) async {
+        guard let gateway, !busy, !snapshotRequestActive else { return }
+        snapshotRequestActive = true
+        refreshing = showProgress
         let ticket = epoch
-        defer { refreshing = false }
+        defer { refreshing = false; snapshotRequestActive = false }
         do {
             let observation = try await gateway.observe(cursors: journal.cursors[gateway.namespace] ?? [:])
             guard ticket == epoch else { return }
-            operations = observation.updates.map(OperationPresentation.init)
-            sessions = observation.sessions.map(SessionPresentation.init)
-            for update in observation.updates {
-                journal.cursors[gateway.namespace, default: [:]][update.snapshot.operationID] = update.next.nextIndex
-            }
-            if journalUsable { try persistJournal() }
-            instanceID = observation.info.instanceID
-            var snapshot = ClientSnapshot()
-            snapshot.connected = true
-            snapshot.phase = observation.games.isEmpty ? .empty : .available
-            snapshot.games = observation.games
-            snapshot.serviceDescription = "Connected · Local development service"
-            store.update(snapshot)
-            connectionProblem = nil
+            try accept(observation, gateway: gateway)
             if let identifier = store.preferences.selectedGameID {
                 details = try await gateway.request("catalog.get", IdentifierRequest(identifier), as: GameDetails.self)
             } else { details = nil }
@@ -81,9 +82,49 @@ public final class RuntimeController {
             guard ticket == epoch else { return }
             connectionProblem = .service(error)
             store.snapshot.connected = false
-            store.snapshot.phase = .disconnected
+            if store.snapshot.games.isEmpty { store.snapshot.phase = .disconnected }
             store.snapshot.serviceDescription = "Disconnected · Last known activity retained"
         }
+    }
+
+    private func accept(_ observation: ServiceObservation, gateway: ServiceGateway) throws {
+        var projection = reconciler
+        for update in observation.updates { try projection.accept(update) }
+        reconciler = projection
+        operations = observation.updates.compactMap { projection.values[$0.snapshot.operationID] }
+            .map(OperationPresentation.init)
+            .sorted { $0.update.snapshot.updatedAt > $1.update.snapshot.updatedAt }
+        sessions = observation.sessions.map(SessionPresentation.init)
+        for operation in operations {
+            let update = operation.update
+            let prior = journal.cursors[gateway.namespace]?[operation.id] ?? 0
+            journal.cursors[gateway.namespace, default: [:]][operation.id] =
+                max(min(prior, update.revision), update.next.nextIndex)
+        }
+        instanceID = observation.info.instanceID
+        var snapshot = ClientSnapshot()
+        snapshot.connected = true
+        snapshot.phase = observation.games.isEmpty ? .empty : .available
+        snapshot.games = observation.games
+        snapshot.serviceDescription = "Connected · Local development service"
+        snapshot.activities = cachedActivities()
+        let changed = store.snapshot.games.contains { old in
+            observation.games.contains { $0.id == old.id && $0.builds != old.builds }
+        }
+        if store.snapshot != snapshot { store.update(snapshot) }
+        if changed {
+            problem = ClientProblem(title: "Installed build changed",
+                            explanation: "A title has updated since the last observation. " +
+                                 "Compatibility is untested.",
+                            nextStep: "Review the current build before planning a development runtime.",
+                            supportCode: "CLIENT-BUILD-CHANGED")
+            plan = nil
+        }
+        if journal.cached == nil { journal.cached = [:] }
+        journal.cached?[gateway.namespace] = CachedServiceSnapshot(games: snapshot.games,
+            activities: snapshot.activities, observedAt: Date())
+        if journalUsable { try persistJournal() }
+        connectionProblem = nil
     }
 
     public func monitor() async {
@@ -163,6 +204,7 @@ public final class RuntimeController {
         guard let gateway, !busy, !refreshing, store.snapshot.connected, !store.snapshot.preview else { return }
         guard journalUsable else { problem = .service(PreferencesError.unsafeStorage); return }
         busy = true
+        while snapshotRequestActive { try? await Task.sleep(for: .milliseconds(20)) }
         problem = nil
         var failure: ClientProblem?
         do { try await body(gateway) } catch { failure = .service(error) }

@@ -114,6 +114,27 @@ def run_flow(service, client, mirror, check, with_session):
         check("service-restart-keeps-operation", restored["instanceID"] != old
               and restored["operations"][0]["id"] == identifier
               and restored["operations"][0]["state"] == "Succeeded")
+        state_path = fixture.root / "client/requests.json"
+        journal = json.loads(state_path.read_text())
+        journal["cursors"][fixture.name][identifier] = 999999
+        state_path.write_text(json.dumps(journal))
+        recovered = probe(client, fixture, recipe)
+        repaired = json.loads(state_path.read_text())["cursors"][fixture.name][identifier]
+        check("stale-cursor-reconciled", recovered["operations"][0]["state"] == "Succeeded"
+              and repaired == recovered["operations"][0]["revision"])
+        subprocess.run(["launchctl", "bootout", fixture.target], check=True, timeout=15)
+        fixture.loaded = False
+        disconnected = probe(client, fixture, recipe)
+        check("seeded-disconnect-detected", not disconnected["connected"]
+              and disconnected.get("problem") == "RT-SERVICE_UNAVAILABLE")
+        check("offline-client-restores-last-known-state", disconnected["games"] == restored["games"]
+              and disconnected["cachedActivities"] == 1)
+        subprocess.run(["launchctl", "bootstrap", fixture.domain, fixture.plist], check=True, timeout=15)
+        fixture.loaded = True
+        fixture.wait_ready()
+        clean_reconnect = probe(client, fixture, recipe)
+        check("clean-reconnect-after-disconnect-control", clean_reconnect["connected"]
+              and not clean_reconnect.get("problem") and clean_reconnect["operations"][0]["id"] == identifier)
         if with_session:
             session = probe(client, fixture, recipe, "session-start")
             if not session["sessions"]:

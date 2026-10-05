@@ -73,8 +73,12 @@ reuses its original key, including after cancellation or terminal completion;
 these actions do not secretly create a new attempt. A new isolated fixture is
 used for a new development run. Endpoint credentials are not copied to disk.
 
-Milestones 1–2 provide the shell and actual service flows. Reconnect edge cases,
-accessibility and the integrated GUI proof follow separately. Diagnostics here
+Milestones 1–2 provide the shell and actual service flows. Milestone 3 adds
+monotonic operation reconciliation, private last-known state, stable background
+polling, actionable errors, keyboard navigation and native accessibility controls.
+Its actual VoiceOver reachability pass remains **NOT VERIFIED**; see
+[the evidence and limitation](Proofs/MILESTONE_3.md). The integrated GUI proof
+follows separately. Diagnostics here
 is local status only; the bundled diagnostics flow belongs to #163.
 
 ## Verification boundaries

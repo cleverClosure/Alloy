@@ -5,6 +5,7 @@ import SwiftUI
 struct LibraryView: View {
     @Bindable var store: ClientStore
     let controller: RuntimeController
+    @FocusState private var searchFocused: Bool
     var body: some View {
         Group {
             switch store.snapshot.phase {
@@ -33,12 +34,19 @@ struct LibraryView: View {
                 }
             }
         }
+        .toolbar {
+            if !store.snapshot.games.isEmpty {
+                Button("Search library", systemImage: "magnifyingglass") { searchFocused = true }
+                    .keyboardShortcut("f", modifiers: .command)
+            }
+        }
     }
 
     private var gameList: some View {
         VStack(spacing: 0) {
             TextField("Search library", text: $store.search)
-                .textFieldStyle(.roundedBorder).padding(12).accessibilityIdentifier("library.search")
+                .textFieldStyle(.roundedBorder).padding(12)
+                .accessibilityIdentifier("library.search").focused($searchFocused)
             if store.visibleGames.isEmpty {
                 EmptyPanel(title: "No matches", detail: "Try a different title, status, or build.",
                            symbol: "magnifyingglass")
@@ -76,6 +84,7 @@ struct GameDetailView: View {
                         .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 8) {
                         Text(game.name).font(.title.weight(.semibold)).textSelection(.enabled)
+                            .accessibilityAddTraits(.isHeader)
                         Text("Local installation").foregroundStyle(.secondary)
                         Label(game.status,
                               systemImage: game.unsupportedReason == nil ? "questionmark.circle" : "nosign")
