@@ -1,0 +1,27 @@
+{
+  "author": "Timur Isaev",
+  "nativeLinkFlags": [
+    "-reproducible",
+    "-objc_stubs_small"
+  ],
+  "controls": [
+    {
+      "root": "/private/tmp/alloy-176-build-g",
+      "repeatedLinks": 10,
+      "distinctSHA256": [
+        "539dda0289a48fdc3d8a5d6d211c8bdd2ff18e13caef695f7a874b85a6e3caae"
+      ]
+    },
+    {
+      "root": "/private/tmp/alloy-176-build-h",
+      "repeatedLinks": 10,
+      "distinctSHA256": [
+        "517f541267d6c6fcd8dbc2bd7c45e7e2d14c3f0275ae3245e4b52efcb9c12692"
+      ]
+    }
+  ],
+  "normalizedCrossRootEqual": true,
+  "reproducibleAloneStable": false,
+  "noDeduplicateStable": false,
+  "ldClassicSupported": false
+}

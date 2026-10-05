@@ -1,0 +1,18 @@
+{
+  "author": "Timur Isaev",
+  "oneByteSourceChange": [
+    {
+      "sourceSHA256": "bf1b497a8563e50a95485032f3d31c4b11492ec920c2583c3b4b9072af062cf4",
+      "binarySHA256": "9d16686968a73faf3680493637b591e5433a02ed2201c22d2a9830f6e512dc75",
+      "layerDigest": "sha256:3198f34ee7cc03b013596e15c8cf54b67a79aaca16c894f8098ce7655369135e"
+    },
+    {
+      "sourceSHA256": "65c6c137a6c84bf3760cba5c3ad4721594d53fb997a360af74ee6a23177cffa2",
+      "binarySHA256": "62b18edb91bb28c57058e4dfa5f486f6161d29695cfb9aac2dcf72e13d44b3b9",
+      "layerDigest": "sha256:2238f4cbcb5379600bc93c89728b57b799f5540e8049a8008f085b323b3eb9ed"
+    }
+  ],
+  "sourceDifferenceRejected": true,
+  "unpinnedToolchainRejectedBeforeBuild": true,
+  "toolchainExit": 1
+}

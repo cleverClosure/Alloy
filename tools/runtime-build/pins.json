@@ -6,7 +6,9 @@
     "-Denable_d3d12=false",
     "-Denable_nvapi=false",
     "-Denable_nvngx=false",
-    "-Denable_tests=false"
+    "-Denable_tests=false",
+    "-Dbuild.c_link_args=-Wl,-reproducible,-objc_stubs_small",
+    "-Dbuild.cpp_link_args=-Wl,-reproducible,-objc_stubs_small"
   ],
   "fexArguments": [
     "-DCMAKE_BUILD_TYPE=Release",
@@ -22,7 +24,7 @@
     "spikes/GFX-001/instrumentation/0001-d3d11-title-metrics.patch": "15c19a8a8bc4c6899bf35a0d89bb21c1c7a60c2655b911d2136fedab08040ba4",
     "spikes/GFX-001/instrumentation/0002-d3d11-msaa-clamp.patch": "575f981a20df30bf0b2f9cee4d381e50308b9b333fb0dc5c560fb0c2812c2c4a",
     "spikes/WINE-001/jit-signal/wine.patch": "da99584650e1c0a9fe38a31608558f0cd9980968bec63adf0b22437080b48c0f",
-    "tools/runtime-build/build.py": "d8f27dd37731e734a8a581b7bebb8ba62986772a3b8a04a768f1fd20b8475c3b",
+    "tools/runtime-build/build.py": "1e9860a8b117eda76afb1bff6f47e5c7351ce639f56b1c674106b820560b6d36",
     "tools/runtime-build/inputs.py": "9055cb4a67883c0952be9e58a26bc28060838ca7b8459a4edcdc0b6c9083b6eb",
     "tools/runtime-build/overlays/fex_unixlib_darwin.cpp": "bf1b497a8563e50a95485032f3d31c4b11492ec920c2583c3b4b9072af062cf4",
     "tools/runtime-build/overlays/wine-excluded-build.patch": "01158ecdabba1a864cc4a40e71534cd5de9242a07eccb245200914d20a77416e",
@@ -161,6 +163,10 @@
       {
         "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/SDKSettings.json",
         "sha256": "7b93ad7e534cc4b31c6a4e39d19b5e0288acf2168c2649479a796d1cb51939fb"
+      },
+      {
+        "path": "/opt/homebrew/opt/zstd/lib/libzstd.a",
+        "sha256": "55cc7856ad9f52bd8f97f052537400e5788eae22f2e92cbd4057528ebb7839e2"
       }
     ],
     "metal": {

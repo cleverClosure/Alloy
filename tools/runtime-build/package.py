@@ -75,7 +75,7 @@ def package(root, output):
     output.mkdir(mode=0o700)
     stages = stage(root, output / ".staging")
     packaged_recipe = {**recipe, "packagingFiles": {
-        name: digest(HERE / name) for name in ("package.py", "layers.py")}}
+        name: digest(HERE / name) for name in ("package.py", "layers.py", "build-generation.py")}}
     recipe_bytes = canonical(packaged_recipe)
     recipe_digest = "sha256:" + hashlib.sha256(recipe_bytes).hexdigest()
     (output / "build-recipe.json").write_bytes(recipe_bytes)
@@ -113,6 +113,9 @@ def package(root, output):
                                "reproducible": False}, "activation": {"releaseRing": "development"}}
     (output / "runtime-manifest.json").write_bytes(canonical(manifest))
     shutil.rmtree(output / ".staging")
+    for file in output.iterdir():
+        file.chmod(0o444)
+    output.chmod(0o555)
     return manifest
 
 

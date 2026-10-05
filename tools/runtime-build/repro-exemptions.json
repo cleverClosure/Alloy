@@ -1,0 +1,12 @@
+{
+  "author": "Timur Isaev",
+  "schemaVersion": 1,
+  "exceptions": [
+    {
+      "role": "graphics-provider",
+      "path": "providers/aarch64-unix/winemetal.so",
+      "normalizer": "metal-source-path-v1",
+      "cause": "Metal 27A266a records the absolute canonical source path in three embedded AIR modules even with relative input, file-prefix-map and compilation-dir options. Those three strings change the Mach-O content-derived UUID and ad-hoc signature hashes. Only those exact strings, the LC_UUID payload and the SHA-256 code-page hashes in the verified linker ad-hoc CodeDirectory (all signature headers, flags, identifier, other fields and padding must match) may differ. All other bytes must match. Build root paths must have equal byte lengths for this narrowly bounded comparison."
+    }
+  ]
+}

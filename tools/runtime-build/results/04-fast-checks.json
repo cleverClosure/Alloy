@@ -1,0 +1,305 @@
+{
+  "author": "Timur Isaev",
+  "reportSHA256": "1a50fcca9dc19e56f87047791ee2dfc3b7f93fc47f314b30e428fdd202129b4f",
+  "tier": "fast",
+  "generated_at": "2026-10-05T15:31:08.057766+00:00",
+  "selected_count": 42,
+  "reported_count": 42,
+  "audit_error": null,
+  "suites": [
+    {
+      "id": "client-swift-test",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 1.894
+    },
+    {
+      "id": "client-service-proof",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 12.148
+    },
+    {
+      "id": "client-bundle-build",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 2.248
+    },
+    {
+      "id": "diagnostics-integration-swift",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 2.192
+    },
+    {
+      "id": "diagnostics-integration-proof",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 30.93
+    },
+    {
+      "id": "runtime-service-swift-test",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 1.587
+    },
+    {
+      "id": "runtime-service-xpc-boundary",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 2.249
+    },
+    {
+      "id": "runtime-service-operation-proof",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 33.409
+    },
+    {
+      "id": "runtime-service-session-proof",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 27.425
+    },
+    {
+      "id": "runtime-service-launch-host",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 2.289
+    },
+    {
+      "id": "runtime-service-integration",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 4.262
+    },
+    {
+      "id": "profile-compiler-swift-test",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 36.377
+    },
+    {
+      "id": "store-catalog-swift-test",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 3.887
+    },
+    {
+      "id": "store-catalog-cli-fault-matrix",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 18.45
+    },
+    {
+      "id": "content-store-swift-test",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 17.497
+    },
+    {
+      "id": "content-store-fault-matrix",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 7.293
+    },
+    {
+      "id": "content-store-concurrency-matrix",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 3.167
+    },
+    {
+      "id": "content-store-stress-matrix",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 16.622
+    },
+    {
+      "id": "content-store-disk-pressure",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 15.028
+    },
+    {
+      "id": "content-store-parser-fuzz",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 19.757
+    },
+    {
+      "id": "store-identity-breadth",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 65.888
+    },
+    {
+      "id": "content-store-performance",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 44.327
+    },
+    {
+      "id": "store-identity-swift-test",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 2.677
+    },
+    {
+      "id": "store-identity-cli-fixture-proof",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 4.398
+    },
+    {
+      "id": "store-identity-fault-matrix",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 2.99
+    },
+    {
+      "id": "store-identity-fingerprint-parity",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 1.985
+    },
+    {
+      "id": "store-identity-metadata-parser-proof",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 1.664
+    },
+    {
+      "id": "store-identity-selector-invalidation-proof",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 1.55
+    },
+    {
+      "id": "store-identity-update-watcher-proof",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 1.772
+    },
+    {
+      "id": "gfx001-analyzer-unittest",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 0.262
+    },
+    {
+      "id": "gfx001-scene-bench-selftest",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 0.146
+    },
+    {
+      "id": "gfx001-dxmt-install-selftest",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 0.658
+    },
+    {
+      "id": "gates-selftest",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 2.464
+    },
+    {
+      "id": "board-lint-selftest",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 0.087
+    },
+    {
+      "id": "make-release-selftest",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 10.571
+    },
+    {
+      "id": "title-format-selftest",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 0.082
+    },
+    {
+      "id": "task-form-selftest",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 0.487
+    },
+    {
+      "id": "merge-gate-selftest",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 0.082
+    },
+    {
+      "id": "merge-gate-e2e-selftest",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 2.293
+    },
+    {
+      "id": "steam-automation-gate",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 1.502
+    },
+    {
+      "id": "steam-automation-gate-selftest",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 4.21
+    },
+    {
+      "id": "runtime-build-controls",
+      "tier": "fast",
+      "verdict": "pass",
+      "reason": null,
+      "elapsed_seconds": 0.665
+    }
+  ]
+}

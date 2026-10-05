@@ -98,6 +98,11 @@ SHA-256 of these canonical table bytes, without a newline or wrapper.
 | 1: directory | 0555 | 0 and empty digest | Empty |
 | 2: symlink | 0777 | UTF-8 target byte count and `sha256:` digest of target bytes | Relative target |
 
+The symlink mode is a canonical type marker, independent of macOS's
+umask-dependent permissions on the link inode. Its target bytes are verified;
+the target regular file and every directory have their exact sealed modes
+verified. File and directory modes are never normalized away during reuse.
+
 Paths are NFC, at most 240 UTF-8 bytes, and exclude empty, dot and dot-dot
 components, backslash, colon and control characters. Case-fold collisions are
 rejected. A link may use `..` only while remaining inside the composed root.
