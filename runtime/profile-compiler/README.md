@@ -203,7 +203,7 @@ preserved July 24 snapshot byte for byte, including its recorded SHA-256.
 
 The export reports `notYetLowered` fields and is explicitly not runtime-ready:
 Wine v1 cannot encode CPU, synchronization, network, feature masks, environment,
-and other complete policy semantics. [SNAPSHOT_V1.md](Specs/SNAPSHOT_V1.md)
+and other complete policy semantics. [SNAPSHOT_V1.md](Specs/SNAPSHOT_V2.md)
 documents every field, the empty-route diagnostic projection, the historical
 oracle, and a reproduction command that runs no Wine guest.
 

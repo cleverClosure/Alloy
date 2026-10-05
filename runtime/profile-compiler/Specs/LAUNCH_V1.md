@@ -16,7 +16,7 @@ local host class, runtime generation, profile ID/revision/digest, policy compile
 version and snapshot digest, local volumes, grant IDs, certification level and
 matrix digest, and creation time. It also includes component digests, input
 digests, CPU/shader cache epochs, resolved processes, the conservative default,
-verification provenance, and the v1 field-coverage report. Profile-level
+verification provenance, and the v2 field-coverage report. Profile-level
 filesystem authorization, registry, dependencies, health, telemetry, and runtime
 settings that require execution are also explicitly listed as not yet lowered.
 
@@ -98,8 +98,10 @@ caller's available-generation inventory. This inventory is a trusted local
 input; the compiler does not claim to hash installed artifacts or replace the
 content store's verification.
 
-The output is always `productionEligible: false`. Current Wine v1 coverage
-gaps also make it `runtimeReady: false`. Those are material limitations, not
+The output is always `productionEligible: false`. Unlowered profile-level requirements and the conservative unknown-process
+network/debug policy keep the existing complete-launch fixtures `runtimeReady: false`.
+Process-policy snapshots using only lowered v2 fields can be ready; see
+[the v2 coverage contract](SNAPSHOT_V2.md). Those are material limitations, not
 warnings that a consumer may discard. This milestone exports a fully bound
 local plan; future trust-chain and runtime work must provide production roots,
 registered host classes, real certified ceilings, and enforcement for the
