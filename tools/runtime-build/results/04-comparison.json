@@ -1,0 +1,66 @@
+{
+  "author": "Timur Isaev",
+  "roots": [
+    "/private/tmp/alloy-176-build-i",
+    "/private/tmp/alloy-176-build-j"
+  ],
+  "recipeDigest": "4b5911f0b7e41868fde7242bc4a3cfeb131a9299cffc4b03fc6092ce4c5c88b3",
+  "packageArtifacts": [
+    {
+      "path": "build-recipe.json",
+      "firstSHA256": "fc59f623a416478617cc33b2c1d1275023af7093fda9b48f323fb09c821f17dd",
+      "secondSHA256": "fc59f623a416478617cc33b2c1d1275023af7093fda9b48f323fb09c821f17dd",
+      "derivedFromMetalException": false
+    },
+    {
+      "path": "cpu-provider.layer.tar.zst",
+      "firstSHA256": "c2b7c3b3430064e15e72ac97ce9048605262758d903748a0102f4619c9958023",
+      "secondSHA256": "c2b7c3b3430064e15e72ac97ce9048605262758d903748a0102f4619c9958023",
+      "derivedFromMetalException": false
+    },
+    {
+      "path": "graphics-provider.layer.tar.zst",
+      "firstSHA256": "e9ddeb516741fd915e82bd2e858bf9ae52465903607f8cbd8903f7127c36c7d9",
+      "secondSHA256": "93cb1a8ff5a115ff9738d5355956ea9401518389a4f47d061024f5f27d0ebaab",
+      "derivedFromMetalException": true
+    },
+    {
+      "path": "provenance.json",
+      "firstSHA256": "d3fea8df2d65450a422ee11498d16d50c305624d6312960f2741a6d414ff07e4",
+      "secondSHA256": "f053eef6125d55bddbe65873f1774392e356d0d864875f7c8b52fa6d078865f1",
+      "derivedFromMetalException": true
+    },
+    {
+      "path": "runtime-manifest.json",
+      "firstSHA256": "482b357d3f44901e5fd1af4db47ec25f79c6d65500295cd44ac81becafd3f1f0",
+      "secondSHA256": "05da5538b1a178db6e6b58a878909d30f9edbc539a2d286705d29bbd0d5c51e8",
+      "derivedFromMetalException": true
+    },
+    {
+      "path": "sbom.json",
+      "firstSHA256": "1a9654a6b89a26e9d80586afd67026247dbb98abd7a00176f7cd8010e0943c72",
+      "secondSHA256": "c31b0fba6d06dd2ce724073234f516607e6c544205bb12e8f93e10f13d9c5530",
+      "derivedFromMetalException": true
+    },
+    {
+      "path": "wine-runtime.layer.tar.zst",
+      "firstSHA256": "2de53df8a6e8ff5997d7540d0b7d913680447259249323c8a3b49a5f4d23099d",
+      "secondSHA256": "2de53df8a6e8ff5997d7540d0b7d913680447259249323c8a3b49a5f4d23099d",
+      "derivedFromMetalException": false
+    }
+  ],
+  "files": 832,
+  "byteIdenticalFiles": 831,
+  "explainedDifferences": [
+    {
+      "role": "graphics-provider",
+      "path": "providers/aarch64-unix/winemetal.so",
+      "cause": "Metal 27A266a records the absolute canonical source path in three embedded AIR modules even with relative input, file-prefix-map and compilation-dir options. Those three strings change the Mach-O content-derived UUID and ad-hoc signature hashes. Only those exact strings, the LC_UUID payload and the SHA-256 code-page hashes in the verified linker ad-hoc CodeDirectory (all signature headers, flags, identifier, other fields and padding must match) may differ. All other bytes must match. Build root paths must have equal byte lengths for this narrowly bounded comparison.",
+      "firstDigest": "sha256:9b615f8c36b875899cb1ff65171a78356ba2f574df94dc277ab3e8e3ff95888c",
+      "secondDigest": "sha256:8b0070f0a02d79fbd53727d96e24c99065ae65ff92f935f8e657b9f17ddba2c5",
+      "normalizedSHA256": "6b72dd6437dd6b21e2e80c22a8daa49ec9e98ea64dd3bdd529449e4c5a6d62f8"
+    }
+  ],
+  "byteIdentical": false,
+  "unlistedDifferences": 0
+}

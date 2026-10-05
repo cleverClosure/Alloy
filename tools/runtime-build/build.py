@@ -98,7 +98,7 @@ def build_wine(recipe, root, env, jobs):
     run(["autoreconf", "-f"], source, env, log)
     flags = "-O2 -g0 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -ffile-prefix-map=" + str(root) + "=/alloy-build"
     wine_env = dict(env, CFLAGS=flags, CXXFLAGS=flags, CROSSCFLAGS=flags)
-    run([source / "configure", *recipe["wineArguments"],
+    run(["../../sources/wine/configure", *recipe["wineArguments"],
          "--prefix=/alloy-runtime"], build, wine_env, log)
     run(["make", f"-j{jobs}"], build, wine_env, log)
     return build
