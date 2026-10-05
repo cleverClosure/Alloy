@@ -74,3 +74,45 @@ toolchain mutations and mutable revisions are rejected, gitlinks match their
 pins, excluded blobs are never requested, and escaping symlinks are refused.
 
 See [PROVENANCE.md](PROVENANCE.md) and [results/01-build.md](results/01-build.md).
+
+## Package
+
+```sh
+python3 tools/runtime-build/package.py \
+  --build-root /private/tmp/alloy-runtime-build \
+  --output /private/tmp/alloy-runtime-package
+```
+
+Output must not exist, and the build completion record must match its recipe.
+The package includes three role layers, an extended recipe identifying the
+packager scripts, a component-level SPDX SBOM, unsigned development provenance
+and a runtime manifest. Timestamps derive from `sourceDateEpoch`; they identify
+the reproducible recipe epoch, not the wall-clock build date. SBOM license
+fields use `NOASSERTION`: this is not a license clearance or release SBOM.
+The manifest's `reproducible` flag remains false until a separate two-build
+proof establishes the result; building once never certifies itself.
+
+Wine runtime files include locale data from the pinned source export. The
+packager omits `winedmo.so` and `winegstreamer.so`, exactly as
+`spikes/LEGAL-001/codec-clean/stage-runtime.sh` does. It does not ship build
+objects, import libraries, tests or absolute symlinks. DXMT Unix dependencies
+use relative links back into the Wine layer.
+
+The [layer contract](../../runtime/content-store/Specs/LAYER_FORMAT_V1.md)
+defines canonical CBOR, file-tree identity and the raw-block Zstandard
+development profile. This profile favors a small audited decoder over
+compression efficiency. It accepts native ad-hoc signatures explicitly and
+does not claim signed production provenance.
+
+Bounded writer controls run with Python alone:
+
+```sh
+python3 -m unittest discover -s tools/runtime-build -p test_layers.py -v
+```
+
+For independent full schema validation, install `jsonschema==4.26.0` into a
+temporary virtual environment and run its Python with
+`tools/runtime-build/validate-package.py /private/tmp/alloy-runtime-package`.
+This audit validates both existing schemas and cross-checks component, file
+table, recipe, provenance and SBOM digests. It is not required by the builder
+and downloads nothing itself. See [results/02-layers.md](results/02-layers.md).
