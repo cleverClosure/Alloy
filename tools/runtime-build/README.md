@@ -116,3 +116,46 @@ temporary virtual environment and run its Python with
 This audit validates both existing schemas and cross-checks component, file
 table, recipe, provenance and SBOM digests. It is not required by the builder
 and downloads nothing itself. See [results/02-layers.md](results/02-layers.md).
+
+## Import and verify a local generation
+
+```sh
+swift build --package-path runtime/content-store --product alloy-runtime-materialize
+runtime/content-store/.build/debug/alloy-runtime-materialize import-development \
+  /private/tmp/alloy-runtime-package /private/tmp/alloy-runtime-store runtime-proof
+runtime/content-store/.build/debug/alloy-runtime-materialize verify \
+  /private/tmp/alloy-runtime-store runtime-proof
+```
+
+The JSON result contains `path`, the composed `treeDigest`, `generationId` and
+the content-store `manifestDigest`. The content-store activation manifest is
+a separate ordered-layer document from the package runtime manifest; their
+digests need not match. The generation ID connects them. The unsigned CLI is
+explicitly restricted to development manifests and compatible hosts.
+
+Verification rejects changed, missing, extra or writable files, changed
+symlinks and hard links. It refuses an absent tree and never repairs a
+tampered existing one. Import copies and validates archive bytes privately;
+the caller's mutable file inode never becomes a CAS object. Native signature
+checks are bounded and accept only valid development signatures. Production
+trust, launch leases and automatic runtime-tree cache reclamation are outside
+this development milestone.
+
+The executable proof uses an external private prefix and has finite command
+and diagnostic-volume budgets:
+
+```sh
+export ALLOY_RUNTIME_GENERATION=/path/from/the/materializer/json
+python3 tools/runtime-build/prove-runtime.py \
+  --materializer "$PWD/runtime/content-store/.build/debug/alloy-runtime-materialize" \
+  --store /private/tmp/alloy-runtime-store --game runtime-proof \
+  --toolchain /private/tmp/alloy-runtime-build/toolchain/llvm-mingw-20260616-ucrt-macos-universal/bin \
+  --output /private/tmp/alloy-runtime-proof
+```
+
+It checks the active tree, runs native cmd and the unregistered-emulator
+control, registers FEX, then requires x64min=42 and ISA smoke=0. Success also
+requires a successful Wine builtin-map trace naming the exact FEX image in
+that generation and an unchanged runtime inventory. The complete unchanged
+issue #104 runner accepts that same path through its `--wine-build` argument. See
+[results/03-materialization.md](results/03-materialization.md).

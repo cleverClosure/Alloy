@@ -1,0 +1,342 @@
+{
+  "author": "Timur Isaev",
+  "smoke": {
+    "author": "Timur Isaev",
+    "runtime": {
+      "generationId": "rtg_43c1e4c9c306e60a45fbf20676509213317e0908f022ac6d172d84dbefd77387",
+      "manifestDigest": "sha256:704a8eb37d563cf0940d7b1c803bf3842a71ec351423f68cd3e6af67a2364394",
+      "path": "/tmp/alloy-176-store/runtime-trees/704a8eb37d563cf0940d7b1c803bf3842a71ec351423f68cd3e6af67a2364394",
+      "treeDigest": "sha256:cc293aff9e071347a64f7945af2807e073fc72515d5d88c3723f5819637245c5"
+    },
+    "fexSHA256": "8a55a52c53a1185d305120e35dd8e19d4f515f55199db762f8af1931fca8eec7",
+    "runs": [
+      {
+        "label": "wineboot",
+        "exit": 0,
+        "failure": null,
+        "log": "/private/tmp/alloy-176-proof-c4/wineboot.log",
+        "loadedFEXPaths": []
+      },
+      {
+        "label": "native-cmd",
+        "exit": 0,
+        "failure": null,
+        "log": "/private/tmp/alloy-176-proof-c4/native-cmd.log",
+        "loadedFEXPaths": []
+      },
+      {
+        "label": "unregistered",
+        "exit": 1,
+        "failure": null,
+        "log": "/private/tmp/alloy-176-proof-c4/unregistered.log",
+        "loadedFEXPaths": []
+      },
+      {
+        "label": "register",
+        "exit": 0,
+        "failure": null,
+        "log": "/private/tmp/alloy-176-proof-c4/register.log",
+        "loadedFEXPaths": []
+      },
+      {
+        "label": "x64min",
+        "exit": 42,
+        "failure": null,
+        "log": "/private/tmp/alloy-176-proof-c4/x64min.log",
+        "loadedFEXPaths": [
+          "/private/tmp/alloy-176-store/runtime-trees/704a8eb37d563cf0940d7b1c803bf3842a71ec351423f68cd3e6af67a2364394/dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
+        ]
+      },
+      {
+        "label": "isa-smoke",
+        "exit": 0,
+        "failure": null,
+        "log": "/private/tmp/alloy-176-proof-c4/isa-smoke.log",
+        "loadedFEXPaths": [
+          "/private/tmp/alloy-176-store/runtime-trees/704a8eb37d563cf0940d7b1c803bf3842a71ec351423f68cd3e6af67a2364394/dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
+        ]
+      }
+    ],
+    "runtimeUnchanged": true
+  },
+  "corpus": {
+    "startedAt": "2026-10-05T13:57:41.384185+00:00",
+    "finishedAt": "2026-10-05T13:59:17.197862+00:00",
+    "complete": true,
+    "runtimeUnchanged": true,
+    "inventorySHA256": "9fdac14d587b861d164ac28e8be3f460b4e2fbe6b84a21d5507c0d68203199f8",
+    "registrationControl": true,
+    "families": {
+      "sse2": {
+        "clean": {
+          "status": "PASS",
+          "checksum": "21ba41417def5d07",
+          "builtin_loaded": true,
+          "pe_sha256": "4879c71df095918a0157659b886764719104cfd77dc832fa055ded79e30768fe",
+          "exit": 0,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/sse2-clean.log"
+        },
+        "mutation": {
+          "status": "PASS",
+          "checksum": "eb480915973927bd",
+          "builtin_loaded": true,
+          "pe_sha256": "32fc905ae322bc4948648b04a6fbd3e7d78ff92a8077f17594ab5cf0b454ec08",
+          "exit": 1,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/sse2-mutation.log"
+        }
+      },
+      "sse": {
+        "clean": {
+          "status": "PASS",
+          "checksum": "1243a236db34df2f",
+          "builtin_loaded": true,
+          "pe_sha256": "7c84690b3987f02f9ba8bd6df45b8ec8fd7014dea1a5fa7fae16595de9094ed4",
+          "exit": 0,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/sse-clean.log"
+        },
+        "mutation": {
+          "status": "PASS",
+          "checksum": "55cf1a60181340ae",
+          "builtin_loaded": true,
+          "pe_sha256": "956d0303529ebfeb0baacdbdd7f74908dcfff873d0758bcc87890b17b8c855a6",
+          "exit": 1,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/sse-mutation.log"
+        }
+      },
+      "sse3": {
+        "clean": {
+          "status": "PASS",
+          "checksum": "a0918c8c7fafcfd9",
+          "builtin_loaded": true,
+          "pe_sha256": "30aa432e9e2d88201f3882a9001ca9f038f4bc3f30cf8d9979180fb43a835e4e",
+          "exit": 0,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/sse3-clean.log"
+        },
+        "mutation": {
+          "status": "PASS",
+          "checksum": "5305bc4225f49774",
+          "builtin_loaded": true,
+          "pe_sha256": "b210bf583dc0e1a31d9aed2a5c387f47dca8261cf56cc2f4d1e5ab1bd7be1edb",
+          "exit": 1,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/sse3-mutation.log"
+        }
+      },
+      "ssse3": {
+        "clean": {
+          "status": "PASS",
+          "checksum": "ce9645ed60d9d174",
+          "builtin_loaded": true,
+          "pe_sha256": "5fb2c13e2516ebab927f449784c42c46ec2d572364ac597fdec680b65c2f8c4f",
+          "exit": 0,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/ssse3-clean.log"
+        },
+        "mutation": {
+          "status": "PASS",
+          "checksum": "89914f4da68752d8",
+          "builtin_loaded": true,
+          "pe_sha256": "61bd0e6cb33ef0358907796b3dd17a054b3099cc03dd194bd86974121a61dcda",
+          "exit": 1,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/ssse3-mutation.log"
+        }
+      },
+      "sse41": {
+        "clean": {
+          "status": "PASS",
+          "checksum": "6cfd121cde334cde",
+          "builtin_loaded": true,
+          "pe_sha256": "71bb2bd22d395e9a7acdd40125fa4654cb935ed647e84a11f9b9cdea1de15aa1",
+          "exit": 0,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/sse41-clean.log"
+        },
+        "mutation": {
+          "status": "PASS",
+          "checksum": "6011bfd1cf108682",
+          "builtin_loaded": true,
+          "pe_sha256": "bb8840783b638591b47180f976e644319957148245f48a6725341dea07c9e4c0",
+          "exit": 1,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/sse41-mutation.log"
+        }
+      },
+      "sse42": {
+        "clean": {
+          "status": "PASS",
+          "checksum": "49c8cba45643ca58",
+          "builtin_loaded": true,
+          "pe_sha256": "b6d9632b9ee1c4fd5ff6e244355630c626e6d6642d0472fa6f6690b9362c0be4",
+          "exit": 0,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/sse42-clean.log"
+        },
+        "mutation": {
+          "status": "PASS",
+          "checksum": "393ef08fb8605058",
+          "builtin_loaded": true,
+          "pe_sha256": "2a4b17b497a32c79d1ca9b73297445de109c520c478519d0b1dbb52dabd4cc29",
+          "exit": 1,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/sse42-mutation.log"
+        }
+      },
+      "avx": {
+        "clean": {
+          "status": "PASS",
+          "checksum": "732fe5b38fa3c408",
+          "builtin_loaded": true,
+          "pe_sha256": "dfd291fdf22c6a7851786954668042fa80bb306ee251f66cbe8ee2028fc6716c",
+          "exit": 0,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/avx-clean.log"
+        },
+        "mutation": {
+          "status": "PASS",
+          "checksum": "64943f963264b421",
+          "builtin_loaded": true,
+          "pe_sha256": "741f041b97601df3b69933a5a627c98ce475bc4b4215769ef4edb2b675ff2871",
+          "exit": 1,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/avx-mutation.log"
+        }
+      },
+      "avx2": {
+        "clean": {
+          "status": "PASS",
+          "checksum": "589ca5662342c316",
+          "builtin_loaded": true,
+          "pe_sha256": "6fe4e0f1aa1d2cd21ed9c737c35f98f5a91a0fa57501999d54df5a4c9c81c0d8",
+          "exit": 0,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/avx2-clean.log"
+        },
+        "mutation": {
+          "status": "PASS",
+          "checksum": "5a9e8298190dc946",
+          "builtin_loaded": true,
+          "pe_sha256": "b50488edac3f951e4e304d33db13bce67fd45cbce55a232f3822acc0fc222bbe",
+          "exit": 1,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/avx2-mutation.log"
+        }
+      },
+      "bmi1": {
+        "clean": {
+          "status": "PASS",
+          "checksum": "5a36ed60bc454d14",
+          "builtin_loaded": true,
+          "pe_sha256": "984cc7107842cf6837766166311bc510432c9ab174e612798782001c70ab1d06",
+          "exit": 0,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/bmi1-clean.log"
+        },
+        "mutation": {
+          "status": "PASS",
+          "checksum": "20eadcbd0e12aa65",
+          "builtin_loaded": true,
+          "pe_sha256": "515654e607408c2c16b4e5eeb7e4da3e66ba0bfbea8ef38a98d78767f7a4d5ee",
+          "exit": 1,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/bmi1-mutation.log"
+        }
+      },
+      "bmi2": {
+        "clean": {
+          "status": "PASS",
+          "checksum": "0fa7cb1768b0cd21",
+          "builtin_loaded": true,
+          "pe_sha256": "80dc27a23307a254f8da52fdbe7757ed6b9d3d925b52705a38b4694eae99227c",
+          "exit": 0,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/bmi2-clean.log"
+        },
+        "mutation": {
+          "status": "PASS",
+          "checksum": "c3df897b1512a714",
+          "builtin_loaded": true,
+          "pe_sha256": "b521b0a8bc5cef7459e9841158f8314e5639c9308f07daa68616a0a8973c866c",
+          "exit": 1,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/bmi2-mutation.log"
+        }
+      },
+      "flags": {
+        "clean": {
+          "status": "PASS",
+          "checksum": "dabc6bdd3b7d41af",
+          "builtin_loaded": true,
+          "pe_sha256": "f47f3153ab9477d703885cbb73e1a01b24b2fc4923afbb80ec5281d8e9e078e3",
+          "exit": 0,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/flags-clean.log"
+        },
+        "mutation": {
+          "status": "PASS",
+          "checksum": "93c7f7c6028d282b",
+          "builtin_loaded": true,
+          "pe_sha256": "275cf3613d7aa2625f411e77e659b060a0c8acdd8788a330bc74cfb0f13318d5",
+          "exit": 1,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/flags-mutation.log"
+        }
+      },
+      "atomics": {
+        "clean": {
+          "status": "PASS",
+          "checksum": "faad3e1498581db0",
+          "builtin_loaded": true,
+          "pe_sha256": "7490ff6d657f33da221c5a86fa9da94865712d4ad67d11eef39f20b0249ba8bc",
+          "exit": 0,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/atomics-clean.log"
+        },
+        "mutation": {
+          "status": "PASS",
+          "checksum": "2476aea558e8f030",
+          "builtin_loaded": true,
+          "pe_sha256": "1ac9b1bb1f94a7d5daa470fa57e4939c6e368281d0f8d62ed1e15136de2e2523",
+          "exit": 1,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/atomics-mutation.log"
+        },
+        "tickets": {
+          "status": "PASS",
+          "checksum": "cf73f23dd9bcc99f",
+          "builtin_loaded": true,
+          "pe_sha256": "858a4b09295742ab4a1eda4951b91072bbfa69c0264c2678c438c1b48b966473",
+          "exit": 1,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/atomics-tickets.log"
+        }
+      },
+      "x87": {
+        "clean": {
+          "status": "PASS",
+          "checksum": "cc376fd87725cdb0",
+          "builtin_loaded": true,
+          "pe_sha256": "1b620805ab0ae779af25bc30eb3b58c3efb9607e2ec1610524954d2c49bf9827",
+          "exit": 0,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/x87-clean.log"
+        },
+        "mutation": {
+          "status": "PASS",
+          "checksum": "95eec97d57d7a340",
+          "builtin_loaded": true,
+          "pe_sha256": "c592111a455534d42912f73107f0c1703afbcf57f6a2b5017a2f2514b29cceb2",
+          "exit": 1,
+          "failure": null,
+          "log": "/private/tmp/alloy-176/spikes/CPU-001/work/isa-corpus-runs/run-sp_vwzfd/x87-mutation.log"
+        }
+      }
+    }
+  },
+  "rawAggregateSHA256": "af64776c7c1e1324dc97030415718313acb02f9a0ed63cd3b046be2ac6dcea54"
+}
