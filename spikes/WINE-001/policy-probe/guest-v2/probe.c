@@ -42,6 +42,14 @@ void entry(void)
     text(" path=");
     text(path);
     text("\n");
+#ifdef PROBE_RESTRICTION
+    {
+        HMODULE restricted = LoadLibraryA("alloyblocked.dll");
+        text(restricted ? "RESTRICTION allowed=1\n" : "RESTRICTION allowed=0\n");
+        if (restricted)
+            FreeLibrary(restricted);
+    }
+#endif
 #ifdef LAUNCH_CHILDREN
     if (child("game.exe") || child("unknown.exe"))
         ExitProcess(250);

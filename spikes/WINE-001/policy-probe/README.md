@@ -2,6 +2,10 @@
 
 **Author:** Timur Isaev
 
+The completed v2 integration proof and session-launch contract are in
+[SESSION_HANDOFF_V2.md](SESSION_HANDOFF_V2.md) and
+[results/04-process-tree.md](results/04-process-tree.md).
+
 This probe compiles a deterministic, fixed-layout policy snapshot and passes it to the Wine
 startup hook through an inherited read-only file descriptor. The launcher, its known game child,
 and an unknown child all statically import the same `alloygraphics.dll` name. The snapshot routes
