@@ -1,0 +1,434 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Author: Timur Isaev. Structural schema; normative cross-field and artifact validation is in alloy_lab.",
+  "title": "Alloy lab scenario v2",
+  "type": "object",
+  "properties": {
+    "version": {
+      "const": 2
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "subject": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "lab001",
+            "native",
+            "wine",
+            "windows-reference"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\\\\\u0000]+$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "kind",
+        "path",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "runtime": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "native",
+            "wine",
+            "windows-reference"
+          ]
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "executable": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\\\\\u0000]+$"
+        },
+        "files": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024,
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\\\\\u0000]+$"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "path",
+              "sha256",
+              "bytes"
+            ],
+            "additionalProperties": false
+          },
+          "maxProperties": 8192
+        }
+      },
+      "required": [
+        "kind",
+        "sha256",
+        "executable",
+        "files"
+      ],
+      "additionalProperties": false
+    },
+    "host": {
+      "type": "object",
+      "properties": {
+        "os": {
+          "enum": [
+            "Darwin",
+            "Windows"
+          ]
+        },
+        "architectures": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "arm64",
+              "aarch64",
+              "x86_64",
+              "AMD64"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 4
+        },
+        "minimum_memory_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "requirements": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "maxProperties": 32
+        }
+      },
+      "required": [
+        "os",
+        "architectures",
+        "minimum_memory_bytes",
+        "requirements"
+      ],
+      "additionalProperties": false
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024,
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\\\\\u0000]+$"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "required": [
+          "path",
+          "sha256"
+        ],
+        "additionalProperties": false
+      },
+      "maxProperties": 64
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+          },
+          "phase": {
+            "enum": [
+              "setup",
+              "run",
+              "teardown"
+            ]
+          },
+          "argv": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "minItems": 1,
+            "maxItems": 128
+          },
+          "environment": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "maxProperties": 32
+          },
+          "timeout_seconds": {
+            "type": "number",
+            "minimum": 0.01,
+            "maximum": 7200
+          },
+          "expected_exit": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255
+          }
+        },
+        "required": [
+          "id",
+          "phase",
+          "argv",
+          "environment",
+          "timeout_seconds",
+          "expected_exit"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 32
+    },
+    "observables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+          },
+          "source": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "enum": [
+                  "file-sha256",
+                  "json-file",
+                  "stdout-json",
+                  "elapsed",
+                  "exit-code"
+                ]
+              },
+              "step": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+              },
+              "path": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024,
+                    "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\\\\\u0000]+$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "key": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4096
+                },
+                "minItems": 0,
+                "maxItems": 16
+              }
+            },
+            "required": [
+              "kind",
+              "step",
+              "path",
+              "key"
+            ],
+            "additionalProperties": false
+          },
+          "comparison": {
+            "type": "object",
+            "properties": {
+              "class": {
+                "enum": [
+                  "exact",
+                  "numeric",
+                  "visual",
+                  "behavioral",
+                  "performance",
+                  "informational"
+                ]
+              },
+              "absolute": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1e+18
+              },
+              "relative": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "direction": {
+                "enum": [
+                  "any",
+                  "higher",
+                  "lower"
+                ]
+              }
+            },
+            "required": [
+              "class",
+              "absolute",
+              "relative",
+              "direction"
+            ],
+            "additionalProperties": false
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "comparison",
+          "unit"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 128
+    },
+    "timing_sensitive": {
+      "type": "boolean"
+    },
+    "timeout_seconds": {
+      "type": "number",
+      "minimum": 0.01,
+      "maximum": 7200
+    },
+    "retry_limit": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "game_build": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "profile": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "cache_state": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "automation": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "privacy": {
+          "const": "local-only-no-accounts"
+        }
+      },
+      "required": [
+        "game_build",
+        "profile",
+        "cache_state",
+        "automation",
+        "privacy"
+      ],
+      "additionalProperties": false
+    },
+    "legacy": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "source_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "definition": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "source_sha256",
+            "definition"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "required": [
+    "version",
+    "id",
+    "revision",
+    "subject",
+    "runtime",
+    "host",
+    "inputs",
+    "steps",
+    "observables",
+    "timing_sensitive",
+    "timeout_seconds",
+    "retry_limit",
+    "context",
+    "legacy"
+  ],
+  "additionalProperties": false
+}
