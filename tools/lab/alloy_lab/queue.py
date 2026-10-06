@@ -27,8 +27,7 @@ class Queue:
         os.close(fd)
         self.db = sqlite3.connect(path, timeout=5, isolation_level=None)
         self.db.row_factory = sqlite3.Row
-        require(self.db.execute('PRAGMA user_version').fetchone()[0] in (0, 1), 'queue:unsupported_version')
-        self.db.execute('PRAGMA user_version=1')
+        require(self.db.execute('PRAGMA user_version').fetchone()[0] in (0, 1, 2), 'queue:unsupported_version')
         self.db.execute('PRAGMA journal_mode=WAL')
         self.db.execute('PRAGMA synchronous=FULL')
         self.db.execute('PRAGMA foreign_keys=ON')
@@ -41,6 +40,19 @@ class Queue:
             job_id TEXT NOT NULL REFERENCES jobs(id), number INTEGER NOT NULL, owner TEXT NOT NULL,
             started REAL NOT NULL, finished REAL, state TEXT NOT NULL, evidence TEXT, failure TEXT,
             PRIMARY KEY(job_id, number))''')
+        with self.transaction():
+            if self.db.execute('PRAGMA user_version').fetchone()[0] < 2:
+                for column in ('classification TEXT', 'history_summary TEXT'):
+                    self.db.execute('ALTER TABLE jobs ADD COLUMN ' + column)
+                for column in ('record_digest TEXT', 'comparison TEXT'):
+                    self.db.execute('ALTER TABLE attempts ADD COLUMN ' + column)
+                self.db.execute('PRAGMA user_version=2')
+                for row in self.db.execute("SELECT job_id,number,state,failure FROM attempts WHERE state!='RUNNING'").fetchall():
+                    comparison = {'verdict': 'UNBASELINED' if row['state'] == 'COMPLETED' else row['state'],
+                                  'reasons': [row['failure']] if row['failure'] else [], 'baseline': None}
+                    comparison['integrity_sha256'] = hashed(comparison)
+                    self.db.execute('UPDATE attempts SET comparison=? WHERE job_id=? AND number=?',
+                                    (canonical(comparison).decode(), row['job_id'], row['number']))
 
     def close(self):
         self.db.close()
@@ -81,6 +93,17 @@ class Queue:
         require(hashed(result['definition']) == result['definition_sha256'], 'queue:definition_corrupt')
         result['history'] = [dict(entry) for entry in self.db.execute(
             'SELECT * FROM attempts WHERE job_id=? ORDER BY number', (job,))]
+        for attempt in result['history']:
+            if attempt['comparison'] is not None:
+                attempt['comparison'] = json.loads(attempt['comparison'])
+                saved = attempt['comparison']
+                require(saved.get('integrity_sha256') == hashed({key: value for key, value in saved.items()
+                        if key != 'integrity_sha256'}), 'queue:comparison_corrupt')
+        verdicts = [entry['comparison']['verdict'] for entry in result['history'] if entry['comparison'] is not None]
+        if verdicts:
+            from .comparison import aggregate
+            result['history_summary'] = aggregate(verdicts)
+            result['classification'] = result['history_summary']['classification']
         return result
 
     def list(self):
@@ -122,14 +145,25 @@ class Queue:
                             (job, number, owner, time.time()))
         return self.get(job)
 
-    def finish(self, job, owner, state, evidence=None, failure=None):
+    def finish(self, job, owner, state, evidence=None, failure=None, record_digest=None, comparison=None):
+        from .comparison import aggregate
         require(state in TERMINAL, 'finish:state')
+        comparison = comparison or {'verdict': 'UNBASELINED' if state == 'COMPLETED' else state,
+                                    'reasons': [failure] if failure else [], 'baseline': None}
+        comparison = dict(comparison)
+        comparison['integrity_sha256'] = hashed(comparison)
         with self.transaction():
             current = self.get(job)
             require(current['state'] == 'RUNNING' and current['owner'] == owner, 'finish:stale_owner')
-            self.db.execute('UPDATE attempts SET finished=?,state=?,evidence=?,failure=? WHERE job_id=? AND number=?',
-                            (time.time(), state, evidence, failure, job, current['attempts']))
-            self.db.execute('UPDATE jobs SET state=?,result=?,failure=? WHERE id=?', (state, evidence, failure, job))
+            self.db.execute('UPDATE attempts SET finished=?,state=?,evidence=?,failure=?,record_digest=?,comparison=? WHERE job_id=? AND number=?',
+                (time.time(), state, evidence, failure, record_digest, canonical(comparison).decode(), job, current['attempts']))
+            verdicts = [entry['comparison']['verdict'] for entry in self.get(job)['history']]
+            summary = aggregate(verdicts)
+            retry = (comparison['verdict'] in ('FAILED', 'REGRESSION', 'INCOMPARABLE', 'INTERRUPTED') and
+                     current['attempts'] <= current['definition']['retry_limit'] and not current['cancel_requested'] and
+                     time.time() < current['deadline'])
+            self.db.execute('UPDATE jobs SET state=?,result=?,failure=?,classification=?,history_summary=? WHERE id=?',
+                ('QUEUED' if retry else state, evidence, failure, summary['classification'], canonical(summary).decode(), job))
 
     def recover(self):
         recovered = []
