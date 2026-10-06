@@ -1,0 +1,17 @@
+{
+  "label": "TEST-ONLY public vector",
+  "source": "{\"z\":-0,\"😀\":[1e-7,1e21,\"é\"],\"a\":{\"b\":2,\"a\":1}}",
+  "canonical": "{\"a\":{\"a\":1,\"b\":2},\"z\":0,\"😀\":[1e-7,1e+21,\"é\"]}",
+  "pae": "RFNTRXYxIDQ4IGFwcGxpY2F0aW9uL3ZuZC5hbGxveS50ZXN0LXZlY3Rvcitqc29uO3ZlcnNpb249MSA1MCB7ImEiOnsiYSI6MSwiYiI6Mn0sInoiOjAsIvCfmIAiOlsxZS03LDFlKzIxLCLDqSJdfQ==",
+  "publicKey": "8doh9nTJNQ/NkbVOo7GgaVEfKxb28D4U3AScM2NbtMY=",
+  "envelope": {
+    "payloadType": "application/vnd.alloy.test-vector+json;version=1",
+    "payload": "eyJhIjp7ImEiOjEsImIiOjJ9LCJ6IjowLCLwn5iAIjpbMWUtNywxZSsyMSwiw6kiXX0=",
+    "signatures": [
+      {
+        "keyId": "sha256:e921c9a79d67bd4f4454aaf8fd6a2dfe6ca633af19781cbe4efed0d080ed0e51",
+        "signature": "1oJUmZ84Dy8v5Mpzp019LprOJcCZzpJa7n0Lji7+3TGaH1BRkTwjeSlGVngAr24RFj6zL8KVbDF5QeDIEj1kDA=="
+      }
+    ]
+  }
+}
