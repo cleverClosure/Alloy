@@ -616,6 +616,14 @@ REGISTRY: list[Suite] = [
         description="synthetic discovery through typed client preview/session/reconnect and exact reclamation",
         cleanup_grace=15,
     ),
+    # --- runtime/title-volumes -------------------------------------------
+    Suite(
+        id="title-volumes-swift-test", tier="fast", cwd=".",
+        cmd=("swift", "test", "--package-path", "runtime/title-volumes"),
+        timeout=240,
+        description="Title-bound saves, settings, cache and scratch lifecycle controls",
+        probe=every(need_commands("swift"), need_paths("runtime/title-volumes/Package.swift")),
+    ),
     # --- runtime/trust ---------------------------------------------------
     Suite(
         id="trust-swift-test", tier="fast", cwd=".",
@@ -933,7 +941,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 56
+REGISTRY_SUITE_COUNT = 57
 
 
 # ---------------------------------------------------------------------------
