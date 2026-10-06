@@ -625,6 +625,21 @@ REGISTRY: list[Suite] = [
         description="cold prefix reproducibility and isolated Wine servers on a verified runtime generation",
         cleanup_grace=30,
     ),
+    Suite(
+        id="runtime-service-wine-launch", tier="full", cwd=".", timeout=700,
+        cmd=lambda root: ("python3", str(root / "tools/lab/lab.py"), "lock-run", "--mode", "exclusive",
+                          "--timeout", "600", "--", "python3", str(root / "runtime/session-service/run-wine-launch-proof.py"),
+                          "--package", os.environ.get("ALLOY_SESSION_RUNTIME_PACKAGE", ""),
+                          "--materializer", str(Path(os.environ.get("ALLOY_SESSION_MATERIALIZER", "")) /
+                                                "alloy-runtime-materialize"),
+                          "--toolchain", os.environ.get("ALLOY_TOOLCHAIN_BIN", "")),
+        probe=every(need_commands("swift", "python3", "launchctl"), need_launch_host,
+                    need_environment_tree("ALLOY_SESSION_RUNTIME_PACKAGE", "runtime-manifest.json"),
+                    need_environment_tree("ALLOY_SESSION_MATERIALIZER", "alloy-runtime-materialize"),
+                    need_environment_tree("ALLOY_TOOLCHAIN_BIN", "x86_64-w64-mingw32-clang")),
+        description="actual XPC x64 launch under policy, exact FEX image, snapshot/lease refusal and fresh controls",
+        cleanup_grace=30,
+    ),
     # --- runtime/title-volumes -------------------------------------------
     Suite(
         id="title-volumes-swift-test", tier="fast", cwd=".",
@@ -996,7 +1011,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 64
+REGISTRY_SUITE_COUNT = 65
 
 
 # ---------------------------------------------------------------------------

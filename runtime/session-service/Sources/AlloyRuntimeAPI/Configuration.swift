@@ -12,10 +12,11 @@ public struct ServiceConfiguration: Codable, Sendable {
     public let libraryRoots: [String]?
     public let fixtureMode: Bool?
     public let testFault: String?
+    public let syntheticPayloadRoot: String?
 
     public init(serviceName: String, credential: String, stateRoot: String, contentRoot: String,
                 libraryRoots: [String] = [],
-                fixtureMode: Bool = false, testFault: String? = nil) {
+                fixtureMode: Bool = false, testFault: String? = nil, syntheticPayloadRoot: String? = nil) {
         self.serviceName = serviceName
         self.credential = credential
         self.stateRoot = stateRoot
@@ -23,6 +24,7 @@ public struct ServiceConfiguration: Codable, Sendable {
         self.libraryRoots = libraryRoots
         self.fixtureMode = fixtureMode
         self.testFault = testFault
+        self.syntheticPayloadRoot = syntheticPayloadRoot
     }
 
     public static func read(_ path: String) throws -> Self {
@@ -64,7 +66,21 @@ public struct ServiceConfiguration: Codable, Sendable {
                 }
             }
         }
+        try result.validateSyntheticPayload(state: state, content: content)
         return result
+    }
+
+    private func validateSyntheticPayload(state: String, content: String) throws {
+        if let payload = syntheticPayloadRoot {
+            guard fixtureMode == true else { throw RuntimeFailure.invalidConfiguration }
+            try Self.validateDirectory(payload)
+            let resolved = try Self.canonicalPath(payload)
+            guard resolved == payload, resolved != state, resolved != content,
+                  !resolved.hasPrefix(state + "/"), !resolved.hasPrefix(content + "/"),
+                  !state.hasPrefix(resolved + "/"), !content.hasPrefix(resolved + "/") else {
+                throw RuntimeFailure.invalidConfiguration
+            }
+        }
     }
 
     public static func validateDirectory(_ path: String) throws {

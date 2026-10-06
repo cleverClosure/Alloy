@@ -9,12 +9,15 @@ public final class RequestRouter: Sendable {
 
     private let handler: (@Sendable (RuntimeRequest) throws -> Data)?
     private let methods: [String]
+    private let gameLaunchAvailable: Bool
 
     public init(configuration: ServiceConfiguration, methods: [String] = [],
+                gameLaunchAvailable: Bool = false,
                 handler: (@Sendable (RuntimeRequest) throws -> Data)? = nil) {
         self.configuration = configuration
         self.methods = ["info"] + methods
         self.handler = handler
+        self.gameLaunchAvailable = gameLaunchAvailable
     }
 
     public func exchange(_ bytes: Data, peerUID: UInt32, now: TimeInterval = Date().timeIntervalSince1970) -> Data {
@@ -48,7 +51,8 @@ public final class RequestRouter: Sendable {
             if request.method == "info" {
                 guard request.payload == Data("{}".utf8) else { return failure(.malformed) }
                 payload = try RuntimeEncoding.encode(ServiceInfo(
-                    instanceID: instanceID, processID: getpid(), userID: getuid(), methods: methods))
+                    instanceID: instanceID, processID: getpid(), userID: getuid(), methods: methods,
+                    gameLaunchAvailable: gameLaunchAvailable))
             } else if methods.contains(request.method), let handler {
                 payload = try handler(request)
             } else { return failure(.malformed) }

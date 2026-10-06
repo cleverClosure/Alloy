@@ -1,5 +1,6 @@
 // Author: Timur Isaev
 import AlloyRuntimeAPI
+import AlloyProfileCompiler
 import Darwin
 import Foundation
 
@@ -12,8 +13,16 @@ public final class ServiceListener: NSObject, NSXPCListenerDelegate {
         let launches = try LaunchService(configuration: configuration)
         let sessions = try SessionSupervisor(configuration: configuration, launches: launches,
                                              executable: fixtureExecutable)
+        let wine = try configuration.syntheticPayloadRoot.map { _ in
+            try WineSessionService(configuration: configuration,
+                executable: fixtureExecutable.deletingLastPathComponent().appendingPathComponent("alloy-session-agent"))
+        }
+        let available = wine != nil && (try? HostCapabilities.current().localClassId()) != nil
         router = RequestRouter(configuration: configuration,
-                               methods: OperationService.methods + LaunchService.methods + SessionSupervisor.methods) {
+                               methods: OperationService.methods + LaunchService.methods + SessionSupervisor.methods
+                                   + (wine == nil ? [] : WineSessionService.methods),
+                               gameLaunchAvailable: available) {
+            if let wine, wine.handles($0) { return try wine.handle($0) }
             if LaunchService.methods.contains($0.method) { return try launches.handle($0) }
             if SessionSupervisor.methods.contains($0.method) { return try sessions.handle($0) }
             return try operations.handle($0)

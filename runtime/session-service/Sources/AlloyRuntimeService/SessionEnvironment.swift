@@ -113,7 +113,8 @@ public final class SessionEnvironment {
         ["PATH": "/usr/bin:/bin", "HOME": prefix.path, "TMPDIR": prefix.appendingPathComponent("drive_c/temp").path,
          "LANG": "C", "WINEPREFIX": prefix.path, "WINELOADER": runtime.appendingPathComponent("loader/wine").path,
          "WINESERVER": runtime.appendingPathComponent("server/wineserver").path,
-         "WINEDEBUG": "-all,+alloy,+loaddll,+xtajit", "WINEDLLOVERRIDES": "mscoree,mshtml=", "FEX_SILENTLOG": "1"]
+         "WINEDEBUG": "-all,+alloy,+module,+loaddll,+xtajit",
+         "WINEDLLOVERRIDES": "mscoree,mshtml=", "FEX_SILENTLOG": "1"]
     }
 }
 

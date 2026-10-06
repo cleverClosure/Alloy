@@ -119,6 +119,9 @@ class ServiceFixture:
             if result.returncode:
                 raise RuntimeError("private service cleanup: " + result.stderr)
             self.loaded = False
-            if run(["launchctl", "print", self.target]).returncode == 0:
-                raise RuntimeError("private service still registered")
+            deadline = time.monotonic() + 3
+            while run(["launchctl", "print", self.target]).returncode == 0:
+                if time.monotonic() >= deadline:
+                    raise RuntimeError("private service still registered")
+                time.sleep(0.05)
         self.temporary.cleanup()

@@ -73,7 +73,7 @@ with operation/catalog reads. Wait for a terminal session state plus an empty
 `liveNodes` array. Display INTERRUPTED honestly; replaying its original fixture
 start returns that same interrupted session, without launching another tree.
 
-`info.gameLaunchAvailable` is false. Show preview coverage and unavailable launch
+On the baseline fixture endpoint, `info.gameLaunchAvailable` is false. Show preview coverage and unavailable launch
 capability. Never hide `notYetLowered`, change readiness flags or offer the native
 fixture driver as a real game's execution provider. Preview input is local
 unsigned development evidence; no production certification or storefront trust
@@ -125,14 +125,15 @@ telemetry, reports or issue attachments.
 ## Bounds and handoff limits
 
 The service is current-user development infrastructure, with no persistent
-LaunchAgent installation, root helper, signing identity or new dependency.
+LaunchAgent installation, root helper, signing identity or third-party dependency.
 Existing catalog/content-store/compiler packages remain unchanged. API messages
 are 4 MiB maximum and client waits at most 30 seconds; previews expire within
 120 seconds. Development-store retention caps and process budgets are specified
 in the wire contract. Pull subscriptions have no callback lifetime to recover.
-The fixed fixture proves local ownership, recovery and lease behavior. Real
-Wine/provider execution, arbitrary-process containment and production launch
-remain separate work.
+The fixed fixture proves local ownership, recovery and lease behavior. The
+explicit [synthetic Wine contract](WINE_LAUNCH_V1.md) adds a separate Wine session
+model and enabled capability; clients must opt into that development contract.
+Complete Wine child supervision and production launch remain separate work.
 
 The existing compiler requires at least 8 GiB to produce a local host identity.
 The [standard hosted arm64 runner](https://docs.github.com/en/actions/reference/runners/github-hosted-runners)

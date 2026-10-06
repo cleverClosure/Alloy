@@ -16,7 +16,8 @@ Milestone 1 implements a versioned XPC boundary and a reusable
 Swift client. Milestone 2 connects the existing installation engine and durable
 operation history, including reconnect and crash recovery. Milestone 3 adds
 compiler-verified development previews and fixed native fixture supervision.
-`info` reports game launch as unavailable.
+The baseline endpoint reports game launch as unavailable; the opt-in synthetic
+Wine driver below has a separate readiness contract.
 
 ```sh
 swift test --package-path runtime/session-service
@@ -63,4 +64,7 @@ credit. Local full-proof results remain separate from hosted refusal evidence.
 
 The [session environment contract](Specs/SESSION_ENVIRONMENT_V1.md) adds cached,
 reproducible prefixes, title-volume mappings and private Wine servers for #181.
-The launch API remains gated while policy execution and supervision are added.
+The [Wine launch protocol](Specs/WINE_LAUNCH_V1.md) enables verified synthetic
+x64 launches under inherited v2 policy. Its [proof](Results/2026-10-06-wine-launch.md)
+uses a separate XPC client and tests corrupt snapshots and missing leases.
+Ordinary profile launches remain gated; complete child supervision follows next.

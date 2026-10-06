@@ -1,0 +1,182 @@
+{
+  "author": "Timur Isaev",
+  "runtime": {
+    "generationId": "rtg_76def2c40743993cff2ce99c7a1f5fd93a2b9bc246977e050a2184b340943c00",
+    "manifestDigest": "sha256:b57daed26197ba29600c29b432f4049065b0b9e8e5ccd95fe4cb79c4058ec077",
+    "path": "/var/folders/mx/f36mfntx6cxdr7v6ldg9g5380000gn/T/alloy-runtime-iuw5d6vy/content/runtime-trees/b57daed26197ba29600c29b432f4049065b0b9e8e5ccd95fe4cb79c4058ec077",
+    "treeDigest": "sha256:6fbeb915a7bb987b060d14ef6060a510ce9632a817c123799547d4bae9fd6610"
+  },
+  "status": "pass",
+  "runtimeUnchanged": true,
+  "imageSHA256": "ac0a9ce68d65aabdf359e71fcab2c11d2d9cf8233a4b29c663189a310cd87b0f",
+  "runs": [
+    {
+      "label": "valid",
+      "state": "SUCCEEDED",
+      "code": "OK",
+      "mappedFEX": [
+        "/private/var/folders/mx/f36mfntx6cxdr7v6ldg9g5380000gn/T/alloy-runtime-iuw5d6vy/content/runtime-trees/b57daed26197ba29600c29b432f4049065b0b9e8e5ccd95fe4cb79c4058ec077/dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
+      ],
+      "events": [
+        {
+          "code": "OK",
+          "correlation": {
+            "correlationID": "20EBD66B-17C3-4D2C-8F7F-4E1495368A36",
+            "generationID": "rtg_76def2c40743993cff2ce99c7a1f5fd93a2b9bc246977e050a2184b340943c00",
+            "launchSpecID": "ls_aa893f28f3a3b13850f25699ab75d0c18609b222d6b92b96e03d710b19d36bcb",
+            "sessionID": "wine-ec654fac9599f62e79e2706abef23dfb7c07c08185aa86db4d8695f0b718d1b3"
+          },
+          "kind": "verifying-runtime",
+          "sequence": 1
+        },
+        {
+          "code": "OK",
+          "correlation": {
+            "correlationID": "20EBD66B-17C3-4D2C-8F7F-4E1495368A36",
+            "generationID": "rtg_76def2c40743993cff2ce99c7a1f5fd93a2b9bc246977e050a2184b340943c00",
+            "launchSpecID": "ls_aa893f28f3a3b13850f25699ab75d0c18609b222d6b92b96e03d710b19d36bcb",
+            "sessionID": "wine-ec654fac9599f62e79e2706abef23dfb7c07c08185aa86db4d8695f0b718d1b3"
+          },
+          "kind": "preparing-prefix",
+          "sequence": 2
+        },
+        {
+          "code": "OK",
+          "correlation": {
+            "correlationID": "20EBD66B-17C3-4D2C-8F7F-4E1495368A36",
+            "generationID": "rtg_76def2c40743993cff2ce99c7a1f5fd93a2b9bc246977e050a2184b340943c00",
+            "launchSpecID": "ls_aa893f28f3a3b13850f25699ab75d0c18609b222d6b92b96e03d710b19d36bcb",
+            "sessionID": "wine-ec654fac9599f62e79e2706abef23dfb7c07c08185aa86db4d8695f0b718d1b3"
+          },
+          "kind": "policy-delivered",
+          "sequence": 3
+        },
+        {
+          "code": "OK",
+          "correlation": {
+            "correlationID": "20EBD66B-17C3-4D2C-8F7F-4E1495368A36",
+            "generationID": "rtg_76def2c40743993cff2ce99c7a1f5fd93a2b9bc246977e050a2184b340943c00",
+            "launchSpecID": "ls_aa893f28f3a3b13850f25699ab75d0c18609b222d6b92b96e03d710b19d36bcb",
+            "sessionID": "wine-ec654fac9599f62e79e2706abef23dfb7c07c08185aa86db4d8695f0b718d1b3"
+          },
+          "kind": "exited",
+          "sequence": 4
+        }
+      ]
+    },
+    {
+      "label": "corrupt-policy",
+      "state": "FAILED",
+      "code": "POLICY_INTEGRITY",
+      "mappedFEX": [],
+      "events": [
+        {
+          "code": "OK",
+          "correlation": {
+            "correlationID": "76AC92BB-2836-4916-A0A0-DDC0F9534B2C",
+            "generationID": "rtg_76def2c40743993cff2ce99c7a1f5fd93a2b9bc246977e050a2184b340943c00",
+            "launchSpecID": "ls_74b2c3d9d40eef4e51dbac6ac52d5f699270c10496d8f86fa7ce3d43ff9a431c",
+            "sessionID": "wine-2ea29f1b030f86b7f36586829de410ff9d2b901775b40fdd7b48b06ff189809d"
+          },
+          "kind": "verifying-runtime",
+          "sequence": 1
+        },
+        {
+          "code": "OK",
+          "correlation": {
+            "correlationID": "76AC92BB-2836-4916-A0A0-DDC0F9534B2C",
+            "generationID": "rtg_76def2c40743993cff2ce99c7a1f5fd93a2b9bc246977e050a2184b340943c00",
+            "launchSpecID": "ls_74b2c3d9d40eef4e51dbac6ac52d5f699270c10496d8f86fa7ce3d43ff9a431c",
+            "sessionID": "wine-2ea29f1b030f86b7f36586829de410ff9d2b901775b40fdd7b48b06ff189809d"
+          },
+          "kind": "preparing-prefix",
+          "sequence": 2
+        },
+        {
+          "code": "POLICY_INTEGRITY",
+          "correlation": {
+            "correlationID": "76AC92BB-2836-4916-A0A0-DDC0F9534B2C",
+            "generationID": "rtg_76def2c40743993cff2ce99c7a1f5fd93a2b9bc246977e050a2184b340943c00",
+            "launchSpecID": "ls_74b2c3d9d40eef4e51dbac6ac52d5f699270c10496d8f86fa7ce3d43ff9a431c",
+            "sessionID": "wine-2ea29f1b030f86b7f36586829de410ff9d2b901775b40fdd7b48b06ff189809d"
+          },
+          "kind": "refused",
+          "sequence": 3
+        }
+      ]
+    },
+    {
+      "label": "missing-lease",
+      "state": "FAILED",
+      "code": "GENERATION_LEASE_MISSING",
+      "mappedFEX": [],
+      "events": [
+        {
+          "code": "GENERATION_LEASE_MISSING",
+          "correlation": {
+            "correlationID": "71CEA82B-AC75-4A06-8A6D-217A7384D2C0",
+            "generationID": "rtg_76def2c40743993cff2ce99c7a1f5fd93a2b9bc246977e050a2184b340943c00",
+            "launchSpecID": "ls_c3e90a4718531d0af28610d69302be35f76c9c26a2bd339d1e96820f7f477712",
+            "sessionID": "wine-c9b086b612c96b32c4646e0d0af95a2756f7d8e473376acce3c5482d8fb7ec60"
+          },
+          "kind": "refused",
+          "sequence": 1
+        }
+      ]
+    },
+    {
+      "label": "valid-after-faults",
+      "state": "SUCCEEDED",
+      "code": "OK",
+      "mappedFEX": [
+        "/private/var/folders/mx/f36mfntx6cxdr7v6ldg9g5380000gn/T/alloy-runtime-iuw5d6vy/content/runtime-trees/b57daed26197ba29600c29b432f4049065b0b9e8e5ccd95fe4cb79c4058ec077/dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
+      ],
+      "events": [
+        {
+          "code": "OK",
+          "correlation": {
+            "correlationID": "A120065C-B70D-47A0-BDEC-184E9908FAF6",
+            "generationID": "rtg_76def2c40743993cff2ce99c7a1f5fd93a2b9bc246977e050a2184b340943c00",
+            "launchSpecID": "ls_ad4c5915f4551d2f3bbafe2f1a6e03a42995f3f54146a4f8d4bd1f7de90ffb55",
+            "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+          },
+          "kind": "verifying-runtime",
+          "sequence": 1
+        },
+        {
+          "code": "OK",
+          "correlation": {
+            "correlationID": "A120065C-B70D-47A0-BDEC-184E9908FAF6",
+            "generationID": "rtg_76def2c40743993cff2ce99c7a1f5fd93a2b9bc246977e050a2184b340943c00",
+            "launchSpecID": "ls_ad4c5915f4551d2f3bbafe2f1a6e03a42995f3f54146a4f8d4bd1f7de90ffb55",
+            "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+          },
+          "kind": "preparing-prefix",
+          "sequence": 2
+        },
+        {
+          "code": "OK",
+          "correlation": {
+            "correlationID": "A120065C-B70D-47A0-BDEC-184E9908FAF6",
+            "generationID": "rtg_76def2c40743993cff2ce99c7a1f5fd93a2b9bc246977e050a2184b340943c00",
+            "launchSpecID": "ls_ad4c5915f4551d2f3bbafe2f1a6e03a42995f3f54146a4f8d4bd1f7de90ffb55",
+            "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+          },
+          "kind": "policy-delivered",
+          "sequence": 3
+        },
+        {
+          "code": "OK",
+          "correlation": {
+            "correlationID": "A120065C-B70D-47A0-BDEC-184E9908FAF6",
+            "generationID": "rtg_76def2c40743993cff2ce99c7a1f5fd93a2b9bc246977e050a2184b340943c00",
+            "launchSpecID": "ls_ad4c5915f4551d2f3bbafe2f1a6e03a42995f3f54146a4f8d4bd1f7de90ffb55",
+            "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+          },
+          "kind": "exited",
+          "sequence": 4
+        }
+      ]
+    }
+  ]
+}

@@ -10,6 +10,7 @@ let package = Package(
         .executable(name: "alloy-runtime-service", targets: ["AlloyRuntimeDaemon"]),
         .executable(name: "alloy-runtime-client", targets: ["AlloyRuntimeCLI"]),
         .executable(name: "alloy-session-fixture", targets: ["AlloySessionFixture"]),
+        .executable(name: "alloy-session-agent", targets: ["AlloySessionAgent"]),
         .executable(name: "alloy-environment-proof", targets: ["AlloyEnvironmentProof"])
     ],
     dependencies: [.package(path: "../store-catalog"), .package(path: "../content-store"),
@@ -25,6 +26,7 @@ let package = Package(
         .executableTarget(name: "AlloyRuntimeDaemon", dependencies: ["AlloyRuntimeService"]),
         .executableTarget(name: "AlloyRuntimeCLI", dependencies: ["AlloyRuntimeAPI"]),
         .executableTarget(name: "AlloySessionFixture", dependencies: ["AlloyRuntimeAPI"]),
+        .executableTarget(name: "AlloySessionAgent", dependencies: ["AlloyRuntimeService"]),
         .executableTarget(name: "AlloyEnvironmentProof", dependencies: ["AlloyRuntimeService"]),
         .testTarget(name: "AlloyRuntimeServiceTests", dependencies: ["AlloyRuntimeService"])
     ]
