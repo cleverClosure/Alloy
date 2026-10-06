@@ -43,7 +43,6 @@ final class SyntheticPreviewStore {
               object["runtimeGenerationID"] as? String == generation.generationID else {
             throw RuntimeFailure.status(.conflict)
         }
-        try store.validateReference(generation, gameID: game)
         let cache = CacheIdentity(runtimeIdentity: generation.manifestDigest,
                                   providers: ["runtime": generation.manifestDigest],
                                   compatibilityInputs: ["source": ContentStore.digest(canonical),
@@ -67,7 +66,7 @@ final class SyntheticPreviewStore {
         return preview
     }
 
-    func verify(_ identifier: String) throws -> StoredSyntheticPreview {
+    func verify(_ identifier: String, currentGeneration: Bool = true) throws -> StoredSyntheticPreview {
         let stored = try PrivateRecords.read(StoredSyntheticPreview.self, from: path(identifier))
         guard stored.preview.previewID == identifier,
               stored.preview.expiresAt > Date().timeIntervalSince1970 else { throw RuntimeFailure.status(.expired) }
@@ -78,9 +77,11 @@ final class SyntheticPreviewStore {
         guard try specification.hostClassId == HostCapabilities.current().localClassId() else {
             throw RuntimeFailure.status(.conflict)
         }
-        let store = try ContentStore(root: URL(fileURLWithPath: configuration.contentRoot))
-        guard try store.referenceSnapshot(gameID: specification.gameId).active == stored.preview.generation else {
-            throw RuntimeFailure.status(.conflict)
+        if currentGeneration {
+            let store = try ContentStore(root: URL(fileURLWithPath: configuration.contentRoot))
+            guard try store.referenceSnapshot(gameID: specification.gameId).active == stored.preview.generation else {
+                throw RuntimeFailure.status(.conflict)
+            }
         }
         return stored
     }

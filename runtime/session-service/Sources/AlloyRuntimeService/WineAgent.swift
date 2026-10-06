@@ -32,7 +32,7 @@ public enum WineAgent {
         let store = try ContentStore(root: URL(fileURLWithPath: record.contentRoot))
         defer { try? store.releaseLease(record.lease) }
         if record.fault == "wine.missing-lease" { try store.releaseLease(record.lease) }
-        try requireLease(record, store: store)
+        try requireLease(record)
         let stored = record.stored
         let compiled = try DevelopmentSessionCompiler.compile(stored.source)
         guard compiled.canonicalJSON == stored.preview.canonicalExport, compiled.specification.runtimeReady,
@@ -66,14 +66,16 @@ public enum WineAgent {
         let input = SessionEnvironmentInput(runtime: runtime.url, generation: runtime.reference.generationID,
             runtimeDigest: runtime.treeDigest, plan: stored.plan, payload: URL(fileURLWithPath: record.payloadRoot))
         let prepared = try builder.prepare(input, sessionRoot: directory) {
-            try WineControl.bootstrap(runtime: runtime.url, prefix: $0)
+            try PrivateRecords.write(BootstrapOwnership(runtime: runtime.url, prefix: $0),
+                                     to: directory.appendingPathComponent("bootstrap.json"))
+            try WineControl.bootstrap(runtime: runtime.url, prefix: $0, cancelled: { stopRequested(directory) })
+            try FileManager.default.removeItem(at: directory.appendingPathComponent("bootstrap.json"))
         }
         let providers = prepared.prefix.appendingPathComponent("drive_c/alloy")
         try privateDirectory(providers)
         try FileManager.default.createSymbolicLink(at: providers.appendingPathComponent("providers"),
                                                    withDestinationURL: runtime.url.appendingPathComponent("providers"))
-        let store = try ContentStore(root: URL(fileURLWithPath: record.contentRoot))
-        try requireLease(record, store: store)
+        try requireLease(record)
         try validateFiles(record, runtime: runtime.url)
         let snapshot = try DevelopmentSessionCompiler.compile(stored.source).snapshot
         var bytes = snapshot.bytes
@@ -84,53 +86,32 @@ public enum WineAgent {
         guard log >= 0 else { throw RuntimeFailure.status(.failed) }
         defer { close(log) }
         if stopRequested(directory) { try reporter.update("STOPPED", kind: "stopped-before-exec"); return }
-        let child = try SpawnedWine.start(executable: runtime.url.appendingPathComponent("loader/wine"),
-            arguments: [stored.request.entryPath], environment: prepared.environment, policy: policy, log: log)
+        let server = try OwnedWineServer(runtime: runtime.url, prefix: prepared.prefix,
+                                         record: record, directory: directory)
         do {
+            let child = try SpawnedWine.start(executable: runtime.url.appendingPathComponent("loader/wine"),
+                arguments: [stored.request.entryPath], environment: prepared.environment, policy: policy, log: log)
+            server.ownership.root = child.identity
+            try server.persist()
+            let supervisor = try WineTreeSupervisor(server: server, child: child, guestLog: log, reporter: reporter)
             try reporter.update("RUNNING", kind: "policy-delivered")
-            let result = try monitor(child, record: record, directory: directory, log: log)
-            try finish(child, runtime: runtime.url, prefix: prepared.prefix)
+            let result: (code: Int32, stopped: Bool)
+            do { result = try supervisor.run() } catch {
+                do { try supervisor.finish() } catch { throw RuntimeFailure.status(.cleanupFailed) }
+                throw error
+            }
+            try supervisor.finish()
             try reporter.update(result.stopped ? "STOPPED" : (result.code == 0 ? "SUCCEEDED" : "FAILED"),
                                 kind: "exited", code: result.code == 0 ? .ok : .failed, exitCode: result.code)
         } catch {
-            do {
-                try finish(child, runtime: runtime.url, prefix: prepared.prefix)
-            } catch { throw RuntimeFailure.status(.cleanupFailed) }
+            try server.emergencyStop()
             throw error
         }
     }
 
-    private static func monitor(_ child: SpawnedWine, record: WineSessionRecord, directory: URL,
-                                log: Int32) throws -> (code: Int32, stopped: Bool) {
-        let duration = UInt64(record.stored.request.maximumSeconds) * 1_000_000_000
-        let deadline = DispatchTime.now().uptimeNanoseconds + duration
-        while DispatchTime.now().uptimeNanoseconds < deadline {
-            if let code = child.pollExit() { return (code, false) }
-            if stopRequested(directory) { return (0, true) }
-            var info = stat()
-            guard fstat(log, &info) == 0, info.st_size <= 1 << 20 else { throw RuntimeFailure.status(.oversized) }
-            usleep(20_000)
-        }
-        throw RuntimeFailure.status(.watchdog)
-    }
-
-    private static func finish(_ child: SpawnedWine, runtime: URL, prefix: URL) throws {
-        try WineControl.stop(runtime: runtime, prefix: prefix)
-        if NativeProcessIdentity.isLive(child.identity) { kill(child.processID, SIGKILL) }
-        let deadline = DispatchTime.now().uptimeNanoseconds + 2_000_000_000
-        while NativeProcessIdentity.mayStillBeLive(child.identity) && DispatchTime.now().uptimeNanoseconds < deadline {
-            _ = child.pollExit()
-            usleep(10_000)
-        }
-        _ = child.pollExit()
-        guard !NativeProcessIdentity.mayStillBeLive(child.identity) else { throw RuntimeFailure.status(.cleanupFailed) }
-    }
-
-    private static func requireLease(_ record: WineSessionRecord, store: ContentStore) throws {
-        guard NativeProcessIdentity.isLive(record.lease.holder),
-              record.lease.holder.processID == getpid(), try store.liveLeases().contains(record.lease) else {
-            throw RuntimeFailure.status(.leaseMissing)
-        }
+    private static func requireLease(_ record: WineSessionRecord) throws {
+        guard record.lease.holder.processID == getpid() else { throw RuntimeFailure.status(.leaseMissing) }
+        try LiveGenerationLease.require(record.lease, contentRoot: record.contentRoot)
     }
 
     private static func validateFiles(_ record: WineSessionRecord, runtime: URL) throws {
@@ -158,17 +139,21 @@ public enum WineAgent {
         }
     }
 
-    private static func stopRequested(_ directory: URL) -> Bool {
+    static func stopRequested(_ directory: URL) -> Bool {
         if FileManager.default.fileExists(atPath: directory.appendingPathComponent("stop.json").path) { return true }
         var descriptor = pollfd(fd: STDIN_FILENO, events: Int16(POLLIN | POLLHUP), revents: 0)
         return poll(&descriptor, 1, 0) > 0
     }
 }
 
-private final class WineReporter {
+final class WineReporter {
     let record: WineSessionRecord
     let directory: URL
     var events: [WineSessionEvent] = []
+    var processes: [WineProcess] = []
+    var healthChecks = 0
+    var state = "STARTING"
+    private var sequence = 0
 
     init(record: WineSessionRecord, directory: URL) { self.record = record; self.directory = directory }
 
@@ -177,9 +162,13 @@ private final class WineReporter {
         let correlation = WineCorrelation(sessionID: record.stored.sessionID,
             launchSpecID: preview.specification.launchSpecId, generationID: preview.generation.generationID,
             correlationID: record.correlationID)
-        events.append(WineSessionEvent(sequence: events.count + 1, kind: kind, correlation: correlation, code: code))
+        self.state = state
+        sequence = max(sequence, events.last?.sequence ?? 0) + 1
+        if events.count == 128 { events.removeFirst() }
+        events.append(WineSessionEvent(sequence: sequence, kind: kind, correlation: correlation, code: code))
         try PrivateRecords.write(WineSessionSnapshot(sessionID: record.stored.sessionID, preview: preview,
-            state: state, code: code, events: events, exitCode: exitCode),
+            state: state, code: code, events: events, exitCode: exitCode,
+            processes: processes, healthChecks: healthChecks),
             to: directory.appendingPathComponent("state.json"))
     }
 }

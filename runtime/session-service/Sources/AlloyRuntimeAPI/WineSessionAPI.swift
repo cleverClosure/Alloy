@@ -53,9 +53,29 @@ public struct WineSessionSnapshot: Codable, Sendable {
     public let code: RuntimeCode
     public let events: [WineSessionEvent]
     public let exitCode: Int32?
+    public let processes: [WineProcess]
+    public let healthChecks: Int
+
+    private enum CodingKeys: String, CodingKey {
+        case driver, sessionID, preview, state, code, events, exitCode, processes, healthChecks
+    }
+
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        driver = try values.decode(String.self, forKey: .driver)
+        sessionID = try values.decode(String.self, forKey: .sessionID)
+        preview = try values.decode(LaunchPreview.self, forKey: .preview)
+        state = try values.decode(String.self, forKey: .state)
+        code = try values.decode(RuntimeCode.self, forKey: .code)
+        events = try values.decode([WineSessionEvent].self, forKey: .events)
+        exitCode = try values.decodeIfPresent(Int32.self, forKey: .exitCode)
+        processes = try values.decodeIfPresent([WineProcess].self, forKey: .processes) ?? []
+        healthChecks = try values.decodeIfPresent(Int.self, forKey: .healthChecks) ?? 0
+    }
 
     public init(sessionID: String, preview: LaunchPreview, state: String, code: RuntimeCode = .ok,
-                events: [WineSessionEvent] = [], exitCode: Int32? = nil) {
+                events: [WineSessionEvent] = [], exitCode: Int32? = nil,
+                processes: [WineProcess] = [], healthChecks: Int = 0) {
         driver = "wine"
         self.sessionID = sessionID
         self.preview = preview
@@ -63,5 +83,7 @@ public struct WineSessionSnapshot: Codable, Sendable {
         self.code = code
         self.events = events
         self.exitCode = exitCode
+        self.processes = processes
+        self.healthChecks = healthChecks
     }
 }

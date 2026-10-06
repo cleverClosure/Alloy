@@ -1,0 +1,52 @@
+# Author: Timur Isaev
+# Pinned Wine trace; unrelated requests and private environment values removed.
+wineserver: starting (pid=88413)
+0024: init_first_thread( unix_pid=100, unix_tid=16131, debug_level=0, reply_fd=7, wait_fd=9, page_size=00004000 )
+0024: init_first_thread() = 0 { pid=0020, tid=0024, server_start=1aa (-0.1), session_id=00000001, inproc_device=0000, info_size=0, machines={aa64,014c,8664} }
+0024: new_process( token=0000, debug=0000, parent_process=0000, flags=00000000, socket_fd=11, access=001fffff, machine=aa64, info_size=354, handles_size=0, jobs_size=0, objattr={rootdir=0000,attributes=00000000,sd={},name=L""}, handles={}, jobs={}, info={debug_flags=0,console_flags=0,console=0000,hstdin=0000,hstdout=0000,hstderr=0008,x=0,y=0,xsize=0,ysize=0,xchars=0,ychars=0,attribute=00,flags=0,show=0,process_group_id=0,curdir=L"C:\\windows\\system32\\",dllpath=L"",imagepath=L"\\??\\C:\\windows\\system32\\wineboot.exe",cmdline=L"\"C:\\windows\\system32\\wineboot.exe\" --init",title=L"C:\\windows\\system32\\wineboot.exe"} )
+0024: new_process() = 0 { info=0010, pid=0028, handle=0014 }
+002c: init_first_thread( unix_pid=101, unix_tid=11011, debug_level=0, reply_fd=5, wait_fd=8, page_size=00004000 )
+002c: init_first_thread() = 0 { pid=0028, tid=002c, server_start=1aa (-0.1), session_id=00000001, inproc_device=0000, info_size=4774, machines={aa64,014c,8664} }
+002c: new_process( token=0000, debug=0000, parent_process=0000, flags=00000000, socket_fd=15, access=001fffff, machine=aa64, info_size=372, handles_size=0, jobs_size=0, objattr={rootdir=0000,attributes=00000000,sd={},name=L""}, handles={}, jobs={}, info={debug_flags=0,console_flags=0,console=0000,hstdin=0000,hstdout=0000,hstderr=0000,x=0,y=0,xsize=0,ysize=0,xchars=0,ychars=0,attribute=00,flags=0,show=0,process_group_id=40,curdir=L"C:\\windows\\",dllpath=L"",imagepath=L"\\??\\C:\\windows\\system32\\winemenubuilder.exe",cmdline=L"C:\\windows\\system32\\winemenubuilder.exe -a -r",title=L"C:\\windows\\system32\\winemenubuilder.exe"} )
+002c: new_process() = 0 { info=0040, pid=0030, handle=0044 }
+0034: init_first_thread( unix_pid=102, unix_tid=11011, debug_level=0, reply_fd=5, wait_fd=7, page_size=00004000 )
+0034: init_first_thread() = 0 { pid=0030, tid=0034, server_start=1aa (-0.1), session_id=00000001, inproc_device=0000, info_size=4950, machines={aa64,014c,8664} }
+002c: new_process( token=0000, debug=0000, parent_process=0000, flags=00000004, socket_fd=15, access=001fffff, machine=aa64, info_size=338, handles_size=0, jobs_size=0, objattr={rootdir=0000,attributes=00000000,sd={},name=L""}, handles={}, jobs={}, info={debug_flags=0,console_flags=0,console=0000,hstdin=0000,hstdout=0000,hstderr=0000,x=0,y=0,xsize=0,ysize=0,xchars=0,ychars=0,attribute=00,flags=0,show=0,process_group_id=40,curdir=L"C:\\windows\\system32",dllpath=L"",imagepath=L"\\??\\C:\\windows\\system32\\services.exe",cmdline=L"\"C:\\windows\\system32\\services.exe\"",title=L"C:\\windows\\system32\\services.exe"} )
+002c: new_process() = 0 { info=0038, pid=0038, handle=003c }
+003c: init_first_thread( unix_pid=103, unix_tid=11011, debug_level=0, reply_fd=5, wait_fd=7, page_size=00004000 )
+003c: init_first_thread() = 0 { pid=0038, tid=003c, server_start=1aa (-0.1), session_id=00000001, inproc_device=0000, info_size=4916, machines={aa64,014c,8664} }
+003c: new_process( token=0000, debug=0000, parent_process=0000, flags=00000000, socket_fd=16, access=001fffff, machine=aa64, info_size=412, handles_size=0, jobs_size=0, objattr={rootdir=0000,attributes=00000000,sd={},name=L""}, handles={}, jobs={}, info={debug_flags=0,console_flags=0,console=0000,hstdin=0000,hstdout=0000,hstderr=0000,x=0,y=0,xsize=0,ysize=0,xchars=0,ychars=0,attribute=00,flags=0,show=0,process_group_id=40,curdir=L"C:\\windows\\system32\\",dllpath=L"",imagepath=L"\\??\\C:\\windows\\system32\\winedevice.exe",cmdline=L"C:\\windows\\system32\\winedevice.exe",title=L"C:\\windows\\system32\\winedevice.exe",desktop=L"__wineservice_winstation\\Default"} )
+003c: new_process() = 0 { info=00dc, pid=0044, handle=00e0 }
+0048: init_first_thread( unix_pid=104, unix_tid=11011, debug_level=0, reply_fd=5, wait_fd=7, page_size=00004000 )
+0048: init_first_thread() = 0 { pid=0044, tid=0048, server_start=1aa (-0.1), session_id=00000001, inproc_device=0000, info_size=2816, machines={aa64,014c,8664} }
+0030: *process killed*
+003c: new_process( token=0000, debug=0000, parent_process=0000, flags=00000000, socket_fd=28, access=001fffff, machine=aa64, info_size=400, handles_size=0, jobs_size=0, objattr={rootdir=0000,attributes=00000000,sd={},name=L""}, handles={}, jobs={}, info={debug_flags=0,console_flags=0,console=0000,hstdin=0000,hstdout=0000,hstderr=0000,x=0,y=0,xsize=0,ysize=0,xchars=0,ychars=0,attribute=00,flags=0,show=0,process_group_id=40,curdir=L"C:\\windows\\system32\\",dllpath=L"",imagepath=L"\\??\\C:\\windows\\system32\\plugplay.exe",cmdline=L"C:\\windows\\system32\\plugplay.exe",title=L"C:\\windows\\system32\\plugplay.exe",desktop=L"__wineservice_winstation\\Default"} )
+003c: new_process() = 0 { info=00e4, pid=0064, handle=00fc }
+0068: init_first_thread( unix_pid=105, unix_tid=11011, debug_level=0, reply_fd=5, wait_fd=7, page_size=00004000 )
+0068: init_first_thread() = 0 { pid=0064, tid=0068, server_start=1aa (-0.1), session_id=00000001, inproc_device=0000, info_size=2804, machines={aa64,014c,8664} }
+0044: *process killed*
+003c: new_process( token=0000, debug=0000, parent_process=0000, flags=00000000, socket_fd=30, access=001fffff, machine=aa64, info_size=460, handles_size=0, jobs_size=0, objattr={rootdir=0000,attributes=00000000,sd={},name=L""}, handles={}, jobs={}, info={debug_flags=0,console_flags=0,console=0000,hstdin=0000,hstdout=0000,hstderr=0000,x=0,y=0,xsize=0,ysize=0,xchars=0,ychars=0,attribute=00,flags=0,show=0,process_group_id=40,curdir=L"C:\\windows\\system32\\",dllpath=L"",imagepath=L"\\??\\C:\\windows\\system32\\svchost.exe",cmdline=L"C:\\windows\\system32\\svchost.exe -k LocalServiceNetworkRestricted",title=L"C:\\windows\\system32\\svchost.exe",desktop=L"__wineservice_winstation\\Default"} )
+003c: new_process() = 0 { info=00e4, pid=0080, handle=00f4 }
+0084: init_first_thread( unix_pid=106, unix_tid=16131, debug_level=0, reply_fd=5, wait_fd=7, page_size=00004000 )
+0084: init_first_thread() = 0 { pid=0080, tid=0084, server_start=1aa (-0.1), session_id=00000001, inproc_device=0000, info_size=2864, machines={aa64,014c,8664} }
+003c: new_process( token=0000, debug=0000, parent_process=0000, flags=00000000, socket_fd=36, access=001fffff, machine=aa64, info_size=412, handles_size=0, jobs_size=0, objattr={rootdir=0000,attributes=00000000,sd={},name=L""}, handles={}, jobs={}, info={debug_flags=0,console_flags=0,console=0000,hstdin=0000,hstdout=0000,hstderr=0000,x=0,y=0,xsize=0,ysize=0,xchars=0,ychars=0,attribute=00,flags=0,show=0,process_group_id=40,curdir=L"C:\\windows\\system32\\",dllpath=L"",imagepath=L"\\??\\C:\\windows\\system32\\winedevice.exe",cmdline=L"C:\\windows\\system32\\winedevice.exe",title=L"C:\\windows\\system32\\winedevice.exe",desktop=L"__wineservice_winstation\\Default"} )
+003c: new_process() = 0 { info=0118, pid=0094, handle=011c }
+0098: init_first_thread( unix_pid=107, unix_tid=16131, debug_level=0, reply_fd=5, wait_fd=7, page_size=00004000 )
+0098: init_first_thread() = 0 { pid=0094, tid=0098, server_start=1aa (-0.1), session_id=00000001, inproc_device=0000, info_size=2816, machines={aa64,014c,8664} }
+003c: new_process( token=0000, debug=0000, parent_process=0000, flags=00000000, socket_fd=40, access=001fffff, machine=aa64, info_size=412, handles_size=0, jobs_size=0, objattr={rootdir=0000,attributes=00000000,sd={},name=L""}, handles={}, jobs={}, info={debug_flags=0,console_flags=0,console=0000,hstdin=0000,hstdout=0000,hstderr=0000,x=0,y=0,xsize=0,ysize=0,xchars=0,ychars=0,attribute=00,flags=0,show=0,process_group_id=40,curdir=L"C:\\windows\\system32\\",dllpath=L"",imagepath=L"\\??\\C:\\windows\\system32\\winedevice.exe",cmdline=L"C:\\windows\\system32\\winedevice.exe",title=L"C:\\windows\\system32\\winedevice.exe",desktop=L"__wineservice_winstation\\Default"} )
+003c: new_process() = 0 { info=013c, pid=00ac, handle=0140 }
+00b0: init_first_thread( unix_pid=108, unix_tid=11011, debug_level=0, reply_fd=5, wait_fd=7, page_size=00004000 )
+00b0: init_first_thread() = 0 { pid=00ac, tid=00b0, server_start=1aa (-0.1), session_id=00000001, inproc_device=0000, info_size=2816, machines={aa64,014c,8664} }
+0094: *process killed*
+00ac: *process killed*
+0028: *process killed*
+0024: new_process( token=0000, debug=0000, parent_process=0000, flags=00000004, socket_fd=14, access=001fffff, machine=aa64, info_size=368, handles_size=0, jobs_size=0, objattr={rootdir=0000,attributes=00000000,sd={},name=L""}, handles={}, jobs={}, info={debug_flags=0,console_flags=0,console=fffffffc,hstdin=0008,hstdout=000c,hstderr=0010,x=0,y=0,xsize=0,ysize=0,xchars=0,ychars=0,attribute=00,flags=1,show=1,process_group_id=32,curdir=L"unix\\private\\tmp\\alloy-181-supervision\\",dllpath=L"",imagepath=L"\\??\\C:\\windows\\system32\\cmd.exe",cmdline=L"\"C:\\windows\\system32\\cmd.exe\" /c exit 0",title=L"C:\\windows\\system32\\cmd.exe"} )
+0024: new_process() = 0 { info=0058, pid=00c8, handle=005c }
+00cc: init_first_thread( unix_pid=109, unix_tid=16131, debug_level=0, reply_fd=5, wait_fd=7, page_size=00004000 )
+00cc: init_first_thread() = 0 { pid=00c8, tid=00cc, server_start=1aa (-0.1), session_id=00000001, inproc_device=0000, info_size=4956, machines={aa64,014c,8664} }
+00c8: *process killed*
+0020: *process killed*
+0080: *process killed*
+0064: *process killed*
+0038: *process killed*
+wineserver: exiting (pid=88413)

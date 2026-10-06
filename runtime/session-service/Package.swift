@@ -28,6 +28,7 @@ let package = Package(
         .executableTarget(name: "AlloySessionFixture", dependencies: ["AlloyRuntimeAPI"]),
         .executableTarget(name: "AlloySessionAgent", dependencies: ["AlloyRuntimeService"]),
         .executableTarget(name: "AlloyEnvironmentProof", dependencies: ["AlloyRuntimeService"]),
-        .testTarget(name: "AlloyRuntimeServiceTests", dependencies: ["AlloyRuntimeService"])
+        .testTarget(name: "AlloyRuntimeServiceTests", dependencies: ["AlloyRuntimeService"],
+                    exclude: ["Fixtures"])
     ]
 )

@@ -23,6 +23,8 @@ public enum RuntimeCode: String, Codable, Sendable {
     case policyIntegrity = "POLICY_INTEGRITY"
     case leaseMissing = "GENERATION_LEASE_MISSING"
     case watchdog = "SESSION_WATCHDOG"
+    case processInventory = "PROCESS_INVENTORY_INCOMPLETE"
+    case interrupted = "SESSION_INTERRUPTED"
     case cleanupFailed = "SESSION_CLEANUP_FAILED"
     case failed = "OPERATION_FAILED"
 }

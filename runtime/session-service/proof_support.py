@@ -66,11 +66,18 @@ class ServiceFixture:
             "StandardErrorPath": str(self.root / "stderr.log"),
         }))
         self.loaded = False
+        self.retained = False
+
+    def preserve(self):
+        """Retain ownership evidence when a proof cannot establish safe deletion."""
+        self.retained = True
+        self.temporary._finalizer.detach()
 
     def __enter__(self):
         result = run(["launchctl", "bootstrap", self.domain, self.plist])
         if result.returncode:
-            self.temporary.cleanup()
+            if not self.retained:
+                self.temporary.cleanup()
             raise RuntimeError("private launchd bootstrap: " + result.stderr)
         self.loaded = True
         try:
@@ -114,14 +121,19 @@ class ServiceFixture:
         return self.wait_ready()
 
     def __exit__(self, *_):
-        if self.loaded:
-            result = run(["launchctl", "bootout", self.target])
-            if result.returncode:
-                raise RuntimeError("private service cleanup: " + result.stderr)
-            self.loaded = False
-            deadline = time.monotonic() + 3
-            while run(["launchctl", "print", self.target]).returncode == 0:
-                if time.monotonic() >= deadline:
-                    raise RuntimeError("private service still registered")
-                time.sleep(0.05)
-        self.temporary.cleanup()
+        try:
+            if self.loaded:
+                result = run(["launchctl", "bootout", self.target])
+                if result.returncode:
+                    raise RuntimeError("private service cleanup: " + result.stderr)
+                self.loaded = False
+                deadline = time.monotonic() + 3
+                while run(["launchctl", "print", self.target]).returncode == 0:
+                    if time.monotonic() >= deadline:
+                        raise RuntimeError("private service still registered")
+                    time.sleep(0.05)
+        except BaseException:
+            self.preserve()
+            raise
+        if not self.retained:
+            self.temporary.cleanup()

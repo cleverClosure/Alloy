@@ -6,6 +6,10 @@ import Foundation
 
 umask(0o077)
 signal(SIGPIPE, SIG_IGN)
-guard CommandLine.arguments.count == 2 else { exit(64) }
-exit(WineAgent.run(directory: URL(fileURLWithPath: CommandLine.arguments[1]),
-                   executable: URL(fileURLWithPath: CommandLine.arguments[0])))
+let arguments = CommandLine.arguments
+let executable = URL(fileURLWithPath: arguments[0])
+if arguments.count == 3, arguments[1] == "--server" {
+    exit(WineServerGate.run(directory: URL(fileURLWithPath: arguments[2]), executable: executable))
+}
+guard arguments.count == 2 else { exit(64) }
+exit(WineAgent.run(directory: URL(fileURLWithPath: arguments[1]), executable: executable))

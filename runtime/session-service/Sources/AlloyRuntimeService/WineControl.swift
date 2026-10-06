@@ -6,30 +6,34 @@ import Foundation
 
 /// Only fixed Wine control commands. Guest launch and process supervision have separate ownership.
 public enum WineControl {
-    public static func bootstrap(runtime: URL, prefix: URL) throws {
+    public static func bootstrap(runtime: URL, prefix: URL, cancelled: () -> Bool = { false }) throws {
         let environment = SessionEnvironment.scrubbed(runtime: runtime, prefix: prefix)
         // Wineboot creates a fresh private prefix; it never receives session policy.
         let loader = runtime.appendingPathComponent("loader/wine")
         do {
-            guard try run(loader, arguments: ["wineboot", "-u"], environment: environment, seconds: 60) == 0 else {
+            guard try run(loader, arguments: ["wineboot", "-u"], environment: environment,
+                          seconds: 60, cancelled: cancelled) == 0 else {
                 throw RuntimeFailure.status(.failed)
             }
-            try wait(runtime: runtime, environment: environment)
-            guard try run(loader, arguments: ["wineboot", "-r"], environment: environment, seconds: 30) == 0 else {
+            try wait(runtime: runtime, environment: environment, cancelled: cancelled)
+            guard try run(loader, arguments: ["wineboot", "-r"], environment: environment,
+                          seconds: 30, cancelled: cancelled) == 0 else {
                 throw RuntimeFailure.status(.failed)
             }
-            try wait(runtime: runtime, environment: environment)
+            try wait(runtime: runtime, environment: environment, cancelled: cancelled)
         } catch {
             try? stop(runtime: runtime, prefix: prefix)
             throw error
         }
     }
 
-    private static func wait(runtime: URL, environment: [String: String]) throws {
+    private static func wait(runtime: URL, environment: [String: String], cancelled: () -> Bool) throws {
         // Bootstrap can leave registration children after wineboot exits. Killing
         // that server would cache a race-dependent, partially registered prefix.
         guard try run(runtime.appendingPathComponent("server/wineserver"), arguments: ["-w"],
-                      environment: environment, seconds: 45) == 0 else { throw RuntimeFailure.status(.failed) }
+                      environment: environment, seconds: 45, cancelled: cancelled) == 0 else {
+            throw RuntimeFailure.status(.failed)
+        }
     }
 
     public static func stop(runtime: URL, prefix: URL) throws {
@@ -43,7 +47,7 @@ public enum WineControl {
     }
 
     static func run(_ executable: URL, arguments: [String], environment: [String: String],
-                    seconds: Double) throws -> Int32 {
+                    seconds: Double, cancelled: () -> Bool = { false }) throws -> Int32 {
         let process = Process()
         process.executableURL = executable
         process.arguments = arguments
@@ -55,7 +59,7 @@ public enum WineControl {
         try process.run()
         let identity = NativeProcessIdentity.current(process.processIdentifier)
         let deadline = DispatchTime.now().uptimeNanoseconds + UInt64(seconds * 1_000_000_000)
-        while process.isRunning && DispatchTime.now().uptimeNanoseconds < deadline { usleep(10_000) }
+        while process.isRunning && DispatchTime.now().uptimeNanoseconds < deadline && !cancelled() { usleep(10_000) }
         if process.isRunning {
             if let identity, NativeProcessIdentity.isLive(identity) { kill(identity.processID, SIGKILL) }
             let killDeadline = DispatchTime.now().uptimeNanoseconds + 1_000_000_000
