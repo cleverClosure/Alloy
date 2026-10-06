@@ -13,6 +13,29 @@ struct TrustState: Codable {
     var revokedKeys: Set<String> = []
     var revokedProfiles: Set<ProfileRevision> = []
     var revokedDigests: Set<String> = []
+
+    enum CodingKeys: String, CodingKey {
+        case rotations, root, pin, lastTime, versions, bundle, revokedKeys, revokedProfiles, revokedDigests
+    }
+
+    init(root: Data, pin: String, lastTime: Double) {
+        self.root = root
+        self.pin = pin
+        self.lastTime = lastTime
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        rotations = try values.decodeIfPresent([Data].self, forKey: .rotations) ?? []
+        root = try values.decode(Data.self, forKey: .root)
+        pin = try values.decode(String.self, forKey: .pin)
+        lastTime = try values.decode(Double.self, forKey: .lastTime)
+        versions = try values.decode([String: AcceptedVersion].self, forKey: .versions)
+        bundle = try values.decodeIfPresent(MetadataBundle.self, forKey: .bundle)
+        revokedKeys = try values.decode(Set<String>.self, forKey: .revokedKeys)
+        revokedProfiles = try values.decode(Set<ProfileRevision>.self, forKey: .revokedProfiles)
+        revokedDigests = try values.decode(Set<String>.self, forKey: .revokedDigests)
+    }
 }
 
 /// Per-user local state. Pin comes from a trusted out-of-band development channel.
@@ -38,6 +61,10 @@ public struct TrustStore: Sendable {
             try store.save(TrustState(root: root, pin: pinnedRootDigest, lastTime: now.timeIntervalSince1970))
         }
         return store
+    }
+
+    public func currentRootVersion(now: Date) throws -> Int {
+        try locked { try ChainValidation.currentRoot(load(now: now), now: now, allowExpired: true).version }
     }
 
     public func refresh(_ bundle: MetadataBundle, now: Date) throws {

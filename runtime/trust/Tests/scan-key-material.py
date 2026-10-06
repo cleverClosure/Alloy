@@ -3,10 +3,12 @@
 
 Author: Timur Isaev
 """
+import base64
 import hashlib
 import json
 from pathlib import Path
 import re
+import secrets
 import subprocess
 import tempfile
 
@@ -26,15 +28,15 @@ def suspicious(path, data):
     return bool(re.search(rb'["\'](?:privateKey|private_key|seed)["\']\s*[:=]\s*["\'][A-Za-z0-9+/=\\]{32,}', data))
 
 
-def main():
+def scan(root):
     files = subprocess.check_output([
         'git', 'ls-files', '-z', '--', '.', ':!third_party/**',
         ':!tools/toolchains/**', ':!spikes/*/work/**',
-    ], cwd=ROOT).decode().split('\0')
+    ], cwd=root).decode().split('\0')
     failures = []
     exempted = []
     for name in filter(None, files):
-        path = ROOT / name
+        path = root / name
         if path.is_symlink():
             continue
         data = path.read_bytes()
@@ -43,15 +45,32 @@ def main():
                 exempted.append(name)
             else:
                 failures.append(name)
-    # The negative control must exercise the detector, not only a filename rule.
+    return failures, exempted
+
+
+def main():
+    failures, exempted = scan(ROOT)
+    # Exercise the same Git enumeration and detector as the real scan. A fresh
+    # 32-byte signing seed stays in this disposable repository and is not committed.
     with tempfile.TemporaryDirectory(prefix='alloy-key-scan-') as temporary:
-        planted = Path(temporary) / 'planted.txt'
-        planted.write_text('-----BEGIN ' + 'PRIVATE KEY-----\nTEST-ONLY-PLANTED\n')
-        assert suspicious(str(planted), planted.read_bytes())
-        assert suspicious('unknown.json', json.dumps({'privateKey': 'A' * 44}).encode())
-        assert not suspicious('public.json', json.dumps({'publicKey': 'A' * 44}).encode())
+        root = Path(temporary)
+        subprocess.run(['git', 'init', '--quiet', str(root)], check=True)
+        (root / 'public.json').write_text(json.dumps({'publicKey': 'A' * 44}))
+        subprocess.run(['git', 'add', 'public.json'], cwd=root, check=True)
+        assert scan(root) == ([], [])
+        seed = base64.b64encode(secrets.token_bytes(32)).decode()
+        planted = root / 'planted.json'
+        planted.write_text(json.dumps({'label': 'TEST-ONLY planted signing seed', 'privateKey': seed}))
+        subprocess.run(['git', 'add', 'planted.json'], cwd=root, check=True)
+        assert scan(root) == (['planted.json'], [])
+        planted.unlink()
+        subprocess.run(['git', 'add', '-u'], cwd=root, check=True)
+        assert scan(root) == ([], [])
+        marker = ('-----BEGIN ' + 'PRIVATE KEY-----\nTEST-ONLY-PLANTED\n').encode()
+        assert suspicious('unknown.txt', marker)
     report = {'status': 'FAIL' if failures else 'PASS', 'paths': failures,
-              'existingTestOnlyFixtures': exempted, 'plantedPrivateKeyDetected': True}
+              'existingTestOnlyFixtures': exempted, 'plantedPrivateKeyDetected': True,
+              'gitEnumerationControl': 'pass'}
     print(json.dumps(report, sort_keys=True))
     raise SystemExit(bool(failures))
 

@@ -1,5 +1,6 @@
 // Author: Timur Isaev
 
+import AlloyTrust
 import Foundation
 
 public struct ObservedFile: Codable, Equatable, Sendable {
@@ -112,7 +113,13 @@ public struct CandidateMetadata: Codable, Equatable, Sendable {
     }
 }
 
+struct TrustCandidateBinding: Sendable {
+    let store: TrustStore
+    let envelopes: CandidateEnvelopes
+}
+
 public struct ProfileCandidate: Sendable {
+    let trustBinding: TrustCandidateBinding?
     public let profile: GameProfileDocument
     public let manifest: RuntimeManifestDocument
     public let metadata: CandidateMetadata
@@ -121,15 +128,40 @@ public struct ProfileCandidate: Sendable {
     public let metadataPayload: VerifiedPayload
 
     public init(profile: Data, manifest: Data, metadata: Data, mode: VerificationMode, now: Date) throws {
-        profilePayload = try TestEnvelope.verify(profile, type: .gameProfile, mode: mode, now: now)
-        manifestPayload = try TestEnvelope.verify(manifest, type: .runtimeManifest, mode: mode, now: now)
-        metadataPayload = try TestEnvelope.verify(metadata, type: .releaseMetadata, mode: mode, now: now)
+        if case .trustChain(let store) = mode {
+            self = try store.withVerifier(now: now) {
+                try Self(envelopes: CandidateEnvelopes(profile: profile, manifest: manifest, metadata: metadata),
+                         mode: mode, now: now, verifier: $0)
+            }
+        } else {
+            self = try Self(envelopes: CandidateEnvelopes(profile: profile, manifest: manifest, metadata: metadata),
+                            mode: mode, now: now, verifier: nil)
+        }
+    }
+
+    init(envelopes: CandidateEnvelopes, mode: VerificationMode, now: Date, verifier: TrustVerifier?) throws {
+        if case .trustChain(let store) = mode {
+            trustBinding = TrustCandidateBinding(store: store, envelopes: envelopes)
+        } else { trustBinding = nil }
+        profilePayload = try verifyCompilerEnvelope(envelopes.profile, type: .gameProfile,
+                                                    mode: mode, now: now, verifier: verifier)
+        manifestPayload = try verifyCompilerEnvelope(envelopes.manifest, type: .runtimeManifest,
+                                                     mode: mode, now: now, verifier: verifier)
+        metadataPayload = try verifyCompilerEnvelope(envelopes.metadata, type: .releaseMetadata,
+                                                     mode: mode, now: now, verifier: verifier)
         self.profile = try GameProfileValidator.validate(profilePayload.bytes)
         self.manifest = try RuntimeManifestValidator.validate(manifestPayload.bytes)
         self.metadata = try JSONDecoder().decode(CandidateMetadata.self, from: metadataPayload.bytes)
         guard self.metadata.profileDigest == profilePayload.digest,
               self.metadata.approvedCertification == self.profile.certification.level else {
             throw CompilerFailure.rejected("release metadata does not approve this exact profile and certification")
+        }
+        if let verifier {
+            let allowed: Set<ReleaseRing> = verifier.scope == .development ? [.development] : [.development, .lab]
+            guard allowed.contains(self.metadata.releaseRing),
+                  allowed.contains(self.manifest.activation?.releaseRing ?? .development) else {
+                throw CompilerFailure.rejected("development/lab root cannot authorize this release ring")
+            }
         }
         guard self.profile.runtime.generation == self.manifest.generationId else {
             throw CompilerFailure.rejected("profile/manifest runtime generation mismatch")

@@ -13,7 +13,8 @@ struct LaunchCompilerTests {
         let expectedDigests = try JSONDecoder().decode(
             [String: String].self, from: extraFixture("Launch/golden-digests.json")
         )
-        #expect(CanonicalJSON.digest(golden.canonicalJSON) == expectedDigests[name])
+        #expect(CanonicalJSON.digest(golden.canonicalJSON) == expectedDigests[name],
+                "golden \(name): \(CanonicalJSON.digest(golden.canonicalJSON))")
         try auditAgainstInputs(golden, input: input)
         #expect(golden.specification.hostClassId.hasPrefix("local-unregistered:"))
         #expect(!golden.specification.productionEligible)

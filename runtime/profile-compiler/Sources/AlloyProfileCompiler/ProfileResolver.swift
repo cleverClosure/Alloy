@@ -19,6 +19,18 @@ public struct ProfileResolution: Sendable {
 
 public enum ProfileResolver {
     public static func resolve(_ candidates: [ProfileCandidate], input: SelectionInput) throws -> ProfileResolution {
+        let refreshed = try candidates.map { candidate in
+            if let binding = candidate.trustBinding {
+                return try ProfileCandidate(profile: binding.envelopes.profile, manifest: binding.envelopes.manifest,
+                                            metadata: binding.envelopes.metadata,
+                                            mode: .trustChain(store: binding.store), now: input.now)
+            }
+            return candidate
+        }
+        return try resolveValidated(refreshed, input: input)
+    }
+
+    static func resolveValidated(_ candidates: [ProfileCandidate], input: SelectionInput) throws -> ProfileResolution {
         var matches: [(candidate: ProfileCandidate, alias: Bool)] = []
         var rejections: [String: String] = [:]
         var stale = false

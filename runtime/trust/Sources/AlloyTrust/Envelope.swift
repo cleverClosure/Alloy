@@ -51,7 +51,7 @@ public struct SignedEnvelope: Codable, Sendable {
     ) throws -> Self {
         let canonical = try TrustCanonicalJSON.encode(payload)
         guard canonical.count <= 1024 * 1024, !type.isEmpty, type.utf8.count <= 256,
-              (1...32).contains(keys.count) else { throw TrustError.malformed("envelope bounds") }
+              (1...64).contains(keys.count) else { throw TrustError.malformed("envelope bounds") }
         let message = preAuthenticationEncoding(type: type, payload: canonical)
         return try Self(payloadType: type, payload: canonical.base64EncodedString(), signatures: keys.map {
             TrustSignature(keyId: keyID($0.publicKey.rawRepresentation),
@@ -70,7 +70,7 @@ public struct SignedEnvelope: Codable, Sendable {
 
     public func decodedPayload() throws -> Data {
         guard !payloadType.isEmpty, payloadType.utf8.count <= 256,
-              (1...32).contains(signatures.count),
+              (1...64).contains(signatures.count),
               let bytes = Data(base64Encoded: payload), bytes.count <= 1024 * 1024,
               bytes.base64EncodedString() == payload,
               try TrustCanonicalJSON.encode(bytes) == bytes else {

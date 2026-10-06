@@ -15,7 +15,8 @@ bytes are length-framed by DSSE PAE and signed. Ed25519 keys are 32-byte public
 keys; IDs are `sha256:` plus lowercase SHA-256 of those raw bytes. IDs only
 index caller-authorized keys; a signature never introduces trust. Thresholds
 count distinct validated public keys, so duplicate signatures cannot amplify
-one key. There are at most 32 keys/signatures and 1 MiB decoded payload.
+one key. There are at most 32 authorized keys per role, 64 envelope signatures (old
+plus new root thresholds during rotation), and 1 MiB decoded payload.
 
 Canonicalization is the existing `alloy-jcs-v1` profile: UTF-16 key ordering,
 finite binary64 numbers with ECMAScript rendering, unchanged Unicode values,
