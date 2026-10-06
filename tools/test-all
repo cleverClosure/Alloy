@@ -619,7 +619,7 @@ REGISTRY: list[Suite] = [
     # --- runtime/trust ---------------------------------------------------
     Suite(
         id="trust-swift-test", tier="fast", cwd=".",
-        cmd=("swift", "test", "--package-path", "runtime/trust"),
+        cmd=("bash", "runtime/trust/run-checks.sh"),
         timeout=180,
         description="Development trust envelopes, role metadata, rotation and revocation",
         probe=need_commands("swift"),

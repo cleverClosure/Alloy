@@ -4,6 +4,7 @@ import Darwin
 import Foundation
 
 struct TrustState: Codable {
+    var rotations: [Data] = []
     var root: Data
     var pin: String
     var lastTime: Double
@@ -42,7 +43,7 @@ public struct TrustStore: Sendable {
     public func refresh(_ bundle: MetadataBundle, now: Date) throws {
         try locked {
             var state = try load(now: now)
-            let root = try ChainValidation.root(state.root, now: now)
+            let root = try ChainValidation.currentRoot(state, now: now)
             let (verifier, versions) = try ChainValidation.verify(
                 bundle, root: root, state: state, now: now
             )
@@ -61,7 +62,7 @@ public struct TrustStore: Sendable {
         try locked {
             let state = try load(now: now)
             guard let bundle = state.bundle else { throw TrustError.state("metadata not initialized") }
-            let root = try ChainValidation.root(state.root, now: now)
+            let root = try ChainValidation.currentRoot(state, now: now)
             let (verifier, _) = try ChainValidation.verify(
                 bundle, root: root, state: state, now: now
             )
@@ -74,7 +75,7 @@ public struct TrustStore: Sendable {
         try withVerifier(now: now) { try $0.verify(bytes, type: type) }
     }
 
-    private func load(now: Date) throws -> TrustState {
+    func load(now: Date) throws -> TrustState {
         let fd = open(directory.appendingPathComponent("state.json").path, O_RDONLY | O_NOFOLLOW | O_CLOEXEC)
         guard fd >= 0 else { throw TrustError.state("missing state") }
         defer { close(fd) }
@@ -100,7 +101,7 @@ public struct TrustStore: Sendable {
         return state
     }
 
-    private func locked<T>(_ body: () throws -> T) throws -> T {
+    func locked<T>(_ body: () throws -> T) throws -> T {
         var info = stat()
         guard lstat(directory.path, &info) == 0, info.st_mode & S_IFMT == S_IFDIR,
               info.st_uid == getuid(), info.st_mode & 0o077 == 0 else {
@@ -115,7 +116,7 @@ public struct TrustStore: Sendable {
         return try body()
     }
 
-    private func save(_ state: TrustState) throws {
+    func save(_ state: TrustState) throws {
         let bytes = try JSONEncoder().encode(state)
         guard bytes.count <= 16 * 1024 * 1024 else { throw TrustError.state("state size bound") }
         let temporary = directory.appendingPathComponent(".state-\(UUID().uuidString)")
