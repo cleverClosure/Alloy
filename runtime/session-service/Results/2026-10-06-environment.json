@@ -1,0 +1,30 @@
+{
+  "author": "Timur Isaev",
+  "status": "pass",
+  "coldCacheRuns": [
+    {
+      "author": "Timur Isaev",
+      "bootCount": "1",
+      "firstServer": "43493",
+      "isolation": "stopping first preserved second; neither survives cleanup",
+      "prefixDigest": "sha256:5b8ce98c74e9fed1c7a09dbfaee0176d7fcfc599a9b3c39cd7794ed9f10c2a15",
+      "runtimeTreeDigest": "sha256:6fbeb915a7bb987b060d14ef6060a510ce9632a817c123799547d4bae9fd6610",
+      "runtimeUnchanged": "true",
+      "secondServer": "43494",
+      "status": "pass",
+      "templateDigest": "sha256:88f45970897ee7bcc1803529f2065847115d0a20d87a607728325e4f35613118"
+    },
+    {
+      "author": "Timur Isaev",
+      "bootCount": "1",
+      "firstServer": "43722",
+      "isolation": "stopping first preserved second; neither survives cleanup",
+      "prefixDigest": "sha256:5b8ce98c74e9fed1c7a09dbfaee0176d7fcfc599a9b3c39cd7794ed9f10c2a15",
+      "runtimeTreeDigest": "sha256:6fbeb915a7bb987b060d14ef6060a510ce9632a817c123799547d4bae9fd6610",
+      "runtimeUnchanged": "true",
+      "secondServer": "43723",
+      "status": "pass",
+      "templateDigest": "sha256:88f45970897ee7bcc1803529f2065847115d0a20d87a607728325e4f35613118"
+    }
+  ]
+}

@@ -616,6 +616,15 @@ REGISTRY: list[Suite] = [
         description="synthetic discovery through typed client preview/session/reconnect and exact reclamation",
         cleanup_grace=15,
     ),
+    Suite(
+        id="runtime-service-environment", tier="full",
+        cmd=("python3", "runtime/session-service/run-environment-proof.py"),
+        cwd=".", timeout=600,
+        probe=every(need_commands("swift", "python3"),
+                    need_environment_tree("ALLOY_SESSION_CONTENT_STORE")),
+        description="cold prefix reproducibility and isolated Wine servers on a verified runtime generation",
+        cleanup_grace=30,
+    ),
     # --- runtime/title-volumes -------------------------------------------
     Suite(
         id="title-volumes-swift-test", tier="fast", cwd=".",
@@ -987,7 +996,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 63
+REGISTRY_SUITE_COUNT = 64
 
 
 # ---------------------------------------------------------------------------
