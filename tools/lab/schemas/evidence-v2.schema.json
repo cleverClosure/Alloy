@@ -1,0 +1,506 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Author: Timur Isaev. Structural schema; normative cross-field and artifact validation is in alloy_lab.",
+  "title": "Alloy lab evidence v2",
+  "type": "object",
+  "properties": {
+    "version": {
+      "const": 2
+    },
+    "scope": {
+      "const": "local-engineering-not-certification"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+    },
+    "job_id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4
+    },
+    "created_at": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "finished_at": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "scenario": {
+      "$ref": "scenario-v2.schema.json"
+    },
+    "source_scenario_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "runner": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "id",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "scheduler": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "id",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "host": {
+          "type": "object",
+          "properties": {
+            "os": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "os_release": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "os_build": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "architecture": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "hardware_class": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "firmware": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "memory_bytes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "cpu_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "capabilities": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "maxProperties": 32
+            }
+          },
+          "required": [
+            "os",
+            "os_release",
+            "os_build",
+            "architecture",
+            "hardware_class",
+            "firmware",
+            "memory_bytes",
+            "cpu_count",
+            "capabilities"
+          ],
+          "additionalProperties": false
+        },
+        "host_class_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "scenario_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "runtime": {
+          "type": "object",
+          "properties": {
+            "expected": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "before": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "after": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "expected",
+            "before",
+            "after"
+          ],
+          "additionalProperties": false
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "expected": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "before": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "after": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "expected",
+            "before",
+            "after"
+          ],
+          "additionalProperties": false
+        },
+        "inputs": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "expected": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "before": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "after": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "expected",
+              "before",
+              "after"
+            ],
+            "additionalProperties": false
+          },
+          "maxProperties": 64
+        },
+        "environment_health": {
+          "type": "object",
+          "properties": {
+            "resource_lock": {
+              "enum": [
+                "exclusive",
+                "shared",
+                "not-acquired"
+              ]
+            },
+            "requirements_met": {
+              "type": "boolean"
+            },
+            "notes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "minItems": 0,
+              "maxItems": 32
+            }
+          },
+          "required": [
+            "resource_lock",
+            "requirements_met",
+            "notes"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "runner",
+        "scheduler",
+        "host",
+        "host_class_sha256",
+        "scenario_sha256",
+        "runtime",
+        "subject",
+        "inputs",
+        "environment_health"
+      ],
+      "additionalProperties": false
+    },
+    "control": {
+      "enum": [
+        "clean",
+        "seeded",
+        "hang",
+        "error",
+        "flaky"
+      ]
+    },
+    "state": {
+      "enum": [
+        "COMPLETED",
+        "FAILED",
+        "INCOMPARABLE",
+        "CANCELLED",
+        "DEADLINE",
+        "INTERRUPTED"
+      ]
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "elapsed_seconds": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1e+18
+          }
+        },
+        "required": [
+          "state",
+          "elapsed_seconds"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 128
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+          },
+          "argv": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "minItems": 1,
+            "maxItems": 128
+          },
+          "exit_code": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "elapsed_seconds": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1e+18
+          }
+        },
+        "required": [
+          "id",
+          "argv",
+          "exit_code",
+          "elapsed_seconds"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 32
+    },
+    "observed": {
+      "type": "object"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024,
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\\\\\u0000]+$"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "path",
+          "sha256",
+          "bytes"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 512
+    },
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+          },
+          "detail": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          }
+        },
+        "required": [
+          "code",
+          "detail"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 64
+    },
+    "duration_seconds": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 14400
+    },
+    "integrity": {
+      "type": "object",
+      "properties": {
+        "algorithm": {
+          "const": "sha256"
+        },
+        "claim": {
+          "const": "accidental-edit-detection-only"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "algorithm",
+        "claim",
+        "sha256"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "version",
+    "scope",
+    "run_id",
+    "job_id",
+    "attempt",
+    "created_at",
+    "finished_at",
+    "scenario",
+    "source_scenario_sha256",
+    "provenance",
+    "control",
+    "state",
+    "events",
+    "steps",
+    "observed",
+    "artifacts",
+    "failures",
+    "duration_seconds",
+    "integrity"
+  ],
+  "additionalProperties": false
+}
