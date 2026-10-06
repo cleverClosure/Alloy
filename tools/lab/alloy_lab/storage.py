@@ -2,7 +2,10 @@
 
 import os
 from pathlib import Path
+from contextlib import contextmanager
+import sqlite3
 import stat
+import time
 import uuid
 
 from .common import canonical, require
@@ -26,6 +29,29 @@ def sync_directory(path):
         os.fsync(fd)
     finally:
         os.close(fd)
+
+
+@contextmanager
+def database_setup(root, name):
+    # SQLite's initial journal-mode transition may return SQLITE_BUSY without
+    # honoring busy_timeout. Serialize connection setup, not normal transactions.
+    from .locking import Lease
+    with Lease(root / (name + '.initialization.lock')) as lease:
+        deadline = time.monotonic() + 5
+        while not lease.try_acquire():
+            require(time.monotonic() < deadline, 'database:initialization_deadline')
+            time.sleep(0.01)
+        fd = os.open(root / name, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+        os.close(fd)
+        db = sqlite3.connect(root / name, timeout=5, isolation_level=None)
+        try:
+            db.row_factory = sqlite3.Row
+            db.execute('PRAGMA journal_mode=WAL')
+            db.execute('PRAGMA synchronous=FULL')
+            yield db
+        except BaseException:
+            db.close()
+            raise
 
 
 def atomic_json(path, value):

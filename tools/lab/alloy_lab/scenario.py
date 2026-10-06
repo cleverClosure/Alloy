@@ -11,7 +11,7 @@ from .common import Invalid, decode, digest, fields, file_bytes, file_digest, ha
 REPO = Path(__file__).resolve().parents[3]
 LEGACY = REPO / "spikes/LAB-001"
 CLASSES = ("exact", "numeric", "visual", "behavioral", "performance", "informational")
-TOKENS = re.compile(r"\{(runtime|subject|work|control|attempt|input:[a-zA-Z0-9_.-]+|runtime_file:[a-zA-Z0-9_.-]+)\}")
+TOKENS = re.compile(r"\{(runtime|runtime_root|subject|work|control|attempt|input:[a-zA-Z0-9_.-]+|runtime_file:[a-zA-Z0-9_.-]+)\}")
 
 
 def template(value, inputs, runtime_files):
@@ -90,7 +90,11 @@ def validate(value):
             require(key not in ("PYTHONPATH", "PYTHONHOME", "DYLD_INSERT_LIBRARIES"), "environment:reserved")
             template(setting, value["inputs"], runtime["files"])
         number(step["timeout_seconds"], "step.timeout", 0.01, value["timeout_seconds"])
-        number(step["expected_exit"], "step.exit", 0, 255, integer=True)
+        exits = step["expected_exit"] if type(step["expected_exit"]) is list else [step["expected_exit"]]
+        require(1 <= len(exits) <= 16, "step.exit:count")
+        for code in exits:
+            number(code, "step.exit", 0, 255, integer=True)
+        require(len(set(exits)) == len(exits), "step.exit:duplicate")
     require(len(set(ids)) == len(ids) and phases == sorted(phases) and 1 in phases, "steps:order_or_duplicate")
     require(type(value["observables"]) is list and 1 <= len(value["observables"]) <= 128, "observables:shape")
     names = []
@@ -137,6 +141,11 @@ def validate(value):
 
 def runtime_digest(runtime):
     return hashed({key: runtime[key] for key in ("kind", "executable", "files")})
+
+
+def expected_exit(step, code):
+    values = step['expected_exit']
+    return code in (values if type(values) is list else [values])
 
 
 def validate_v1(value):

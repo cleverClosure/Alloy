@@ -25,12 +25,14 @@ Admission is non-preemptive. Separate `work` processes provide concurrency; one
 and deadlines before admission make no execution claim. An admitted attempt is
 durably recorded before its worker starts. Cancellation, elapsed execution
 limits, absolute deadlines, output caps and nonzero exits retain named failures.
-The default retry limit is zero; later retry policy must retain this history.
+The default retry limit is zero; the [retry policy](EVIDENCE_STORE.md) retains every
+attempt and never upgrades a failed history into a pass.
 
 A job lease protects the ownership transition and worker lifetime. Queue recovery
 uses the lease, not the apparent liveness of a potentially reused PID. A RUNNING
 row whose lease is free becomes INTERRUPTED, retaining its attempt and failure.
-Recovery never marks an abandoned claim completed or silently re-executes it.
+Recovery never marks an abandoned claim completed. An explicitly configured retry
+may enqueue another attempt, while retaining the interruption in job history.
 A crash after claim but before spawn therefore remains visible without inventing
 an evidence record for an execution that was not observed.
 
@@ -62,7 +64,7 @@ interval. `lock-run` holds the lease over the command and its cleanup. Use it fo
 runtime builds and corpus runs that must not corrupt a timing measurement.
 `shared` is available for non-timing functional work. External command logs are
 bounded at 8 MiB per stream and forwarded on completion; scenario logs are bounded
-at 64 KiB per step/stream. All process lifetimes have explicit time limits.
+at 64 KiB per step/stream (1 MiB for Wine traces). All process lifetimes have explicit time limits.
 
 ## Process death and cancellation
 

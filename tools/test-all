@@ -652,6 +652,24 @@ REGISTRY: list[Suite] = [
         description="Immutable evidence, frozen baselines, seeded regressions, flaky retries and torn-publication controls",
         probe=every(need_commands("python3", "sysctl"), need_paths("tools/lab/alloy_lab/store.py")),
     ),
+    Suite(
+        id="lab-wine-contracts", tier="fast", cwd=".",
+        cmd=("python3", "-B", "-m", "unittest", "discover", "-s", "tools/lab/tests", "-p", "test_wine.py", "-v"),
+        timeout=60,
+        description="Wine guest architecture, private-prefix cleanup contract and complete runtime inventory refusal",
+        probe=every(need_commands("python3", "sysctl"), need_paths("tools/lab/alloy_lab/wine.py")),
+    ),
+    Suite(
+        id="lab-wine-guest", tier="full", cwd=".",
+        cmd=lambda root: ("python3", "-B", "tools/lab/prove-guest.py",
+                          "--runtime", env_argument(root, "ALLOY_RUNTIME_GENERATION"),
+                          "--toolchain", env_argument(root, "ALLOY_TOOLCHAIN_BIN")),
+        timeout=1000, cleanup_grace=15,
+        description="Real isolated x64 Wine guest, automatic regressions, digest mismatch and server cleanup",
+        probe=every(need_commands("python3", "sysctl", "ps"),
+                    need_environment_tree("ALLOY_RUNTIME_GENERATION", "loader/wine", "server/wineserver"),
+                    need_environment_tree("ALLOY_TOOLCHAIN_BIN", "x86_64-w64-mingw32-clang")),
+    ),
     # --- runtime/trust ---------------------------------------------------
     Suite(
         id="trust-swift-test", tier="fast", cwd=".",
@@ -969,7 +987,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 61
+REGISTRY_SUITE_COUNT = 63
 
 
 # ---------------------------------------------------------------------------

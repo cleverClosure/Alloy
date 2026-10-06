@@ -1,6 +1,7 @@
 """CAS, frozen baselines and honest retry controls. Author: Timur Isaev."""
 
 import copy
+import fcntl
 import hashlib
 import json
 import os
@@ -245,6 +246,51 @@ store.add_record(load(sys.argv[2]+'/record.json'),sys.argv[2],fault)
             self.assertEqual(migrated.db.execute('PRAGMA user_version').fetchone()[0], 2)
         finally:
             migrated.close()
+
+    def test_database_initialization_obeys_kernel_lock_and_concurrent_cold_open(self):
+        for kind, module, filename in (('Store', 'store', 'index.sqlite3'), ('Queue', 'queue', 'queue.sqlite3')):
+            root = self.root / ('initialize-' + kind)
+            root.mkdir(mode=0o700)
+            descriptor = os.open(root / (filename + '.initialization.lock'), os.O_CREAT | os.O_RDWR, 0o600)
+            fcntl.flock(descriptor, fcntl.LOCK_EX)
+            script = f"import sys;sys.path.insert(0,{str(PACKAGE)!r});from alloy_lab.{module} import {kind};" + \
+                f"print('ready',flush=True);value={kind}(sys.argv[1]);value.close();print('opened',flush=True)"
+            child = subprocess.Popen([sys.executable, '-B', '-c', script, str(root)],
+                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            try:
+                import select
+                self.assertTrue(select.select([child.stdout], [], [], 5)[0])
+                self.assertEqual(child.stdout.readline().strip(), 'ready')
+                # An independent flock must stop initialization before SQLite is opened.
+                time.sleep(0.2)
+                self.assertIsNone(child.poll(), 'initializer bypassed the kernel lock')
+                self.assertFalse((root / filename).exists())
+                os.close(descriptor)
+                descriptor = None
+                output, error = child.communicate(timeout=5)
+                self.assertEqual(child.returncode, 0, error)
+                self.assertEqual(output.strip(), 'opened')
+            finally:
+                if descriptor is not None:
+                    os.close(descriptor)
+                if child.poll() is None:
+                    child.kill()
+                child.communicate(timeout=5)
+            # Start eight fresh processes against an absent database together.
+            cold = self.root / ('cold-' + kind)
+            cold.mkdir(mode=0o700)
+            children = [subprocess.Popen([sys.executable, '-B', '-c', script, str(cold)],
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) for _ in range(8)]
+            try:
+                for process in children:
+                    output, error = process.communicate(timeout=10)
+                    self.assertEqual(process.returncode, 0, error)
+                    self.assertEqual(output.strip(), 'ready\nopened')
+            finally:
+                for process in children:
+                    if process.poll() is None:
+                        process.kill()
+                    process.communicate(timeout=5)
 
 
 if __name__ == '__main__':

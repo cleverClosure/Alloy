@@ -1,0 +1,320 @@
+{
+  "author": "Timur Isaev",
+  "baseline_sha256": "43935349cc1902cc753864446ef1d9b98b2d0a86c6bc29b1a9eb22a7bcc29596",
+  "compiler_sha256": "c9b86311ade81d53235c93fafabdf98328d094de344ea9a9038e0dab6695ee9f",
+  "complete": true,
+  "guest_architecture": "x64",
+  "runs": [
+    {
+      "classification": "UNBASELINED",
+      "failures": [],
+      "job_id": "82954aad-c71c-4bf0-b57d-1eeaf76271c7",
+      "label": "calibration",
+      "loaded_fex_paths": [
+        "/private/tmp/alloy-180-guest-runtime/dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
+      ],
+      "observed": {
+        "answer": 42,
+        "sum": 21
+      },
+      "record_sha256": "1716be9623a29f744d64d5d3e5d9ff759ade606b85e74dc704a328e8d40cd082",
+      "state": "COMPLETED",
+      "steps": [
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/loader/wine",
+            "wineboot",
+            "-u"
+          ],
+          "elapsed_seconds": 7.467664417024935,
+          "exit_code": 0,
+          "id": "boot"
+        },
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/loader/wine",
+            "reg",
+            "add",
+            "HKLM\\Software\\Microsoft\\Wow64\\amd64",
+            "/ve",
+            "/t",
+            "REG_SZ",
+            "/d",
+            "libarm64ecfex.dll",
+            "/f"
+          ],
+          "elapsed_seconds": 4.133478000003379,
+          "exit_code": 0,
+          "id": "register"
+        },
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/loader/wine",
+            "/private/tmp/alloy-180-final-guest-fixed/known-answer.exe",
+            "clean"
+          ],
+          "elapsed_seconds": 4.076538499997696,
+          "exit_code": 0,
+          "id": "guest"
+        },
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/server/wineserver",
+            "-k"
+          ],
+          "elapsed_seconds": 0.004656417004298419,
+          "exit_code": 1,
+          "id": "stop-server"
+        },
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/server/wineserver",
+            "-w"
+          ],
+          "elapsed_seconds": 0.004212375002680346,
+          "exit_code": 0,
+          "id": "wait-server"
+        }
+      ]
+    },
+    {
+      "classification": "CLEAN",
+      "failures": [],
+      "job_id": "3134e05b-ed94-401c-b65d-b5f62673852a",
+      "label": "clean",
+      "loaded_fex_paths": [
+        "/private/tmp/alloy-180-guest-runtime/dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
+      ],
+      "observed": {
+        "answer": 42,
+        "sum": 21
+      },
+      "record_sha256": "302e2fd12fcfaaae1497682eee4caafd3e3347df275f6e618175bb7c9434abe1",
+      "state": "COMPLETED",
+      "steps": [
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/loader/wine",
+            "wineboot",
+            "-u"
+          ],
+          "elapsed_seconds": 6.971450957993511,
+          "exit_code": 0,
+          "id": "boot"
+        },
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/loader/wine",
+            "reg",
+            "add",
+            "HKLM\\Software\\Microsoft\\Wow64\\amd64",
+            "/ve",
+            "/t",
+            "REG_SZ",
+            "/d",
+            "libarm64ecfex.dll",
+            "/f"
+          ],
+          "elapsed_seconds": 4.131597750005312,
+          "exit_code": 0,
+          "id": "register"
+        },
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/loader/wine",
+            "/private/tmp/alloy-180-final-guest-fixed/known-answer.exe",
+            "clean"
+          ],
+          "elapsed_seconds": 4.102346791012678,
+          "exit_code": 0,
+          "id": "guest"
+        },
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/server/wineserver",
+            "-k"
+          ],
+          "elapsed_seconds": 0.004495667002629489,
+          "exit_code": 1,
+          "id": "stop-server"
+        },
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/server/wineserver",
+            "-w"
+          ],
+          "elapsed_seconds": 0.004025625006761402,
+          "exit_code": 0,
+          "id": "wait-server"
+        }
+      ]
+    },
+    {
+      "classification": "REGRESSION",
+      "failures": [],
+      "job_id": "b336f082-e7f4-48fc-b8d8-e7788ba921a8",
+      "label": "seeded",
+      "loaded_fex_paths": [
+        "/private/tmp/alloy-180-guest-runtime/dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
+      ],
+      "observed": {
+        "answer": 43,
+        "sum": 22
+      },
+      "record_sha256": "00da9cdbd45e1de99854d0c31ab13ce62bb01e91ce38a15d739b307d12eaae6a",
+      "state": "COMPLETED",
+      "steps": [
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/loader/wine",
+            "wineboot",
+            "-u"
+          ],
+          "elapsed_seconds": 7.026241000014124,
+          "exit_code": 0,
+          "id": "boot"
+        },
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/loader/wine",
+            "reg",
+            "add",
+            "HKLM\\Software\\Microsoft\\Wow64\\amd64",
+            "/ve",
+            "/t",
+            "REG_SZ",
+            "/d",
+            "libarm64ecfex.dll",
+            "/f"
+          ],
+          "elapsed_seconds": 4.155846000008751,
+          "exit_code": 0,
+          "id": "register"
+        },
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/loader/wine",
+            "/private/tmp/alloy-180-final-guest-fixed/known-answer.exe",
+            "seeded"
+          ],
+          "elapsed_seconds": 4.125270707998425,
+          "exit_code": 0,
+          "id": "guest"
+        },
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/server/wineserver",
+            "-k"
+          ],
+          "elapsed_seconds": 0.004659375001210719,
+          "exit_code": 1,
+          "id": "stop-server"
+        },
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/server/wineserver",
+            "-w"
+          ],
+          "elapsed_seconds": 0.004230416001519188,
+          "exit_code": 0,
+          "id": "wait-server"
+        }
+      ]
+    },
+    {
+      "classification": "INCOMPARABLE",
+      "failures": [
+        {
+          "code": "INPUT_OR_SETUP_FAILURE",
+          "detail": "execution:input_digest_mismatch"
+        },
+        {
+          "code": "INPUT_CHANGED",
+          "detail": "execution:input_digest_mismatch"
+        }
+      ],
+      "job_id": "38d8ded0-17ac-4520-906c-474f5267c0b0",
+      "label": "digest-mismatch",
+      "observed": {},
+      "record_sha256": "7fde62d8399a1b064918948017049f1448bcc193fff386a5012ec26e5b29b57d",
+      "state": "INCOMPARABLE",
+      "steps": []
+    },
+    {
+      "classification": "FAILED",
+      "failures": [
+        {
+          "code": "RUN_TIMEOUT",
+          "detail": "bounded step deadline exceeded"
+        }
+      ],
+      "job_id": "93366b87-fb6a-417c-9884-cce42669e01a",
+      "label": "timeout-cleanup",
+      "observed": {},
+      "record_sha256": "799475fecb94ea6bd0f670cc8573d20079af0e6d70262521d30cecffd9f1e398",
+      "state": "FAILED",
+      "steps": [
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/loader/wine",
+            "wineboot",
+            "-u"
+          ],
+          "elapsed_seconds": 8.112140959012322,
+          "exit_code": 0,
+          "id": "boot"
+        },
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/loader/wine",
+            "reg",
+            "add",
+            "HKLM\\Software\\Microsoft\\Wow64\\amd64",
+            "/ve",
+            "/t",
+            "REG_SZ",
+            "/d",
+            "libarm64ecfex.dll",
+            "/f"
+          ],
+          "elapsed_seconds": 4.104726459016092,
+          "exit_code": 0,
+          "id": "register"
+        },
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/loader/wine",
+            "/private/tmp/alloy-180-final-guest-fixed/known-answer.exe",
+            "hang"
+          ],
+          "elapsed_seconds": 1.0132005000195932,
+          "exit_code": -9,
+          "id": "guest"
+        },
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/server/wineserver",
+            "-k"
+          ],
+          "elapsed_seconds": 0.0648645420151297,
+          "exit_code": 0,
+          "id": "stop-server"
+        },
+        {
+          "argv": [
+            "/private/tmp/alloy-180-guest-runtime/server/wineserver",
+            "-w"
+          ],
+          "elapsed_seconds": 0.004505834018345922,
+          "exit_code": 0,
+          "id": "wait-server"
+        }
+      ]
+    }
+  ],
+  "runtime_files": 835,
+  "runtime_sha256": "903e09091ef16d73e018b5eb380b975e4c26cd45d035a4a6c4f33de31d4bc7ae",
+  "runtime_unchanged": true,
+  "scope": "local-engineering-not-certification",
+  "subject_sha256": "be7e0b574a51dd9c348a1fb4a828cd4a2e1ce73a1a4ed52a912aa3c757586e78"
+}
