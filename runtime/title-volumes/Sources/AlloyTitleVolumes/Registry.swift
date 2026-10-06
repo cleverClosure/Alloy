@@ -8,6 +8,7 @@ extension TitleVolumeStore {
         let handle = try lockFile(metadata, "registry.lock")
         defer { flock(handle, LOCK_UN); close(handle) }
         guard flock(handle, LOCK_EX) == 0 else { throw VolumeError.systemCall("registry lock", errno) }
+        try recoverPending()
         return try body()
     }
 

@@ -74,6 +74,12 @@ struct Registry: Codable {
     var titles: [TitleRecord] = []
 }
 
+struct SessionLease {
+    let record: VolumeRecord
+    let scratch: Int32
+    let writer: Int32
+}
+
 struct CheckedDocument: Codable {
     let payload: Data
     let sha256: String
