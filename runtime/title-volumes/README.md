@@ -21,9 +21,14 @@ The root can be shared with `AlloyContentStore`; this library owns only
 The CLI also supports `audit ROOT GAME`, `scratch-create ROOT GAME SESSION NOW`,
 and `scratch-expire ROOT GAME NOW`. Times are explicit Unix seconds. Library
 errors are named, including quota, path, integrity, conflict and registry errors.
+Older content-store save-only titles can be explicitly imported with
+`adopt-legacy-saves ROOT GAME`; stop legacy writers first. The operation preserves
+bytes and tightens owned permissions, refusing unsafe links or extra state.
 
 See [the layout contract](Specs/LAYOUT_V1.md) for ownership and concurrency.
 See [save operations](Specs/SAVES_V1.md) for explicit backup/restore commands,
 conflict handling, periodic policy and the required quiet write boundary.
 See [settings and disposable state](Specs/STATE_V1.md) for versioning, resets,
 cache identity inputs and scratch recovery.
+The [session-launch handoff](Specs/CONSUMER_HANDOFF.md) defines the C/G/S/T plan,
+six compiler volume IDs, lease boundaries and integration responsibilities.

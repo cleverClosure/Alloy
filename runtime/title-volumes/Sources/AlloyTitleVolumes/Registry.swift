@@ -18,7 +18,7 @@ extension TitleVolumeStore {
         var info = stat()
         guard handle >= 0, fstat(handle, &info) == 0, info.st_mode & S_IFMT == S_IFREG,
               info.st_nlink == 1, info.st_uid == geteuid(), info.st_mode & 0o077 == 0,
-              info.st_dev == directory.device else {
+              info.st_dev == directory.device, noExtendedACL(handle) else {
             if handle >= 0 { close(handle) }
             throw VolumeError.unsafeFile
         }

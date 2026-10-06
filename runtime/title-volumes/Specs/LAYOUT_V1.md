@@ -43,6 +43,10 @@ directory descriptors. Descendant mounts, symlinks, multiply-linked files,
 special files, foreign ownership, group/other-readable managed files and
 non-private managed directories are refused. Shared content-store container
 directories may be owner-writable 0755; title directories remain 0700.
+Managed files, directories and locks also refuse extended ACL entries (including
+inherited grants); POSIX mode bits alone cannot prove restrictive access. A
+filesystem unable to provide that ACL check fails closed. Existing ACLs are not
+silently removed or changed by this package.
 
 Paths use NFC components, reject traversal and Windows-reserved names, and
 detect case aliases. The traversal budget is 32 levels and 10,000 entries.

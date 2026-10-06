@@ -624,6 +624,13 @@ REGISTRY: list[Suite] = [
         description="Title-bound saves, settings, cache and scratch lifecycle controls",
         probe=every(need_commands("swift"), need_paths("runtime/title-volumes/Package.swift")),
     ),
+    Suite(
+        id="title-volumes-fault-matrix", tier="fast", cwd=".",
+        cmd=("python3", "runtime/title-volumes/run-fault-matrix.py"),
+        timeout=300,
+        description="Real process-death save protection and independent content-store lifecycle proof",
+        probe=every(need_commands("swift", "python3"), need_paths("runtime/title-volumes/run-fault-matrix.py")),
+    ),
     # --- runtime/trust ---------------------------------------------------
     Suite(
         id="trust-swift-test", tier="fast", cwd=".",
@@ -941,7 +948,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 57
+REGISTRY_SUITE_COUNT = 58
 
 
 # ---------------------------------------------------------------------------
