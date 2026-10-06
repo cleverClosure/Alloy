@@ -655,6 +655,23 @@ REGISTRY: list[Suite] = [
         description="complete Wine process inventory, stop/kill/watchdog, lease health and agent/service crash recovery",
         cleanup_grace=30,
     ),
+    Suite(
+        id="runtime-service-session-e2e", tier="full", cwd=".", timeout=1200,
+        cmd=lambda root: ("python3", str(root / "tools/lab/lab.py"), "lock-run", "--mode", "exclusive",
+                          "--timeout", "1100", "--", "python3", str(root / "runtime/session-service/run-session-e2e-proof.py"),
+                          "--package", os.environ.get("ALLOY_SESSION_PROOF_PACKAGE_A", ""),
+                          "--alternate-package", os.environ.get("ALLOY_SESSION_PROOF_PACKAGE_B", ""),
+                          "--payload", os.environ.get("ALLOY_SESSION_PROOF_PAYLOAD", ""),
+                          "--materializer", str(Path(os.environ.get("ALLOY_SESSION_MATERIALIZER", "")) /
+                                                "alloy-runtime-materialize")),
+        probe=every(need_commands("swift", "python3", "launchctl"), need_launch_host,
+                    need_environment_tree("ALLOY_SESSION_PROOF_PACKAGE_A", "runtime-manifest.json"),
+                    need_environment_tree("ALLOY_SESSION_PROOF_PACKAGE_B", "runtime-manifest.json"),
+                    need_environment_tree("ALLOY_SESSION_PROOF_PAYLOAD", "launcher.exe"),
+                    need_environment_tree("ALLOY_SESSION_MATERIALIZER", "alloy-runtime-materialize")),
+        description="separate-client mixed guest tree, import-time policy, saves, crash/refusals and exact runtime rollback",
+        cleanup_grace=30,
+    ),
     # --- runtime/title-volumes -------------------------------------------
     Suite(
         id="title-volumes-swift-test", tier="fast", cwd=".",
@@ -1026,7 +1043,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 66
+REGISTRY_SUITE_COUNT = 67
 
 
 # ---------------------------------------------------------------------------

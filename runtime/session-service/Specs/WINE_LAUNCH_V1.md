@@ -69,5 +69,5 @@ or production game support. Clients must distinguish Wine snapshots (`driver:
 wine`) from the unchanged native fixture snapshots and honor terminal error codes.
 
 Complete process inventory, health, staged stop and restart reconciliation are
-specified in [Wine supervision](WINE_SUPERVISION_V1.md). The final provider/save
-end-to-end proof is a separate milestone.
+specified in [Wine supervision](WINE_SUPERVISION_V1.md). The [complete session proof](SESSION_E2E_V1.md) adds independent provider-policy,
+durable-save and runtime-restoration evidence.

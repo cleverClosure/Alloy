@@ -1,0 +1,2837 @@
+{
+  "alternateRuntime": {
+    "generationId": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+    "manifestDigest": "sha256:bd5bf2587073d51fcb979d1949c81fcb72df9748ae0a077fcc40476f0647f804",
+    "path": "/var/folders/mx/f36mfntx6cxdr7v6ldg9g5380000gn/T/alloy-runtime-y0vt703b/content/runtime-trees/bd5bf2587073d51fcb979d1949c81fcb72df9748ae0a077fcc40476f0647f804",
+    "treeDigest": "sha256:c28a3a00cac62d8e2a41e5d196a66f338d8eb922fb2ef1d1c419134d89c735e4"
+  },
+  "author": "Timur Isaev",
+  "clientTransport": "authenticated-XPC",
+  "restoredRuntime": {
+    "generationId": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+    "manifestDigest": "sha256:714585ac2f15ceadb6f34b67dd680ce6da5a5f2ef727ebe5e07afa8e2572ba22",
+    "path": "/var/folders/mx/f36mfntx6cxdr7v6ldg9g5380000gn/T/alloy-runtime-y0vt703b/content/runtime-trees/714585ac2f15ceadb6f34b67dd680ce6da5a5f2ef727ebe5e07afa8e2572ba22",
+    "treeDigest": "sha256:25993ff4996a50679f7c52a8401e2771c23a8b3e69b8180f315924fac21ed89a"
+  },
+  "runs": [
+    {
+      "case": "valid-restricted",
+      "deadNativeIdentities": 13,
+      "launchRequestSeconds": 0.03251358401030302,
+      "observations": {
+        "mappedFEX": [
+          "/private/var/folders/mx/f36mfntx6cxdr7v6ldg9g5380000gn/T/alloy-runtime-y0vt703b/content/runtime-trees/714585ac2f15ceadb6f34b67dd680ce6da5a5f2ef727ebe5e07afa8e2572ba22/dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
+        ],
+        "policies": [
+          {
+            "entry": "GUEST id=launcher LANG=launcher cwd=G:\\cwd-launcher fex=0",
+            "import": "IMPORT id=launcher LANG=launcher cwd=G:\\cwd-launcher fex=0",
+            "providerDirectory": "C:\\alloy\\providers\\launcher",
+            "role": "launcher",
+            "variant": "one"
+          },
+          {
+            "entry": "GUEST id=game LANG=game cwd=G:\\cwd-game fex=1",
+            "import": "IMPORT id=game LANG=game cwd=G:\\cwd-game fex=1",
+            "providerDirectory": "C:\\alloy\\providers\\game",
+            "role": "game",
+            "variant": "one"
+          },
+          {
+            "entry": "GUEST id=unknown LANG=unknown cwd=G:\\cwd-unknown fex=0",
+            "import": "IMPORT id=unknown LANG=unknown cwd=G:\\cwd-unknown fex=0",
+            "providerDirectory": "C:\\alloy\\providers\\unknown",
+            "role": "unknown",
+            "variant": "one"
+          }
+        ],
+        "unknownDLLAllowed": false
+      },
+      "secondsToStop": 5.87532445800025,
+      "serviceInstanceChanged": false,
+      "session": {
+        "code": "OK",
+        "driver": "wine",
+        "events": [
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "verifying-runtime",
+            "sequence": 1
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "preparing-prefix",
+            "sequence": 2
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "policy-delivered",
+            "sequence": 3
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "health-ok",
+            "sequence": 4
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "process-inventory",
+            "sequence": 5
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "process-inventory",
+            "sequence": 6
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "process-inventory",
+            "sequence": 7
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "process-inventory",
+            "sequence": 8
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "process-inventory",
+            "sequence": 9
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "process-inventory",
+            "sequence": 10
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "process-inventory",
+            "sequence": 11
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "health-ok",
+            "sequence": 12
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "process-inventory",
+            "sequence": 13
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "process-inventory",
+            "sequence": 14
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "stop-graceful",
+            "sequence": 15
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "process-inventory",
+            "sequence": 16
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "process-inventory",
+            "sequence": 17
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "process-inventory",
+            "sequence": 18
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "stop-wineserver",
+            "sequence": 19
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "process-inventory",
+            "sequence": 20
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "stop-kill",
+            "sequence": 21
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "tree-empty",
+            "sequence": 22
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "B84CE573-1D56-4E28-BBE1-302F144769E3",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_78dda8d710962a6ab4f8be3b0e46025b0b0c78c733dc9c1fd0ef79f7f1e0902a",
+              "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229"
+            },
+            "kind": "exited",
+            "sequence": 23
+          }
+        ],
+        "exitCode": 0,
+        "healthChecks": 2,
+        "processes": [
+          {
+            "classification": "known",
+            "exited": true,
+            "identifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/1",
+            "imagePath": "G:\\launcher.exe",
+            "native": {
+              "processId": 46657,
+              "startTimeMicroseconds": 749191,
+              "startTimeSeconds": 1791297483
+            },
+            "policyID": "launcher",
+            "unixPID": 46657,
+            "winePID": "0020"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/2",
+            "imagePath": "C:\\windows\\system32\\wineboot.exe",
+            "native": {
+              "processId": 46663,
+              "startTimeMicroseconds": 983920,
+              "startTimeSeconds": 1791297483
+            },
+            "parentIdentifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/1",
+            "policyID": "unknown",
+            "unixPID": 46663,
+            "winePID": "0028"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/3",
+            "imagePath": "C:\\windows\\system32\\winemenubuilder.exe",
+            "native": {
+              "processId": 46666,
+              "startTimeMicroseconds": 61998,
+              "startTimeSeconds": 1791297484
+            },
+            "parentIdentifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/2",
+            "policyID": "unknown",
+            "unixPID": 46666,
+            "winePID": "0030"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/4",
+            "imagePath": "C:\\windows\\system32\\services.exe",
+            "native": {
+              "processId": 46668,
+              "startTimeMicroseconds": 81390,
+              "startTimeSeconds": 1791297484
+            },
+            "parentIdentifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/2",
+            "policyID": "unknown",
+            "unixPID": 46668,
+            "winePID": "0038"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/5",
+            "imagePath": "C:\\windows\\system32\\winedevice.exe",
+            "parentIdentifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/4",
+            "policyID": "unknown",
+            "unixPID": 46671,
+            "winePID": "0044"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/6",
+            "imagePath": "C:\\windows\\system32\\plugplay.exe",
+            "native": {
+              "processId": 46674,
+              "startTimeMicroseconds": 210792,
+              "startTimeSeconds": 1791297484
+            },
+            "parentIdentifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/4",
+            "policyID": "unknown",
+            "unixPID": 46674,
+            "winePID": "0064"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/7",
+            "imagePath": "C:\\windows\\system32\\svchost.exe",
+            "native": {
+              "processId": 46677,
+              "startTimeMicroseconds": 260927,
+              "startTimeSeconds": 1791297484
+            },
+            "parentIdentifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/4",
+            "policyID": "unknown",
+            "unixPID": 46677,
+            "winePID": "0080"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/8",
+            "imagePath": "C:\\windows\\system32\\winedevice.exe",
+            "parentIdentifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/4",
+            "policyID": "unknown",
+            "unixPID": 46680,
+            "winePID": "0094"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/9",
+            "imagePath": "C:\\windows\\system32\\winedevice.exe",
+            "parentIdentifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/4",
+            "policyID": "unknown",
+            "unixPID": 46682,
+            "winePID": "00ac"
+          },
+          {
+            "classification": "known",
+            "exited": true,
+            "identifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/10",
+            "imagePath": "G:\\game.exe",
+            "native": {
+              "processId": 46686,
+              "startTimeMicroseconds": 468456,
+              "startTimeSeconds": 1791297484
+            },
+            "parentIdentifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/1",
+            "policyID": "game",
+            "unixPID": 46686,
+            "winePID": "00c8"
+          },
+          {
+            "classification": "unknown",
+            "exited": true,
+            "identifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/11",
+            "imagePath": "G:\\unknown.exe",
+            "native": {
+              "processId": 46691,
+              "startTimeMicroseconds": 636302,
+              "startTimeSeconds": 1791297484
+            },
+            "parentIdentifier": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229/10",
+            "policyID": "unknown",
+            "unixPID": 46691,
+            "winePID": "00d0"
+          }
+        ],
+        "sessionID": "wine-b22281af89ae011e7dad1b67cd4e25d7aa4f124bc75daab64aa803c15a606229",
+        "state": "STOPPED"
+      }
+    },
+    {
+      "case": "restriction-positive",
+      "deadNativeIdentities": 13,
+      "launchRequestSeconds": 0.03252270899247378,
+      "observations": {
+        "mappedFEX": [
+          "/private/var/folders/mx/f36mfntx6cxdr7v6ldg9g5380000gn/T/alloy-runtime-y0vt703b/content/runtime-trees/714585ac2f15ceadb6f34b67dd680ce6da5a5f2ef727ebe5e07afa8e2572ba22/dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
+        ],
+        "policies": [
+          {
+            "entry": "GUEST id=launcher LANG=launcher cwd=G:\\cwd-launcher fex=0",
+            "import": "IMPORT id=launcher LANG=launcher cwd=G:\\cwd-launcher fex=0",
+            "providerDirectory": "C:\\alloy\\providers\\launcher",
+            "role": "launcher",
+            "variant": "one"
+          },
+          {
+            "entry": "GUEST id=game LANG=game cwd=G:\\cwd-game fex=1",
+            "import": "IMPORT id=game LANG=game cwd=G:\\cwd-game fex=1",
+            "providerDirectory": "C:\\alloy\\providers\\game",
+            "role": "game",
+            "variant": "one"
+          },
+          {
+            "entry": "GUEST id=unknown LANG=unknown cwd=G:\\cwd-unknown fex=0",
+            "import": "IMPORT id=unknown LANG=unknown cwd=G:\\cwd-unknown fex=0",
+            "providerDirectory": "C:\\alloy\\providers\\unknown",
+            "role": "unknown",
+            "variant": "one"
+          }
+        ],
+        "unknownDLLAllowed": true
+      },
+      "secondsToStop": 5.764363041991601,
+      "serviceInstanceChanged": false,
+      "session": {
+        "code": "OK",
+        "driver": "wine",
+        "events": [
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "verifying-runtime",
+            "sequence": 1
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "preparing-prefix",
+            "sequence": 2
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "policy-delivered",
+            "sequence": 3
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "health-ok",
+            "sequence": 4
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "process-inventory",
+            "sequence": 5
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "process-inventory",
+            "sequence": 6
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "process-inventory",
+            "sequence": 7
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "process-inventory",
+            "sequence": 8
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "health-ok",
+            "sequence": 9
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "process-inventory",
+            "sequence": 10
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "process-inventory",
+            "sequence": 11
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "process-inventory",
+            "sequence": 12
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "process-inventory",
+            "sequence": 13
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "stop-graceful",
+            "sequence": 14
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "process-inventory",
+            "sequence": 15
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "process-inventory",
+            "sequence": 16
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "stop-wineserver",
+            "sequence": 17
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "process-inventory",
+            "sequence": 18
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "stop-kill",
+            "sequence": 19
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "tree-empty",
+            "sequence": 20
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "0CD916D6-D74D-4987-AC34-B640B486519E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_9c3d1f5e9934f6ada7c38a9cbb00424cc6ae18fc85b1918b061e7735b2abab27",
+              "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d"
+            },
+            "kind": "exited",
+            "sequence": 21
+          }
+        ],
+        "exitCode": 0,
+        "healthChecks": 2,
+        "processes": [
+          {
+            "classification": "known",
+            "exited": true,
+            "identifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/1",
+            "imagePath": "G:\\launcher.exe",
+            "native": {
+              "processId": 47562,
+              "startTimeMicroseconds": 124122,
+              "startTimeSeconds": 1791297526
+            },
+            "policyID": "launcher",
+            "unixPID": 47562,
+            "winePID": "0020"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/2",
+            "imagePath": "C:\\windows\\system32\\wineboot.exe",
+            "native": {
+              "processId": 47570,
+              "startTimeMicroseconds": 585194,
+              "startTimeSeconds": 1791297526
+            },
+            "parentIdentifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/1",
+            "policyID": "unknown",
+            "unixPID": 47570,
+            "winePID": "0028"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/3",
+            "imagePath": "C:\\windows\\system32\\winemenubuilder.exe",
+            "native": {
+              "processId": 47574,
+              "startTimeMicroseconds": 682669,
+              "startTimeSeconds": 1791297526
+            },
+            "parentIdentifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/2",
+            "policyID": "unknown",
+            "unixPID": 47574,
+            "winePID": "0030"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/4",
+            "imagePath": "C:\\windows\\system32\\services.exe",
+            "native": {
+              "processId": 47576,
+              "startTimeMicroseconds": 703015,
+              "startTimeSeconds": 1791297526
+            },
+            "parentIdentifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/2",
+            "policyID": "unknown",
+            "unixPID": 47576,
+            "winePID": "0038"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/5",
+            "imagePath": "C:\\windows\\system32\\winedevice.exe",
+            "parentIdentifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/4",
+            "policyID": "unknown",
+            "unixPID": 47579,
+            "winePID": "0044"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/6",
+            "imagePath": "C:\\windows\\system32\\plugplay.exe",
+            "native": {
+              "processId": 47582,
+              "startTimeMicroseconds": 852860,
+              "startTimeSeconds": 1791297526
+            },
+            "parentIdentifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/4",
+            "policyID": "unknown",
+            "unixPID": 47582,
+            "winePID": "0064"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/7",
+            "imagePath": "C:\\windows\\system32\\svchost.exe",
+            "native": {
+              "processId": 47585,
+              "startTimeMicroseconds": 905629,
+              "startTimeSeconds": 1791297526
+            },
+            "parentIdentifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/4",
+            "policyID": "unknown",
+            "unixPID": 47585,
+            "winePID": "0080"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/8",
+            "imagePath": "C:\\windows\\system32\\winedevice.exe",
+            "parentIdentifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/4",
+            "policyID": "unknown",
+            "unixPID": 47588,
+            "winePID": "0094"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/9",
+            "imagePath": "C:\\windows\\system32\\winedevice.exe",
+            "parentIdentifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/4",
+            "policyID": "unknown",
+            "unixPID": 47590,
+            "winePID": "00ac"
+          },
+          {
+            "classification": "known",
+            "exited": true,
+            "identifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/10",
+            "imagePath": "G:\\game.exe",
+            "native": {
+              "processId": 47595,
+              "startTimeMicroseconds": 165287,
+              "startTimeSeconds": 1791297527
+            },
+            "parentIdentifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/1",
+            "policyID": "game",
+            "unixPID": 47595,
+            "winePID": "00c8"
+          },
+          {
+            "classification": "unknown",
+            "exited": true,
+            "identifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/11",
+            "imagePath": "G:\\unknown.exe",
+            "native": {
+              "processId": 47597,
+              "startTimeMicroseconds": 209899,
+              "startTimeSeconds": 1791297527
+            },
+            "parentIdentifier": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d/10",
+            "policyID": "unknown",
+            "unixPID": 47597,
+            "winePID": "00d0"
+          }
+        ],
+        "sessionID": "wine-7a0caa3562e38f9d6ea7129f34380edab119757e31786d02c8b167abb665167d",
+        "state": "STOPPED"
+      }
+    },
+    {
+      "case": "service-crash",
+      "deadNativeIdentities": 13,
+      "launchRequestSeconds": 0.03416029197978787,
+      "observations": {
+        "mappedFEX": [
+          "/private/var/folders/mx/f36mfntx6cxdr7v6ldg9g5380000gn/T/alloy-runtime-y0vt703b/content/runtime-trees/714585ac2f15ceadb6f34b67dd680ce6da5a5f2ef727ebe5e07afa8e2572ba22/dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
+        ],
+        "policies": [
+          {
+            "entry": "GUEST id=launcher LANG=launcher cwd=G:\\cwd-launcher fex=0",
+            "import": "IMPORT id=launcher LANG=launcher cwd=G:\\cwd-launcher fex=0",
+            "providerDirectory": "C:\\alloy\\providers\\launcher",
+            "role": "launcher",
+            "variant": "one"
+          },
+          {
+            "entry": "GUEST id=game LANG=game cwd=G:\\cwd-game fex=1",
+            "import": "IMPORT id=game LANG=game cwd=G:\\cwd-game fex=1",
+            "providerDirectory": "C:\\alloy\\providers\\game",
+            "role": "game",
+            "variant": "one"
+          },
+          {
+            "entry": "GUEST id=unknown LANG=unknown cwd=G:\\cwd-unknown fex=0",
+            "import": "IMPORT id=unknown LANG=unknown cwd=G:\\cwd-unknown fex=0",
+            "providerDirectory": "C:\\alloy\\providers\\unknown",
+            "role": "unknown",
+            "variant": "one"
+          }
+        ],
+        "unknownDLLAllowed": false
+      },
+      "secondsToStop": 5.818637249991298,
+      "serviceInstanceChanged": true,
+      "session": {
+        "code": "OK",
+        "driver": "wine",
+        "events": [
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "verifying-runtime",
+            "sequence": 1
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "preparing-prefix",
+            "sequence": 2
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "policy-delivered",
+            "sequence": 3
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "health-ok",
+            "sequence": 4
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "process-inventory",
+            "sequence": 5
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "process-inventory",
+            "sequence": 6
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "process-inventory",
+            "sequence": 7
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "process-inventory",
+            "sequence": 8
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "health-ok",
+            "sequence": 9
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "process-inventory",
+            "sequence": 10
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "process-inventory",
+            "sequence": 11
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "process-inventory",
+            "sequence": 12
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "stop-graceful",
+            "sequence": 13
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "process-inventory",
+            "sequence": 14
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "process-inventory",
+            "sequence": 15
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "process-inventory",
+            "sequence": 16
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "process-inventory",
+            "sequence": 17
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "stop-wineserver",
+            "sequence": 18
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "process-inventory",
+            "sequence": 19
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "stop-kill",
+            "sequence": 20
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "tree-empty",
+            "sequence": 21
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "D19ADA75-E8AB-452B-A0A8-9107E403F3E0",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_b66f3fad1f59be9da1087c45c0dac9354d9009108ba4f6229d3417cb019f7638",
+              "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c"
+            },
+            "kind": "exited",
+            "sequence": 22
+          }
+        ],
+        "exitCode": 0,
+        "healthChecks": 2,
+        "processes": [
+          {
+            "classification": "known",
+            "exited": true,
+            "identifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/1",
+            "imagePath": "G:\\launcher.exe",
+            "native": {
+              "processId": 48227,
+              "startTimeMicroseconds": 16705,
+              "startTimeSeconds": 1791297567
+            },
+            "policyID": "launcher",
+            "unixPID": 48227,
+            "winePID": "0020"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/2",
+            "imagePath": "C:\\windows\\system32\\wineboot.exe",
+            "native": {
+              "processId": 48237,
+              "startTimeMicroseconds": 558621,
+              "startTimeSeconds": 1791297567
+            },
+            "parentIdentifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/1",
+            "policyID": "unknown",
+            "unixPID": 48237,
+            "winePID": "0028"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/3",
+            "imagePath": "C:\\windows\\system32\\winemenubuilder.exe",
+            "native": {
+              "processId": 48240,
+              "startTimeMicroseconds": 634933,
+              "startTimeSeconds": 1791297567
+            },
+            "parentIdentifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/2",
+            "policyID": "unknown",
+            "unixPID": 48240,
+            "winePID": "0030"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/4",
+            "imagePath": "C:\\windows\\system32\\services.exe",
+            "native": {
+              "processId": 48242,
+              "startTimeMicroseconds": 651391,
+              "startTimeSeconds": 1791297567
+            },
+            "parentIdentifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/2",
+            "policyID": "unknown",
+            "unixPID": 48242,
+            "winePID": "0038"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/5",
+            "imagePath": "C:\\windows\\system32\\winedevice.exe",
+            "parentIdentifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/4",
+            "policyID": "unknown",
+            "unixPID": 48245,
+            "winePID": "0044"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/6",
+            "imagePath": "C:\\windows\\system32\\plugplay.exe",
+            "native": {
+              "processId": 48248,
+              "startTimeMicroseconds": 781498,
+              "startTimeSeconds": 1791297567
+            },
+            "parentIdentifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/4",
+            "policyID": "unknown",
+            "unixPID": 48248,
+            "winePID": "0068"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/7",
+            "imagePath": "C:\\windows\\system32\\svchost.exe",
+            "native": {
+              "processId": 48251,
+              "startTimeMicroseconds": 834386,
+              "startTimeSeconds": 1791297567
+            },
+            "parentIdentifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/4",
+            "policyID": "unknown",
+            "unixPID": 48251,
+            "winePID": "0080"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/8",
+            "imagePath": "C:\\windows\\system32\\winedevice.exe",
+            "parentIdentifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/4",
+            "policyID": "unknown",
+            "unixPID": 48253,
+            "winePID": "0094"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/9",
+            "imagePath": "C:\\windows\\system32\\winedevice.exe",
+            "parentIdentifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/4",
+            "policyID": "unknown",
+            "unixPID": 48256,
+            "winePID": "00ac"
+          },
+          {
+            "classification": "known",
+            "exited": true,
+            "identifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/10",
+            "imagePath": "G:\\game.exe",
+            "native": {
+              "processId": 48260,
+              "startTimeMicroseconds": 43464,
+              "startTimeSeconds": 1791297568
+            },
+            "parentIdentifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/1",
+            "policyID": "game",
+            "unixPID": 48260,
+            "winePID": "00c8"
+          },
+          {
+            "classification": "unknown",
+            "exited": true,
+            "identifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/11",
+            "imagePath": "G:\\unknown.exe",
+            "native": {
+              "processId": 48262,
+              "startTimeMicroseconds": 92784,
+              "startTimeSeconds": 1791297568
+            },
+            "parentIdentifier": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c/10",
+            "policyID": "unknown",
+            "unixPID": 48262,
+            "winePID": "00d0"
+          }
+        ],
+        "sessionID": "wine-093a0f26b15e991235cc817de2db4a40f006aa205a709cfac7635f5ed502697c",
+        "state": "STOPPED"
+      }
+    },
+    {
+      "case": "corrupt-policy",
+      "deadNativeIdentities": 1,
+      "guestEntryCount": 0,
+      "launchRequestSeconds": 0.03107245799037628,
+      "secondsToRefusal": 18.44610504200682,
+      "session": {
+        "code": "POLICY_INTEGRITY",
+        "driver": "wine",
+        "events": [
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "7470A888-0728-4702-BC6F-D26D3311066E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_638187506198501563c5dc9f69f4956db4ad43b7e78d1b7aafe0b162cdf801ee",
+              "sessionID": "wine-2ea29f1b030f86b7f36586829de410ff9d2b901775b40fdd7b48b06ff189809d"
+            },
+            "kind": "verifying-runtime",
+            "sequence": 1
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "7470A888-0728-4702-BC6F-D26D3311066E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_638187506198501563c5dc9f69f4956db4ad43b7e78d1b7aafe0b162cdf801ee",
+              "sessionID": "wine-2ea29f1b030f86b7f36586829de410ff9d2b901775b40fdd7b48b06ff189809d"
+            },
+            "kind": "preparing-prefix",
+            "sequence": 2
+          },
+          {
+            "code": "POLICY_INTEGRITY",
+            "correlation": {
+              "correlationID": "7470A888-0728-4702-BC6F-D26D3311066E",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_638187506198501563c5dc9f69f4956db4ad43b7e78d1b7aafe0b162cdf801ee",
+              "sessionID": "wine-2ea29f1b030f86b7f36586829de410ff9d2b901775b40fdd7b48b06ff189809d"
+            },
+            "kind": "refused",
+            "sequence": 3
+          }
+        ],
+        "healthChecks": 0,
+        "processes": [],
+        "sessionID": "wine-2ea29f1b030f86b7f36586829de410ff9d2b901775b40fdd7b48b06ff189809d",
+        "state": "FAILED"
+      }
+    },
+    {
+      "case": "missing-lease",
+      "deadNativeIdentities": 1,
+      "guestEntryCount": 0,
+      "launchRequestSeconds": 0.034814791986718774,
+      "secondsToRefusal": 12.278044042002875,
+      "session": {
+        "code": "GENERATION_LEASE_MISSING",
+        "driver": "wine",
+        "events": [
+          {
+            "code": "GENERATION_LEASE_MISSING",
+            "correlation": {
+              "correlationID": "148C3824-517E-430D-BEA5-78FAD355065D",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_a0091ceb6de1a0c94b898d809b4abf065a78b0c698bb2f913849abb74a70f82a",
+              "sessionID": "wine-c9b086b612c96b32c4646e0d0af95a2756f7d8e473376acce3c5482d8fb7ec60"
+            },
+            "kind": "refused",
+            "sequence": 1
+          }
+        ],
+        "healthChecks": 0,
+        "processes": [],
+        "sessionID": "wine-c9b086b612c96b32c4646e0d0af95a2756f7d8e473376acce3c5482d8fb7ec60",
+        "state": "FAILED"
+      }
+    },
+    {
+      "case": "tampered-runtime",
+      "deadNativeIdentities": 1,
+      "guestEntryCount": 0,
+      "launchRequestSeconds": 0.03293133300030604,
+      "secondsToRefusal": 14.422675832989626,
+      "session": {
+        "code": "RUNTIME_INTEGRITY",
+        "driver": "wine",
+        "events": [
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "74DE26F9-4547-4D7B-9A3A-4314B04D4FB2",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_e7c68e77b9861485363c1e974418bedfc8974fda9ce2ef7c222699e8698a666b",
+              "sessionID": "wine-d8162841c93826e84293381a51d314d203f98298299b40f85c41a64741609d7b"
+            },
+            "kind": "verifying-runtime",
+            "sequence": 1
+          },
+          {
+            "code": "RUNTIME_INTEGRITY",
+            "correlation": {
+              "correlationID": "74DE26F9-4547-4D7B-9A3A-4314B04D4FB2",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_e7c68e77b9861485363c1e974418bedfc8974fda9ce2ef7c222699e8698a666b",
+              "sessionID": "wine-d8162841c93826e84293381a51d314d203f98298299b40f85c41a64741609d7b"
+            },
+            "kind": "refused",
+            "sequence": 2
+          }
+        ],
+        "healthChecks": 0,
+        "processes": [],
+        "sessionID": "wine-d8162841c93826e84293381a51d314d203f98298299b40f85c41a64741609d7b",
+        "state": "FAILED"
+      }
+    },
+    {
+      "case": "valid-after-faults",
+      "deadNativeIdentities": 13,
+      "launchRequestSeconds": 0.03435912501299754,
+      "observations": {
+        "mappedFEX": [
+          "/private/var/folders/mx/f36mfntx6cxdr7v6ldg9g5380000gn/T/alloy-runtime-y0vt703b/content/runtime-trees/714585ac2f15ceadb6f34b67dd680ce6da5a5f2ef727ebe5e07afa8e2572ba22/dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
+        ],
+        "policies": [
+          {
+            "entry": "GUEST id=launcher LANG=launcher cwd=G:\\cwd-launcher fex=0",
+            "import": "IMPORT id=launcher LANG=launcher cwd=G:\\cwd-launcher fex=0",
+            "providerDirectory": "C:\\alloy\\providers\\launcher",
+            "role": "launcher",
+            "variant": "one"
+          },
+          {
+            "entry": "GUEST id=game LANG=game cwd=G:\\cwd-game fex=1",
+            "import": "IMPORT id=game LANG=game cwd=G:\\cwd-game fex=1",
+            "providerDirectory": "C:\\alloy\\providers\\game",
+            "role": "game",
+            "variant": "one"
+          },
+          {
+            "entry": "GUEST id=unknown LANG=unknown cwd=G:\\cwd-unknown fex=0",
+            "import": "IMPORT id=unknown LANG=unknown cwd=G:\\cwd-unknown fex=0",
+            "providerDirectory": "C:\\alloy\\providers\\unknown",
+            "role": "unknown",
+            "variant": "one"
+          }
+        ],
+        "unknownDLLAllowed": false
+      },
+      "secondsToStop": 6.113050958985696,
+      "serviceInstanceChanged": false,
+      "session": {
+        "code": "OK",
+        "driver": "wine",
+        "events": [
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "verifying-runtime",
+            "sequence": 1
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "preparing-prefix",
+            "sequence": 2
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "policy-delivered",
+            "sequence": 3
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "health-ok",
+            "sequence": 4
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "process-inventory",
+            "sequence": 5
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "process-inventory",
+            "sequence": 6
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "process-inventory",
+            "sequence": 7
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "process-inventory",
+            "sequence": 8
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "health-ok",
+            "sequence": 9
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "process-inventory",
+            "sequence": 10
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "process-inventory",
+            "sequence": 11
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "process-inventory",
+            "sequence": 12
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "process-inventory",
+            "sequence": 13
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "process-inventory",
+            "sequence": 14
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "process-inventory",
+            "sequence": 15
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "stop-graceful",
+            "sequence": 16
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "process-inventory",
+            "sequence": 17
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "process-inventory",
+            "sequence": 18
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "process-inventory",
+            "sequence": 19
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "stop-wineserver",
+            "sequence": 20
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "process-inventory",
+            "sequence": 21
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "stop-kill",
+            "sequence": 22
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "tree-empty",
+            "sequence": 23
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "3A258E73-83B1-4C59-A97E-681D178BA9B4",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_0fd50907403981d89450fcc68e1f4a7da7c542159ca178ce2d5d64953d83ead6",
+              "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d"
+            },
+            "kind": "exited",
+            "sequence": 24
+          }
+        ],
+        "exitCode": 0,
+        "healthChecks": 2,
+        "processes": [
+          {
+            "classification": "known",
+            "exited": true,
+            "identifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/1",
+            "imagePath": "G:\\launcher.exe",
+            "native": {
+              "processId": 50646,
+              "startTimeMicroseconds": 681130,
+              "startTimeSeconds": 1791297674
+            },
+            "policyID": "launcher",
+            "unixPID": 50646,
+            "winePID": "0020"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/2",
+            "imagePath": "C:\\windows\\system32\\wineboot.exe",
+            "native": {
+              "processId": 50665,
+              "startTimeMicroseconds": 266831,
+              "startTimeSeconds": 1791297675
+            },
+            "parentIdentifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/1",
+            "policyID": "unknown",
+            "unixPID": 50665,
+            "winePID": "0028"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/3",
+            "imagePath": "C:\\windows\\system32\\winemenubuilder.exe",
+            "native": {
+              "processId": 50668,
+              "startTimeMicroseconds": 344593,
+              "startTimeSeconds": 1791297675
+            },
+            "parentIdentifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/2",
+            "policyID": "unknown",
+            "unixPID": 50668,
+            "winePID": "0030"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/4",
+            "imagePath": "C:\\windows\\system32\\services.exe",
+            "native": {
+              "processId": 50671,
+              "startTimeMicroseconds": 363500,
+              "startTimeSeconds": 1791297675
+            },
+            "parentIdentifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/2",
+            "policyID": "unknown",
+            "unixPID": 50671,
+            "winePID": "0038"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/5",
+            "imagePath": "C:\\windows\\system32\\winedevice.exe",
+            "native": {
+              "processId": 50678,
+              "startTimeMicroseconds": 480445,
+              "startTimeSeconds": 1791297675
+            },
+            "parentIdentifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/4",
+            "policyID": "unknown",
+            "unixPID": 50678,
+            "winePID": "0044"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/6",
+            "imagePath": "C:\\windows\\system32\\plugplay.exe",
+            "native": {
+              "processId": 50687,
+              "startTimeMicroseconds": 662120,
+              "startTimeSeconds": 1791297675
+            },
+            "parentIdentifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/4",
+            "policyID": "unknown",
+            "unixPID": 50687,
+            "winePID": "0068"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/7",
+            "imagePath": "C:\\windows\\system32\\svchost.exe",
+            "native": {
+              "processId": 50690,
+              "startTimeMicroseconds": 777484,
+              "startTimeSeconds": 1791297675
+            },
+            "parentIdentifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/4",
+            "policyID": "unknown",
+            "unixPID": 50690,
+            "winePID": "0080"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/8",
+            "imagePath": "C:\\windows\\system32\\winedevice.exe",
+            "parentIdentifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/4",
+            "policyID": "unknown",
+            "unixPID": 50693,
+            "winePID": "0094"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/9",
+            "imagePath": "C:\\windows\\system32\\winedevice.exe",
+            "parentIdentifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/4",
+            "policyID": "unknown",
+            "unixPID": 50696,
+            "winePID": "00ac"
+          },
+          {
+            "classification": "known",
+            "exited": true,
+            "identifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/10",
+            "imagePath": "G:\\game.exe",
+            "native": {
+              "processId": 50700,
+              "startTimeMicroseconds": 25634,
+              "startTimeSeconds": 1791297676
+            },
+            "parentIdentifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/1",
+            "policyID": "game",
+            "unixPID": 50700,
+            "winePID": "00c8"
+          },
+          {
+            "classification": "unknown",
+            "exited": true,
+            "identifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/11",
+            "imagePath": "G:\\unknown.exe",
+            "native": {
+              "processId": 50702,
+              "startTimeMicroseconds": 74306,
+              "startTimeSeconds": 1791297676
+            },
+            "parentIdentifier": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d/10",
+            "policyID": "unknown",
+            "unixPID": 50702,
+            "winePID": "00d0"
+          }
+        ],
+        "sessionID": "wine-93c9b871ddf14f27829287db4d6952118f5243940b22fce280e1e1fc218e4a4d",
+        "state": "STOPPED"
+      }
+    },
+    {
+      "case": "alternate-runtime",
+      "deadNativeIdentities": 13,
+      "launchRequestSeconds": 0.03659533298923634,
+      "observations": {
+        "mappedFEX": [
+          "/private/var/folders/mx/f36mfntx6cxdr7v6ldg9g5380000gn/T/alloy-runtime-y0vt703b/content/runtime-trees/bd5bf2587073d51fcb979d1949c81fcb72df9748ae0a077fcc40476f0647f804/dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
+        ],
+        "policies": [
+          {
+            "entry": "GUEST id=launcher LANG=launcher cwd=G:\\cwd-launcher fex=0",
+            "import": "IMPORT id=launcher LANG=launcher cwd=G:\\cwd-launcher fex=0",
+            "providerDirectory": "C:\\alloy\\providers\\launcher",
+            "role": "launcher",
+            "variant": "two"
+          },
+          {
+            "entry": "GUEST id=game LANG=game cwd=G:\\cwd-game fex=1",
+            "import": "IMPORT id=game LANG=game cwd=G:\\cwd-game fex=1",
+            "providerDirectory": "C:\\alloy\\providers\\game",
+            "role": "game",
+            "variant": "two"
+          },
+          {
+            "entry": "GUEST id=unknown LANG=unknown cwd=G:\\cwd-unknown fex=0",
+            "import": "IMPORT id=unknown LANG=unknown cwd=G:\\cwd-unknown fex=0",
+            "providerDirectory": "C:\\alloy\\providers\\unknown",
+            "role": "unknown",
+            "variant": "two"
+          }
+        ],
+        "unknownDLLAllowed": false
+      },
+      "secondsToStop": 9.338271959015401,
+      "serviceInstanceChanged": false,
+      "session": {
+        "code": "OK",
+        "driver": "wine",
+        "events": [
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "verifying-runtime",
+            "sequence": 1
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "preparing-prefix",
+            "sequence": 2
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "policy-delivered",
+            "sequence": 3
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "health-ok",
+            "sequence": 4
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "process-inventory",
+            "sequence": 5
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "process-inventory",
+            "sequence": 6
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "process-inventory",
+            "sequence": 7
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "process-inventory",
+            "sequence": 8
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "process-inventory",
+            "sequence": 9
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "process-inventory",
+            "sequence": 10
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "process-inventory",
+            "sequence": 11
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "process-inventory",
+            "sequence": 12
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "health-ok",
+            "sequence": 13
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "process-inventory",
+            "sequence": 14
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "process-inventory",
+            "sequence": 15
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "process-inventory",
+            "sequence": 16
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "process-inventory",
+            "sequence": 17
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "stop-graceful",
+            "sequence": 18
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "process-inventory",
+            "sequence": 19
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "process-inventory",
+            "sequence": 20
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "stop-wineserver",
+            "sequence": 21
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "process-inventory",
+            "sequence": 22
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "stop-kill",
+            "sequence": 23
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "tree-empty",
+            "sequence": 24
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "BFA5929D-59BD-4623-AD92-5230A457AD2C",
+              "generationID": "rtg_10fc5d4f9409cf91ddf5fdcdc03cc84594a7f6f604ab08055ec692ffc5a6a6ac",
+              "launchSpecID": "ls_f1ce7b8b1c074dc4ae63fd3cbc6af44b4346e98240ce8098801689444b1969a0",
+              "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00"
+            },
+            "kind": "exited",
+            "sequence": 25
+          }
+        ],
+        "exitCode": 0,
+        "healthChecks": 2,
+        "processes": [
+          {
+            "classification": "known",
+            "exited": true,
+            "identifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/1",
+            "imagePath": "G:\\launcher.exe",
+            "native": {
+              "processId": 53148,
+              "startTimeMicroseconds": 52250,
+              "startTimeSeconds": 1791297767
+            },
+            "policyID": "launcher",
+            "unixPID": 53148,
+            "winePID": "0020"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/2",
+            "imagePath": "C:\\windows\\system32\\wineboot.exe",
+            "native": {
+              "processId": 53154,
+              "startTimeMicroseconds": 296269,
+              "startTimeSeconds": 1791297767
+            },
+            "parentIdentifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/1",
+            "policyID": "unknown",
+            "unixPID": 53154,
+            "winePID": "0028"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/3",
+            "imagePath": "C:\\windows\\system32\\winemenubuilder.exe",
+            "native": {
+              "processId": 53157,
+              "startTimeMicroseconds": 393833,
+              "startTimeSeconds": 1791297767
+            },
+            "parentIdentifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/2",
+            "policyID": "unknown",
+            "unixPID": 53157,
+            "winePID": "0030"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/4",
+            "imagePath": "C:\\windows\\system32\\services.exe",
+            "native": {
+              "processId": 53160,
+              "startTimeMicroseconds": 412235,
+              "startTimeSeconds": 1791297767
+            },
+            "parentIdentifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/2",
+            "policyID": "unknown",
+            "unixPID": 53160,
+            "winePID": "0038"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/5",
+            "imagePath": "C:\\windows\\system32\\winedevice.exe",
+            "parentIdentifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/4",
+            "policyID": "unknown",
+            "unixPID": 53165,
+            "winePID": "0044"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/6",
+            "imagePath": "C:\\windows\\system32\\plugplay.exe",
+            "native": {
+              "processId": 53168,
+              "startTimeMicroseconds": 562011,
+              "startTimeSeconds": 1791297767
+            },
+            "parentIdentifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/4",
+            "policyID": "unknown",
+            "unixPID": 53168,
+            "winePID": "0068"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/7",
+            "imagePath": "C:\\windows\\system32\\svchost.exe",
+            "native": {
+              "processId": 53171,
+              "startTimeMicroseconds": 613072,
+              "startTimeSeconds": 1791297767
+            },
+            "parentIdentifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/4",
+            "policyID": "unknown",
+            "unixPID": 53171,
+            "winePID": "0080"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/8",
+            "imagePath": "C:\\windows\\system32\\winedevice.exe",
+            "parentIdentifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/4",
+            "policyID": "unknown",
+            "unixPID": 53173,
+            "winePID": "0094"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/9",
+            "imagePath": "C:\\windows\\system32\\winedevice.exe",
+            "parentIdentifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/4",
+            "policyID": "unknown",
+            "unixPID": 53176,
+            "winePID": "00ac"
+          },
+          {
+            "classification": "known",
+            "exited": true,
+            "identifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/10",
+            "imagePath": "G:\\game.exe",
+            "native": {
+              "processId": 53180,
+              "startTimeMicroseconds": 837370,
+              "startTimeSeconds": 1791297767
+            },
+            "parentIdentifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/1",
+            "policyID": "game",
+            "unixPID": 53180,
+            "winePID": "00c8"
+          },
+          {
+            "classification": "unknown",
+            "exited": true,
+            "identifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/11",
+            "imagePath": "G:\\unknown.exe",
+            "native": {
+              "processId": 53187,
+              "startTimeMicroseconds": 239199,
+              "startTimeSeconds": 1791297768
+            },
+            "parentIdentifier": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00/10",
+            "policyID": "unknown",
+            "unixPID": 53187,
+            "winePID": "00d0"
+          }
+        ],
+        "sessionID": "wine-781e15388d94e8add32560a2f8753bf00e0df93a4c97a868d0f44c156b013b00",
+        "state": "STOPPED"
+      }
+    },
+    {
+      "case": "restored-runtime",
+      "deadNativeIdentities": 13,
+      "launchRequestSeconds": 0.03650812502019107,
+      "observations": {
+        "mappedFEX": [
+          "/private/var/folders/mx/f36mfntx6cxdr7v6ldg9g5380000gn/T/alloy-runtime-y0vt703b/content/runtime-trees/714585ac2f15ceadb6f34b67dd680ce6da5a5f2ef727ebe5e07afa8e2572ba22/dlls/libarm64ecfex/aarch64-windows/libarm64ecfex.dll"
+        ],
+        "policies": [
+          {
+            "entry": "GUEST id=launcher LANG=launcher cwd=G:\\cwd-launcher fex=0",
+            "import": "IMPORT id=launcher LANG=launcher cwd=G:\\cwd-launcher fex=0",
+            "providerDirectory": "C:\\alloy\\providers\\launcher",
+            "role": "launcher",
+            "variant": "one"
+          },
+          {
+            "entry": "GUEST id=game LANG=game cwd=G:\\cwd-game fex=1",
+            "import": "IMPORT id=game LANG=game cwd=G:\\cwd-game fex=1",
+            "providerDirectory": "C:\\alloy\\providers\\game",
+            "role": "game",
+            "variant": "one"
+          },
+          {
+            "entry": "GUEST id=unknown LANG=unknown cwd=G:\\cwd-unknown fex=0",
+            "import": "IMPORT id=unknown LANG=unknown cwd=G:\\cwd-unknown fex=0",
+            "providerDirectory": "C:\\alloy\\providers\\unknown",
+            "role": "unknown",
+            "variant": "one"
+          }
+        ],
+        "unknownDLLAllowed": false
+      },
+      "secondsToStop": 9.773392333008815,
+      "serviceInstanceChanged": false,
+      "session": {
+        "code": "OK",
+        "driver": "wine",
+        "events": [
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "verifying-runtime",
+            "sequence": 1
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "preparing-prefix",
+            "sequence": 2
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "policy-delivered",
+            "sequence": 3
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "health-ok",
+            "sequence": 4
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "process-inventory",
+            "sequence": 5
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "process-inventory",
+            "sequence": 6
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "process-inventory",
+            "sequence": 7
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "process-inventory",
+            "sequence": 8
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "health-ok",
+            "sequence": 9
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "process-inventory",
+            "sequence": 10
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "process-inventory",
+            "sequence": 11
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "process-inventory",
+            "sequence": 12
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "process-inventory",
+            "sequence": 13
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "process-inventory",
+            "sequence": 14
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "stop-graceful",
+            "sequence": 15
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "process-inventory",
+            "sequence": 16
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "process-inventory",
+            "sequence": 17
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "stop-wineserver",
+            "sequence": 18
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "process-inventory",
+            "sequence": 19
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "stop-kill",
+            "sequence": 20
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "tree-empty",
+            "sequence": 21
+          },
+          {
+            "code": "OK",
+            "correlation": {
+              "correlationID": "EBE91A66-9050-47BA-81FD-34782A49DEBC",
+              "generationID": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+              "launchSpecID": "ls_343d3a0814fdb848fcefd9206f1e4499b25d3e716903d4fdf21e0958ae63efd3",
+              "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494"
+            },
+            "kind": "exited",
+            "sequence": 22
+          }
+        ],
+        "exitCode": 0,
+        "healthChecks": 2,
+        "processes": [
+          {
+            "classification": "known",
+            "exited": true,
+            "identifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/1",
+            "imagePath": "G:\\launcher.exe",
+            "native": {
+              "processId": 54643,
+              "startTimeMicroseconds": 814772,
+              "startTimeSeconds": 1791297852
+            },
+            "policyID": "launcher",
+            "unixPID": 54643,
+            "winePID": "0020"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/2",
+            "imagePath": "C:\\windows\\system32\\wineboot.exe",
+            "native": {
+              "processId": 54677,
+              "startTimeMicroseconds": 397035,
+              "startTimeSeconds": 1791297853
+            },
+            "parentIdentifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/1",
+            "policyID": "unknown",
+            "unixPID": 54677,
+            "winePID": "0028"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/3",
+            "imagePath": "C:\\windows\\system32\\winemenubuilder.exe",
+            "native": {
+              "processId": 54680,
+              "startTimeMicroseconds": 495879,
+              "startTimeSeconds": 1791297853
+            },
+            "parentIdentifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/2",
+            "policyID": "unknown",
+            "unixPID": 54680,
+            "winePID": "0030"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/4",
+            "imagePath": "C:\\windows\\system32\\services.exe",
+            "native": {
+              "processId": 54683,
+              "startTimeMicroseconds": 517903,
+              "startTimeSeconds": 1791297853
+            },
+            "parentIdentifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/2",
+            "policyID": "unknown",
+            "unixPID": 54683,
+            "winePID": "0038"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/5",
+            "imagePath": "C:\\windows\\system32\\winedevice.exe",
+            "parentIdentifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/4",
+            "policyID": "unknown",
+            "unixPID": 54688,
+            "winePID": "0044"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/6",
+            "imagePath": "C:\\windows\\system32\\plugplay.exe",
+            "native": {
+              "processId": 54691,
+              "startTimeMicroseconds": 676120,
+              "startTimeSeconds": 1791297853
+            },
+            "parentIdentifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/4",
+            "policyID": "unknown",
+            "unixPID": 54691,
+            "winePID": "0064"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/7",
+            "imagePath": "C:\\windows\\system32\\svchost.exe",
+            "native": {
+              "processId": 54694,
+              "startTimeMicroseconds": 739302,
+              "startTimeSeconds": 1791297853
+            },
+            "parentIdentifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/4",
+            "policyID": "unknown",
+            "unixPID": 54694,
+            "winePID": "0080"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/8",
+            "imagePath": "C:\\windows\\system32\\winedevice.exe",
+            "parentIdentifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/4",
+            "policyID": "unknown",
+            "unixPID": 54697,
+            "winePID": "0094"
+          },
+          {
+            "classification": "runtime",
+            "exited": true,
+            "identifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/9",
+            "imagePath": "C:\\windows\\system32\\winedevice.exe",
+            "parentIdentifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/4",
+            "policyID": "unknown",
+            "unixPID": 54700,
+            "winePID": "00ac"
+          },
+          {
+            "classification": "known",
+            "exited": true,
+            "identifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/10",
+            "imagePath": "G:\\game.exe",
+            "native": {
+              "processId": 54705,
+              "startTimeMicroseconds": 983979,
+              "startTimeSeconds": 1791297853
+            },
+            "parentIdentifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/1",
+            "policyID": "game",
+            "unixPID": 54705,
+            "winePID": "00c8"
+          },
+          {
+            "classification": "unknown",
+            "exited": true,
+            "identifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/11",
+            "imagePath": "G:\\unknown.exe",
+            "native": {
+              "processId": 54707,
+              "startTimeMicroseconds": 38840,
+              "startTimeSeconds": 1791297854
+            },
+            "parentIdentifier": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494/10",
+            "policyID": "unknown",
+            "unixPID": 54707,
+            "winePID": "00d0"
+          }
+        ],
+        "sessionID": "wine-50037dd088073f678d6af0afeb2d2e131a0a575219e0b44745bf92d9fa98d494",
+        "state": "STOPPED"
+      }
+    }
+  ],
+  "runtime": {
+    "generationId": "rtg_9be8f28bfe11529d689c33d76bd11aac6c935e3b7662f66e092166566b11847a",
+    "manifestDigest": "sha256:714585ac2f15ceadb6f34b67dd680ce6da5a5f2ef727ebe5e07afa8e2572ba22",
+    "path": "/var/folders/mx/f36mfntx6cxdr7v6ldg9g5380000gn/T/alloy-runtime-y0vt703b/content/runtime-trees/714585ac2f15ceadb6f34b67dd680ce6da5a5f2ef727ebe5e07afa8e2572ba22",
+    "treeDigest": "sha256:25993ff4996a50679f7c52a8401e2771c23a8b3e69b8180f315924fac21ed89a"
+  },
+  "saveSHA256": "dbd50f6c90a4ed5ee71cec12a12f454393f6896e1c4c6a674c0beec58c1fa1d7",
+  "status": "pass"
+}

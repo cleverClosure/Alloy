@@ -136,6 +136,84 @@ model and enabled capability; clients must opt into that development contract.
 The [Wine supervision contract](WINE_SUPERVISION_V1.md) defines complete process
 records, health, stop and recovery. Production launch remains separate work.
 
+## Synthetic Windows sessions
+
+The [complete Windows session handoff](SESSION_E2E_V1.md) and its
+[execution record](../Results/2026-10-06-session-e2e.md) cover #181. A private
+endpoint must have both `fixtureMode: true` and a configured
+`syntheticPayloadRoot`. `info.gameLaunchAvailable` then advertises this explicit
+development driver only on a supported actual host. A normal endpoint continues
+to refuse unsupported production launches; its native fixture is not a fallback.
+
+Use `RuntimeClient.request(_:_:returning:)` for this model:
+
+| Wire method | Request | Result |
+| --- | --- | --- |
+| `launch.synthetic.resolve` | `SyntheticResolveRequest` | `LaunchPreview` |
+| `launch.verify` | `IdentifierRequest` with `wine-preview-...` | `LaunchPreview` |
+| `launch.game` | `IdentifierRequest` with the verified preview ID | `WineSessionSnapshot` |
+| `session.get`, `session.stop` | `IdentifierRequest` with `wine-...` | `WineSessionSnapshot` |
+| `wine.session.list` | Empty JSON object | Array of `WineSessionSnapshot` |
+
+The request source is JSON encoded as Codable `Data` (base64 in the JSON wire
+request). Omit `host`, `createdAt` and `volumes`: the service binds these fields.
+Provide the immutable generation/tree identities, exact G: entry path, known PE
+image hashes, per-process policies and an explicit restricted default. A ready
+synthetic preview remains `productionEligible: false`. Never replace omitted
+production controls with a synthetic policy to make an ordinary title launch.
+
+Decode `driver: "wine"` as `WineSessionSnapshot`; the native fixture's convenience
+methods and `typed-snapshot` command use a different model. Launch admission
+promptly returns STARTING after persisting a pending record for a helper held on
+its startup gate. Expensive content validation and lease acquisition continue
+off the XPC request path. The helper cannot proceed until the fully verified
+generation lease matches its captured birth identity and the complete request is
+durable. The agent then verifies runtime/payload/policy and prepares its prefix.
+STARTING acknowledges admission, not guest execution or successful validation.
+
+Pending STARTING and STOPPING snapshots have an empty event array; clients must
+not require or synthesize nonterminal admission events. The agent's later event
+stream, or a terminal admission failure, supplies the correlated history.
+A later FAILED snapshot may carry `RUNTIME_INTEGRITY`, `PAYLOAD_INTEGRITY`, `POLICY_INTEGRITY` or
+`GENERATION_LEASE_MISSING` before any guest executes. Handle `SESSION_WATCHDOG`,
+`SESSION_INTERRUPTED`, `PROCESS_INVENTORY_INCOMPLETE` and `SESSION_CLEANUP_FAILED`
+explicitly. A stop response acknowledges intent, not completed process cleanup.
+
+Poll the durable session ID through a terminal snapshot. Retained process rows
+should all have `exited: true` after successful cleanup; `processes` is historical
+inventory and does not become empty. Render `identifier` and `parentIdentifier`
+as identity and parentage. Wine/Unix PIDs alone are not stable identities; a
+short-lived process can legitimately lack an observed native birth record.
+Show `unknown` classification and its default policy ID. That policy ID records
+the expected selection; the proof's DLL-attach observations independently check
+what the process received before imports.
+
+After a transport timeout, use the durable ID or `wine.session.list` to find the
+existing session; do not start a replacement with a fresh key. A still-valid
+preview can replay its existing launch. Preview expiry or changed active
+generation can reject later verification without undoing an already acquired
+session lease. Service restart requests existing sessions to stop and reconcile;
+it never promises to resume guest execution automatically.
+
+Wine events carry `sessionID`, `launchSpecID`, `generationID` and the original
+launch request's `correlationID`. Deduplicate by sequence within a session; the
+bounded recent-event ring can begin above sequence one. These events are separate
+from `OperationCursor`. Keep the complete correlation tuple when producing
+reviewed diagnostics. The proof's optional local capture includes private
+`pending.json`, `request.json`, `bootstrap.json`, state/ownership records and
+Wine/server logs when present. It scans these bytes for the endpoint credential
+and never copies the endpoint file. That check does not make full launch inputs,
+host paths or other raw records safe to share. Keep this capture private; use
+the existing #163 review, redaction and export rules to create a separate
+publishable bundle. Never publish the endpoint capability or unreviewed raw
+admission/request records.
+
+Runtime activation and rollback choose immutable files. They must not restore,
+replace or recreate the title's S: save volume. The proof checks saved bytes after
+stop, service death, refusals and both A → B and B → A activation. Its drive
+namespace and provider marker DLLs do not establish host filesystem isolation,
+network confinement, graphics compatibility or production eligibility.
+
 The existing compiler requires at least 8 GiB to produce a local host identity.
 The [standard hosted arm64 runner](https://docs.github.com/en/actions/reference/runners/github-hosted-runners)
 reports 7 GiB, also confirmed by the actual hosted compiler-test log. The full session and integration
