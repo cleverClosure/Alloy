@@ -83,13 +83,13 @@ public struct TrustVerifier: Sendable {
 }
 
 enum ChainValidation {
-    static func root(_ bytes: Data, now: Date) throws -> TrustMetadata {
+    static func root(_ bytes: Data, now: Date, allowExpired: Bool = false) throws -> TrustMetadata {
         let envelope = try SignedEnvelope.decode(bytes)
         let root = try TrustMetadata.decode(envelope.decodedPayload())
         try root.validateRoot()
         let (keys, threshold) = try root.authorized(.root)
         _ = try envelope.verify(type: TrustRole.root.payloadType, keys: keys, threshold: threshold)
-        try requireFresh(root.expiresAt, now: now, role: "root")
+        if !allowExpired { try requireFresh(root.expiresAt, now: now, role: "root") }
         return root
     }
 
@@ -130,11 +130,11 @@ enum ChainValidation {
         let revokedKeys = state.revokedKeys.union(revocation.revokedKeys!)
         // Metadata-signing keys must be replaced via the root role. A revocation
         // signer may withdraw artifact keys, never disable the update authority.
-        let artifactKeys = Set([TrustRole.profiles, .manifests, .releases, .evidence].flatMap {
+        let metadataKeys = Set([TrustRole.root, .targets, .snapshot, .timestamp, .revocation].flatMap {
             root.roles?[$0.rawValue]?.keyIds ?? []
         })
         let newlyRevoked = Set(revocation.revokedKeys!).subtracting(state.revokedKeys)
-        guard newlyRevoked.isSubset(of: artifactKeys) else { throw TrustError.wrongRole }
+        guard newlyRevoked.isDisjoint(with: metadataKeys) else { throw TrustError.wrongRole }
         let verifier = TrustVerifier(
             root: root, metadata: metadata, revokedKeys: revokedKeys,
             revokedProfiles: state.revokedProfiles.union(revocation.revokedProfiles!),
