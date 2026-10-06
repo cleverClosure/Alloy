@@ -13,7 +13,7 @@ import uuid
 from .common import Invalid, MAX_ARTIFACT, decode, file_bytes, file_digest, hashed, require, safe_file
 from .evidence import SCOPE, seal, validate
 from .identity import archive_sources, host_identity, input_identities, requirements_met, runtime_manifest, scheduler_identity, source_identity
-from .scenario import TOKENS, runtime_digest
+from .scenario import TOKENS, expected_exit, runtime_digest
 from .storage import atomic_json, private_directory
 
 LOG_LIMIT = 65536
@@ -137,6 +137,7 @@ def execute(job, queue, parent_fd, inherited):
         if mode == 'flaky':
             mode = 'error' if job['attempts'] == 1 else 'clean'
         values = {'runtime': str(safe_file(job['runtime_root'], definition['runtime']['executable'])),
+                  'runtime_root': job['runtime_root'],
                   'subject': str(safe_file(job['input_root'], definition['subject']['path'])),
                   'work': str(output), 'control': mode, 'attempt': str(job['attempts'])}
         values.update({'input:' + key: str(safe_file(job['input_root'], entry['path'])) for key, entry in definition['inputs'].items()})
@@ -150,12 +151,13 @@ def execute(job, queue, parent_fd, inherited):
         remaining = definition['timeout_seconds'] - (time.monotonic() - started)
         timeout = min(step['timeout_seconds'], max(0.01, 3 if cleanup else remaining))
         code, elapsed, failure = run_program(argv, environment, output, output / f"steps/{step['id']}.stdout.log",
-            output / f"steps/{step['id']}.stderr.log", timeout, (lambda: None) if cleanup else stop, inherited)
+            output / f"steps/{step['id']}.stderr.log", timeout, (lambda: None) if cleanup else stop, inherited,
+            log_limit=(1 << 20) if definition['runtime']['kind'] == 'wine' else LOG_LIMIT)
         record['steps'].append({'id': step['id'], 'argv': argv, 'exit_code': code, 'elapsed_seconds': elapsed})
         if failure:
             state = failure[0] if failure[0] in ('CANCELLED', 'DEADLINE', 'INTERRUPTED') else 'FAILED'
             fail(state, failure[0], failure[1])
-        elif code != step['expected_exit']:
+        elif not expected_exit(step, code):
             fail('FAILED', 'EXIT_NONZERO', f"{step['id']} exited {code}; expected {step['expected_exit']}")
     event('SETUP')
     prepared = False

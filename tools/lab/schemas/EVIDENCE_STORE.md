@@ -11,7 +11,9 @@ are identified by digest; the lab does not duplicate whole runtime generations.
 
 Publication writes and fsyncs a private temporary file, links it exclusively into
 the object namespace, then commits a FULL-synchronous SQLite index transaction.
-Objects are read-only and never overwritten. A crash may leave an orphan object,
+A bounded kernel file lease serializes initial journal/schema setup across
+processes; normal WAL transactions remain concurrent. Objects are read-only and
+never overwritten. A crash may leave an orphan object,
 but cannot expose a partially indexed record. Reads rehash objects and reconstruct
 the bounded artifact tree for independent evidence validation. Existing corrupt
 objects are refused. Checksums detect accidental corruption; they are not signatures

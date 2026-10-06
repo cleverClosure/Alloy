@@ -11,7 +11,7 @@ import uuid
 from .common import MAX_ARTIFACT, canonical, decode, digest, file_bytes, file_digest, hashed, load, require, safe_file
 from .comparison import compare, freeze, key, validate_baseline
 from .evidence import validate
-from .storage import private_directory, sync_directory
+from .storage import database_setup, private_directory, sync_directory
 
 
 CURRENT_BASELINE = object()
@@ -21,16 +21,10 @@ class Store:
     def __init__(self, root):
         self.root = private_directory(root)
         self.objects = private_directory(self.root / 'objects')
-        path = self.root / 'index.sqlite3'
-        fd = os.open(path, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
-        os.close(fd)
-        self.db = sqlite3.connect(path, timeout=5, isolation_level=None)
-        self.db.row_factory = sqlite3.Row
-        self.db.execute('PRAGMA journal_mode=WAL')
-        self.db.execute('PRAGMA synchronous=FULL')
-        self.db.execute('CREATE TABLE IF NOT EXISTS records (digest TEXT PRIMARY KEY, run_id TEXT UNIQUE NOT NULL, key TEXT NOT NULL, created REAL NOT NULL)')
-        self.db.execute('CREATE TABLE IF NOT EXISTS baselines (key TEXT PRIMARY KEY, digest TEXT NOT NULL, revision INTEGER NOT NULL)')
-        self.db.execute('CREATE TABLE IF NOT EXISTS baseline_history (key TEXT NOT NULL, revision INTEGER NOT NULL, digest TEXT NOT NULL, replaced TEXT, created REAL NOT NULL, PRIMARY KEY(key,revision))')
+        with database_setup(self.root, 'index.sqlite3') as self.db:
+            self.db.execute('CREATE TABLE IF NOT EXISTS records (digest TEXT PRIMARY KEY, run_id TEXT UNIQUE NOT NULL, key TEXT NOT NULL, created REAL NOT NULL)')
+            self.db.execute('CREATE TABLE IF NOT EXISTS baselines (key TEXT PRIMARY KEY, digest TEXT NOT NULL, revision INTEGER NOT NULL)')
+            self.db.execute('CREATE TABLE IF NOT EXISTS baseline_history (key TEXT NOT NULL, revision INTEGER NOT NULL, digest TEXT NOT NULL, replaced TEXT, created REAL NOT NULL, PRIMARY KEY(key,revision))')
 
     def close(self):
         self.db.close()

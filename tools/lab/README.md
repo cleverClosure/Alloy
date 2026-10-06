@@ -17,5 +17,5 @@ The [v2 contracts](schemas/CONTRACTS.md) define scenarios and evidence. The
 [scheduler contract](schemas/SCHEDULER.md) documents durable submission, shared/
 exclusive leases, cancellation, deadlines and process-death recovery. The
 [evidence store](schemas/EVIDENCE_STORE.md) specifies immutable objects, explicit
-frozen baselines and honest retry histories. The final milestone adds the guest
-proof and consumer handoff.
+frozen baselines and honest retry histories. The [consumer handoff](schemas/HANDOFF.md)
+covers Wine guests, certification/performance submissions and shared host leases.

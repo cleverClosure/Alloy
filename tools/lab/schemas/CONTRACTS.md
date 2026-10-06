@@ -38,7 +38,7 @@ The observed host class covers that environment separately. Wine callers must
 inventory every staged runtime component; a launcher-only digest is insufficient.
 
 Each command is an argv array whose executable is a declared runtime file. There
-is no shell interpolation. Tokens are `{runtime}`, `{runtime_file:ID}`, `{subject}`,
+is no shell interpolation. Tokens are `{runtime}`, `{runtime_root}`, `{runtime_file:ID}`, `{subject}`,
 `{input:ID}`, `{work}`, `{control}` and `{attempt}`. They are expanded by the runner,
 never by a shell. Setup, run and teardown are ordered, with at least one run step.
 Every step has its own timeout and expected exit status; total time is bounded.

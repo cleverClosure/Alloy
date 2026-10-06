@@ -68,6 +68,9 @@ def command_worker(args):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest='command', required=True)
+    wine = commands.add_parser('wine-scenario')
+    wine.add_argument('--runtime-root', required=True, type=Path)
+    wine.add_argument('--subject', required=True, type=Path)
     for name in ('validate-scenario', 'migrate-v1'):
         command = commands.add_parser(name)
         command.add_argument('path', type=Path)
@@ -120,6 +123,10 @@ def main():
     internal.add_argument('argv', nargs=argparse.REMAINDER)
     args = parser.parse_args()
     try:
+        if args.command == 'wine-scenario':
+            from alloy_lab.wine import scenario
+            print(json.dumps(scenario(args.runtime_root, args.subject), sort_keys=True, indent=2))
+            return 0
         if args.command == '_worker':
             return worker(args.root, args.job, args.owner, args.parent_fd, args.job_fd, args.host_fd)
         if args.command == '_command-worker':

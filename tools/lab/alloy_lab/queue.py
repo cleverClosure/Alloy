@@ -11,7 +11,7 @@ import uuid
 from .common import canonical, digest, hashed, identifier, number, require
 from .locking import Lease
 from .scenario import validate
-from .storage import private_directory
+from .storage import database_setup, private_directory
 
 TERMINAL = ('COMPLETED', 'FAILED', 'INCOMPARABLE', 'CANCELLED', 'DEADLINE', 'INTERRUPTED')
 
@@ -21,38 +21,31 @@ class Queue:
         self.root = private_directory(root)
         self.leases = private_directory(self.root / 'leases')
         self.runs = private_directory(self.root / 'runs')
-        path = self.root / 'queue.sqlite3'
-        require(not path.is_symlink(), 'queue:symlink')
-        fd = os.open(path, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
-        os.close(fd)
-        self.db = sqlite3.connect(path, timeout=5, isolation_level=None)
-        self.db.row_factory = sqlite3.Row
-        require(self.db.execute('PRAGMA user_version').fetchone()[0] in (0, 1, 2), 'queue:unsupported_version')
-        self.db.execute('PRAGMA journal_mode=WAL')
-        self.db.execute('PRAGMA synchronous=FULL')
-        self.db.execute('PRAGMA foreign_keys=ON')
-        self.db.execute('''CREATE TABLE IF NOT EXISTS jobs (
-            id TEXT PRIMARY KEY, submitted REAL NOT NULL, priority INTEGER NOT NULL, deadline REAL NOT NULL,
-            state TEXT NOT NULL, cancel_requested INTEGER NOT NULL DEFAULT 0, definition TEXT NOT NULL,
-            source_sha256 TEXT NOT NULL, definition_sha256 TEXT NOT NULL, input_root TEXT NOT NULL, runtime_root TEXT NOT NULL, control TEXT NOT NULL,
-            owner TEXT, failure TEXT, result TEXT, attempts INTEGER NOT NULL DEFAULT 0)''')
-        self.db.execute('''CREATE TABLE IF NOT EXISTS attempts (
-            job_id TEXT NOT NULL REFERENCES jobs(id), number INTEGER NOT NULL, owner TEXT NOT NULL,
-            started REAL NOT NULL, finished REAL, state TEXT NOT NULL, evidence TEXT, failure TEXT,
-            PRIMARY KEY(job_id, number))''')
-        with self.transaction():
-            if self.db.execute('PRAGMA user_version').fetchone()[0] < 2:
-                for column in ('classification TEXT', 'history_summary TEXT'):
-                    self.db.execute('ALTER TABLE jobs ADD COLUMN ' + column)
-                for column in ('record_digest TEXT', 'comparison TEXT'):
-                    self.db.execute('ALTER TABLE attempts ADD COLUMN ' + column)
-                self.db.execute('PRAGMA user_version=2')
-                for row in self.db.execute("SELECT job_id,number,state,failure FROM attempts WHERE state!='RUNNING'").fetchall():
-                    comparison = {'verdict': 'UNBASELINED' if row['state'] == 'COMPLETED' else row['state'],
-                                  'reasons': [row['failure']] if row['failure'] else [], 'baseline': None}
-                    comparison['integrity_sha256'] = hashed(comparison)
-                    self.db.execute('UPDATE attempts SET comparison=? WHERE job_id=? AND number=?',
-                                    (canonical(comparison).decode(), row['job_id'], row['number']))
+        with database_setup(self.root, 'queue.sqlite3') as self.db:
+            require(self.db.execute('PRAGMA user_version').fetchone()[0] in (0, 1, 2), 'queue:unsupported_version')
+            self.db.execute('PRAGMA foreign_keys=ON')
+            self.db.execute('''CREATE TABLE IF NOT EXISTS jobs (
+                id TEXT PRIMARY KEY, submitted REAL NOT NULL, priority INTEGER NOT NULL, deadline REAL NOT NULL,
+                state TEXT NOT NULL, cancel_requested INTEGER NOT NULL DEFAULT 0, definition TEXT NOT NULL,
+                source_sha256 TEXT NOT NULL, definition_sha256 TEXT NOT NULL, input_root TEXT NOT NULL, runtime_root TEXT NOT NULL, control TEXT NOT NULL,
+                owner TEXT, failure TEXT, result TEXT, attempts INTEGER NOT NULL DEFAULT 0)''')
+            self.db.execute('''CREATE TABLE IF NOT EXISTS attempts (
+                job_id TEXT NOT NULL REFERENCES jobs(id), number INTEGER NOT NULL, owner TEXT NOT NULL,
+                started REAL NOT NULL, finished REAL, state TEXT NOT NULL, evidence TEXT, failure TEXT,
+                PRIMARY KEY(job_id, number))''')
+            with self.transaction():
+                if self.db.execute('PRAGMA user_version').fetchone()[0] < 2:
+                    for column in ('classification TEXT', 'history_summary TEXT'):
+                        self.db.execute('ALTER TABLE jobs ADD COLUMN ' + column)
+                    for column in ('record_digest TEXT', 'comparison TEXT'):
+                        self.db.execute('ALTER TABLE attempts ADD COLUMN ' + column)
+                    self.db.execute('PRAGMA user_version=2')
+                    for row in self.db.execute("SELECT job_id,number,state,failure FROM attempts WHERE state!='RUNNING'").fetchall():
+                        comparison = {'verdict': 'UNBASELINED' if row['state'] == 'COMPLETED' else row['state'],
+                                      'reasons': [row['failure']] if row['failure'] else [], 'baseline': None}
+                        comparison['integrity_sha256'] = hashed(comparison)
+                        self.db.execute('UPDATE attempts SET comparison=? WHERE job_id=? AND number=?',
+                                        (canonical(comparison).decode(), row['job_id'], row['number']))
 
     def close(self):
         self.db.close()

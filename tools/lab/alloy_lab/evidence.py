@@ -142,7 +142,8 @@ def validate(record, artifact_root=None):
                 require(runtime_digest(manifest) == provenance['runtime'][which], 'provenance:runtime_archive_mismatch')
     if record["state"] == "COMPLETED":
         require(not record["failures"] and ids == list(expected_steps), "completed:steps_or_failures")
-        require(all(step["exit_code"] == expected_steps[step["id"]]["expected_exit"] for step in record["steps"]), "completed:exit")
+        from .scenario import expected_exit
+        require(all(expected_exit(expected_steps[step["id"]], step["exit_code"]) for step in record["steps"]), "completed:exit")
         require(set(record["observed"]) == {item["id"] for item in scenario["observables"]}, "completed:missing_observation")
         artifacts = {entry["path"]: entry for entry in record["artifacts"]}
         results = {step["id"]: step for step in record["steps"]}

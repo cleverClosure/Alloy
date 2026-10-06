@@ -64,6 +64,14 @@ def requirements_met(scenario, host):
 
 def runtime_manifest(scenario, root):
     expected = scenario['runtime']
+    if expected['kind'] == 'wine':
+        from .wine import inventory
+        actual = inventory(root)
+        require({entry['path'] for entry in actual.values()} ==
+                {entry['path'] for entry in expected['files'].values()}, 'wine:runtime_inventory_changed')
+        by_path = {entry['path']: entry for entry in actual.values()}
+        return {'kind': expected['kind'], 'executable': expected['executable'],
+                'files': {name: by_path[entry['path']] for name, entry in expected['files'].items()}}
     observed = {'kind': expected['kind'], 'executable': expected['executable'], 'files': {}}
     for name, entry in expected['files'].items():
         observed['files'][name] = {'path': entry['path'], **file_digest(safe_file(root, entry['path']))}
