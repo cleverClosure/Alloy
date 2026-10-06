@@ -72,3 +72,16 @@ adds complete child inventory, unknown-child reporting, generation lease health,
 staged stop, watchdog and crash reconciliation. The full-tier
 `runtime-service-wine-tree` suite exercises real nested Windows guests and
 retains short-lived children in its inventory.
+
+The [complete synthetic session contract](Specs/SESSION_E2E_V1.md) defines the
+final separate-client handoff: an ARM64 launcher starts an x64 game, which starts
+an unlisted ARM64 child. Three provider DLLs check policy during imports; the
+game writes a persistent S: save. `runtime-service-session-e2e` runs the policy,
+stop, service-crash, integrity-refusal and A → B → A runtime-activation cases.
+Its [execution record](Results/2026-10-06-session-e2e.md) records measured results
+and the scope of the evidence. The spec includes package-building commands,
+required test-runner environment and private diagnostic handling.
+
+These are opt-in unsigned development fixtures. Their C/G/S/T drive plan is a
+namespace, not host filesystem authorization. The marker providers do not render
+graphics, and the proof does not establish production or storefront game support.
