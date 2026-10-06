@@ -10,6 +10,7 @@ struct ReplacementJournal: Codable {
     let beforeArchiveID: String
     let before: TreeInventory
     let after: TreeInventory
+    var settingsVersion: SettingsVersion?
 }
 
 struct ReplacementRequest {
@@ -17,6 +18,7 @@ struct ReplacementRequest {
     let before: ArchiveRecord
     let after: TreeInventory
     let operation: String
+    var settingsVersion: SettingsVersion?
 }
 
 extension TitleVolumeStore {
@@ -41,7 +43,8 @@ extension TitleVolumeStore {
         }
         try fault?("\(operation).after-stage")
         let journal = ReplacementJournal(id: id, gameID: gameID, kind: kind,
-                                          beforeArchiveID: before.id, before: before.inventory, after: after)
+                                          beforeArchiveID: before.id, before: before.inventory, after: after,
+                                          settingsVersion: request.settingsVersion)
         try transaction.write("journal.json", data: checked(journal))
         try fault?("\(operation).after-journal")
         let title = try volumes.child(gameID)
@@ -51,6 +54,10 @@ extension TitleVolumeStore {
         try title.sync()
         try transaction.sync()
         try fault?("\(operation).after-sync")
+        if let version = request.settingsVersion {
+            try publishSettings(version)
+            try fault?("\(operation).after-metadata")
+        }
         try transaction.write("committed.json", data: checked(journal))
         try fault?("\(operation).after-commit")
         try transactions.remove(id)
@@ -63,23 +70,7 @@ extension TitleVolumeStore {
                 try identifier(id)
                 let transaction = try transactions.child(id)
                 if try transaction.information("journal.json") != nil {
-                    let journal = try decodeChecked(ReplacementJournal.self, transaction.read("journal.json"))
-                    guard journal.id == id, [.saves, .settings].contains(journal.kind) else {
-                        throw VolumeError.integrityMismatch
-                    }
-                    try quiet(journal.gameID) {
-                        let before = try archive(journal.gameID, journal.beforeArchiveID)
-                        guard before.inventory == journal.before, before.volumeKind == journal.kind else {
-                            throw VolumeError.integrityMismatch
-                        }
-                        let volume = try resolve(journal.gameID, journal.kind, nil, in: loadRegistry())
-                        let current = try directory(volume).inventory(limit: volume.quota)
-                        guard current == journal.before || current == journal.after else {
-                            throw VolumeError.integrityMismatch
-                        }
-                        // No automatic restore: keep the atomic result present at the public path.
-                        try transactions.remove(id)
-                    }
+                    try recoverReplacement(id, transaction: transaction, transactions: transactions)
                 } else {
                     // The swap is impossible until a complete journal has been durably published.
                     try transactions.remove(id)
@@ -101,4 +92,29 @@ extension TitleVolumeStore {
             }
         }
     }
+    private func recoverReplacement(_ id: String, transaction: Directory, transactions: Directory) throws {
+        let journal = try decodeChecked(ReplacementJournal.self, transaction.read("journal.json"))
+        guard journal.id == id, [.saves, .settings].contains(journal.kind) else {
+            throw VolumeError.integrityMismatch
+        }
+        try quiet(journal.gameID) {
+            let before = try archive(journal.gameID, journal.beforeArchiveID)
+            guard before.inventory == journal.before, before.volumeKind == journal.kind else {
+                throw VolumeError.integrityMismatch
+            }
+            let volume = try resolve(journal.gameID, journal.kind, nil, in: loadRegistry())
+            let current = try directory(volume).inventory(limit: volume.quota)
+            guard current == journal.before || current == journal.after else {
+                throw VolumeError.integrityMismatch
+            }
+            if current == journal.after, let version = journal.settingsVersion {
+                guard journal.kind == .settings, version.gameID == journal.gameID,
+                      version.inventory == journal.after else { throw VolumeError.integrityMismatch }
+                try publishSettings(version)
+            }
+            // No automatic restore: keep the atomic result present at the public path.
+            try transactions.remove(id)
+        }
+    }
+
 }
