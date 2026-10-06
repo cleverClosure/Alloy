@@ -84,7 +84,7 @@ its acquired lease even if its preview later expires.
 
 `proof_support.ServiceFixture` and `launch_fixture.launch_input` are committed
 Python fixture entry points. Add `runtime/session-service` to `sys.path` in a
-consumer's bounded test. `build()` locates all three Swift executables.
+consumer's bounded test. `build()` locates the package executables.
 
 ```python
 from proof_support import PACKAGE, ServiceFixture, build
@@ -133,7 +133,8 @@ in the wire contract. Pull subscriptions have no callback lifetime to recover.
 The fixed fixture proves local ownership, recovery and lease behavior. The
 explicit [synthetic Wine contract](WINE_LAUNCH_V1.md) adds a separate Wine session
 model and enabled capability; clients must opt into that development contract.
-Complete Wine child supervision and production launch remain separate work.
+The [Wine supervision contract](WINE_SUPERVISION_V1.md) defines complete process
+records, health, stop and recovery. Production launch remains separate work.
 
 The existing compiler requires at least 8 GiB to produce a local host identity.
 The [standard hosted arm64 runner](https://docs.github.com/en/actions/reference/runners/github-hosted-runners)

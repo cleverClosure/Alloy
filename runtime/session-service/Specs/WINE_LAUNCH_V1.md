@@ -68,6 +68,6 @@ compiler accepts. It advertises synthetic development capability, not certified
 or production game support. Clients must distinguish Wine snapshots (`driver:
 wine`) from the unchanged native fixture snapshots and honor terminal error codes.
 
-The current milestone includes root-process watchdog and prefix-specific server
-cleanup. Complete child inventory, staged stop, health and restart reconciliation
-are the next milestone; the final process-tree proof is not credited here.
+Complete process inventory, health, staged stop and restart reconciliation are
+specified in [Wine supervision](WINE_SUPERVISION_V1.md). The final provider/save
+end-to-end proof is a separate milestone.

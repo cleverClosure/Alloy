@@ -67,4 +67,8 @@ reproducible prefixes, title-volume mappings and private Wine servers for #181.
 The [Wine launch protocol](Specs/WINE_LAUNCH_V1.md) enables verified synthetic
 x64 launches under inherited v2 policy. Its [proof](Results/2026-10-06-wine-launch.md)
 uses a separate XPC client and tests corrupt snapshots and missing leases.
-Ordinary profile launches remain gated; complete child supervision follows next.
+Ordinary profile launches remain gated. [Wine supervision](Specs/WINE_SUPERVISION_V1.md)
+adds complete child inventory, unknown-child reporting, generation lease health,
+staged stop, watchdog and crash reconciliation. The full-tier
+`runtime-service-wine-tree` suite exercises real nested Windows guests and
+retains short-lived children in its inventory.
