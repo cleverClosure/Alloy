@@ -58,3 +58,9 @@ the unchanged launch compiler. The test runner reports a named SKIP otherwise;
 `run-launch-host-proof.py` still runs and verifies truthful host identity and
 refusal. Hosted machines below that minimum do not receive session coverage
 credit. Local full-proof results remain separate from hosted refusal evidence.
+
+## Wine session environment
+
+The [session environment contract](Specs/SESSION_ENVIRONMENT_V1.md) adds cached,
+reproducible prefixes, title-volume mappings and private Wine servers for #181.
+The launch API remains gated while policy execution and supervision are added.
