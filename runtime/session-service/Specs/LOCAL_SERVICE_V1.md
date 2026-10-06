@@ -45,7 +45,9 @@ new required semantics require a new supported version.
 `info` takes `{}` and returns `ServiceInfo`: instance UUID, protocol version,
 service PID/UID, supported methods and capability booleans. PID is informational;
 it never authorizes a session or lease. Every restart creates a new instance UUID.
-`developmentOnly` is true and `gameLaunchAvailable` is false.
+`developmentOnly` is true. `gameLaunchAvailable` is false on baseline endpoints;
+the explicit [synthetic Wine driver](WINE_LAUNCH_V1.md) advertises its bounded
+development capability when configured on an eligible host.
 
 Replies contain a stable code, message key, support code and retryable bit.
 Boundary errors do not echo arbitrary input, paths, credentials or underlying
@@ -135,7 +137,7 @@ reply. Neither hook is activated by a profile or ordinary operation payload.
 | `host.info` | empty | HostCapabilities from the actual local host |
 | `launch.resolve` | DevelopmentLaunchInput | LaunchPreview |
 | `launch.verify` | IdentifierRequest (preview ID) | reverified LaunchPreview |
-| `launch.game` | IdentifierRequest (preview ID) | always LAUNCH_NOT_RUNTIME_READY |
+| `launch.game` | IdentifierRequest (preview ID) | ordinary profile: LAUNCH_NOT_RUNTIME_READY; synthetic: WineSessionSnapshot |
 | `fixture.start` | FixtureStart | SessionSnapshot |
 | `session.get`, `session.stop` | IdentifierRequest (session ID) | SessionSnapshot |
 | `session.list` | empty | SessionSnapshot array |
@@ -181,7 +183,9 @@ one-second wait, exact-identity KILL, and a two-second exit wait. Every fixture
 also has a 20-second hard watchdog; expiry exits 43 and reports FAILED, with an
 EXITED_WATCHDOG node. Startup failure exits 42 without acquiring a lease. The
 fixed fixture is cooperative code, not arbitrary-process containment or Wine
-policy enforcement. The service does not invoke Wine or FEX.
+policy enforcement. The native fixture never invokes Wine/FEX. The separate
+[synthetic Wine driver](WINE_LAUNCH_V1.md) uses its own agent, preview format and
+opt-in configuration; ordinary profile data cannot select it.
 
 Snapshots use RUNNING, STOPPING, STOPPED, SUCCEEDED, FAILED or INTERRUPTED. Poll
 until a terminal state **and** an empty `liveNodes` array; an agent's exit alone

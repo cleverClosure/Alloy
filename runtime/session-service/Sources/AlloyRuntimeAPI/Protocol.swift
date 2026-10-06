@@ -18,6 +18,12 @@ public enum RuntimeCode: String, Codable, Sendable {
     case conflict = "CONFLICT"
     case notFound = "NOT_FOUND"
     case notReady = "LAUNCH_NOT_RUNTIME_READY"
+    case runtimeIntegrity = "RUNTIME_INTEGRITY"
+    case payloadIntegrity = "PAYLOAD_INTEGRITY"
+    case policyIntegrity = "POLICY_INTEGRITY"
+    case leaseMissing = "GENERATION_LEASE_MISSING"
+    case watchdog = "SESSION_WATCHDOG"
+    case cleanupFailed = "SESSION_CLEANUP_FAILED"
     case failed = "OPERATION_FAILED"
 }
 
@@ -91,13 +97,14 @@ public struct ServiceInfo: Codable, Sendable {
     public let gameLaunchAvailable: Bool
     public let methods: [String]
 
-    public init(instanceID: String, processID: Int32, userID: UInt32, methods: [String]) {
+    public init(instanceID: String, processID: Int32, userID: UInt32, methods: [String],
+                gameLaunchAvailable: Bool = false) {
         self.instanceID = instanceID
         protocolVersion = 1
         self.processID = processID
         self.userID = userID
         developmentOnly = true
-        gameLaunchAvailable = false
+        self.gameLaunchAvailable = gameLaunchAvailable
         self.methods = methods
     }
 }
