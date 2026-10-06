@@ -85,6 +85,17 @@ def main():
     work = commands.add_parser('work')
     work.add_argument('root', type=Path)
     work.add_argument('--drain', action='store_true')
+    work.add_argument('--require-clean', action='store_true')
+    baseline = commands.add_parser('baseline-set')
+    baseline.add_argument('root', type=Path)
+    baseline.add_argument('records', nargs='+')
+    baseline.add_argument('--replace')
+    for name in ('evidence', 'compare'):
+        command = commands.add_parser(name)
+        command.add_argument('root', type=Path)
+        command.add_argument('record')
+        if name == 'compare':
+            command.add_argument('--baseline')
     for name in ('status', 'cancel', 'recover'):
         command = commands.add_parser(name)
         command.add_argument('root', type=Path)
@@ -121,6 +132,22 @@ def main():
             if not 0 < args.timeout <= 7200:
                 raise ValueError('lock-run:timeout')
             return lock_run(args)
+        if args.command in ('baseline-set', 'evidence', 'compare'):
+            from alloy_lab.store import Store
+            store = Store(args.root / 'evidence-store')
+            try:
+                if args.command == 'baseline-set':
+                    print(json.dumps({'baseline': store.set_baseline(args.records, args.replace)}))
+                    return 0
+                record = store.record(args.record)
+                if args.command == 'evidence':
+                    print(json.dumps(record, sort_keys=True))
+                    return 0
+                result = store.compare(record, args.baseline) if args.baseline else store.compare(record)
+                print(json.dumps(result, sort_keys=True))
+                return 0 if result['verdict'] == 'CLEAN' else 1
+            finally:
+                store.close()
         if args.command == 'validate-evidence':
             value = validate_evidence(load(args.path), args.artifacts)
             print(json.dumps({'valid': True, 'run_id': value['run_id']}))
@@ -154,8 +181,10 @@ def main():
                         if job is None:
                             break
                         row = queue.get(job)
-                        print(json.dumps({key: row[key] for key in ('id', 'state', 'result', 'failure')}, sort_keys=True))
-                        failed = failed or row['state'] != 'COMPLETED'
+                        print(json.dumps({key: row[key] for key in ('id', 'state', 'result', 'failure', 'classification', 'history_summary')}, sort_keys=True))
+                        failed = failed or (row['state'] != 'QUEUED' and
+                            (row['state'] != 'COMPLETED' or row['classification'] not in ('CLEAN', 'UNBASELINED') or
+                             (args.require_clean and row['classification'] != 'CLEAN')))
                         if not args.drain:
                             break
                     return 1 if failed else 0

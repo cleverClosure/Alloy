@@ -127,6 +127,19 @@ def validate(record, artifact_root=None):
             observed = file_digest(safe_file(artifact_root, entry["path"]))
             require(observed == {key: entry[key] for key in ("sha256", "bytes")}, "artifact:corrupt")
     require(len(set(paths)) == len(paths) and total <= 64 << 20, "artifacts:duplicate_or_large")
+    source_entries = {entry['path'][8:]: {key: entry[key] for key in ('sha256', 'bytes')}
+                      for entry in record['artifacts'] if entry['path'].startswith('sources/')}
+    if source_entries:
+        require(hashed(source_entries) == provenance['runner']['sha256'], 'provenance:source_archive_mismatch')
+        require(source_entries.get('scheduler.py', {}).get('sha256') == provenance['scheduler']['sha256'],
+                'provenance:scheduler_archive_mismatch')
+    if artifact_root is not None:
+        from .scenario import runtime_digest
+        for which in ('before', 'after'):
+            name = f'provenance/runtime-{which}.json'
+            if name in {entry['path'] for entry in record['artifacts']}:
+                manifest = decode(file_bytes(safe_file(artifact_root, name)))
+                require(runtime_digest(manifest) == provenance['runtime'][which], 'provenance:runtime_archive_mismatch')
     if record["state"] == "COMPLETED":
         require(not record["failures"] and ids == list(expected_steps), "completed:steps_or_failures")
         require(all(step["exit_code"] == expected_steps[step["id"]]["expected_exit"] for step in record["steps"]), "completed:exit")

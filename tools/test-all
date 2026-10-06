@@ -645,6 +645,13 @@ REGISTRY: list[Suite] = [
         description="Durable queue, real shared/exclusive workers, cancellation and scheduler-death recovery",
         probe=every(need_commands("python3", "sysctl"), need_paths("tools/lab/alloy_lab/scheduler.py")),
     ),
+    Suite(
+        id="lab-evidence-store", tier="fast", cwd=".",
+        cmd=("python3", "-B", "-m", "unittest", "discover", "-s", "tools/lab/tests", "-p", "test_evidence_store.py", "-v"),
+        timeout=120,
+        description="Immutable evidence, frozen baselines, seeded regressions, flaky retries and torn-publication controls",
+        probe=every(need_commands("python3", "sysctl"), need_paths("tools/lab/alloy_lab/store.py")),
+    ),
     # --- runtime/trust ---------------------------------------------------
     Suite(
         id="trust-swift-test", tier="fast", cwd=".",
@@ -962,7 +969,7 @@ REGISTRY: list[Suite] = [
 # Pinned by hand, not derived from len(REGISTRY) — see "Adding a suite" above.
 # A constant computed from the list it is meant to audit could never disagree
 # with it.
-REGISTRY_SUITE_COUNT = 60
+REGISTRY_SUITE_COUNT = 61
 
 
 # ---------------------------------------------------------------------------

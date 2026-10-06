@@ -15,5 +15,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools/lab/tests -v
 
 The [v2 contracts](schemas/CONTRACTS.md) define scenarios and evidence. The
 [scheduler contract](schemas/SCHEDULER.md) documents durable submission, shared/
-exclusive leases, cancellation, deadlines and process-death recovery. Subsequent
-milestones add the evidence store/comparison/retries and the guest proof/handoff.
+exclusive leases, cancellation, deadlines and process-death recovery. The
+[evidence store](schemas/EVIDENCE_STORE.md) specifies immutable objects, explicit
+frozen baselines and honest retry histories. The final milestone adds the guest
+proof and consumer handoff.

@@ -70,13 +70,24 @@ def worker(root, job_id, owner, parent_fd, job_fd, host_fd):
     try:
         job = queue.get(job_id)
         require(job['state'] == 'RUNNING' and job['owner'] == owner, 'worker:stale_owner')
+        path, address = None, None
         try:
             record, path = execute(job, queue, parent_fd, (job_fd, host_fd))
             reason = '; '.join(item['code'] for item in record['failures']) or None
-            queue.finish(job_id, owner, record['state'], path, reason)
+            from .store import Store
+            store = Store(queue.root / 'evidence-store')
+            try:
+                address = store.add_record(record, (queue.root / path).parent)
+                try:
+                    comparison = store.compare(record)
+                except (OSError, ValueError) as error:
+                    comparison = {'verdict': 'INCOMPARABLE', 'reasons': ['invalid_baseline:' + str(error)], 'baseline': None}
+            finally:
+                store.close()
+            queue.finish(job_id, owner, record['state'], path, reason, address, comparison)
             return 0 if record['state'] == 'COMPLETED' else 1
         except Exception as error:
-            queue.finish(job_id, owner, 'FAILED', failure=f'worker failure: {error}')
+            queue.finish(job_id, owner, 'FAILED', evidence=path, record_digest=address, failure=f'worker failure: {error}')
             return 1
     finally:
         queue.close()

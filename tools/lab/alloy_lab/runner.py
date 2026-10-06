@@ -12,8 +12,8 @@ import uuid
 
 from .common import Invalid, MAX_ARTIFACT, decode, file_bytes, file_digest, hashed, require, safe_file
 from .evidence import SCOPE, seal, validate
-from .identity import host_identity, input_identities, requirements_met, runtime_identity, scheduler_identity, source_identity
-from .scenario import TOKENS
+from .identity import archive_sources, host_identity, input_identities, requirements_met, runtime_manifest, scheduler_identity, source_identity
+from .scenario import TOKENS, runtime_digest
 from .storage import atomic_json, private_directory
 
 LOG_LIMIT = 65536
@@ -84,8 +84,9 @@ def execute(job, queue, parent_fd, inherited):
     private_directory(output / 'steps')
     private_directory(output / 'home')
     private_directory(output / 'tmp')
+    private_directory(output / 'provenance')
     host = host_identity()
-    before_runner = source_identity()
+    before_runner = archive_sources(output)
     observed_identity = lambda expected: {'expected': expected, 'before': None, 'after': None}
     provenance = {
         'runner': before_runner, 'scheduler': scheduler_identity(), 'host': host, 'host_class_sha256': hashed(host),
@@ -125,7 +126,9 @@ def execute(job, queue, parent_fd, inherited):
             record['state'] = state
         record['failures'].append({'code': code, 'detail': str(detail)[:4096] or code})
     def identities(which):
-        provenance['runtime'][which] = runtime_identity(definition, job['runtime_root'])
+        manifest = runtime_manifest(definition, job['runtime_root'])
+        provenance['runtime'][which] = runtime_digest(manifest)
+        atomic_json(output / f'provenance/runtime-{which}.json', manifest)
         provenance['subject'][which] = file_digest(safe_file(job['input_root'], definition['subject']['path']))['sha256']
         for name, value in input_identities(definition, job['input_root']).items():
             provenance['inputs'][name][which] = value
@@ -222,6 +225,8 @@ def execute(job, queue, parent_fd, inherited):
                     expected = definition['legacy']['definition']['expected'][mode]
                     require([record['observed'][f'frame-{index}'] for index in range(4)] == expected['frames'], 'legacy:frame_oracle')
                     require(all(record['observed'][key] == value for key, value in expected['metrics'].items()), 'legacy:counter_oracle')
+            names.update(str(path.relative_to(output)) for folder in ('sources', 'provenance')
+                         for path in (output / folder).iterdir() if path.is_file())
             for name in sorted(names):
                 path = safe_file(output, name)
                 require(path.stat().st_size <= MAX_ARTIFACT, 'artifact:too_large')
