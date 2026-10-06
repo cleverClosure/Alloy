@@ -110,17 +110,34 @@ public final class TitleVolumeStore: @unchecked Sendable {
     /// A live session holds this lease; expiry alone cannot remove its scratch.
     public func withSessionLease<T>(gameID: String, sessionID: String,
                                     _ body: (VolumeRecord) throws -> T) throws -> T {
-        let lease: (VolumeRecord, Int32) = try locked {
+        let lease: SessionLease = try locked {
             let record = try resolve(gameID, .scratch, sessionID, in: loadRegistry())
             let handle = try lockFile(try metadata.child("leases"), record.id)
             guard flock(handle, LOCK_SH) == 0 else {
                 close(handle)
                 throw VolumeError.systemCall("session lease", errno)
             }
-            return (record, handle)
+            let writer: Int32
+            do {
+                writer = try lockFile(try metadata.child("leases"), "writers-" + gameID)
+                guard flock(writer, LOCK_SH) == 0 else {
+                    close(writer)
+                    throw VolumeError.systemCall("writer lease", errno)
+                }
+            } catch {
+                flock(handle, LOCK_UN)
+                close(handle)
+                throw error
+            }
+            return SessionLease(record: record, scratch: handle, writer: writer)
         }
-        defer { flock(lease.1, LOCK_UN); close(lease.1) }
-        return try body(lease.0)
+        defer {
+            flock(lease.scratch, LOCK_UN)
+            close(lease.scratch)
+            flock(lease.writer, LOCK_UN)
+            close(lease.writer)
+        }
+        return try body(lease.record)
     }
 
     @discardableResult

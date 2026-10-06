@@ -36,6 +36,24 @@ do {
     case "scratch-expire":
         guard arguments.count == 4, let now = Int64(arguments[3]) else { throw VolumeError.invalidPolicy }
         try emit(store.expireScratch(gameID: gameID, now: now))
+    case "snapshot", "snapshot-if-due":
+        guard arguments.count == 4, let now = Int64(arguments[3]) else { throw VolumeError.invalidPolicy }
+        if command == "snapshot" { try emit(store.snapshot(gameID: gameID, now: now)) } else {
+            try emit(store.snapshotIfDue(gameID: gameID, now: now))
+        }
+    case "backup-create":
+        guard arguments.count == 5, let now = Int64(arguments[3]) else { throw VolumeError.invalidPolicy }
+        try emit(store.createBackup(gameID: gameID, now: now, reason: arguments[4]))
+    case "backup-list":
+        guard arguments.count == 3 else { throw VolumeError.invalidPolicy }
+        try emit(store.archives(gameID: gameID))
+    case "backup-delete":
+        guard arguments.count == 4 else { throw VolumeError.invalidPolicy }
+        try store.deleteArchive(gameID: gameID, archiveID: arguments[3])
+    case "backup-restore":
+        guard arguments.count == 6, let now = Int64(arguments[5]) else { throw VolumeError.invalidPolicy }
+        try emit(store.restore(gameID: gameID, archiveID: arguments[3],
+                               expectedFingerprint: arguments[4], now: now))
     default: throw VolumeError.invalidPolicy
     }
 } catch {
