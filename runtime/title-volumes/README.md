@@ -25,3 +25,5 @@ errors are named, including quota, path, integrity, conflict and registry errors
 See [the layout contract](Specs/LAYOUT_V1.md) for ownership and concurrency.
 See [save operations](Specs/SAVES_V1.md) for explicit backup/restore commands,
 conflict handling, periodic policy and the required quiet write boundary.
+See [settings and disposable state](Specs/STATE_V1.md) for versioning, resets,
+cache identity inputs and scratch recovery.

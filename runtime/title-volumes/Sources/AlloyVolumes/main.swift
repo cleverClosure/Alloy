@@ -54,6 +54,30 @@ do {
         guard arguments.count == 6, let now = Int64(arguments[5]) else { throw VolumeError.invalidPolicy }
         try emit(store.restore(gameID: gameID, archiveID: arguments[3],
                                expectedFingerprint: arguments[4], now: now))
+    case "settings-status":
+        guard arguments.count == 3 else { throw VolumeError.invalidPolicy }
+        try emit(store.settingsStatus(gameID: gameID))
+    case "settings-reset", "settings-update":
+        let expectedCount = command == "settings-reset" ? 5 : 6
+        guard arguments.count == expectedCount, let now = Int64(arguments[4]) else {
+            throw VolumeError.invalidPolicy
+        }
+        let files: [String: Data]
+        if command == "settings-reset" { files = [:] } else {
+            let data = try Data(contentsOf: URL(fileURLWithPath: arguments[5]))
+            guard data.count <= 64 << 20 else { throw VolumeError.quotaExceeded }
+            files = try JSONDecoder().decode([String: Data].self, from: data)
+        }
+        try emit(store.updateSettings(gameID: gameID, update: SettingsUpdate(
+            expectedFingerprint: arguments[3], files: files, now: now)))
+    case "cache-status":
+        guard arguments.count == 3 else { throw VolumeError.invalidPolicy }
+        try emit(store.activeCache(gameID: gameID))
+    case "cache-activate":
+        guard arguments.count == 4 else { throw VolumeError.invalidPolicy }
+        let data = try Data(contentsOf: URL(fileURLWithPath: arguments[3]))
+        guard data.count <= 1 << 20 else { throw VolumeError.quotaExceeded }
+        try emit(store.activateCache(gameID: gameID, identity: JSONDecoder().decode(CacheIdentity.self, from: data)))
     default: throw VolumeError.invalidPolicy
     }
 } catch {

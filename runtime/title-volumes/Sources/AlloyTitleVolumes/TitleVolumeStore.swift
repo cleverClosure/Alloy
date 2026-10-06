@@ -80,6 +80,7 @@ public final class TitleVolumeStore: @unchecked Sendable {
 
     public func write(gameID: String, kind: VolumeKind, generation: String? = nil,
                       path: String, data: Data) throws {
+        guard kind != .settings else { throw VolumeError.invalidPolicy }
         let components = try relativeComponents(path)
         try locked {
             let record = try resolve(gameID, kind, generation, in: loadRegistry())
@@ -138,34 +139,6 @@ public final class TitleVolumeStore: @unchecked Sendable {
             close(lease.writer)
         }
         return try body(lease.record)
-    }
-
-    @discardableResult
-    public func expireScratch(gameID: String, now: Int64) throws -> [String] {
-        guard now >= 0 else { throw VolumeError.invalidPolicy }
-        return try locked {
-            var registry = try loadRegistry()
-            let title = try titleRecord(gameID, in: registry)
-            var removed: [String] = []
-            for record in title.volumes where record.kind == .scratch && (record.expiresAt ?? Int64.max) <= now {
-                let handle = try lockFile(try metadata.child("leases"), record.id)
-                defer { flock(handle, LOCK_UN); close(handle) }
-                if flock(handle, LOCK_EX | LOCK_NB) != 0 {
-                    guard errno == EWOULDBLOCK else { throw VolumeError.systemCall("cleanup lease", errno) }
-                    continue
-                }
-                guard let sessionID = record.generation else { throw VolumeError.corruptRegistry }
-                try volumes.child(gameID).child("sessions").remove(sessionID)
-                removed.append(record.id)
-            }
-            if !removed.isEmpty {
-                for index in registry.titles.indices where registry.titles[index].gameID == gameID {
-                    registry.titles[index].volumes.removeAll { removed.contains($0.id) }
-                }
-                try saveRegistry(&registry)
-            }
-            return removed
-        }
     }
 
     func createScoped(gameID: String, kind: VolumeKind, generation: String,
