@@ -114,7 +114,7 @@ extension TitleVolumeStore {
         }
     }
 
-    private func activeCacheUnlocked(_ gameID: String) throws -> CacheSelection? {
+    func activeCacheUnlocked(_ gameID: String) throws -> CacheSelection? {
         let title = try titleRecord(gameID, in: loadRegistry())
         guard try metadata.information("cache-current") != nil else { return nil }
         let directory = try metadata.child("cache-current")

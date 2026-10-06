@@ -15,7 +15,8 @@ final class Directory {
             throw VolumeError.systemCall("open directory", errno)
         }
         guard info.st_mode & S_IFMT == S_IFDIR, info.st_uid == geteuid(),
-              info.st_mode & (privateMode ? 0o077 : 0o022) == 0 else {
+              info.st_mode & (privateMode ? 0o077 : 0o022) == 0,
+              !privateMode || noExtendedACL(descriptor) else {
             close(descriptor)
             throw VolumeError.unsafePath
         }
@@ -26,8 +27,12 @@ final class Directory {
     deinit { close(descriptor) }
 
     static func root(_ url: URL) throws -> Directory {
-        guard url.isFileURL, url.path.hasPrefix("/"), url.path != "/" else { throw VolumeError.unsafePath }
-        let components = url.path.split(separator: "/").map(String.init)
+        let path = url.path(percentEncoded: false)
+        guard url.isFileURL, path.hasPrefix("/"), path != "/" else { throw VolumeError.unsafePath }
+        let components = path.split(separator: "/").map(String.init)
+        guard components.allSatisfy({ $0 != "." && $0 != ".." && !$0.contains("\0") && $0.utf8.count <= 255 }) else {
+            throw VolumeError.unsafePath
+        }
         var current = open("/", O_RDONLY | O_DIRECTORY | O_CLOEXEC)
         guard current >= 0 else { throw VolumeError.systemCall("open root", errno) }
         for (index, component) in components.enumerated() {
@@ -95,26 +100,26 @@ final class Directory {
             errno = 0
         }
         guard errno == 0 else { throw VolumeError.systemCall("readdir", errno) }
-        let folded = result.map { $0.precomposedStringWithCanonicalMapping.lowercased() }
+        let folded = result.map(caseKey)
         guard Set(folded).count == result.count else { throw VolumeError.unsafePath }
         return result.sorted()
     }
 
     func rejectAlias(_ name: String) throws {
-        let folded = name.precomposedStringWithCanonicalMapping.lowercased()
-        guard try !names().contains(where: { $0 != name && $0.lowercased() == folded }) else {
+        let folded = caseKey(name)
+        guard try !names().contains(where: { $0 != name && caseKey($0) == folded }) else {
             throw VolumeError.unsafePath
         }
     }
 
-    func file(_ name: String) throws -> Int32 {
+    func file(_ name: String, privateMode: Bool = true) throws -> Int32 {
         try component(name)
         let handle = openat(descriptor, name, O_RDONLY | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC)
         guard handle >= 0 else { throw VolumeError.unsafeFile }
         var info = stat()
         guard fstat(handle, &info) == 0, info.st_mode & S_IFMT == S_IFREG,
               info.st_nlink == 1, info.st_uid == geteuid(), info.st_dev == device,
-              info.st_mode & 0o077 == 0 else {
+              info.st_mode & (privateMode ? 0o077 : 0o022) == 0, noExtendedACL(handle) else {
             close(handle)
             throw VolumeError.unsafeFile
         }
@@ -192,4 +197,13 @@ final class Directory {
         guard !name.isEmpty, name != ".", name != "..", !name.contains("/"),
               !name.contains("\0"), name.utf8.count <= 255 else { throw VolumeError.unsafePath }
     }
+}
+
+func noExtendedACL(_ descriptor: Int32) -> Bool {
+    // On Darwin, an already-validated open descriptor reports ENOENT when it has no extended ACL.
+    guard let acl = acl_get_fd_np(descriptor, ACL_TYPE_EXTENDED) else { return errno == ENOENT }
+    defer { acl_free(UnsafeMutableRawPointer(acl)) }
+    var entry: acl_entry_t?
+    errno = 0
+    return acl_get_entry(acl, Int32(ACL_FIRST_ENTRY.rawValue), &entry) == -1 && errno == EINVAL
 }

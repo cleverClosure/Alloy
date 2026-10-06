@@ -40,8 +40,8 @@ extension TitleVolumeStore {
             _ = try relativeComponents(binding.relativePath)
             let guest = binding.guestPath.replacingOccurrences(of: "\\", with: "/")
             guard guest.count > 3, ["C:/", "G:/", "S:/"].contains(String(guest.prefix(3))),
-                  guests.insert(guest.lowercased()).inserted,
-                  targets.insert(binding.relativePath.lowercased()).inserted else { throw VolumeError.unsafePath }
+                  guests.insert(caseKey(guest)).inserted,
+                  targets.insert(caseKey(binding.relativePath)).inserted else { throw VolumeError.unsafePath }
             _ = try relativeComponents(String(guest.dropFirst(3)))
         }
         for paths in [guests, targets] {
@@ -59,13 +59,15 @@ extension TitleVolumeStore {
     }
 
     public func savePaths(gameID: String) throws -> SavePathDeclaration? {
-        try locked {
+        try locked { try savePathsUnlocked(gameID) }
+    }
+
+    func savePathsUnlocked(_ gameID: String) throws -> SavePathDeclaration? {
             _ = try titleRecord(gameID, in: loadRegistry())
             guard try metadata.information("save-paths") != nil else { return nil }
             let directory = try metadata.child("save-paths")
             guard try directory.information(gameID + ".json") != nil else { return nil }
             return try decodeChecked(SavePathDeclaration.self, directory.read(gameID + ".json"))
-        }
     }
 
     /// Later monitored-first-run code supplies candidates; this interface never scans outside the title's save root.

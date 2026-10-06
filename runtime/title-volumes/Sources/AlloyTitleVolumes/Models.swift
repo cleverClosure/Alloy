@@ -116,6 +116,11 @@ func identifier(_ value: String) throws {
     }
 }
 
+func caseKey(_ value: String) -> String {
+    value.precomposedStringWithCanonicalMapping.folding(options: [.caseInsensitive],
+                                                        locale: Locale(identifier: "en_US_POSIX"))
+}
+
 func relativeComponents(_ path: String) throws -> [String] {
     let parts = path.split(separator: "/", omittingEmptySubsequences: false).map(String.init)
     guard !parts.isEmpty, parts.count <= 32, path.utf8.count <= 2048 else { throw VolumeError.unsafePath }
