@@ -251,3 +251,17 @@ The package remains a library with no external dependencies and no executable
 guest requirement. Its one local package dependency is WINE-001's existing
 snapshot library, used read-only. No production signing identity or account is
 needed; the committed test keys are intentionally public fixtures.
+
+## Offline development trust
+
+`VerificationMode.trustChain(store:)` accepts AlloyTrust signed profiles,
+manifests, release metadata and evidence from a pinned development/lab root.
+All inputs are checked in one locked trust transaction. Stable/canary claims
+are rejected under these roots, and cached selections/exports are revalidated.
+Existing test-only and unsigned development modes remain available.
+
+Compiler 0.8.0 uses `verified-local` in canonical signed launch specifications
+and reports the precise mode separately as `CompiledLaunch.verificationProvenance`.
+Both signed paths produce the same runtime configuration for the same payloads.
+See the [consumer handoff](../trust/Specs/CONSUMER_HANDOFF.md) for initialization,
+refresh, rotation, revocation and the remaining production/service boundaries.

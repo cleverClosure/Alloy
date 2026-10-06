@@ -90,4 +90,5 @@ public struct CompiledLaunch: Sendable {
     public let specification: LaunchSpecification
     public let canonicalJSON: Data
     public let snapshot: PolicySnapshotExport
+    public let verificationProvenance: String
 }

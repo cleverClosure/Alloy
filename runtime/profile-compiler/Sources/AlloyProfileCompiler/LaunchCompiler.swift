@@ -1,23 +1,32 @@
 // Author: Timur Isaev
 
+import AlloyTrust
 import Foundation
 
 public enum LaunchCompiler {
-    public static let version = "0.7.0"
+    public static let version = "0.8.0"
 
     public static func compile(_ input: LaunchCompilationInput) throws -> CompiledLaunch {
+        if case .trustChain(let store) = input.verificationMode {
+            return try store.withVerifier(now: input.selection.now) { try compile(input, verifier: $0) }
+        }
+        return try compile(input, verifier: nil)
+    }
+
+    private static func compile(_ input: LaunchCompilationInput, verifier: TrustVerifier?) throws -> CompiledLaunch {
         guard (1...256).contains(input.candidates.count), (1...4095).contains(input.processes.count) else {
             throw CompilerFailure.rejected("candidate or process count exceeds launch bounds")
         }
         let candidates = try input.candidates.map {
             try ProfileCandidate(
-                profile: $0.profile, manifest: $0.manifest, metadata: $0.metadata,
-                mode: input.verificationMode, now: input.selection.now
+                envelopes: $0, mode: input.verificationMode,
+                now: input.selection.now, verifier: verifier
             )
         }
-        let chosen = try ProfileResolver.resolve(candidates, input: input.selection).requireSelected()
-        let evidencePayload = try TestEnvelope.verify(
-            input.evidenceEnvelope, type: .launchEvidence, mode: input.verificationMode, now: input.selection.now
+        let chosen = try ProfileResolver.resolveValidated(candidates, input: input.selection).requireSelected()
+        let evidencePayload = try verifyCompilerEnvelope(
+            input.evidenceEnvelope, type: .launchEvidence, mode: input.verificationMode,
+            now: input.selection.now, verifier: verifier
         )
         let evidence = try LaunchEvidence.decode(evidencePayload.bytes)
         let registry = try SemanticValidation.validateEvidence(
@@ -36,7 +45,8 @@ public enum LaunchCompiler {
             input, chosen: chosen, evidenceDigest: evidencePayload.digest, artifacts: artifacts
         )
         return CompiledLaunch(
-            specification: specification, canonicalJSON: try CanonicalJSON.encode(specification), snapshot: snapshot
+            specification: specification, canonicalJSON: try CanonicalJSON.encode(specification), snapshot: snapshot,
+            verificationProvenance: chosen.profilePayload.verification
         )
     }
 
@@ -158,7 +168,8 @@ public enum LaunchCompiler {
                 certification: .init(level: chosen.profile.certification.level,
                                      matrixDigest: chosen.profile.certification.matrixDigest),
                 createdAt: ISO8601DateFormatter().string(from: input.selection.now),
-                verification: chosen.profilePayload.verification, productionEligible: false,
+                verification: chosen.profilePayload.verification == "unsigned-development"
+                    ? "unsigned-development" : "verified-local", productionEligible: false,
                 runtimeReady: gaps.isEmpty, notYetLowered: gaps, inputDigests: digests,
                 componentDigests: Dictionary(uniqueKeysWithValues: chosen.manifest.components.map {
                     ($0.name, $0.digest)

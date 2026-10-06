@@ -1,5 +1,6 @@
 // Author: Timur Isaev
 
+import AlloyTrust
 import CryptoKit
 import Foundation
 
@@ -14,6 +15,7 @@ public enum PayloadType: String, Codable, Sendable {
 public enum VerificationMode: Sendable {
     case testOnly(keys: [String: Data])
     case development
+    case trustChain(store: TrustStore)
 }
 
 public struct VerifiedPayload: Sendable {
@@ -71,6 +73,9 @@ public struct TestEnvelope: Codable, Sendable {
     public static func verify(
         _ envelope: Data, type: PayloadType, mode: VerificationMode, now: Date
     ) throws -> VerifiedPayload {
+        if case .trustChain(let store) = mode {
+            return try verifiedTrustPayload(store.verify(envelope, type: type.rawValue, now: now), type: type)
+        }
         let decoded = try JSONDecoder().decode(Self.self, from: CanonicalJSON.encode(envelope))
         let claims = decoded.claims
         guard claims.canonicalization == CanonicalJSON.version, claims.payloadType == type else {
@@ -94,6 +99,8 @@ public struct TestEnvelope: Codable, Sendable {
                 throw CompilerFailure.rejected("invalid test signature")
             }
             verification = "test-only"
+        case .trustChain:
+            throw CompilerFailure.rejected("trust verification requires the trust-chain path")
         case .development:
             guard decoded.keyId == nil && decoded.signature == nil else {
                 throw CompilerFailure.rejected("signed envelopes require explicit test-key verification")
@@ -112,4 +119,19 @@ func parseTimestamp(_ value: String) -> Date? {
     if let date = formatter.date(from: value) { return date }
     formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
     return formatter.date(from: value)
+}
+
+func verifiedTrustPayload(_ trusted: TrustedPayload, type: PayloadType) throws -> VerifiedPayload {
+    guard try CanonicalJSON.encode(trusted.bytes) == trusted.bytes else {
+        throw CompilerFailure.rejected("trust and compiler canonicalization mismatch")
+    }
+    return VerifiedPayload(bytes: trusted.bytes, digest: CanonicalJSON.digest(trusted.bytes), type: type,
+                           verification: "trust-chain-" + trusted.scope.rawValue, expiresAt: trusted.expiresAt)
+}
+
+func verifyCompilerEnvelope(
+    _ bytes: Data, type: PayloadType, mode: VerificationMode, now: Date, verifier: TrustVerifier?
+) throws -> VerifiedPayload {
+    if let verifier { return try verifiedTrustPayload(verifier.verify(bytes, type: type.rawValue), type: type) }
+    return try TestEnvelope.verify(bytes, type: type, mode: mode, now: now)
 }

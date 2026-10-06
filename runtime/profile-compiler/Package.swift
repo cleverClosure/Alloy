@@ -16,12 +16,16 @@ let package = Package(
         .executable(name: "alloy-snapshot-export", targets: ["AlloySnapshotExport"])
     ],
     dependencies: [
-        .package(path: "../../spikes/WINE-001/policy-probe")
+        .package(path: "../../spikes/WINE-001/policy-probe"),
+        .package(path: "../trust")
     ],
     targets: [
         .target(
             name: "AlloyProfileCompiler",
-            dependencies: [.product(name: "AlloyPolicySnapshot", package: "policy-probe")]
+            dependencies: [
+                .product(name: "AlloyPolicySnapshot", package: "policy-probe"),
+                .product(name: "AlloyTrust", package: "trust")
+            ]
         ),
         .executableTarget(name: "AlloySnapshotExport", dependencies: ["AlloyProfileCompiler"]),
         .testTarget(
