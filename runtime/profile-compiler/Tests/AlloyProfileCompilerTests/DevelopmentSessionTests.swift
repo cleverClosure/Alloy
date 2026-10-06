@@ -15,7 +15,8 @@ private func sessionSource() throws -> [String: Any] {
     return ["schemaVersion": DevelopmentSessionCompiler.format, "syntheticOnly": true,
             "filesystem": "title-volumes-namespace-v1", "gameID": "synthetic", "buildID": "build-one",
             "runtimeGenerationID": "rtg_one", "runtimeTreeDigest": "sha256:" + String(repeating: "a", count: 64),
-            "host": try JSONSerialization.jsonObject(with: CanonicalJSON.encode(HostCapabilities.current())),
+            "host": ["architecture": "arm64", "macOS": "26.0", "macOSBuild": "25A-fixture",
+                     "gpuFamilies": ["apple7"], "memoryGiB": 16, "features": [], "entitlements": []],
             "createdAt": "2026-10-06T00:00:00Z",
             "volumes": Dictionary(uniqueKeysWithValues: ["runtime", "game", "saves", "settings", "cache", "temp"]
                 .map { ($0, "vol-" + $0) }),
@@ -109,5 +110,12 @@ struct DevelopmentSessionTests {
         changed = source
         changed["volumes"] = ["game": "/tmp/arbitrary"]
         #expect(throws: (any Error).self) { try compileSession(changed) }
+        changed = source
+        var host = try #require(changed["host"] as? [String: Any])
+        host["memoryGiB"] = 7
+        changed["host"] = host
+        #expect(throws: CompilerFailure.rejected("invalid host memory class or OS build")) {
+            try compileSession(changed)
+        }
     }
 }
